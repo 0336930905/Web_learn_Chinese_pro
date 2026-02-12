@@ -1,0 +1,2518 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Vocabulary Quest - Ultimate Challenge</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎮</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../css/games-common.css" />
+    <!-- API Client for authenticated requests -->
+    <script src="../js/api-client.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#0D7FF2",
+                        "background-light": "#f8fafc",
+                        "background-dark": "#0f172a",
+                        "text-main": "#1e293b",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1e2a36",
+                        "border-light": "#e2e8f0",
+                        "border-dark": "#334155"
+                    },
+                    fontFamily: {
+                        display: ["Lexend", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+
+        /* Animation helpers */
+        @keyframes slideInUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(13, 127, 242, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(13, 127, 242, 0.8);
+            }
+        }
+
+        .animate-slide-in-up {
+            animation: slideInUp 0.5s ease-out;
+        }
+
+        .game-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .game-card:hover {
+            transform: translateY(-4px);
+        }
+
+        /* Match word game styles */
+        .connector-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .anchor-point {
+            transition: transform 0.2s ease;
+        }
+
+        .game-card:hover .anchor-point {
+            transform: scale(1.2);
+        }
+
+        .connection-line {
+            stroke: #10b981;
+            stroke-width: 4;
+            fill: none;
+            stroke-linecap: round;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawLine 0.6s ease-out forwards;
+        }
+
+        @keyframes drawLine {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        .chinese-word-speaker {
+            position: relative;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .chinese-word-speaker:hover {
+            color: #0d7ff2;
+        }
+
+        .chinese-word-speaker:active {
+            transform: scale(0.95);
+        }
+
+        /* Kids vocab card */
+        .vocab-card {
+            perspective: 1000px;
+        }
+
+        /* Progress ring */
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.5s ease;
+        }
+        .border-radius-40px {
+            border-radius: 40px !important;
+        }
+        
+        /* Blob animation for Round 4 */
+        @keyframes blob {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(20px, -50px) scale(1.1); }
+            50% { transform: translate(-20px, 20px) scale(0.9); }
+            75% { transform: translate(50px, 50px) scale(1.05); }
+        }
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+        .animation-delay-4000 {
+            animation-delay: 4s;
+        }
+        
+        /* Difficulty selection */
+        .difficulty-btn.selected {
+            border-width: 3px;
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .difficulty-btn.selected[data-difficulty="beginner"] {
+            border-color: #10b981;
+            background-color: rgba(16, 185, 129, 0.1);
+        }
+        .difficulty-btn.selected[data-difficulty="intermediate"] {
+            border-color: #3b82f6;
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        .difficulty-btn.selected[data-difficulty="advanced"] {
+            border-color: #8b5cf6;
+            background-color: rgba(139, 92, 246, 0.1);
+        }
+        .difficulty-btn.selected[data-difficulty="native"] {
+            border-color: #ef4444;
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+        
+        .category-item.selected {
+            background-color: rgba(74, 222, 128, 0.2);
+            border-color: #10b981;
+        }
+    </style>
+</head>
+
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 transition-colors duration-200 min-h-screen flex flex-col overflow-hidden">
+    
+    <!-- Common Game Header -->
+    <div id="game-header-container"></div>
+    <script>
+        // Track when header is fully loaded
+        window.headerLoaded = false;
+        
+        // Insert common header
+        fetch('games-header.html')
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('game-header-container').innerHTML = html;
+                // Execute scripts in the loaded HTML
+                const scripts = document.getElementById('game-header-container').querySelectorAll('script');
+                let scriptsLoaded = 0;
+                const totalScripts = scripts.length;
+                
+                scripts.forEach(script => {
+                    const newScript = document.createElement('script');
+                    
+                    // Handle script load completion
+                    newScript.onload = newScript.onerror = () => {
+                        scriptsLoaded++;
+                        if (scriptsLoaded === totalScripts) {
+                            window.headerLoaded = true;
+                            console.log('✅ Game header fully loaded');
+                        }
+                    };
+                    
+                    if (script.src) {
+                        newScript.src = script.src;
+                    } else {
+                        newScript.textContent = script.textContent;
+                        // Inline scripts execute immediately
+                        scriptsLoaded++;
+                    }
+                    document.body.appendChild(newScript);
+                });
+                
+                // If no scripts, mark as loaded
+                if (totalScripts === 0) {
+                    window.headerLoaded = true;
+                }
+            })
+            .catch(err => console.error('Failed to load game header:', err));
+    </script>
+
+    <!-- Difficulty & Category Selection Modal -->
+    <div id="difficultyModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 w-full max-w-2xl animate-slide-in-up">
+            <div class="text-center mb-8">
+                <div class="text-6xl mb-4">🎯</div>
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Chọn Mức Độ Kiểm Tra</h2>
+                <p class="text-gray-600 dark:text-gray-400">Chọn độ khó phù hợp với trình độ của bạn.<br/>Từ vựng sẽ được lấy ngẫu nhiên từ tất cả bộ đề cùng mức độ.</p>
+            </div>
+            
+            <!-- Difficulty Selection -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined">tune</span>
+                    Chọn Mức Độ
+                </h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <button onclick="selectDifficulty('beginner')" 
+                        class="difficulty-btn p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-green-500 dark:hover:border-green-500 transition-all flex flex-col items-center gap-2 group"
+                        data-difficulty="beginner">
+                        <span class="text-3xl">🌱</span>
+                        <span class="text-sm font-semibold text-gray-900 dark:text-white">Beginner</span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Cơ bản</span>
+                    </button>
+                    <button onclick="selectDifficulty('intermediate')" 
+                        class="difficulty-btn p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-all flex flex-col items-center gap-2 group"
+                        data-difficulty="intermediate">
+                        <span class="text-3xl">🌿</span>
+                        <span class="text-sm font-semibold text-gray-900 dark:text-white">Intermediate</span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Trung cấp</span>
+                    </button>
+                    <button onclick="selectDifficulty('advanced')" 
+                        class="difficulty-btn p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-purple-500 dark:hover:border-purple-500 transition-all flex flex-col items-center gap-2 group"
+                        data-difficulty="advanced">
+                        <span class="text-3xl">🌳</span>
+                        <span class="text-sm font-semibold text-gray-900 dark:text-white">Advanced</span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Nâng cao</span>
+                    </button>
+                    <button onclick="selectDifficulty('native')" 
+                        class="difficulty-btn p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-red-500 dark:hover:border-red-500 transition-all flex flex-col items-center gap-2 group"
+                        data-difficulty="native">
+                        <span class="text-3xl">🏆</span>
+                        <span class="text-sm font-semibold text-gray-900 dark:text-white">Native</span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Bản ngữ</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Start Button -->
+            <div id="startTestSection" class="hidden">
+                <button onclick="startTest()" 
+                    class="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold text-lg rounded-xl shadow-lg transition-all flex items-center justify-center gap-3">
+                    <span class="material-symbols-outlined text-2xl">play_arrow</span>
+                    <span>Bắt Đầu Kiểm Tra</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col items-center justify-center   w-full max-w-6xl mx-auto relative z-10">
+        
+        <!-- Real-time Test Stats -->
+        <div style="display: none;" id="testStatsDisplay" class="mb-4 text-center bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-6 py-3 rounded-full shadow-md border border-slate-200 dark:border-slate-700">
+            <p class="text-base font-bold text-slate-700 dark:text-slate-300">
+                📊 <span id="test-stats-correct">0</span>/<span id="test-stats-total">22</span> đúng · <span id="test-stats-percentage">0</span>%
+            </p>
+        </div>
+        
+        <!-- Round 1: Listening Game -->
+        <div id="round1" class="game-round hidden w-full">
+            <div class="text-center ">
+                <div class="inline-block px-6 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full font-bold text-sm mb-4">
+                    🎧 ROUND 1: LISTENING | Nghe và chọn nghĩa đúng
+                </div>
+            </div>
+            
+            <div class="max-w-4xl w-full mx-auto flex flex-col gap-8 md:gap-12">
+                 <!-- Interaction Zone: Speaker -->
+                 <section id="round1-speaker-section"
+                    class="flex flex-col items-center text-center gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    <h2 class="text-slate-800 dark:text-slate-200 text-lg md:text-xl font-medium">Nghe và chọn nghĩa đúng!</h2>
+                    <div class="relative group">
+                        <!-- Ripple Effect Layers -->
+                        <div class="absolute inset-0 rounded-full bg-primary/20 animate-ping opacity-75"></div>
+                        <div class="absolute -inset-2 rounded-full bg-primary/10 animate-pulse"></div>
+                        <button id="round1-playBtn"
+                            class="relative z-10 flex items-center justify-center w-24 h-24 md:w-22 md:h-22 rounded-full bg-primary text-white shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 group-hover:shadow-primary/50">
+                            <span class="material-symbols-outlined text-[48px] md:text-[64px]">volume_up</span>
+                        </button>
+                    </div>
+                    <button id="round1-replayBtn"
+                        class="text-primary hover:text-blue-600 dark:hover:text-blue-400 text-sm font-semibold flex items-center gap-1 transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">replay</span>
+                        Nhấp để nghe lại
+                    </button>
+                    <!-- Display Chinese word (hidden initially, shown after first play) -->
+                    <div id="round1-wordDisplay" class="hidden mt-4 text-center">
+                        <div class="text-4xl md:text-4xl font-bold text-primary mb-2" id="round1-chineseWord"></div>
+                        <div class="text-lg md:text-xl text-blue-600 dark:text-blue-400" id="round1-pinyinWord"></div>
+                    </div>
+                </section>
+
+                <!-- Answer Grid -->
+                <section id="round1-optionsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 w-full">
+                    <!-- Options will be dynamically inserted here -->
+                </section>
+
+                <!-- Next Button -->
+                <div class="flex justify-center ">
+                    <button id="round1-nextBtn" disabled class="flex items-center justify-center gap-2 bg-slate-300 dark:bg-slate-700 text-slate-500 dark:text-slate-400 font-bold text-lg px-8 py-3 rounded-full shadow-lg transition-all min-w-[160px]">
+                        <span>Chọn đáp án</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Round 2: Match Word Game -->
+        <div id="round2" class="game-round hidden w-full">
+            <div class="text-center ">
+                <div class="inline-block px-6 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full font-bold text-sm mb-4">
+                    🔗 ROUND 2: MATCHING
+                </div>
+            </div>
+             <!-- Instructions -->
+            <div class="text-center  md:mb-12">
+                <h2 class="text-3xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white mb-2">
+                    Ghép từ Trung với nghĩa!
+                </h2>
+                <p id="round2-instruction" class="text-slate-500 dark:text-slate-400 text-lg">
+                    Nhấp vào từ tiếng Trung, sau đó nhấp vào nghĩa tiếng Việt để ghép chúng.
+                </p>
+            </div>
+            <!-- Game Board Container -->
+            <div class="relative flex-1 flex justify-between items-center gap-8 max-w-4xl mx-auto w-full min-h-[400px]">
+                <!-- SVG Layer for Connections -->
+                <svg id="round2-connections-svg" class="connector-svg hidden md:block"></svg>
+                
+                <!-- Left Column: Chinese Words -->
+                <div id="round2-wordsColumn" class="flex flex-col gap-6 w-full max-w-[280px] z-20">
+                    <!-- Cards will be dynamically inserted here -->
+                </div>
+                
+                <!-- Right Column: Vietnamese Meanings -->
+                <div id="round2-meaningsColumn" class="flex flex-col gap-6 w-full max-w-[280px] z-20">
+                    <!-- Cards will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Round 3: Reverse Quiz Game -->
+        <div id="round3" class="game-round hidden w-full">
+            <div class="text-center ">
+                 <div class="inline-block px-6  bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full font-bold text-sm mb-4">
+                    🖼️ ROUND 3: PICTURE QUIZ
+                </div>
+            </div>
+            
+            <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 w-full items-center">
+                <!-- Left Column: The Stage (Image & Prompt) -->
+                <div class="lg:col-span-7 flex flex-col w-full justify-center">
+                    <!-- Question Prompt -->
+                    <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold text-center lg:text-left mb-2 text-gray-800 dark:text-gray-100 drop-shadow-sm leading-tight">
+                        Nhìn ảnh và đoán nghĩa.<br />
+                        <span class="text-primary">đây là gì?</span>
+                    </h1>
+                    <!-- Image Card -->
+                    <div class="relative w-full aspect-[4/3] rounded-xl overflow-hidden shadow-2xl bg-white dark:bg-slate-800 border-4 border-white dark:border-slate-800 ring-1 ring-black/5 group">
+                        <!-- Countdown Timer Overlay (Top Right) -->
+                        <div class="absolute top-6 right-6 z-20">
+                            <div class="relative flex items-center justify-center size-20 rounded-full bg-white dark:bg-slate-800 shadow-lg">
+                                <svg class="transform -rotate-90 size-20" viewbox="0 0 100 100">
+                                    <circle class="dark:stroke-gray-700" cx="50" cy="50" fill="none" r="45" stroke="#e5e7eb" stroke-width="8"></circle>
+                                    <circle id="round3-timer-circle" class="text-primary transition-all duration-1000 ease-linear" cx="50" cy="50" fill="none" r="45" stroke="currentColor" stroke-dasharray="283" stroke-dashoffset="0" stroke-linecap="round" stroke-width="8"></circle>
+                                </svg>
+                                <div class="absolute flex flex-col items-center">
+                                    <span id="round3-timer-text" class="text-xl font-bold text-gray-800 dark:text-white leading-none">15</span>
+                                    <span class="text-[10px] uppercase font-bold text-slate-400 mt-0.5">Sec</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Main Image -->
+                        <div id="round3-image"  class=" w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style="background-image: url('');">
+                        </div>
+                        <!-- Label Overlay (Hint) -->
+                        <div class="absolute bottom-6 left-6 z-20">
+                            <div class="px-4 py-2 bg-white/90 dark:bg-black/60 backdrop-blur-sm rounded-lg shadow-sm">
+                                <p id="round3-hint" class="text-sm font-medium text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-primary text-lg">lightbulb</span>
+                                    Hint: ...
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Column: Answer Grid -->
+                <div class="lg:col-span-5 w-full flex flex-col justify-center gap-4 lg:pl-8">
+                    <div id="round3-optionsGrid" class="grid grid-cols-2 gap-4 w-full">
+                        <!-- Options will be dynamically inserted here -->
+                    </div>
+                    <div class="mt-6 flex justify-center lg:justify-start">
+                        <button id="round3-listenBtn" class="flex items-center gap-2 px-6 py-3 rounded-full bg-gray-100 dark:bg-slate-700 text-slate-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm font-bold">
+                            <span class="material-symbols-outlined text-[20px]">volume_up</span>
+                            Nghe câu hỏi
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Round 4: Kids Vocabulary Game -->
+        <div id="round4" class="game-round hidden w-full ">
+            <div class="text-center ">
+                <div class="inline-block px-6 py-2 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-full font-bold text-sm mb-4">
+                    🎤 ROUND 4: PRONUNCIATION PRACTICE
+                </div>
+            </div>
+            <div class="flex items-center justify-center relative w-full min-h-[500px]">
+                <!-- Blob Background -->
+                <div class="absolute top-0 -left-4 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob dark:opacity-30"></div>
+                <div class="absolute top-0 -right-4 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000 dark:opacity-30"></div>
+                <div class="absolute -bottom-8 left-20 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000 dark:opacity-30"></div>
+
+                <div class="relative group z-10">
+                    <!-- Top Badge -->
+                    <div class="absolute -top-5 left-1/2 transform -translate-x-1/2 z-20 w-full flex justify-center">
+                        <div id="round4-topBadge" onclick="speakRound4Word()" class="flex items-center gap-2 px-6 py-2 bg-white dark:bg-slate-700 rounded-full shadow-lg border border-slate-100 dark:border-slate-600 transition-all duration-300 whitespace-nowrap cursor-pointer hover:border-primary hover:shadow-xl active:scale-95">
+                            <span class="material-symbols-outlined text-blue-500">headphones</span>
+                            <span class="font-bold text-slate-700 dark:text-slate-200 text-sm">Listen carefully</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Main Card -->
+                    <div id="round4-cardContainer" class="h-38rem bg-white dark:bg-slate-800 rounded-3xl shadow-xl border-2 border-slate-200 dark:border-slate-700 p-8 pb-16 w-[90vw] max-w-lg md:max-w-xl lg:max-w-2xl relative flex flex-col items-center justify-between min-h-[480px] transition-all duration-300 hover:shadow-2xl">
+                        <!-- Top Left: Letter -->
+                        <div class="absolute top-6 left-6">
+                            <span id="round4-letterDisplay" class="w-12 h-12 flex items-center justify-center bg-slate-100 dark:bg-slate-700 rounded-xl text-xl font-black text-slate-400 dark:text-slate-500">A</span>
+                        </div>
+                        
+                        <!-- Top Right: Difficulty -->
+                        <div class="absolute top-6 right-6 flex gap-2">
+                             <span id="round4-difficultyText" class="px-3 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 text-xs font-bold rounded-full border border-yellow-200 dark:border-yellow-800/50">Beginner</span>
+                        </div>
+                        
+                        <!-- Content -->
+                        <div class="flex flex-row items-center justify-center w-full gap-8 mt-8 md:mt-12">
+                            <!-- Emoji/Image -->
+                            <div id="round4-imageContainer" class="text-7xl md:text-8xl animate-bounce duration-[2000ms]">
+                                🍎
+                            </div>
+                            
+                            <!-- Words -->
+                            <div class="flex flex-col items-start gap-1">
+                                <span class="text-sm font-bold text-slate-400 uppercase tracking-wider">Traditional</span>
+                                <div id="round4-traditionalText" class="text-5xl md:text-7xl font-black text-primary dark:text-blue-400 leading-tight">苹果</div>
+                                <div id="round4-pinyinText" class="text-2xl text-slate-500 dark:text-slate-400 font-serif italic">píng guǒ</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Meaning -->
+                        <div class="text-center w-full mb-4">
+                            <div class="h-px w-2/3 mx-auto bg-slate-100 dark:bg-slate-700 mb-6"></div>
+                            <div id="round4-meaningText" class="text-2xl md:text-3xl font-bold text-slate-700 dark:text-slate-200">Apple</div>
+                              <!-- SKIP BUTTON -->
+                            <button onclick="skipRound4Word()" style="margin: 0 auto; padding-top: 5px;" class="mt-1 px-4 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-300 text-xs font-bold flex items-center gap-1 transition-all border border-slate-200 dark:border-slate-700">
+                                <span>Bỏ qua câu này</span> 
+                                <span class="material-symbols-outlined text-[14px]">skip_next</span>
+                            </button>
+                        </div>
+                        
+                        <!-- Progress -->
+                        <div class="absolute bottom-6 right-6">
+                            <span id="round4-progressText" class="text-xs font-bold text-slate-300 dark:text-slate-600">1/10</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Bottom Action Button (Mic) -->
+                    <div style="top: 415px !important;" class="absolute -bottom-24 left-1/2 transform -translate-x-1/2 flex flex-col items-center w-full z-30">
+                        <div class="relative cursor-pointer transition-transform active:scale-95" onclick="recordRound4UserSpeech()">
+                            <div id="round4-recordPingEffect" class="absolute inset-0 bg-red-400 rounded-full animate-ping opacity-0"></div>
+                            <button id="round4-recordBtn" class="relative z-10 w-20 h-20 bg-white dark:bg-slate-700 rounded-full shadow-lg border-4 border-slate-100 dark:border-slate-600 flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary transition-all duration-300 group-hover:shadow-xl">
+                                <span class="material-symbols-outlined text-4xl">mic</span>
+                            </button>
+                        </div>
+                        
+                        <!-- Status Text / Visualizer -->
+                        <div class="mt-2 flex flex-col items-center justify-start">
+                             <div id="round4-visualizer" class="flex items-end justify-center h-4 space-x-1 hidden mb-1">
+                                <div class="w-1 bg-primary rounded-full h-2 animate-pulse"></div>
+                                <div class="w-1 bg-primary rounded-full h-4 animate-pulse delay-75"></div>
+                                <div class="w-1 bg-primary rounded-full h-3 animate-pulse delay-150"></div>
+                                <div class="w-1 bg-primary rounded-full h-4 animate-pulse delay-75"></div>
+                                <div class="w-1 bg-primary rounded-full h-2 animate-pulse"></div>
+                            </div>
+                            <span id="round4-statusText" class="text-sm font-bold text-slate-400 dark:text-slate-500 mb-2">Tap to speak</span>
+                            
+                          
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Round 5: Fill in the Blanks Game -->
+        <div id="round5" class="game-round hidden w-full">
+            <div class="text-center ">
+                <div class="inline-block px-6 py-2 bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 rounded-full font-bold text-sm mb-4">
+                    ✏️ ROUND 5: FILL THE BLANKS
+                </div>
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 w-full max-w-3xl mx-auto">
+                <!-- Question Display -->
+                <div id="round5-questionDisplay" class="text-center mb-8"></div>
+                
+                <!-- Options Container -->
+                <div id="round5-optionsContainer" class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8"></div>
+                
+                <!-- Check Button -->
+                <div class="flex justify-center">
+                    <button id="round5-checkButton" disabled class="flex items-center justify-center gap-2 bg-slate-300 dark:bg-slate-700 text-slate-500 dark:text-slate-400 font-bold text-lg px-10 py-4 rounded-full shadow-lg transition-all disabled:cursor-not-allowed hover:bg-primary hover:text-white disabled:hover:bg-slate-300 disabled:hover:text-slate-500 min-w-[200px]">
+                        <span id="round5-checkButtonText">Chọn đáp án</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Final Result Screen -->
+        <div id="finalResult" class="game-round hidden w-full flex items-center justify-center py-2 h-full">
+            <div class="bg-gradient-to-br from-white via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-2xl shadow-2xl p-4 max-w-lg w-full mx-auto border-4 border-gradient-to-r from-cyan-200 via-blue-200 to-purple-200 dark:border-gray-700 transform animate-slide-in-up max-h-[85vh] overflow-y-auto scrollbar-thin">
+                <div class="text-center">
+                    <div class="text-4xl mb-1 animate-bounce" id="finalEmoji">🎉</div>
+                    <h2 class="text-3xl font-black bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent mb-1" id="finalTitle">Xuất sắc!</h2>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">Hoàn thành Quiz!</p>
+                    
+                    <div class="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-md mb-3">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="text-center p-2 bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-lg">
+                                <div class="text-xl font-black text-green-600 dark:text-green-400" id="finalScore">0/22</div>
+                                <div class="text-[10px] text-green-700 dark:text-green-300 font-semibold uppercase">Điểm số</div>
+                            </div>
+                            <div class="text-center p-2 bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/30 dark:to-cyan-900/30 rounded-lg">
+                                <div class="text-xl font-black text-blue-600 dark:text-blue-400" id="finalPercentage">0%</div>
+                                <div class="text-[10px] text-blue-700 dark:text-blue-300 font-semibold uppercase">Chính xác</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Round Breakdown -->
+                        <div class="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+                            <h3 class="text-xs font-bold mb-2 text-gray-700 dark:text-gray-300 uppercase tracking-wide">Chi tiết</h3>
+                            <div class="space-y-1" id="roundBreakdown"></div>
+                        </div>
+                        
+                        <!-- Rewards Section -->
+                        <div id="rewardsSection" class="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700 hidden">
+                            <h3 class="text-xs font-bold mb-2 text-gray-700 dark:text-gray-300 flex items-center gap-1 uppercase tracking-wide">
+                                <span>✨</span> Phần thưởng
+                            </h3>
+                            <div class="space-y-1.5">
+                                <!-- XP Gained -->
+                                <div class="flex items-center justify-between p-1.5 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                                    <span class="text-xs font-semibold text-yellow-700 dark:text-yellow-300 flex items-center gap-1">
+                                        <span>🌟</span> XP
+                                    </span>
+                                    <span class="text-sm font-black text-yellow-600 dark:text-yellow-400" id="xpGained">+0 XP</span>
+                                </div>
+                                
+                                <!-- Streak -->
+                                <div class="flex items-center justify-between p-1.5 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
+                                    <span class="text-xs font-semibold text-orange-700 dark:text-orange-300 flex items-center gap-1">
+                                        <span>🔥</span> Chuỗi
+                                    </span>
+                                    <span class="text-sm font-black text-orange-600 dark:text-orange-400" id="streakDays">0 ngày</span>
+                                </div>
+                                
+                                <!-- Level Up -->
+                                <div id="levelUpNotification" class="hidden p-2 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-lg border-2 border-purple-300 dark:border-purple-700 text-center">
+                                    <div class="text-xl mb-0.5">🎆</div>
+                                    <div class="text-xs font-black text-purple-700 dark:text-purple-300 uppercase">Lên cấp!</div>
+                                    <div class="text-[10px] text-purple-600 dark:text-purple-400">Bạn đã đạt <span id="newLevelText">Level 2</span>!</div>
+                                </div>
+                                
+                                <!-- New Achievements -->
+                                <div id="newAchievementsContainer" class="hidden space-y-1">
+                                    <!-- Achievements will be dynamically added here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-2">
+                        <button onclick="location.reload()" class="flex-1 bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-3 py-2 rounded-xl font-bold hover:scale-105 transition-transform shadow-md text-sm">
+                            🔄 Chơi lại
+                        </button>
+                        <button onclick="window.location.href='../user/games_home.html'" class="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-2 rounded-xl font-bold hover:scale-105 transition-transform shadow-md text-sm">
+                            🏠 Trang chủ
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // ========== Global State ==========
+        let currentRound = 0;
+        let roundData = {
+            round1: { questions: [], currentIndex: 0, score: 0, total: 5, answers: [] },
+            round2: { cards: [], matches: new Map(), selectedWord: null, matchedPairs: 0, totalPairs: 0, score: 0, total: 4, answers: [] },
+            round3: { questions: [], currentIndex: 0, score: 0, total: 5, answers: [] },
+            round4: { cards: [], currentIndex: 0, score: 0, correctAnswers: 0, attemptsForCurrentCard: 0, total: 3, answers: [] },
+            round5: { questions: [], currentIndex: 0, score: 0, total: 5, answers: [] }
+        };
+        let totalScore = 0;
+        let totalQuestions = 22; // 5 + 4 + 5 + 3 + 5
+        let allAnswers = []; // Track all answers for submission
+        
+        // Modal state
+        let selectedDifficulty = null;
+
+        // ========== API Helper (with authentication) ==========
+        const api = new ApiClient();
+        
+        // Helper to make authenticated API calls with error handling
+        async function apiGet(endpoint, params = {}) {
+            try {
+                return await api.get(endpoint, params);
+            } catch (error) {
+                console.error('API Error:', error);
+                
+                // Handle token expiration
+                if (error.status === 401 || error.message.includes('token') || error.message.includes('Token')) {
+                    alert('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+                    // Clear invalid token
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('jwtToken');
+                    sessionStorage.removeItem('authToken');
+                    // Redirect to login
+                    window.location.href = '../login_screen.html';
+                    throw error;
+                }
+                throw error;
+            }
+        }
+
+        // ========== Helper Functions ==========
+        function getCategoryIdFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('categoryId');
+        }
+        
+        // ========== Modal Functions ==========
+        function showDifficultyModal() {
+            document.getElementById('difficultyModal').classList.remove('hidden');
+        }
+        
+        function hideDifficultyModal() {
+            document.getElementById('difficultyModal').classList.add('hidden');
+        }
+        
+        async function selectDifficulty(difficulty) {
+            // Update UI
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            const selectedBtn = document.querySelector(`[data-difficulty="${difficulty}"]`);
+            if (selectedBtn) selectedBtn.classList.add('selected');
+            
+            // Update state
+            selectedDifficulty = difficulty;
+            
+            // Show start button immediately (no need to select category)
+            document.getElementById('startTestSection').classList.remove('hidden');
+        }
+        
+        function startTest() {
+            if (!selectedDifficulty) {
+                alert('Vui lòng chọn mức độ!');
+                return;
+            }
+            
+            // Hide modal and start game
+            hideDifficultyModal();
+            initializeGame();
+        }
+        
+        // Make functions global
+        window.selectDifficulty = selectDifficulty;
+        window.startTest = startTest;
+
+        function showRoundTransition(roundNum, title, description) {
+            // Directly show the round without transition overlay
+            showRound(roundNum);
+        }
+
+        function showRound(roundNum) {
+            // Hide all rounds
+            document.querySelectorAll('.game-round').forEach(el => el.classList.add('hidden'));
+            
+            // Show specific round
+            const roundEl = document.getElementById(`round${roundNum}`);
+            if (roundEl) {
+                roundEl.classList.remove('hidden');
+            }
+            
+            currentRound = roundNum;
+            
+            // Update header
+            updateGameProgress();
+        }
+
+        function updateGameProgress() {
+            const completedQuestions = 
+                (currentRound > 1 ? roundData.round1.total : roundData.round1.currentIndex) +
+                (currentRound > 2 ? roundData.round2.total : roundData.round2.matchedPairs) +
+                (currentRound > 3 ? roundData.round3.total : roundData.round3.currentIndex) +
+                (currentRound > 4 ? roundData.round4.total : roundData.round4.correctAnswers) +
+                (currentRound > 5 ? roundData.round5.total : roundData.round5.currentIndex);
+            
+            if (window.updateGameHeaderProgress) {
+                window.updateGameHeaderProgress({
+                    current: Math.min(completedQuestions + 1, totalQuestions),
+                    total: totalQuestions,
+                    score: totalScore,
+                    label: 'Question',
+                    animateScore: completedQuestions > 0
+                });
+            }
+            
+            // Update real-time test stats
+            updateTestStats();
+        }
+        
+        function updateTestStats() {
+            // Show stats display once test starts
+            const statsDisplay = document.getElementById('testStatsDisplay');
+            if (currentRound > 0 && statsDisplay) {
+                statsDisplay.classList.remove('hidden');
+            }
+            
+            // Calculate total correct answers across all rounds
+            const totalCorrect = allAnswers.filter(a => a.correct).length;
+            const totalAnswered = allAnswers.length;
+            const percentage = totalAnswered > 0 ? Math.round((totalCorrect / totalAnswered) * 100) : 0;
+            
+            // Update display
+            const correctEl = document.getElementById('test-stats-correct');
+            const totalEl = document.getElementById('test-stats-total');
+            const percentageEl = document.getElementById('test-stats-percentage');
+            
+            if (correctEl) correctEl.textContent = totalCorrect;
+            if (totalEl) totalEl.textContent = totalQuestions;
+            if (percentageEl) percentageEl.textContent = percentage;
+        }
+
+        function goToNextRound() {
+            if (currentRound < 5) {
+                const nextRound = currentRound + 1;
+                const roundTitles = ['', 'Listening Challenge', 'Matching Game', 'Picture Quiz', 'Pronunciation Practice', 'Fill the Blanks'];
+                const roundDescriptions = ['', 'Listen and choose the correct meaning', 'Match words with meanings', 'Identify the word from picture', 'Practice your pronunciation', 'Complete the missing word'];
+                
+                showRoundTransition(nextRound, roundTitles[nextRound], roundDescriptions[nextRound]);
+                
+                // Render the next round immediately
+                if (nextRound === 2) renderRound2();
+                else if (nextRound === 3) renderRound3Question();
+                else if (nextRound === 4) renderRound4Card();
+                else if (nextRound === 5) renderRound5Question();
+            } else {
+                showFinalResult();
+            }
+        }
+
+        function showFinalResult() {
+            document.querySelectorAll('.game-round').forEach(el => el.classList.add('hidden'));
+            document.getElementById('finalResult').classList.remove('hidden');
+            
+            const percentage = Math.round((totalScore / totalQuestions) * 100);
+            
+            // Set emoji, title and color based on performance
+            let emoji = '🎉';
+            let title = 'Xuất sắc!';
+            let colorClass = 'from-green-500 to-emerald-500';
+            
+            if (percentage >= 90) {
+                emoji = '🏆';
+                title = 'Hoàn hảo!';
+                colorClass = 'from-yellow-400 to-amber-500';
+            } else if (percentage >= 70) {
+                emoji = '🎉';
+                title = 'Rất tốt!';
+                colorClass = 'from-green-500 to-emerald-500';
+            } else if (percentage >= 50) {
+                emoji = '👍';
+                title = 'Tốt!';
+                colorClass = 'from-blue-500 to-cyan-500';
+            } else {
+                emoji = '💪';
+                title = 'Cố gắng lên!';
+                colorClass = 'from-orange-500 to-red-500';
+            }
+            
+            document.getElementById('finalEmoji').textContent = emoji;
+            const titleEl = document.getElementById('finalTitle');
+            titleEl.textContent = title;
+            titleEl.className = `text-4xl font-black bg-gradient-to-r ${colorClass} bg-clip-text text-transparent mb-2`;
+            
+            document.getElementById('finalScore').textContent = `${totalScore}/${totalQuestions}`;
+            document.getElementById('finalPercentage').textContent = `${percentage}%`;
+            
+            // Round breakdown
+            const breakdown = document.getElementById('roundBreakdown');
+            breakdown.innerHTML = `
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-600 dark:text-gray-400">🎧 Vòng 1: Nghe</span>
+                    <span class="font-bold text-gray-800 dark:text-white">${roundData.round1.score}/${roundData.round1.total}</span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-600 dark:text-gray-400">🔗 Vòng 2: Ghép từ</span>
+                    <span class="font-bold text-gray-800 dark:text-white">${roundData.round2.score}/${roundData.round2.total}</span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-600 dark:text-gray-400">🖼️ Vòng 3: Nhìn hình</span>
+                    <span class="font-bold text-gray-800 dark:text-white">${roundData.round3.score}/${roundData.round3.total}</span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-600 dark:text-gray-400">🎤 Vòng 4: Phát âm</span>
+                    <span class="font-bold text-gray-800 dark:text-white">${roundData.round4.score}/${roundData.round4.total}</span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-600 dark:text-gray-400">✏️ Vòng 5: Điền chỗ trống</span>
+                    <span class="font-bold text-gray-800 dark:text-white">${roundData.round5.score}/${roundData.round5.total}</span>
+                </div>
+            `;
+            
+            // Submit test result to backend
+            submitTestResult();
+        }
+        
+        // ========== Submit Test Result ==========
+        let testStartTime = null; // Track when test started
+        
+        async function submitTestResult() {
+            try {
+                // Collect all answers from all rounds
+                allAnswers = [
+                    ...(roundData.round1.answers || []),
+                    ...(roundData.round2.answers || []),
+                    ...(roundData.round3.answers || []),
+                    ...(roundData.round4.answers || []),
+                    ...(roundData.round5.answers || [])
+                ];
+                
+                // Calculate test duration in seconds
+                const duration = testStartTime ? Math.floor((Date.now() - testStartTime) / 1000) : 0;
+                
+                // Calculate correct answers
+                const correctAnswers = allAnswers.filter(a => a.correct).length;
+                const percentage = Math.round((correctAnswers / totalQuestions) * 100);
+                
+                // Submit to old endpoint for backward compatibility (user stats, streak, etc.)
+                const oldResponse = await api.post('/games/test/submit', {
+                    score: totalScore,
+                    totalQuestions: totalQuestions,
+                    difficulty: selectedDifficulty || 'mixed',
+                    answers: allAnswers,
+                    duration: duration,
+                    details: {
+                        round1: { score: roundData.round1.score, total: roundData.round1.total },
+                        round2: { score: roundData.round2.score, total: roundData.round2.total },
+                        round3: { score: roundData.round3.score, total: roundData.round3.total },
+                        round4: { score: roundData.round4.score, total: roundData.round4.total },
+                        round5: { score: roundData.round5.score, total: roundData.round5.total }
+                    }
+                });
+                
+                // Submit to NEW Activities & Achievements endpoint
+                const activityResponse = await api.post('/activities/test', {
+                    score: totalScore,
+                    totalQuestions: totalQuestions,
+                    correctAnswers: correctAnswers,
+                    percentage: percentage,
+                    difficulty: selectedDifficulty || 'mixed',
+                    categoryId: getCategoryIdFromUrl(),
+                    answers: allAnswers,
+                    duration: duration
+                });
+                
+                // Show rewards section
+                document.getElementById('rewardsSection').classList.remove('hidden');
+                
+                // Display results from both APIs
+                if (oldResponse.success && oldResponse.data) {
+                    const { xpGained, newLevel, leveledUp, streak } = oldResponse.data;
+                    
+                    // Update streak display
+                    if (streak) {
+                        const streakText = streak.increased 
+                            ? `${streak.current} ngày 🔥` 
+                            : `${streak.current} ngày`;
+                        document.getElementById('streakDays').textContent = streakText;
+                    }
+                    
+                    // Show level up notification
+                    if (leveledUp) {
+                        const levelUpDiv = document.getElementById('levelUpNotification');
+                        document.getElementById('newLevelText').textContent = `Level ${newLevel}`;
+                        levelUpDiv.classList.remove('hidden');
+                        levelUpDiv.classList.add('animate-bounce');
+                        setTimeout(() => levelUpDiv.classList.remove('animate-bounce'), 2000);
+                    }
+                }
+                
+                // Display NEW XP from Activities API
+                if (activityResponse.success && activityResponse.data) {
+                    const { xpEarned, newAchievements } = activityResponse.data;
+                    
+                    // Update XP display with NEW calculation
+                    document.getElementById('xpGained').textContent = `+${xpEarned} XP`;
+                    
+                    // Show new achievements if any
+                    if (newAchievements && newAchievements.length > 0) {
+                        displayNewAchievements(newAchievements);
+                    }
+                    
+                    console.log('✅ Activity recorded:', activityResponse.data);
+                }
+                
+                console.log('✅ Test results submitted successfully');
+                
+            } catch (error) {
+                console.error('❌ Error submitting test result:', error);
+                // Don't block the user if submission fails - they can still see their score
+            }
+        }
+        
+        // Display newly unlocked achievements
+        function displayNewAchievements(achievements) {
+            const container = document.getElementById('newAchievementsContainer');
+            container.innerHTML = '';
+            container.classList.remove('hidden');
+            
+            achievements.forEach(achievement => {
+                const achievementEl = document.createElement('div');
+                achievementEl.className = 'p-2 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/30 dark:to-yellow-900/30 rounded-lg border-2 border-amber-300 dark:border-amber-700 animate-pulse';
+                achievementEl.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <div class="text-2xl">${achievement.icon || '🏆'}</div>
+                        <div class="flex-1">
+                            <div class="text-xs font-black text-amber-700 dark:text-amber-300 uppercase">Thành tựu mới!</div>
+                            <div class="text-sm font-bold text-amber-800 dark:text-amber-200">${achievement.title}</div>
+                            <div class="text-[10px] text-amber-600 dark:text-amber-400">${achievement.description}</div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(achievementEl);
+                
+                // Remove pulse animation after 3 seconds
+                setTimeout(() => {
+                    achievementEl.classList.remove('animate-pulse');
+                }, 3000);
+            });
+        }
+
+        // ========================================
+        // ROUND 1: LISTENING GAME
+        // ========================================
+        async function loadRound1() {
+            // Use difficulty if selected, otherwise fall back to categoryId
+            if (selectedDifficulty) {
+                try {
+                    const data = await apiGet('/games/listening-quiz', { difficulty: selectedDifficulty, count: 5 });
+                    
+                    if (!data.success) {
+                        alert(data.message);
+                        return;
+                    }
+                    
+                    roundData.round1.questions = data.data;
+                    roundData.round1.currentIndex = 0;
+                    roundData.round1.score = 0;
+                } catch (err) {
+                    alert('Lỗi khi tải Round 1: ' + err.message);
+                }
+            } else {
+                // Legacy: fallback to categoryId if present
+                const categoryId = getCategoryIdFromUrl();
+                if (!categoryId) {
+                    alert('Không tìm thấy categoryId!');
+                    window.location.href = '../user/games_home.html';
+                    return;
+                }
+                
+                try {
+                    const data = await apiGet('/games/listening-quiz', { categoryId, count: 5 });
+                    
+                    if (!data.success) {
+                        alert(data.message);
+                        return;
+                    }
+                    
+                    roundData.round1.questions = data.data;
+                    roundData.round1.currentIndex = 0;
+                    roundData.round1.score = 0;
+                } catch (err) {
+                    alert('Lỗi khi tải Round 1: ' + err.message);
+                }
+            }
+        }
+
+        function renderRound1Question() {
+            const data = roundData.round1;
+            const q = data.questions[data.currentIndex];
+            if (!q) {
+                // Round complete
+                totalScore += data.score;
+                goToNextRound();
+                return;
+            }
+            
+            // Reset selected answer
+            window.round1SelectedAnswer = null;
+            
+            // Update progress
+            updateGameProgress();
+            
+            // Hide word initially
+            document.getElementById('round1-wordDisplay').classList.add('hidden');
+            document.getElementById('round1-chineseWord').textContent = '';
+            document.getElementById('round1-pinyinWord').textContent = '';
+            
+            // Setup audio buttons
+            const playBtn = document.getElementById('round1-playBtn');
+            const replayBtn = document.getElementById('round1-replayBtn');
+            
+            const playAudio = () => {
+                // Show word display if hidden (user might want to see it after listening)
+                const wordDisplay = document.getElementById('round1-wordDisplay');
+                if (wordDisplay) {
+                    wordDisplay.classList.remove('hidden');
+                    document.getElementById('round1-chineseWord').textContent = q.word.traditional || q.word.simplified;
+                    document.getElementById('round1-pinyinWord').textContent = q.word.pinyin;
+                }
+                
+                // Visual feedback during playback
+                const icon = playBtn.querySelector('.material-symbols-outlined');
+                if (icon) icon.classList.add('text-blue-200');
+                playBtn.classList.add('scale-95', 'ring-4', 'ring-primary/30');
+
+                if (window.speakText) {
+                    window.speakText(q.word.traditional || q.word.simplified, 0.9, () => {
+                        // On end
+                        if (icon) icon.classList.remove('text-blue-200');
+                        playBtn.classList.remove('scale-95', 'ring-4', 'ring-primary/30');
+                    });
+                } else {
+                    // Fallback if speakText missing
+                    console.warn('speakText function not available yet');
+                    setTimeout(() => {
+                        if (icon) icon.classList.remove('text-blue-200');
+                        playBtn.classList.remove('scale-95', 'ring-4', 'ring-primary/30');
+                    }, 1000);
+                }
+            };
+            
+            playBtn.onclick = playAudio;
+            replayBtn.onclick = playAudio;
+            
+            // Render options
+            const grid = document.getElementById('round1-optionsGrid');
+            grid.innerHTML = '';
+            
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = '    border-radius-40px card-hover group relative flex flex-col gap-4 p-4 rounded-xl bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 hover:border-primary/50 dark:hover:border-primary/50 shadow-sm text-left transition-all';
+                btn.innerHTML = `
+                    <div class="flex items-center justify-between w-full">
+                        <span class="text-slate-800 dark:text-slate-100 font-bold text-xl">${opt.text}</span>
+                        <div class="w-6 h-6 rounded-full border-2 border-slate-200 dark:border-slate-600 group-hover:border-primary group-hover:bg-primary/10 flex items-center justify-center transition-colors">
+                            <div class="w-2.5 h-2.5 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        </div>
+                    </div>
+                `;
+                btn.onclick = () => selectRound1Answer(idx);
+                grid.appendChild(btn);
+            });
+            
+            // Reset next button
+            const nextBtn = document.getElementById('round1-nextBtn');
+            nextBtn.disabled = true;
+            nextBtn.className = 'flex items-center justify-center gap-2 bg-slate-300 dark:bg-slate-700 text-slate-500 dark:text-slate-400 font-bold text-lg px-8 py-3 rounded-full shadow-lg transition-all min-w-[160px] disabled:cursor-not-allowed';
+            nextBtn.innerHTML = '<span>Chọn đáp án</span>';
+            nextBtn.onclick = null;
+        }
+
+        function selectRound1Answer(idx) {
+            window.round1SelectedAnswer = idx;
+            
+            const grid = document.getElementById('round1-optionsGrid');
+            const buttons = grid.querySelectorAll('button');
+            
+            buttons.forEach((btn, i) => {
+                btn.classList.remove('bg-blue-50', 'dark:bg-blue-900/20', 'border-primary', 'shadow-md', 'scale-[1.02]');
+                btn.classList.add('bg-white', 'dark:bg-slate-800', 'border-slate-100', 'dark:border-slate-700');
+                
+                if (i === idx) {
+                    btn.classList.remove('bg-white', 'dark:bg-slate-800', 'border-slate-100', 'dark:border-slate-700');
+                    btn.classList.add('bg-blue-50', 'dark:bg-blue-900/20', 'border-primary', 'shadow-md', 'scale-[1.02]');
+                }
+            });
+            
+            // Enable check button
+            const nextBtn = document.getElementById('round1-nextBtn');
+            nextBtn.disabled = false;
+            nextBtn.className = 'flex items-center justify-center gap-2 bg-primary hover:bg-blue-600 text-white font-bold text-lg px-8 py-3 rounded-full shadow-lg shadow-primary/30 transition-all hover:translate-y-[-2px] active:translate-y-[0px] min-w-[160px]';
+            nextBtn.innerHTML = '<span>Kiểm tra</span><span class="material-symbols-outlined">check_circle</span>';
+            nextBtn.onclick = checkRound1Answer;
+        }
+
+        function checkRound1Answer() {
+            const data = roundData.round1;
+            const q = data.questions[data.currentIndex];
+            const idx = window.round1SelectedAnswer;
+            const isCorrect = q.options[idx].isCorrect;
+            
+            const grid = document.getElementById('round1-optionsGrid');
+            const buttons = grid.querySelectorAll('button');
+            
+            buttons.forEach((btn, i) => {
+                btn.disabled = true;
+                btn.classList.remove('border-primary', 'bg-blue-50', 'dark:bg-blue-900/20');
+                
+                if (q.options[i].isCorrect) {
+                    btn.classList.add('border-green-500', 'bg-green-50', 'dark:bg-green-900/20');
+                    // Add check icon
+                    const checkIcon = document.createElement('div');
+                    checkIcon.className = 'absolute -top-3 -right-3 w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center shadow-lg';
+                    checkIcon.innerHTML = '<span class="material-symbols-outlined text-xl">check</span>';
+                    btn.style.position = 'relative';
+                    btn.appendChild(checkIcon);
+                } else if (i === idx && !isCorrect) {
+                    btn.classList.add('border-red-500', 'bg-red-50', 'dark:bg-red-900/20');
+                    // Add X icon
+                    const xIcon = document.createElement('div');
+                    xIcon.className = 'absolute -top-3 -right-3 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg';
+                    xIcon.innerHTML = '<span class="material-symbols-outlined text-xl">close</span>';
+                    btn.style.position = 'relative';
+                    btn.appendChild(xIcon);
+                }
+            });
+            
+            if (isCorrect) {
+                 data.score+=1; // Increment score
+            }
+            
+            // Track answer with vocabulary ID
+            const answer = { 
+                correct: isCorrect, 
+                round: 1, 
+                questionIndex: data.currentIndex,
+                vocabularyId: q.id // Track vocabulary ID
+            };
+            data.answers.push(answer);
+            allAnswers.push(answer);
+            
+            // Update test stats
+            updateTestStats();
+            
+            // Update next button
+            const nextBtn = document.getElementById('round1-nextBtn');
+            nextBtn.innerHTML = `<span>${isCorrect ? 'Đúng! Tiếp tục' : 'Sai! Tiếp tục'}</span><span class="material-symbols-outlined">arrow_forward</span>`;
+            nextBtn.className = `flex items-center justify-center gap-2 ${isCorrect ? 'bg-green-500 hover:bg-green-600' : 'bg-orange-500 hover:bg-orange-600'} text-white font-bold text-lg px-8 py-3 rounded-full shadow-lg transition-all hover:translate-y-[-2px] active:translate-y-[0px] min-w-[160px]`;
+            nextBtn.onclick = () => {
+                data.currentIndex++;
+                renderRound1Question();
+            };
+        }
+
+        // ========================================
+        // ROUND 2: MATCH WORD GAME
+        // ========================================
+        async function loadRound2() {
+            if (selectedDifficulty) {
+                try {
+                    const data = await apiGet('/games/matching', { difficulty: selectedDifficulty, count: 4 });
+                    
+                    if (!data.success) {
+                        alert(data.message);
+                        return;
+                    }
+                    
+                    roundData.round2.cards = data.data.cards;
+                    roundData.round2.totalPairs = data.data.totalPairs;
+                    roundData.round2.total = data.data.totalPairs;
+                    roundData.round2.matchedPairs = 0;
+                    roundData.round2.score = 0;
+                    roundData.round2.matches = new Map();
+                    roundData.round2.selectedWord = null;
+                } catch (err) {
+                    alert('Lỗi khi tải Round 2: ' + err.message);
+                }
+            } else {
+                const categoryId = getCategoryIdFromUrl();
+                if (!categoryId) return;
+                
+                try {
+                    const data = await apiGet('/games/matching', { categoryId, count: 4 });
+                    
+                    if (!data.success) {
+                        alert(data.message);
+                        return;
+                    }
+                    
+                    roundData.round2.cards = data.data.cards;
+                    roundData.round2.totalPairs = data.data.totalPairs;
+                    roundData.round2.total = data.data.totalPairs;
+                    roundData.round2.matchedPairs = 0;
+                    roundData.round2.score = 0;
+                    roundData.round2.matches = new Map();
+                    roundData.round2.selectedWord = null;
+                } catch (err) {
+                    alert('Lỗi khi tải Round 2: ' + err.message);
+                }
+            }
+        }
+
+        function renderRound2() {
+            const data = roundData.round2;
+            const wordsColumn = document.getElementById('round2-wordsColumn');
+            const meaningsColumn = document.getElementById('round2-meaningsColumn');
+            
+            wordsColumn.innerHTML = '';
+            meaningsColumn.innerHTML = '';
+            
+            const words = data.cards.filter(c => c.type === 'word');
+            const meanings = data.cards.filter(c => c.type === 'meaning');
+            
+            words.forEach(card => {
+                const cardEl = createRound2WordCard(card);
+                wordsColumn.appendChild(cardEl);
+            });
+            
+            meanings.forEach(card => {
+                const cardEl = createRound2MeaningCard(card);
+                meaningsColumn.appendChild(cardEl);
+            });
+            
+            updateRound2Instruction('Nhấp vào một từ tiếng Trung để bắt đầu');
+            updateGameProgress();
+        }
+
+        function createRound2WordCard(card) {
+            const div = document.createElement('div');
+            div.className = 'game-card group relative bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-primary/50 shadow-md rounded-full h-20 flex items-center justify-center cursor-pointer select-none transition-all';
+            div.dataset.cardId = card.id;
+            div.dataset.pairId = card.pairId;
+            div.dataset.type = card.type;
+            
+            div.innerHTML = `
+                <span class="chinese-word-speaker text-xl md:text-2xl font-bold text-slate-700 dark:text-slate-200" data-word="${card.content}">${card.content}</span>
+                <div class="anchor-point absolute -right-3 top-1/2 -translate-y-1/2 size-6 bg-slate-300 dark:bg-slate-600 group-hover:bg-primary border-4 border-white dark:border-slate-800 rounded-full shadow-sm z-30 transition-colors"></div>
+            `;
+            
+            div.onclick = (e) => {
+                e.stopPropagation();
+                if (window.speakText) {
+                    window.speakText(card.content, 0.8);
+                }
+                selectRound2Word(card);
+            };
+            
+            return div;
+        }
+
+        function createRound2MeaningCard(card) {
+            const div = document.createElement('div');
+            div.className = 'game-card group relative bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-primary/50 shadow-md rounded-full h-20 flex items-center px-2 cursor-pointer select-none transition-all';
+            div.dataset.cardId = card.id;
+            div.dataset.pairId = card.pairId;
+            div.dataset.type = card.type;
+            
+            const icon = getRound2MeaningIcon(card.content);
+            
+            div.innerHTML = `
+                <div class="anchor-point absolute -left-3 top-1/2 -translate-y-1/2 size-6 bg-slate-300 dark:bg-slate-600 group-hover:bg-primary border-4 border-white dark:border-slate-800 rounded-full shadow-sm z-30 transition-colors"></div>
+                <div class="flex items-center gap-4 pl-2 w-full">
+                    <div class="size-14 rounded-full ${icon.bgColor} flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined ${icon.textColor} text-3xl">${icon.name}</span>
+                    </div>
+                    <span class="text-xl font-medium text-slate-700 dark:text-slate-200">${card.content}</span>
+                </div>
+            `;
+            
+            div.onclick = () => selectRound2Meaning(card);
+            
+            return div;
+        }
+
+        function getRound2MeaningIcon(meaning) {
+            const icons = {
+                'bg-blue-100': { name: 'chair_alt', textColor: 'text-blue-500' },
+                'bg-orange-100': { name: 'directions_run', textColor: 'text-orange-500' },
+                'bg-green-100': { name: 'restaurant', textColor: 'text-green-500' },
+                'bg-purple-100': { name: 'sentiment_satisfied', textColor: 'text-purple-500' },
+                'bg-red-100': { name: 'favorite', textColor: 'text-red-500' },
+                'bg-yellow-100': { name: 'wb_sunny', textColor: 'text-yellow-500' },
+            };
+            const colors = Object.keys(icons);
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            return {
+                bgColor: randomColor,
+                name: icons[randomColor].name,
+                textColor: icons[randomColor].textColor
+            };
+        }
+
+        function selectRound2Word(card) {
+            const data = roundData.round2;
+            if (data.matches.has(card.pairId)) return;
+            
+            document.querySelectorAll('[data-type="word"]').forEach(el => {
+                el.classList.remove('border-primary', 'shadow-lg', 'shadow-primary/20', 'bg-blue-50', 'dark:bg-blue-900/20', 'scale-105');
+                el.classList.add('border-slate-200', 'dark:border-slate-700', 'bg-white', 'dark:bg-slate-800');
+            });
+            
+            const cardEl = document.querySelector(`[data-card-id="${card.id}"]`);
+            cardEl.classList.remove('border-slate-200', 'dark:border-slate-700', 'bg-white', 'dark:bg-slate-800');
+            cardEl.classList.add('border-primary', 'shadow-lg', 'shadow-primary/20', 'bg-blue-50', 'dark:bg-blue-900/20', 'scale-105');
+            
+            data.selectedWord = card;
+            updateRound2Instruction('Bây giờ chọn nghĩa tiếng Việt tương ứng');
+        }
+
+        function selectRound2Meaning(card) {
+            const data = roundData.round2;
+            if (!data.selectedWord) {
+                updateRound2Instruction('Vui lòng chọn một từ tiếng Trung trước');
+                return;
+            }
+            
+            if (data.matches.has(card.pairId)) return;
+            
+            if (data.selectedWord.pairId === card.pairId) {
+                matchRound2Correct(data.selectedWord, card);
+            } else {
+                matchRound2Wrong(data.selectedWord, card);
+            }
+        }
+
+        function matchRound2Correct(wordCard, meaningCard) {
+            const data = roundData.round2;
+            
+            const wordEl = document.querySelector(`[data-card-id="${wordCard.id}"]`);
+            const meaningEl = document.querySelector(`[data-card-id="${meaningCard.id}"]`);
+            
+            drawConnectionLine(wordEl, meaningEl);
+            
+            // Styled as success
+            wordEl.classList.remove('border-primary', 'border-slate-200', 'dark:border-slate-700', 'scale-105', 'bg-white', 'dark:bg-slate-800', 'bg-blue-50');
+            wordEl.classList.add('border-green-500', 'bg-green-50', 'dark:bg-green-900/20');
+            wordEl.querySelector('.chinese-word-speaker').classList.add('text-green-600', 'dark:text-green-400');
+            
+            meaningEl.classList.remove('border-slate-200', 'dark:border-slate-700', 'bg-white', 'dark:bg-slate-800');
+            meaningEl.classList.add('border-green-500', 'bg-green-50', 'dark:bg-green-900/20');
+            const meaningTextSpan = meaningEl.querySelector('.flex.items-center span:last-child');
+            if (meaningTextSpan) {
+                meaningTextSpan.classList.add('text-green-600', 'dark:text-green-400');
+            }
+            
+            // Add check icons
+            const checkIcon = '<div class="absolute -top-2 -right-2 w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center shadow-lg z-40"><span class="material-symbols-outlined text-lg">check</span></div>';
+            wordEl.style.position = 'relative';
+            meaningEl.style.position = 'relative';
+            wordEl.insertAdjacentHTML('beforeend', checkIcon);
+            meaningEl.insertAdjacentHTML('beforeend', checkIcon);
+            
+            // Keep word clickable for audio only
+             const originalWordContent = wordCard.content;
+             wordEl.onclick = (e) => {
+                 if (window.speakText) window.speakText(originalWordContent, 0.8);
+             };
+            
+            meaningEl.onclick = null;
+
+            data.matches.set(wordCard.pairId, true);
+            data.matchedPairs++;
+            data.score++;
+            data.selectedWord = null;
+            
+            // Track answer with vocabulary ID (pairId is the vocabulary _id)
+            const answer = { 
+                correct: true, 
+                round: 2, 
+                pairId: wordCard.pairId,
+                vocabularyId: wordCard.pairId // pairId is the vocabulary ID
+            };
+            data.answers.push(answer);
+            allAnswers.push(answer);
+            updateTestStats();
+            
+            updateRound2Instruction(`Ghép đúng! ${data.matchedPairs}/${data.totalPairs} cặp`);
+            
+            if (data.matchedPairs >= data.totalPairs) {
+                setTimeout(() => {
+                    totalScore += data.score;
+                    goToNextRound();
+                }, 1500);
+            } else {
+               // Continue
+            }
+        }
+
+        function drawConnectionLine(wordEl, meaningEl) {
+            const svg = document.getElementById('round2-connections-svg');
+            if (!svg) return;
+            
+            // Get positions of anchor points
+            const wordAnchor = wordEl.querySelector('.anchor-point');
+            const meaningAnchor = meaningEl.querySelector('.anchor-point');
+            
+            if (!wordAnchor || !meaningAnchor) return;
+            
+            const wordRect = wordAnchor.getBoundingClientRect();
+            const meaningRect = meaningAnchor.getBoundingClientRect();
+            const svgRect = svg.getBoundingClientRect();
+            
+            // Calculate relative positions
+            const x1 = wordRect.left + wordRect.width / 2 - svgRect.left;
+            const y1 = wordRect.top + wordRect.height / 2 - svgRect.top;
+            const x2 = meaningRect.left + meaningRect.width / 2 - svgRect.left;
+            const y2 = meaningRect.top + meaningRect.height / 2 - svgRect.top;
+            
+            // Create curved path
+            const midX = (x1 + x2) / 2;
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            const d = `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`;
+            
+            path.setAttribute('d', d);
+            path.setAttribute('class', 'connection-line');
+            
+            svg.appendChild(path);
+        }
+
+        function matchRound2Wrong(wordCard, meaningCard) {
+            const data = roundData.round2;
+            
+            const wordEl = document.querySelector(`[data-card-id="${wordCard.id}"]`);
+            const meaningEl = document.querySelector(`[data-card-id="${meaningCard.id}"]`);
+            
+            wordEl.classList.add('border-red-500', 'bg-red-50', 'dark:bg-red-900/20');
+             meaningEl.classList.add('border-red-500', 'bg-red-50', 'dark:bg-red-900/20');
+            
+            // Track wrong answer with vocabulary IDs
+            const answer = { 
+                correct: false, 
+                round: 2, 
+                attempted: meaningCard.pairId,
+                vocabularyId: wordCard.pairId // The word they were trying to match
+            };
+            data.answers.push(answer);
+            allAnswers.push(answer);
+            updateTestStats();
+            
+            updateRound2Instruction('Không khớp! Thử lại.');
+            
+            setTimeout(() => {
+                wordEl.classList.remove('border-red-500', 'bg-red-50', 'dark:bg-red-900/20', 'border-primary', 'shadow-lg', 'shadow-primary/20', 'bg-blue-50', 'dark:bg-blue-900/20', 'scale-105');
+                wordEl.classList.add('border-slate-200', 'dark:border-slate-700', 'bg-white', 'dark:bg-slate-800');
+                
+                meaningEl.classList.remove('border-red-500', 'bg-red-50', 'dark:bg-red-900/20');
+                meaningEl.classList.add('border-slate-200', 'dark:border-slate-700');
+                
+                data.selectedWord = null;
+                updateRound2Instruction('Nhấp vào một từ tiếng Trung để bắt đầu');
+            }, 800);
+        }
+
+        function updateRound2Instruction(text) {
+            document.getElementById('round2-instruction').textContent = text;
+        }
+
+        // ========================================
+        // ROUND 3: REVERSE QUIZ GAME
+        // ========================================
+        let round3Timer = null;
+        let round3TimeLeft = 15;
+
+        async function loadRound3() {
+            if (selectedDifficulty) {
+                try {
+                    const data = await apiGet('/games/reverse-quiz', { difficulty: selectedDifficulty, count: 5 });
+                    
+                    if (!data.success) {
+                        alert(data.message);
+                        return;
+                    }
+                    
+                    roundData.round3.questions = data.data;
+                    roundData.round3.currentIndex = 0;
+                    roundData.round3.score = 0;
+                } catch (err) {
+                    alert('Lỗi khi tải Round 3: ' + err.message);
+                }
+            } else {
+                const categoryId = getCategoryIdFromUrl();
+                if (!categoryId) return;
+                
+                try {
+                    const data = await apiGet('/games/reverse-quiz', { categoryId, count: 5 });
+                    
+                    if (!data.success) {
+                        alert(data.message);
+                        return;
+                    }
+                    
+                    roundData.round3.questions = data.data;
+                    roundData.round3.currentIndex = 0;
+                    roundData.round3.score = 0;
+                } catch (err) {
+                    alert('Lỗi khi tải Round 3: ' + err.message);
+                }
+            }
+        }
+
+        function renderRound3Question() {
+            const data = roundData.round3;
+            const q = data.questions[data.currentIndex];
+            if (!q) {
+                resetRound3Timer(); // Ensure timer stops
+                totalScore += data.score;
+                goToNextRound();
+                return;
+            }
+            
+            // Re-init state for question
+            resetRound3Timer();
+
+            // Update image
+            const imagePanel = document.getElementById('round3-image');
+            if (imagePanel) {
+                imagePanel.style.backgroundImage = `url('${q.imageUrl}')`;
+            }
+            
+            // Update hint
+            const hintEl = document.getElementById('round3-hint');
+            if (hintEl) {
+                hintEl.innerHTML = `
+                <span class="material-symbols-outlined text-primary text-lg">lightbulb</span>
+                Hint: ${q.hint || q.word.pinyin}
+            `;
+            }
+            
+            // Render options
+            const grid = document.getElementById('round3-optionsGrid');
+            grid.innerHTML = '';
+            
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'group relative flex flex-col items-center justify-center p-6 lg:p-8 h-32 lg:h-40 rounded-xl bg-white dark:bg-slate-800 border-b-4 border-gray-200 dark:border-gray-700 hover:border-primary active:border-primary active:translate-y-1 transition-all duration-200 shadow-sm hover:shadow-xl hover:shadow-primary/10';
+                
+                // Parse option text: "traditional (pinyin)" format
+                const text = opt.text || '';
+                const match = text.match(/^(.+?)\s*\((.+?)\)$/);
+                const chineseWord = match ? match[1].trim() : text;
+                const pinyinText = match ? match[2].trim() : '';
+                
+                // Icon placeholder (simple mapping based on index/random logic or static)
+                const iconName = ['translate', 'school', 'menu_book', 'language'][idx % 4];
+                const colorClasses = [
+                    'bg-blue-50 dark:bg-blue-900/30 text-blue-500 dark:text-blue-300',
+                    'bg-orange-50 dark:bg-orange-900/30 text-orange-500 dark:text-orange-300', 
+                    'bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400',
+                    'bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400'
+                ][idx % 4];
+                
+                btn.innerHTML = `
+                    <div class="size-10 mb-2 rounded-full ${colorClasses} flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <span class="material-symbols-outlined">${iconName}</span>
+                    </div>
+                    <span class="text-xl lg:text-2xl font-bold text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors text-center">${chineseWord}</span>
+                    <span class="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">${pinyinText}</span>
+                    <div class="absolute inset-0 border-2 border-transparent group-hover:border-primary rounded-xl pointer-events-none transition-colors"></div>
+                `;
+                btn.onclick = () => selectRound3Answer(idx);
+                grid.appendChild(btn);
+            });
+            
+            // Listen button
+            const listenBtn = document.getElementById('round3-listenBtn');
+            if (listenBtn) {
+                listenBtn.onclick = () => {
+                    if (window.speakText) {
+                        window.speakText(q.word.traditional || q.word.simplified);    
+                    } else {
+                        console.warn('speakText function not available yet');
+                    }
+                }
+            }
+            
+            startRound3Timer();
+            updateGameProgress();
+        }
+
+        function resetRound3Timer() {
+            if (round3Timer) clearInterval(round3Timer);
+            round3TimeLeft = 15;
+            updateRound3TimerDisplay();
+        }
+
+        function startRound3Timer() {
+            resetRound3Timer();
+            round3Timer = setInterval(() => {
+                round3TimeLeft--;
+                updateRound3TimerDisplay();
+                
+                if (round3TimeLeft <= 0) {
+                    clearInterval(round3Timer);
+                    // Time's up -> auto move
+                    const data = roundData.round3;
+                    data.currentIndex++;
+                    renderRound3Question();
+                }
+            }, 1000);
+        }
+
+        function updateRound3TimerDisplay() {
+            const timerText = document.getElementById('round3-timer-text');
+            if (timerText) timerText.textContent = round3TimeLeft;
+            
+            const circle = document.getElementById('round3-timer-circle');
+            if (circle) {
+                const progress = (round3TimeLeft / 15) * 283;
+                circle.setAttribute('stroke-dashoffset', 283 - progress);
+            }
+        }
+
+        function selectRound3Answer(idx) {
+            if (round3Timer) clearInterval(round3Timer);
+
+            const data = roundData.round3;
+            const q = data.questions[data.currentIndex];
+            const isCorrect = q.options[idx].isCorrect;
+            
+            const grid = document.getElementById('round3-optionsGrid');
+            const buttons = grid.querySelectorAll('button');
+            
+            buttons.forEach((btn, i) => {
+                btn.disabled = true;
+                btn.classList.remove('hover:border-primary'); // Remove hover effect on freeze
+                
+                if (q.options[i].isCorrect) {
+                     btn.classList.remove('border-gray-200', 'dark:border-gray-700');
+                     btn.classList.add('border-green-500', 'bg-green-50', 'dark:bg-green-900/30');
+                } else if (i === idx) {
+                     btn.classList.remove('border-gray-200', 'dark:border-gray-700');
+                     btn.classList.add('border-red-500', 'bg-red-50', 'dark:bg-red-900/30');
+                }
+            });
+            
+            if (isCorrect) {
+                data.score++;
+            }
+            
+            // Track answer for Round 3 with vocabulary ID
+            const answer = { 
+                correct: isCorrect, 
+                round: 3, 
+                questionIndex: data.currentIndex,
+                vocabularyId: q.id // Track vocabulary ID
+            };
+            data.answers.push(answer);
+            allAnswers.push(answer);
+            updateTestStats();
+            
+            setTimeout(() => {
+                data.currentIndex++;
+                renderRound3Question();
+            }, 1500);
+        }
+
+        // ========================================
+        // ROUND 4: KIDS VOCABULARY GAME
+        // ========================================
+        let round4Recognition = null;
+        let round4IsRecording = false;
+        let round4IsPlaying = false;
+        
+        async function loadRound4() {
+            if (selectedDifficulty) {
+                try {
+                    const data = await apiGet('/games/vocabulary-cards', { difficulty: selectedDifficulty, count: 3 });
+                    
+                    if (data.success) {
+                        roundData.round4 = {
+                            cards: data.data || [],
+                            currentIndex: 0,
+                            score: 0,
+                            correctAnswers: 0,
+                            attemptsForCurrentCard: 0,
+                            total: (data.data && data.data.length) || 0,
+                            answers: []
+                        };
+                        
+                        initRound4SpeechRecognition();
+                        renderRound4Card();
+                    }
+                } catch (err) {
+                    console.error("Error loading round 4", err);
+                }
+            } else {
+                const categoryId = getCategoryIdFromUrl();
+                if (!categoryId) return;
+                
+                try {
+                    const data = await apiGet('/games/vocabulary-cards', { categoryId, count: 3 });
+                    
+                    if (data.success) {
+                        roundData.round4 = {
+                            cards: data.data || [],
+                            currentIndex: 0,
+                            score: 0,
+                            correctAnswers: 0,
+                            attemptsForCurrentCard: 0,
+                            total: (data.data && data.data.length) || 0,
+                            answers: []
+                        };
+                        
+                        initRound4SpeechRecognition();
+                        renderRound4Card();
+                    }
+                } catch (err) {
+                    console.error("Error loading round 4", err);
+                }
+            }
+        }
+
+        function initRound4SpeechRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            
+            if (!SpeechRecognition) {
+                console.warn('Speech Recognition not supported');
+                // Show error message and skip this round
+                const toast = document.createElement('div');
+                toast.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-4 rounded-2xl shadow-xl z-50 flex items-center gap-2 font-bold';
+                toast.innerHTML = '<span class="material-symbols-outlined">error</span> <span>Trình duyệt không hỗ trợ nhận diện giọng nói. Bỏ qua Round 4...</span>';
+                document.body.appendChild(toast);
+                setTimeout(() => {
+                    toast.remove();
+                    totalScore += roundData.round4.score;
+                    goToNextRound();
+                }, 2000);
+                return;
+            }
+            
+            round4Recognition = new SpeechRecognition();
+            round4Recognition.lang = 'zh-TW';
+            round4Recognition.continuous = false;
+            round4Recognition.interimResults = false;
+            round4Recognition.maxAlternatives = 3;
+            
+            round4Recognition.onstart = () => {
+                round4IsRecording = true;
+                updateRound4BottomBtn('recording');
+            };
+            
+            round4Recognition.onresult = (event) => {
+                const results = Array.from(event.results[0]);
+                const transcripts = results.map(r => r.transcript);
+                checkRound4Pronunciation(transcripts);
+            };
+            
+            round4Recognition.onerror = (event) => {
+                console.error('Speech error:', event.error);
+                round4IsRecording = false;
+                
+                // Show friendly error message for common errors
+                if (event.error === 'no-speech') {
+                    updateRound4TopBadge('listen');
+                    updateRound4BottomBtn('default');
+                    
+                    // Show toast notification
+                    const toast = document.createElement('div');
+                    toast.className = 'fixed top-4 right-4 bg-orange-500 text-white px-6 py-4 rounded-2xl shadow-xl z-50 flex items-center gap-2 font-bold';
+                    toast.innerHTML = '<span class="material-symbols-outlined">mic_off</span> <span>Không nghe thấy giọng nói. Hãy thử lại!</span>';
+                    document.body.appendChild(toast);
+                    setTimeout(() => toast.remove(), 3000);
+                } else if (event.error === 'network' || event.error === 'not-allowed' || event.error === 'service-not-allowed' || event.error === 'aborted') {
+                    // Handle critical errors - count as failed attempt
+                    updateRound4BottomBtn('default');
+                    const data = roundData.round4;
+                    data.attemptsForCurrentCard++;
+                    
+                    const errorMessages = {
+                        'network': 'Lỗi kết nối mạng',
+                        'not-allowed': 'Không có quyền truy cập microphone',
+                        'service-not-allowed': 'Dịch vụ nhận diện giọng nói không khả dụng',
+                        'aborted': 'Nhận diện bị hủy'
+                    };
+                    
+                    // Check if this is the 3rd failed attempt
+                    if (data.attemptsForCurrentCard >= 3) {
+                        const card = data.cards[data.currentIndex];
+                        
+                        // Track wrong answer
+                        const answer = { 
+                            correct: false, 
+                            round: 4, 
+                            cardIndex: data.currentIndex,
+                            vocabularyId: card.id || card._id,
+                            error: event.error
+                        };
+                        data.answers.push(answer);
+                        allAnswers.push(answer);
+                        updateTestStats();
+                        
+                        // Show error and auto-skip message
+                        const toast = document.createElement('div');
+                        toast.className = 'fixed top-4 right-4 bg-orange-500 text-white px-6 py-4 rounded-2xl shadow-xl z-50 flex items-center gap-2 font-bold';
+                        toast.innerHTML = `<span class="material-symbols-outlined">error</span> <span>3 lần thất bại. Chuyển câu tiếp theo...</span>`;
+                        document.body.appendChild(toast);
+                        
+                        setTimeout(() => {
+                            toast.remove();
+                            if (data.currentIndex < data.total - 1) {
+                                data.currentIndex++;
+                                renderRound4Card();
+                            } else {
+                                totalScore += data.score;
+                                goToNextRound();
+                            }
+                        }, 1500);
+                    } else {
+                        // Show error toast with attempt count
+                        const toast = document.createElement('div');
+                        toast.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-4 rounded-2xl shadow-xl z-50 flex items-center gap-2 font-bold';
+                        toast.innerHTML = `<span class="material-symbols-outlined">error</span> <span>${errorMessages[event.error] || 'Lỗi nhận diện giọng nói'}. Thử lại (${data.attemptsForCurrentCard}/3)</span>`;
+                        document.body.appendChild(toast);
+                        setTimeout(() => toast.remove(), 2500);
+                    }
+                } else {
+                    updateRound4BottomBtn('default');
+                }
+            };
+            
+            round4Recognition.onend = () => {
+                round4IsRecording = false;
+                // Immediate reset for smoother UX
+                setTimeout(() => {
+                    if (!round4IsPlaying) updateRound4BottomBtn('default');
+                }, 300);
+            };
+        }
+
+        function renderRound4Card() {
+            const data = roundData.round4;
+            const card = data.cards[data.currentIndex];
+            
+            if (!card) {
+                // If no cards or end of round logic required
+                // For now cycle or show nothing
+                return;
+            }
+            
+            // Update progress header
+            updateGameProgress();
+            
+            // Text Content
+            document.getElementById('round4-letterDisplay').textContent = card.letter || (data.currentIndex + 1);
+            document.getElementById('round4-traditionalText').textContent = card.traditional;
+            document.getElementById('round4-pinyinText').textContent = card.pinyin;
+            document.getElementById('round4-meaningText').textContent = card.meaning;
+            
+            // Difficulty Badge
+            const diffMap = { 'beginner': 'Easy', 'intermediate': 'Medium', 'advanced': 'Hard' };
+            document.getElementById('round4-difficultyText').textContent = diffMap[card.difficulty] || card.difficulty || 'Easy';
+            
+            // Emoji/Image Logic (Simple mapping if no image URL)
+            const emojiMap = {
+                '坐': '🪑', '站': '🧍', '走': '🚶', '跑': '🏃',
+                '吃': '🍽️', '喝': '🥤', '睡': '😴', '笑': '😄',
+                '哭': '😢', '看': '👀', '听': '👂', '说': '💬',
+                '苹果': '🍎', '香蕉': '🍌', '猫': '🐱', '狗': '🐶'
+            };
+            // Use card.image if available, otherwise emoji
+            const imgContainer = document.getElementById('round4-imageContainer');
+            if (card.imageUrl) {
+                 imgContainer.innerHTML = `<img src="${card.imageUrl}" class="w-full h-full object-contain rounded-xl" alt="${card.meaning}">`;
+                 imgContainer.className = "w-48 h-48 md:w-56 md:h-56"; // Reset size for image
+            } else {
+                 imgContainer.textContent = emojiMap[card.traditional] || '📚';
+                 imgContainer.className = "text-7xl md:text-8xl animate-bounce duration-[2000ms]";
+            }
+            
+            // Progress
+            document.getElementById('round4-progressText').textContent = `${data.currentIndex + 1} / ${data.total}`;
+
+            // Reset States
+            updateRound4TopBadge('listen');
+            updateRound4BottomBtn('default');
+            data.attemptsForCurrentCard = 0;
+            round4IsRecording = false;
+            round4IsPlaying = false;
+            
+            // Auto-play audio immediately for better flow
+            setTimeout(() => speakRound4Word(), 300);
+        }
+
+        function updateRound4TopBadge(state) {
+            const badge = document.getElementById('round4-topBadge');
+            if (!badge) return;
+            
+            const iconSpan = badge.querySelector('.material-symbols-outlined');
+            const textSpan = badge.querySelector('span:last-child');
+            
+            // Reset classes
+            badge.className = "flex items-center gap-2 px-6 py-2 rounded-full shadow-lg border transition-all duration-300 whitespace-nowrap";
+            
+            switch (state) {
+                case 'listen':
+                    badge.classList.add('bg-white', 'dark:bg-slate-700', 'border-slate-100', 'dark:border-slate-600');
+                    textSpan.textContent = 'Listen & Repeat';
+                    iconSpan.textContent = 'headphones';
+                    iconSpan.className = "material-symbols-outlined text-blue-500";
+                    break;
+                case 'playing':
+                    badge.classList.add('bg-blue-500', 'border-blue-600');
+                    textSpan.textContent = 'Listening...';
+                    textSpan.className = "font-bold text-white1 text-sm";
+                    iconSpan.textContent = 'volume_up';
+                    iconSpan.className = "material-symbols-outlined text-white animate-pulse";
+                    break;
+                case 'recording':
+                    badge.classList.add('bg-red-500', 'border-red-600');
+                    textSpan.textContent = 'Listening to you...';
+                    textSpan.className = "font-bold text-white text-sm";
+                    iconSpan.textContent = 'mic';
+                    iconSpan.className = "material-symbols-outlined text-white animate-pulse";
+                    break;
+                case 'correct':
+                    badge.classList.add('bg-green-500', 'border-green-600');
+                    textSpan.textContent = 'Excellent!';
+                    textSpan.className = "font-bold text-white text-sm";
+                    iconSpan.textContent = 'check_circle';
+                    iconSpan.className = "material-symbols-outlined text-white";
+                    break;
+                 case 'wrong':
+                    badge.classList.add('bg-orange-500', 'border-orange-600');
+                    textSpan.textContent = 'Try Again!';
+                    textSpan.className = "font-bold text-white text-sm";
+                    iconSpan.textContent = 'cached';
+                    iconSpan.className = "material-symbols-outlined text-white";
+                    break;
+            }
+        }
+        
+        function updateRound4BottomBtn(state) {
+            const btn = document.getElementById('round4-recordBtn');
+            const statusText = document.getElementById('round4-statusText');
+            const visualizer = document.getElementById('round4-visualizer');
+            const ping = document.getElementById('round4-recordPingEffect');
+            
+            if (!btn) return;
+            
+            const icon = btn.querySelector('.material-symbols-outlined');
+            
+            // Reset styles
+            // Note: Keep element references valid
+            
+            // Base classes
+            btn.className = "relative z-10 w-20 h-20 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 group-hover:shadow-xl";
+            ping.style.opacity = 0;
+            visualizer.classList.add('hidden');
+            
+            if (state === 'default') {
+                btn.classList.add('bg-white', 'dark:bg-slate-700', 'border-4', 'border-slate-100', 'dark:border-slate-600', 'text-slate-400', 'hover:text-primary', 'hover:border-primary');
+                icon.textContent = 'mic';
+                statusText.textContent = 'Tap to speak';
+                statusText.className = "text-sm font-bold text-slate-400 dark:text-slate-500";
+            } else if (state === 'recording') {
+                btn.classList.add('bg-red-500', 'text-white', 'border-4', 'border-red-200', 'scale-110');
+                icon.textContent = 'mic';
+                statusText.textContent = 'Speak now...';
+                statusText.className = "text-sm font-bold text-red-500 animate-pulse";
+                ping.style.opacity = 1;
+                visualizer.classList.remove('hidden');
+            } else if (state === 'playing') {
+                btn.classList.add('bg-blue-100', 'text-blue-500', 'border-4', 'border-blue-200');
+                icon.textContent = 'volume_up';
+                statusText.textContent = 'Playing...';
+                statusText.className = "text-sm font-bold text-blue-500";
+            } else if (state === 'analyzing') {
+                btn.classList.add('bg-purple-100', 'text-purple-500', 'border-4', 'border-purple-200', 'animate-spin');
+                icon.textContent = 'settings';
+                statusText.textContent = 'Analyzing...';
+                statusText.className = "text-sm font-bold text-purple-500";
+            }
+        }
+
+        function skipRound4Word() {
+            const data = roundData.round4;
+            if (!data || !data.cards || !data.answers) {
+                console.warn('Round 4 data not properly initialized');
+                return;
+            }
+            
+            const card = data.cards[data.currentIndex];
+            if (!card) {
+                console.warn('No card at current index');
+                return;
+            }
+            
+            // Stop any ongoing speech/recording
+            round4IsPlaying = false;
+            round4IsRecording = false;
+            if (round4Recognition) {
+                try {
+                    round4Recognition.stop();
+                } catch (e) {
+                    console.log('Error stopping recognition:', e);
+                }
+            }
+            
+            // Track skipped question as wrong
+            const answer = { 
+                correct: false, 
+                round: 4, 
+                cardIndex: data.currentIndex,
+                vocabularyId: card.id || card._id,
+                skipped: true
+            };
+            data.answers.push(answer);
+            allAnswers.push(answer);
+            updateTestStats();
+            
+            // Immediate transition to next card
+            if (data.currentIndex < data.total - 1) {
+                data.currentIndex++;
+                renderRound4Card();
+            } else {
+                totalScore += data.score;
+                goToNextRound();
+            }
+        }
+        window.skipRound4Word = skipRound4Word;
+
+        function speakRound4Word() {
+            const data = roundData.round4;
+            const card = data.cards[data.currentIndex];
+            if (!card || round4IsPlaying) return;
+            
+            round4IsPlaying = true;
+            updateRound4TopBadge('playing');
+            updateRound4BottomBtn('playing');
+            
+            if (window.speakText) {
+                window.speakText(card.traditional, 1, () => {
+                    round4IsPlaying = false;
+                    updateRound4TopBadge('listen');
+                    updateRound4BottomBtn('default');
+                });
+            } else {
+                // Fallback timeout
+                setTimeout(() => {
+                    round4IsPlaying = false;
+                    updateRound4TopBadge('listen');
+                    updateRound4BottomBtn('default');
+                }, 800);
+            }
+        }
+
+        function recordRound4UserSpeech() {
+            if (round4IsPlaying || round4IsRecording) return;
+            
+            if (round4Recognition) {
+                try {
+                    round4Recognition.start();
+                } catch (e) {
+                    console.error(e);
+                }
+            } else {
+                alert("Speech recognition not supported");
+            }
+        }
+
+        // Make functions global for onclick handlers
+        window.completeRound4 = completeRound4;
+        window.recordRound4UserSpeech = recordRound4UserSpeech;
+        window.speakRound4Word = speakRound4Word;
+        
+        function completeRound4() {
+            const data = roundData.round4;
+            totalScore += data.score;
+            goToNextRound();
+        }
+        
+        function checkRound4Pronunciation(transcripts) {
+            updateRound4BottomBtn('analyzing');
+            
+            const data = roundData.round4;
+            const card = data.cards[data.currentIndex];
+            
+            // Multiple acceptable answers for easier matching
+            const acceptableAnswers = [
+                card.traditional,
+                card.simplified,
+                card.pinyin.toLowerCase().replace(/\s+/g, ''), // "hēi sè" -> "heise"
+                card.pinyin.toLowerCase().replace(/[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/g, (m) => {
+                    // Convert tones to base letters for easier matching
+                    const toneMap = {
+                        'ā':'a','á':'a','ǎ':'a','à':'a',
+                        'ē':'e','é':'e','ě':'e','è':'e',
+                        'ī':'i','í':'i','ǐ':'i','ì':'i',
+                        'ō':'o','ó':'o','ǒ':'o','ò':'o',
+                        'ū':'u','ú':'u','ǔ':'u','ù':'u',
+                        'ǖ':'u','ǘ':'u','ǚ':'u','ǜ':'u'
+                    };
+                    return toneMap[m] || m;
+                }).replace(/\s+/g, '') // pinyin without tones: "hei se" -> "heise"
+            ];
+            
+            const isCorrect = transcripts.some(t => {
+                // Normalize transcript: remove punctuation, spaces, lowercase
+                const clean = t.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()\s]/g, "");
+                
+                // Check if transcript matches any acceptable answer
+                return acceptableAnswers.some(answer => {
+                    const normalizedAnswer = answer.toLowerCase().replace(/\s+/g, '');
+                    return clean === normalizedAnswer || 
+                           clean.includes(normalizedAnswer) || 
+                           normalizedAnswer.includes(clean);
+                });
+            });
+            
+            setTimeout(() => {
+                // Reset recording state immediately
+                round4IsRecording = false;
+                
+                if (isCorrect) {
+                     // Success feedback
+                     updateRound4TopBadge('correct');
+                     updateRound4BottomBtn('default');
+                     
+                     // Visual celebration
+                     const btn = document.getElementById('round4-recordBtn');
+                     btn.classList.add('bg-green-500', 'text-white', 'border-green-200');
+                     
+                     // Add score
+                     data.correctAnswers++;
+                     data.score++;
+                     
+                     // Track answer with vocabulary ID
+                     const answer = { 
+                         correct: true, 
+                         round: 4, 
+                         cardIndex: data.currentIndex,
+                         vocabularyId: card.id
+                     };
+                     data.answers.push(answer);
+                     allAnswers.push(answer);
+                     updateTestStats();
+                     
+                     // Quick transition to next question (smooth flow)
+                     setTimeout(() => {
+                         if (data.currentIndex < data.total - 1) {
+                             data.currentIndex++;
+                             renderRound4Card();
+                         } else {
+                             totalScore += data.score;
+                             goToNextRound();
+                         }
+                     }, 600);
+                } else {
+                    data.attemptsForCurrentCard++;
+                    
+                    if (data.attemptsForCurrentCard >= 3) {
+                        // 3 strikes - move to next question
+                        
+                        // Track wrong answer
+                        const answer = { 
+                            correct: false, 
+                            round: 4, 
+                            cardIndex: data.currentIndex,
+                            vocabularyId: card.id
+                        };
+                        data.answers.push(answer);
+                        allAnswers.push(answer);
+                        updateTestStats();
+                        
+                        // Show failure feedback
+                        updateRound4TopBadge('wrong');
+                        updateRound4BottomBtn('default');
+                        
+                        // Show toast notification
+                        const toast = document.createElement('div');
+                        toast.className = 'fixed top-4 right-4 bg-orange-500 text-white px-6 py-4 rounded-2xl shadow-xl z-50 flex items-center gap-2 font-bold';
+                        toast.innerHTML = '<span class="material-symbols-outlined">error</span> <span>3 lần thất bại. Chuyển câu tiếp theo...</span>';
+                        document.body.appendChild(toast);
+                        
+                        // Quick transition to next (consistent with correct flow)
+                        setTimeout(() => {
+                            toast.remove();
+                            if (data.currentIndex < data.total - 1) {
+                                data.currentIndex++;
+                                renderRound4Card();
+                            } else {
+                                totalScore += data.score;
+                                goToNextRound();
+                            }
+                        }, 1500);
+                    } else {
+                        // Still have attempts - encourage retry
+                        updateRound4TopBadge('wrong');
+                        updateRound4BottomBtn('default');
+                        
+                        // Show remaining attempts with toast
+                        const toast = document.createElement('div');
+                        toast.className = 'fixed top-4 right-4 bg-yellow-500 text-white px-6 py-4 rounded-2xl shadow-xl z-50 flex items-center gap-2 font-bold';
+                        toast.innerHTML = `<span class="material-symbols-outlined">repeat</span> <span>Thử lại! Còn ${3 - data.attemptsForCurrentCard} lần</span>`;
+                        document.body.appendChild(toast);
+                        setTimeout(() => toast.remove(), 2000);
+                        
+                        // Also show in badge
+                        const badge = document.getElementById('round4-topBadge');
+                        const textSpan = badge.querySelector('span:last-child');
+                        textSpan.textContent = `Thử lại! (Còn ${3 - data.attemptsForCurrentCard} lần)`;
+                        
+                        // Ready for immediate retry
+                        round4IsPlaying = false;
+                        round4IsRecording = false;
+                    }
+                }
+            }, 400);
+        }
+
+        // ========================================
+        // ROUND 5: FILL IN THE BLANKS GAME
+        // ========================================
+        async function loadRound5() {
+            if (selectedDifficulty) {
+                try {
+                    const data = await apiGet('/games/fill-in-blanks', { difficulty: selectedDifficulty, count: 5 });
+                    
+                    if (!data.success) {
+                        alert(data.message);
+                        return;
+                    }
+                    
+                    roundData.round5.questions = data.data;
+                    roundData.round5.currentIndex = 0;
+                    roundData.round5.score = 0;
+                } catch (err) {
+                    alert('Lỗi khi tải Round 5: ' + err.message);
+                }
+            } else {
+                const categoryId = getCategoryIdFromUrl();
+                if (!categoryId) return;
+                
+                try {
+                    const data = await apiGet('/games/fill-in-blanks', { categoryId, count: 5 });
+                    
+                    if (!data.success) {
+                        alert(data.message);
+                        return;
+                    }
+                    
+                    roundData.round5.questions = data.data;
+                    roundData.round5.currentIndex = 0;
+                    roundData.round5.score = 0;
+                } catch (err) {
+                    alert('Lỗi khi tải Round 5: ' + err.message);
+                }
+            }
+        }
+
+        function renderRound5Question() {
+            const data = roundData.round5;
+            const q = data.questions[data.currentIndex];
+            if (!q) {
+                totalScore += data.score;
+                goToNextRound();
+                return;
+            }
+            
+            // Render question display
+            const displayDiv = document.getElementById('round5-questionDisplay');
+            displayDiv.innerHTML = '';
+            
+            // Blank word display with integrated speaker button
+            const blankContainer = document.createElement('div');
+            blankContainer.className = 'flex items-center justify-center gap-3 mb-4';
+            
+            const speakerBtn = document.createElement('button');
+            speakerBtn.className = 'inline-flex items-center justify-center w-10 h-10 rounded-full bg-primary hover:bg-blue-600 text-white shadow-md hover:scale-110 transition-all';
+            speakerBtn.innerHTML = '<span class="material-symbols-outlined text-lg">volume_up</span>';
+            speakerBtn.onclick = () => {
+                if (window.speakText) {
+                    window.speakText(q.word.simplified || q.word.traditional);
+                }
+            };
+            
+            const blankWord = document.createElement('span');
+            blankWord.textContent = q.question.displayWord;
+            blankWord.className = 'text-4xl md:text-5xl font-bold text-gray-700 dark:text-gray-300';
+            
+            blankContainer.appendChild(speakerBtn);
+            blankContainer.appendChild(blankWord);
+            displayDiv.appendChild(blankContainer);
+            
+            // Meaning and Pinyin
+            const infoContainer = document.createElement('div');
+            infoContainer.className = 'flex flex-wrap justify-center gap-3 text-lg';
+            
+            const meaningBadge = document.createElement('span');
+            meaningBadge.className = 'px-4 py-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full border border-green-200 dark:border-green-800 font-semibold';
+            meaningBadge.textContent = q.word.meaning;
+            
+            const pinyinBadge = document.createElement('span');
+            pinyinBadge.className = 'px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full border border-blue-200 dark:border-blue-800 font-semibold';
+            pinyinBadge.textContent = q.word.pinyin;
+            
+            infoContainer.appendChild(meaningBadge);
+            infoContainer.appendChild(pinyinBadge);
+            displayDiv.appendChild(infoContainer);
+            
+            // Render options
+            const optionsDiv = document.getElementById('round5-optionsContainer');
+            optionsDiv.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'game-card bg-white dark:bg-gray-800 border-2 border-slate-200 dark:border-slate-700 hover:border-primary/50 px-6 py-4 rounded-2xl text-2xl font-black text-primary dark:text-blue-400 transition-all';
+                btn.textContent = opt.char; // Backend returns 'char' not 'text'
+                btn.onclick = () => selectRound5Answer(idx);
+                optionsDiv.appendChild(btn);
+            });
+            
+            // Reset check button
+            const checkBtn = document.getElementById('round5-checkButton');
+            const checkBtnText = document.getElementById('round5-checkButtonText');
+            checkBtn.disabled = true;
+            checkBtnText.textContent = 'Chọn đáp án';
+            checkBtn.onclick = null;
+            
+            window.round5SelectedAnswer = null;
+            
+            updateGameProgress();
+        }
+
+        function selectRound5Answer(idx) {
+            const optionsDiv = document.getElementById('round5-optionsContainer');
+            const buttons = Array.from(optionsDiv.children);
+            
+            buttons.forEach(btn => {
+                btn.classList.remove('option-selected', 'ring-4', 'ring-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
+                btn.classList.add('bg-white', 'dark:bg-gray-800');
+            });
+            
+            buttons[idx].classList.add('option-selected', 'ring-4', 'ring-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
+            buttons[idx].classList.remove('bg-white', 'dark:bg-gray-800');
+            
+            window.round5SelectedAnswer = idx;
+            
+            const checkBtn = document.getElementById('round5-checkButton');
+            const checkBtnText = document.getElementById('round5-checkButtonText');
+            checkBtn.disabled = false;
+            checkBtn.className = 'flex items-center justify-center gap-2 bg-primary hover:bg-blue-600 text-white font-bold text-lg px-10 py-4 rounded-full shadow-lg transition-all min-w-[200px]';
+            checkBtnText.textContent = 'Kiểm tra đáp án';
+            checkBtn.onclick = () => checkRound5Answer(idx);
+        }
+
+        function checkRound5Answer(idx) {
+            const data = roundData.round5;
+            const q = data.questions[data.currentIndex];
+            const isCorrect = q.options[idx].isCorrect;
+            
+            const optionsDiv = document.getElementById('round5-optionsContainer');
+            const buttons = Array.from(optionsDiv.children);
+            
+            buttons.forEach((btn, i) => {
+                btn.disabled = true;
+                if (i === idx) {
+                    if (isCorrect) {
+                        btn.classList.add('bg-green-100', 'dark:bg-green-900/30', 'border-green-500', 'text-green-700', 'dark:text-green-400');
+                    } else {
+                        btn.classList.add('bg-red-100', 'dark:bg-red-900/30', 'border-red-500', 'text-red-700', 'dark:text-red-400');
+                    }
+                }
+                if (q.options[i].isCorrect) {
+                    btn.classList.add('bg-green-100', 'dark:bg-green-900/30', 'border-green-500', 'text-green-700', 'dark:text-green-400');
+                }
+            });
+            
+            if (isCorrect) {
+                data.score++;
+            }
+            
+            // Track answer for Round 5 with vocabulary ID
+            const answer = { 
+                correct: isCorrect, 
+                round: 5, 
+                questionIndex: data.currentIndex,
+                vocabularyId: q.id || q.word.id // Track vocabulary ID
+            };
+            data.answers.push(answer);
+            allAnswers.push(answer);
+            updateTestStats();
+            
+            const checkBtn = document.getElementById('round5-checkButton');
+            const checkBtnText = document.getElementById('round5-checkButtonText');
+            checkBtn.disabled = true;
+            
+            if (isCorrect) {
+                checkBtn.className = 'flex items-center justify-center gap-2 bg-green-500 text-white font-bold text-lg px-10 py-4 rounded-full shadow-lg transition-all min-w-[200px]';
+                checkBtnText.textContent = '✓ Chính xác!';
+            } else {
+                checkBtn.className = 'flex items-center justify-center gap-2 bg-red-500 text-white font-bold text-lg px-10 py-4 rounded-full shadow-lg transition-all min-w-[200px]';
+                checkBtnText.textContent = '✗ Sai rồi!';
+            }
+            
+            setTimeout(() => {
+                data.currentIndex++;
+                renderRound5Question();
+            }, 1500);
+        }
+
+        // ========================================
+        // INITIALIZE GAME
+        // ========================================
+        async function initializeGame() {
+            // Check if difficulty is selected (required for test mode)
+            if (!selectedDifficulty) {
+                console.log('⚠️ No difficulty selected, cannot start game');
+                return;
+            }
+            
+            // Track test start time for duration calculation
+            testStartTime = Date.now();
+            
+            // Load all rounds data
+            await Promise.all([
+                loadRound1(),
+                loadRound2(),
+                loadRound3(),
+                loadRound4(),
+                loadRound5()
+            ]);
+            
+            // Start with Round 1
+            showRoundTransition(1, 'Listening Challenge', 'Listen and choose the correct meaning');
+            
+            // Render first question of Round 1 immediately
+            renderRound1Question();
+        }
+
+        // Start game when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check authentication first
+            if (typeof ApiClient === 'undefined' || typeof window.authAPI === 'undefined') {
+                console.error('❌ API Client not loaded!');
+                setTimeout(() => window.location.reload(), 1000);
+                return;
+            }
+            
+            // Check if user is authenticated
+            if (!window.authAPI.isAuthenticated()) {
+                console.log('⚠️ Not authenticated, redirecting to login...');
+                alert('Vui lòng đăng nhập để chơi game!');
+                window.location.href = '../login_screen.html';
+                return;
+            }
+            
+            // Wait for header to load before showing modal
+            const waitForHeader = () => {
+                if (window.headerLoaded && window.speakText) {
+                    console.log('📋 Showing difficulty selection modal');
+                    showDifficultyModal();
+                } else {
+                    console.log('⏳ Waiting for game header to load...');
+                    setTimeout(waitForHeader, 100);
+                }
+            };
+            
+            waitForHeader();
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Reverse Quiz Game</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎮</text></svg>">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="../css/games-common.css" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0d7ff2",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+        }
+
+        .dark .glass-effect {
+            background: rgba(34, 26, 16, 0.7);
+        }
+
+        .pattern-bg {
+            background-image: radial-gradient(#f49d25 1px, transparent 1px);
+            background-size: 24px 24px;
+            opacity: 0.1;
+        }
+        .pt-0 {
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display min-h-screen flex flex-col overflow-hidden text-text-main dark:text-white transition-colors duration-200">
+    <!-- Decorative Background Pattern -->
+    <div class="fixed inset-0 pattern-bg pointer-events-none z-0"></div>
+    <!-- Common Game Header -->
+    <div id="game-header-container"></div>
+    <script>
+    // Insert common header
+    fetch('games-header.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('game-header-container').innerHTML = html;
+        // Execute scripts in the loaded HTML
+        const scripts = document.getElementById('game-header-container').querySelectorAll('script');
+        scripts.forEach(script => {
+            const newScript = document.createElement('script');
+            if (script.src) {
+                newScript.src = script.src;
+            } else {
+                newScript.textContent = script.textContent;
+            }
+            document.body.appendChild(newScript);
+        });
+      })
+      .catch(err => console.error('Failed to load game header:', err));
+    </script>
+    
+    <!-- Main Game Content -->
+    <main class="pt-0 flex-1 flex flex-col items-center justify-center p-4 md:p-8 w-full max-w-6xl mx-auto relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full h-full lg:h-auto items-center">
+            <!-- Left Column: The Stage (Image & Prompt) -->
+            <div class="lg:col-span-7 flex flex-col w-full h-full justify-center">
+                <!-- Question Prompt -->
+                <h1 id="questionPrompt"
+                    class="text-3xl md:text-4xl lg:text-5xl font-bold text-center lg:text-left mb-8 text-gray-800 dark:text-gray-100 drop-shadow-sm leading-tight">
+                    Look at the picture.<br />
+                    <span class="text-primary">Which word matches?</span>
+                </h1>
+                <!-- Image Card -->
+                <div
+                    class="relative w-full aspect-[4/3] rounded-xl overflow-hidden shadow-2xl bg-surface-light dark:bg-surface-dark border-4 border-white dark:border-surface-dark ring-1 ring-black/5 group">
+                    <!-- Countdown Timer Overlay (Top Right) -->
+                    <div class="absolute top-6 right-6 z-20" id="timerContainer">
+                        <div
+                            class="relative flex items-center justify-center size-20 rounded-full bg-white dark:bg-surface-dark shadow-lg">
+                            <svg class="transform -rotate-90 size-20" viewBox="0 0 100 100">
+                                <circle class="dark:stroke-gray-700" cx="50" cy="50" fill="none" r="45"
+                                    stroke="#e5e7eb" stroke-width="8"></circle>
+                                <circle id="timerCircle" class="text-primary transition-all duration-1000 ease-linear" cx="50"
+                                    cy="50" fill="none" r="45" stroke="currentColor" stroke-dasharray="283"
+                                    stroke-dashoffset="0" stroke-linecap="round" stroke-width="8"></circle>
+                            </svg>
+                            <div class="absolute flex flex-col items-center">
+                                <span id="timerText" class="text-xl font-bold text-gray-800 dark:text-white leading-none">20</span>
+                                <span
+                                    class="text-[10px] uppercase font-bold text-text-muted dark:text-gray-400 mt-0.5">Sec</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Main Image -->
+               
+                    <!-- Label Overlay (Optional Hint) -->
+                    <div class="absolute bottom-6 left-6 z-20" id="hintContainer">
+                        <div class="px-4 py-2 bg-white/90 dark:bg-black/60 backdrop-blur-sm rounded-lg shadow-sm">
+                            <p id="hintText" class="text-sm font-medium text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary text-lg">lightbulb</span>
+                                <span id="hintContent">Loading hint...</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Right Column: Answer Grid -->
+            <div class="lg:col-span-5 w-full flex flex-col justify-center gap-4 lg:pl-8">
+                <div id="optionsGrid" class="grid grid-cols-2 gap-4 w-full">
+                    <!-- Options will be dynamically loaded here -->
+                </div>
+                <div class="mt-6 flex justify-center lg:justify-start">
+                    <button id="speakBtn"
+                        class="flex items-center gap-2 px-6 py-3 rounded-full bg-gray-100 dark:bg-surface-dark text-text-muted dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-sm font-bold">
+                        <span class="material-symbols-outlined text-[20px]">volume_up</span>
+                        Listen to word
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Mobile Bottom Progress (Visible only on small screens) -->
+    <div
+        class="md:hidden w-full px-6 py-4 bg-white dark:bg-surface-dark border-t border-gray-100 dark:border-gray-800">
+        <div class="flex justify-between w-full mb-2 text-xs font-bold text-text-muted dark:text-gray-400">
+            <span id="mobileProgress">Question 1/10</span>
+            <span id="mobilePercent">0%</span>
+        </div>
+        <div class="w-full h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+            <div id="mobileProgressBar" class="h-full bg-primary rounded-full transition-all duration-300" style="width: 0%;"></div>
+        </div>
+    </div>
+
+<script>
+// ========== Helper: Get categoryId from URL ==========
+function getCategoryIdFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('categoryId');
+}
+
+// ========== State ==========
+let questions = [];
+let currentIndex = 0;
+let score = 0;
+let timeLeft = 20;
+let timerInterval = null;
+let selectedAnswer = null;
+
+// ========== Load Questions ==========
+async function loadQuestions() {
+    const categoryId = getCategoryIdFromUrl();
+    if (!categoryId) {
+        alert('Không tìm thấy categoryId!');
+        window.location.href = '../user/games_home.html';
+        return;
+    }
+    try {
+        const res = await fetch(`/api/games/reverse-quiz?categoryId=${categoryId}&count=10`);
+        const data = await res.json();
+        if (!data.success) {
+            alert('Không thể tải câu hỏi: ' + (data.error?.message || 'Lỗi không xác định'));
+            window.location.href = '../user/games_home.html';
+            return;
+        }
+        questions = data.data;
+        currentIndex = 0;
+        score = 0;
+        renderQuestion();
+        updateGameHeader();
+    } catch (err) {
+        alert('Lỗi khi gọi API: ' + err.message);
+        window.location.href = '../user/games_home.html';
+    }
+}
+
+// ========== Render Question ==========
+function renderQuestion() {
+    const q = questions[currentIndex];
+    if (!q) {
+        renderResult();
+        return;
+    }
+
+    // Reset timer
+    startTimer();
+
+    // Update image
+    const imageDiv = document.getElementById('questionImage');
+    imageDiv.style.backgroundImage = `url('${q.imageUrl}')`;
+    imageDiv.setAttribute('data-alt', q.meaning);
+
+    // Update hint
+    document.getElementById('hintContent').textContent = `Pinyin: ${q.hint}`;
+
+    // Render options
+    const optionsGrid = document.getElementById('optionsGrid');
+    optionsGrid.innerHTML = '';
+    
+    const iconOptions = [
+        { icon: 'sentiment_very_satisfied', color: 'blue' },
+        { icon: 'favorite', color: 'orange' },
+        { icon: 'star', color: 'green' },
+        { icon: 'emoji_objects', color: 'purple' }
+    ];
+
+    q.options.forEach((opt, idx) => {
+        const iconOpt = iconOptions[idx] || iconOptions[0];
+        const btn = document.createElement('button');
+        btn.className = 'option-btn group relative flex flex-col items-center justify-center p-6 lg:p-8 h-32 lg:h-40 rounded-xl bg-white dark:bg-surface-dark border-b-4 border-gray-200 dark:border-gray-700 hover:border-primary active:translate-y-1 transition-all duration-200 shadow-sm hover:shadow-xl hover:shadow-primary/10';
+        btn.innerHTML = `
+            <div class="size-10 mb-2 rounded-full bg-${iconOpt.color}-50 dark:bg-${iconOpt.color}-900/30 text-${iconOpt.color}-600 dark:text-${iconOpt.color}-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <span class="material-symbols-outlined">${iconOpt.icon}</span>
+            </div>
+            <span class="text-xl lg:text-2xl font-bold text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors">${opt.meaning}</span>
+            <div class="absolute inset-0 border-2 border-transparent group-hover:border-primary rounded-xl pointer-events-none transition-colors"></div>
+        `;
+        btn.onclick = () => selectAnswer(idx, opt.isCorrect);
+        optionsGrid.appendChild(btn);
+    });
+
+    // Update speak button
+    document.getElementById('speakBtn').onclick = () => speakWord();
+
+    // Update progress
+    updateProgress();
+}
+
+// ========== Timer ==========
+function startTimer() {
+    // Clear existing timer
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+
+    timeLeft = 20;
+    const timerText = document.getElementById('timerText');
+    const timerCircle = document.getElementById('timerCircle');
+    const circumference = 2 * Math.PI * 45; // radius = 45
+
+    timerText.textContent = timeLeft;
+    timerCircle.style.strokeDashoffset = '0';
+
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        timerText.textContent = timeLeft;
+        
+        // Update circle progress
+        const offset = circumference * (1 - timeLeft / 20);
+        timerCircle.style.strokeDashoffset = offset;
+
+        // Change color when time is running out
+        if (timeLeft <= 5) {
+            timerCircle.classList.remove('text-primary');
+            timerCircle.classList.add('text-red-500');
+        }
+
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            handleTimeout();
+        }
+    }, 1000);
+}
+
+function stopTimer() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+}
+
+// ========== Select Answer ==========
+function selectAnswer(idx, isCorrect) {
+    // Stop timer
+    stopTimer();
+
+    // Disable all buttons
+    const buttons = document.querySelectorAll('.option-btn');
+    buttons.forEach((btn, i) => {
+        btn.disabled = true;
+        btn.classList.remove('hover:border-primary');
+        
+        // Show correct answer
+        const q = questions[currentIndex];
+        if (q.options[i].isCorrect) {
+            btn.classList.add('border-green-500');
+            btn.querySelector('.text-xl').classList.add('text-green-600');
+        } else if (i === idx && !isCorrect) {
+            btn.classList.add('border-red-500');
+            btn.querySelector('.text-xl').classList.add('text-red-600');
+        }
+    });
+
+    // Update score
+    if (isCorrect) {
+        score++;
+    }
+
+    // Next question after delay
+    setTimeout(() => {
+        currentIndex++;
+        renderQuestion();
+    }, 2000);
+}
+
+// ========== Handle Timeout ==========
+function handleTimeout() {
+    const buttons = document.querySelectorAll('.option-btn');
+    buttons.forEach((btn, i) => {
+        btn.disabled = true;
+        const q = questions[currentIndex];
+        if (q.options[i].isCorrect) {
+            btn.classList.add('border-yellow-500');
+        }
+    });
+
+    // Next question after delay
+    setTimeout(() => {
+        currentIndex++;
+        renderQuestion();
+    }, 2000);
+}
+
+// ========== Speak Word ==========
+function speakWord() {
+    const q = questions[currentIndex];
+    if (window.speakText) {
+        window.speakText(q.traditional || q.simplified);
+    } else {
+        const utterance = new SpeechSynthesisUtterance(q.traditional || q.simplified);
+        utterance.lang = 'zh-TW';
+        speechSynthesis.speak(utterance);
+    }
+}
+
+// ========== Update Progress ==========
+function updateProgress() {
+    const progress = Math.round(((currentIndex + 1) / questions.length) * 100);
+    
+    // Update mobile progress
+    document.getElementById('mobileProgress').textContent = `Question ${currentIndex + 1}/${questions.length}`;
+    document.getElementById('mobilePercent').textContent = `${progress}%`;
+    document.getElementById('mobileProgressBar').style.width = `${progress}%`;
+
+    // Update header if available
+    if (window.setGameHeaderProgressLabel) {
+        window.setGameHeaderProgressLabel(`Question ${currentIndex + 1}/${questions.length}`);
+    }
+    if (window.setGameHeaderProgressValue) {
+        window.setGameHeaderProgressValue(progress);
+    }
+    if (window.setGameHeaderScore) {
+        window.setGameHeaderScore(score);
+    }
+}
+
+// ========== Update Game Header ==========
+function updateGameHeader() {
+    if (window.setGameHeaderTitle) {
+        window.setGameHeaderTitle('Reverse Quiz');
+    }
+    updateProgress();
+}
+
+// ========== Render Result ==========
+function renderResult() {
+    stopTimer();
+    
+    const main = document.querySelector('main');
+    const percentage = Math.round((score / questions.length) * 100);
+    
+    let message = '';
+    let emoji = '';
+    if (percentage >= 80) {
+        message = 'Excellent! 🎉';
+        emoji = '🏆';
+    } else if (percentage >= 60) {
+        message = 'Great job! 👍';
+        emoji = '⭐';
+    } else if (percentage >= 40) {
+        message = 'Good effort! 💪';
+        emoji = '👏';
+    } else {
+        message = 'Keep practicing! 📚';
+        emoji = '💪';
+    }
+
+    main.innerHTML = `
+        <div class='flex flex-col items-center justify-center mt-16 text-center px-4'>
+            <div class='text-8xl mb-8'>${emoji}</div>
+            <h2 class='text-4xl md:text-5xl font-bold text-primary mb-4'>${message}</h2>
+            <p class='text-2xl md:text-3xl mb-8 text-gray-700 dark:text-gray-300'>
+                You scored <span class='font-bold text-green-600'>${score}</span> out of <span class='font-bold'>${questions.length}</span>
+            </p>
+            <div class='text-6xl font-bold text-primary mb-12'>${percentage}%</div>
+            <button onclick='window.location.href="../user/games_home.html"' class='px-8 py-4 rounded-full bg-primary text-white font-bold text-xl shadow-lg hover:bg-blue-600 hover:shadow-xl transition-all duration-200 transform hover:scale-105'>
+                Play Another Game
+            </button>
+        </div>
+    `;
+}
+
+// ========== Start Game ==========
+document.addEventListener('DOMContentLoaded', loadQuestions);
+</script>
+</body>
+
+</html>

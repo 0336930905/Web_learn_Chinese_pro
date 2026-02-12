@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Vocabulary Adventure - Fun Learning for Kids</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <!-- Material Symbols -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="../css/user-common.css" />
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- i18n and API Client -->
+    <script src="../i18n/translations.js"></script>
+    <script src="../js/api-client.js"></script>
+    <!-- Theme Configuration -->
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4ce64c",
+                        "primary-dark": "#3db83d",
+                        "background-light": "#f8fbf8",
+                        "background-dark": "#112111",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1a2e1a",
+                        "text-main": "#0e1b0e",
+                        "text-muted": "#509550",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "1.5rem",
+                        "xl": "2.5rem",
+                        "2xl": "3.5rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 40px -10px rgba(76, 230, 76, 0.15)',
+                        'card': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        /* Custom styles for floating animations */
+        @keyframes float {
+            0% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(5deg);
+            }
+
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+        }
+
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .animate-float-delayed {
+            animation: float 7s ease-in-out infinite 1s;
+        }
+
+        .animate-float-slow {
+            animation: float 8s ease-in-out infinite 2s;
+        }
+
+        .bg-pattern-dots {
+            background-image: radial-gradient(#4ce64c 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-text-main antialiased overflow-x-hidden transition-colors duration-300">
+    <!-- Language Switcher -->
+    <div class="fixed top-4 left-4 z-50 flex gap-2 bg-surface-light/90 dark:bg-surface-dark/90 backdrop-blur-md rounded-full shadow-lg p-2 border border-primary/20">
+        <button class="lang-option px-4 py-2 rounded-full font-bold transition-all hover:bg-primary/10" data-lang="en">EN</button>
+        <button class="lang-option px-4 py-2 rounded-full font-bold transition-all hover:bg-primary/10" data-lang="vi">VI</button>
+        <button class="lang-option px-4 py-2 rounded-full font-bold transition-all hover:bg-primary/10" data-lang="tw">台</button>
+    </div>
+    <style>
+        .lang-option.active {
+            background-color: #4ce64c;
+            color: #0e1b0e;
+        }
+    </style>
+    <div class="relative flex min-h-screen flex-col">
+        <!-- Navigation -->
+        <header class="sticky top-4 z-50 mx-auto w-full max-w-[1200px] px-4">
+            <div
+                class="flex items-center justify-between rounded-full bg-surface-light/90 dark:bg-surface-dark/90 backdrop-blur-md border border-primary/20 px-6 py-3 shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-text-main">
+                        <span class="material-symbols-outlined text-2xl font-bold">school</span>
+                    </div>
+                    <span
+                        class="text-xl font-bold tracking-tight text-text-main dark:text-white hidden sm:block" data-i18n="landing.appName">Vocabulary
+                        Adventure</span>
+                </div>
+                <nav class="hidden md:flex items-center gap-8">
+                    <a class="text-sm font-medium text-text-main dark:text-white hover:text-primary transition-colors"
+                        href="#" data-i18n="landing.navFeatures">Features</a>
+                    <a class="text-sm font-medium text-text-main dark:text-white hover:text-primary transition-colors"
+                        href="#" data-i18n="landing.navPricing">Pricing</a>
+                    <a class="text-sm font-medium text-text-main dark:text-white hover:text-primary transition-colors"
+                        href="#" data-i18n="landing.navAbout">About</a>
+                </nav>
+                <div class="flex gap-3">
+                    <button
+                        class="hidden sm:flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-bold text-text-main transition-colors hover:bg-gray-100 dark:text-white dark:hover:bg-white/10"
+                        id="navLoginBtn" data-i18n="landing.navLogin">
+                        Login
+                    </button>
+                    <button
+                        class="flex items-center justify-center rounded-full bg-primary px-6 py-2.5 text-sm font-bold text-text-main shadow-lg shadow-primary/20 transition-transform hover:scale-105 active:scale-95"
+                        id="navSignupBtn" data-i18n="landing.navSignup">
+                        Sign Up
+                    </button>
+                </div>
+            </div>
+        </header>
+        <main class="flex-grow">
+            <!-- Hero Section -->
+            <section class="relative pt-12 pb-20 md:pt-20 md:pb-32 overflow-hidden">
+                <!-- Background decorative elements -->
+                <div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+                    <div class="absolute top-[10%] left-[5%] text-primary/20 animate-float text-6xl font-black">A</div>
+                    <div
+                        class="absolute top-[15%] right-[10%] text-primary/30 animate-float-delayed text-8xl font-black">
+                        ?</div>
+                    <div
+                        class="absolute bottom-[20%] left-[15%] text-blue-400/20 animate-float-slow text-7xl font-black">
+                        B</div>
+                    <div class="absolute top-[40%] right-[5%] w-64 h-64 rounded-full bg-primary/10 blur-3xl"></div>
+                    <div class="absolute bottom-[10%] left-[10%] w-96 h-96 rounded-full bg-blue-400/10 blur-3xl"></div>
+                </div>
+                <div class="container mx-auto px-4 max-w-[1200px]">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                        <div class="flex flex-col gap-6 text-center lg:text-left z-10 order-2 lg:order-1">
+                            <div
+                                class="inline-flex self-center lg:self-start items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-sm font-bold text-primary-dark dark:text-primary">
+                                <span class="material-symbols-outlined text-sm">celebration</span>
+                                <span data-i18n="landing.badge">#1 Vocabulary App for Kids</span>
+                            </div>
+                            <h1
+                                class="text-5xl md:text-6xl lg:text-7xl font-black leading-[1.1] tracking-tight text-text-main dark:text-white">
+                                <span data-i18n="landing.heroTitle">Learning English is a</span> <span
+                                    class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400" data-i18n="landing.heroHighlight">Fun
+                                    Adventure!</span>
+                            </h1>
+                            <p
+                                class="text-lg md:text-xl text-text-main/70 dark:text-white/70 max-w-xl mx-auto lg:mx-0 leading-relaxed" data-i18n="landing.heroDescription">
+                                Join thousands of happy kids mastering new words through interactive stories, games, and
+                                daily challenges.
+                            </p>
+                            <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mt-4">
+                                <button
+                                    class="flex items-center justify-center gap-2 rounded-full bg-primary h-14 px-8 text-base font-bold text-text-main shadow-lg shadow-primary/30 transition-transform hover:scale-105 hover:shadow-primary/40"
+                                    id="heroGetStartedBtn">
+                                    <span class="material-symbols-outlined">rocket_launch</span>
+                                    <span data-i18n="landing.getStarted">Get Started for Free</span>
+                                </button>
+                                <button
+                                    class="flex items-center justify-center gap-2 rounded-full bg-white dark:bg-white/10 border border-gray-200 dark:border-white/10 h-14 px-8 text-base font-bold text-text-main dark:text-white transition-colors hover:bg-gray-50 dark:hover:bg-white/20">
+                                    <span class="material-symbols-outlined">play_circle</span>
+                                    <span data-i18n="landing.watchDemo">Watch Demo</span>
+                                </button>
+                            </div>
+                            <div
+                                class="mt-8 flex items-center justify-center lg:justify-start gap-4 text-sm font-medium text-text-main/60 dark:text-white/60">
+                                <div class="flex -space-x-2">
+                                    <div class="h-8 w-8 rounded-full border-2 border-white bg-gray-200"
+                                        data-alt="User avatar 1"
+                                        style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBrPQ8f5THvavl2sBt5n5QtQP6dAuZK3pIld3rQnw7dugsMxlQR6Np5l329meOMIvdQovWLJM3FbrgEUFd3Qy_QBK9XPOk2C34t7itoQIhy1TkvgnLZKh0y2ylt_wzBQCb_h4TSxDE4gEi83oNavFuIhcsRsRKvYhLcMTnc_yNk-loi57ItephjLHRJ8z15f3iZsUfKhmD3pbl55RPIIqk28wGlprHIjp-GzNYxvZnd5oNRPWkK1dsW9LMhtUNPzlDJVnxtCtAG6jY'); background-size: cover;">
+                                    </div>
+                                    <div class="h-8 w-8 rounded-full border-2 border-white bg-gray-200"
+                                        data-alt="User avatar 2"
+                                        style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDQvFUB0maE0JSsMfN5fL1i8C7k2ZgTnqJrtUJ-uial4HSvznXv6qfpe2THuMVR5ZkQ3AKb9x9zZyyOwPGEcrzdQyNqRaoo8rq1yufWibeb8hy4U56Ry-VguaJLig994KZ3uoI6zzTLXqzmkjitYUaTLgpIZ4mg8A_Enpf5NFrmhbMbBlokHW3OpGs3Yk50Dm-LsOXjksF0Z2gfjPEgSVACyMsZItqb3mZQfJjnpH40_-FocPgTg7BPmOgzkvUmiVm_W_kKg_6i_jo'); background-size: cover;">
+                                    </div>
+                                    <div class="h-8 w-8 rounded-full border-2 border-white bg-gray-200"
+                                        data-alt="User avatar 3"
+                                        style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDlq6H8SeJDzzo_ngldy_f9kwSHKyTytnWY8TXglUss3NhE3Or8hOXgHHbQJW2SKMazo1l9F_nAb-BPUC8RHJbS0fVtyIVs8hNLekcDf_qj_y15-tfdHvjPWBGuSUd5rTpeFjsRWY7H2pUpPy9fgKWNLnySLZGpulxr2uDCkHhsrLCKHD4wIE1rko9r93ArUBzMJlDrmIjeLWtKzQM575Gj5r0Uj4b_KqZ6RyNSQstlAI32XpEpMvlmhY8WVh6IYzpk-coxcWhsZKE'); background-size: cover;">
+                                    </div>
+                                </div>
+                                <p data-i18n="landing.lovedBy">Loved by 10,000+ parents</p>
+                            </div>
+                        </div>
+                        <div class="relative z-10 order-1 lg:order-2 flex justify-center">
+                            <div class="relative w-full max-w-lg aspect-square">
+                                <!-- Main Hero Image Container -->
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-tr from-primary/20 to-blue-200/20 rounded-full blur-2xl transform rotate-6">
+                                </div>
+                                <div
+                                    class="relative h-full w-full rounded-[3rem] overflow-hidden shadow-2xl bg-[#e8f5e9] border-4 border-white dark:border-white/10 flex items-center justify-center group">
+                                    <!-- 3D Illustration Placeholder -->
+                                    <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                                        data-alt="Happy child reading a colorful book in a library setting, representing learning"
+                                        style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuALQX0W5pCQQY2bKajkHMKm4YuG6QiO5gCO9sV1Vb1oWB0pP1NdMe_cKmHkCy5TyHAY_WzCZ3cL9Zzoad7hpQjsLB1dNcjX8igEC1Ry6NVli8vcrIa3RFq3g59K4J6-jEx2nuAn4P3rla8yxtOpuPpgcKtkQG-L9myrxlWusxhxXtZvvkta02x91QzK5ycTv8E431tBDkj1Gi3Se75v_gHpi_hMJFZQmWG52fsfnthEiEal7seaYH3OAGrG5yORC-VKBqLEnDRcsP0');">
+                                    </div>
+                                    <!-- Floating Elements Overlay -->
+                                    <div
+                                        class="absolute -top-6 -right-6 h-20 w-20 bg-white dark:bg-surface-dark rounded-2xl shadow-xl flex items-center justify-center animate-float">
+                                        <span
+                                            class="material-symbols-outlined text-4xl text-primary">emoji_events</span>
+                                    </div>
+                                    <div
+                                        class="absolute -bottom-4 -left-4 h-16 w-16 bg-white dark:bg-surface-dark rounded-full shadow-xl flex items-center justify-center animate-float-delayed">
+                                        <span class="text-2xl font-black text-blue-500">A+</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Features Section -->
+            <section class="py-20 bg-white dark:bg-surface-dark relative">
+                <div
+                    class="absolute top-0 left-0 w-full h-8 bg-gradient-to-b from-background-light dark:from-background-dark to-transparent">
+                </div>
+                <div class="container mx-auto px-4 max-w-[1200px]">
+                    <div class="text-center max-w-2xl mx-auto mb-16">
+                        <h2 class="text-primary text-lg font-bold uppercase tracking-wider mb-2" data-i18n="landing.featuresTitle">Why Kids Love Us</h2>
+                        <h3 class="text-3xl md:text-4xl font-black text-text-main dark:text-white mb-6" data-i18n="landing.featuresHeading">Designed for
+                            Fun, Built for Learning</h3>
+                        <p class="text-lg text-text-main/70 dark:text-white/70" data-i18n="landing.featuresDescription">Our platform combines educational best
+                            practices with engaging gameplay to keep children motivated.</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <!-- Feature 1 -->
+                        <div
+                            class="group relative p-8 rounded-[2rem] bg-background-light dark:bg-background-dark border border-transparent hover:border-primary/20 hover:shadow-soft transition-all duration-300">
+                            <div
+                                class="h-14 w-14 rounded-2xl bg-primary/20 flex items-center justify-center text-primary-dark dark:text-primary mb-6 group-hover:scale-110 transition-transform duration-300">
+                                <span class="material-symbols-outlined text-3xl">sports_esports</span>
+                            </div>
+                            <h4 class="text-xl font-bold text-text-main dark:text-white mb-3" data-i18n="landing.feature1Title">Interactive Games</h4>
+                            <p class="text-text-main/70 dark:text-white/70 leading-relaxed" data-i18n="landing.feature1Description">
+                                Forget boring flashcards. Kids learn new vocabulary through exciting mini-games and
+                                challenges that adapt to their level.
+                            </p>
+                        </div>
+                        <!-- Feature 2 -->
+                        <div
+                            class="group relative p-8 rounded-[2rem] bg-background-light dark:bg-background-dark border border-transparent hover:border-primary/20 hover:shadow-soft transition-all duration-300">
+                            <div
+                                class="h-14 w-14 rounded-2xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 mb-6 group-hover:scale-110 transition-transform duration-300">
+                                <span class="material-symbols-outlined text-3xl">psychology</span>
+                            </div>
+                            <h4 class="text-xl font-bold text-text-main dark:text-white mb-3" data-i18n="landing.feature2Title">Smart Review</h4>
+                            <p class="text-text-main/70 dark:text-white/70 leading-relaxed" data-i18n="landing.feature2Description">
+                                Our spaced repetition algorithm ensures your child reviews words at the perfect moment
+                                to move them into long-term memory.
+                            </p>
+                        </div>
+                        <!-- Feature 3 -->
+                        <div
+                            class="group relative p-8 rounded-[2rem] bg-background-light dark:bg-background-dark border border-transparent hover:border-primary/20 hover:shadow-soft transition-all duration-300">
+                            <div
+                                class="h-14 w-14 rounded-2xl bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-orange-600 dark:text-orange-400 mb-6 group-hover:scale-110 transition-transform duration-300">
+                                <span class="material-symbols-outlined text-3xl">monitoring</span>
+                            </div>
+                            <h4 class="text-xl font-bold text-text-main dark:text-white mb-3" data-i18n="landing.feature3Title">Parental Tracking</h4>
+                            <p class="text-text-main/70 dark:text-white/70 leading-relaxed" data-i18n="landing.feature3Description">
+                                Stay in the loop with detailed weekly reports. See exactly what your child learned and
+                                celebrate their milestones together.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Social Proof / Stats Section -->
+            <section class="py-16 bg-primary/5 dark:bg-primary/10">
+                <div class="container mx-auto px-4 max-w-[1200px]">
+                    <div
+                        class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-primary/10 dark:divide-white/10">
+                        <div class="p-4">
+                            <div class="text-4xl font-black text-text-main dark:text-white mb-2">50k+</div>
+                            <div class="text-sm font-bold text-text-muted dark:text-primary uppercase tracking-wider" data-i18n="landing.statsLearners">
+                                Active Learners</div>
+                        </div>
+                        <div class="p-4">
+                            <div class="text-4xl font-black text-text-main dark:text-white mb-2">1M+</div>
+                            <div class="text-sm font-bold text-text-muted dark:text-primary uppercase tracking-wider" data-i18n="landing.statsWords">
+                                Words Learned</div>
+                        </div>
+                        <div class="p-4">
+                            <div class="text-4xl font-black text-text-main dark:text-white mb-2">4.8</div>
+                            <div class="text-sm font-bold text-text-muted dark:text-primary uppercase tracking-wider" data-i18n="landing.statsRating">
+                                App Store Rating</div>
+                        </div>
+                        <div class="p-4">
+                            <div class="text-4xl font-black text-text-main dark:text-white mb-2">100%</div>
+                            <div class="text-sm font-bold text-text-muted dark:text-primary uppercase tracking-wider" data-i18n="landing.statsSafe">
+                                Kid Safe</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Bottom CTA -->
+            <section class="py-24 relative overflow-hidden">
+                <div class="container mx-auto px-4 max-w-[1000px] relative z-10">
+                    <div
+                        class="rounded-[3rem] bg-text-main dark:bg-surface-dark p-8 md:p-16 text-center relative overflow-hidden shadow-2xl">
+                        <!-- Decorative background in card -->
+                        <div
+                            class="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2">
+                        </div>
+                        <div
+                            class="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/20 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/2">
+                        </div>
+                        <div class="relative z-10">
+                            <h2 class="text-3xl md:text-5xl font-black text-white mb-6" data-i18n="landing.ctaTitle">Ready to start the adventure?
+                            </h2>
+                            <p class="text-lg text-white/80 max-w-2xl mx-auto mb-10" data-i18n="landing.ctaDescription">
+                                Give your child the gift of language. Sign up today and get 7 days of premium access
+                                completely free.
+                            </p>
+                            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                                <button
+                                    class="h-14 px-8 rounded-full bg-primary text-text-main font-bold text-lg hover:bg-primary-dark transition-colors shadow-lg shadow-primary/20"
+                                    id="ctaSignupBtn" data-i18n="landing.ctaStartTrial">
+                                    Start Free Trial
+                                </button>
+                                <button
+                                    class="h-14 px-8 rounded-full bg-white/10 text-white border border-white/20 font-bold text-lg hover:bg-white/20 transition-colors"
+                                    data-i18n="landing.ctaViewPricing">
+                                    View Pricing
+                                </button>
+                            </div>
+                            <p class="mt-6 text-sm text-white/50" data-i18n="landing.ctaNoCredit">No credit card required for trial.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <footer class="bg-white dark:bg-surface-dark py-12 border-t border-gray-100 dark:border-white/5">
+            <div class="container mx-auto px-4 max-w-[1200px]">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+                    <div class="flex items-center gap-2">
+                        <div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-text-main">
+                            <span class="material-symbols-outlined text-lg">school</span>
+                        </div>
+                        <span class="text-lg font-bold text-text-main dark:text-white" data-i18n="landing.appName">Vocabulary Adventure</span>
+                    </div>
+                    <div class="flex gap-8 text-sm font-medium text-text-main/70 dark:text-white/70">
+                        <a class="hover:text-primary transition-colors" href="#" data-i18n="landing.footerPrivacy">Privacy Policy</a>
+                        <a class="hover:text-primary transition-colors" href="#" data-i18n="landing.footerTerms">Terms of Service</a>
+                        <a class="hover:text-primary transition-colors" href="#" data-i18n="landing.footerContact">Contact Support</a>
+                    </div>
+                    <div class="flex gap-4">
+                        <a class="h-10 w-10 rounded-full bg-background-light dark:bg-white/5 flex items-center justify-center hover:bg-primary hover:text-text-main transition-colors text-text-main/70 dark:text-white/70"
+                            href="#">
+                            <svg aria-hidden="true" class="h-5 w-5" fill="currentColor" viewbox="0 0 24 24">
+                                <path clip-rule="evenodd"
+                                    d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"
+                                    fill-rule="evenodd"></path>
+                            </svg>
+                        </a>
+                        <a class="h-10 w-10 rounded-full bg-background-light dark:bg-white/5 flex items-center justify-center hover:bg-primary hover:text-text-main transition-colors text-text-main/70 dark:text-white/70"
+                            href="#">
+                            <svg aria-hidden="true" class="h-5 w-5" fill="currentColor" viewbox="0 0 24 24">
+                                <path
+                                    d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84">
+                                </path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="mt-8 text-center text-xs text-text-main/40 dark:text-white/40" data-i18n="landing.footerCopyright">
+                    © 2023 Vocabulary Adventure Inc. All rights reserved.
+                </div>
+            </div>
+        </footer>
+    </div>
+    <script>
+        // Dark mode handling based on system preference
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize i18n
+            if (typeof i18n !== 'undefined') {
+                i18n.init();
+
+                // Language switcher
+                document.querySelectorAll('.lang-option').forEach(button => {
+                    button.addEventListener('click', () => {
+                        i18n.setLanguage(button.dataset.lang);
+                    });
+                });
+            }
+
+            // Navigation button handlers
+            const navLoginBtn = document.getElementById('navLoginBtn');
+            const navSignupBtn = document.getElementById('navSignupBtn');
+            const heroGetStartedBtn = document.getElementById('heroGetStartedBtn');
+            const ctaSignupBtn = document.getElementById('ctaSignupBtn');
+
+            // Login button
+            if (navLoginBtn) {
+                navLoginBtn.addEventListener('click', () => {
+                    window.location.href = '/login_screen.html';
+                });
+            }
+
+            // Signup buttons (multiple locations)
+            [navSignupBtn, heroGetStartedBtn, ctaSignupBtn].forEach(btn => {
+                if (btn) {
+                    btn.addEventListener('click', () => {
+                        window.location.href = '/sign_up_screen.html';
+                    });
+                }
+            });
+
+            // Check if user is already logged in
+            if (typeof authAPI !== 'undefined' && authAPI.isAuthenticated()) {
+                // User is logged in, show a different message or redirect
+                const user = authAPI.getCurrentUser();
+                if (user) {
+                    // Optional: Show logged-in state or redirect to dashboard
+                    console.log('User is logged in:', user.fullName);
+                    // Uncomment to auto-redirect logged-in users:
+                    // window.location.href = '/index.html';
+                }
+            }
+
+            // Add smooth scroll behavior for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    const href = this.getAttribute('href');
+                    if (href !== '#') {
+                        e.preventDefault();
+                        const target = document.querySelector(href);
+                        if (target) {
+                            target.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                        }
+                    }
+                });
+            });
+
+            // Simple animation on scroll (optional enhancement)
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -100px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // Observe feature cards for fade-in animation
+            document.querySelectorAll('.grid > div').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+
+</html>

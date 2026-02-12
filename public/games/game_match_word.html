@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Match Word and Meaning Game</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎮</text></svg>">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="../css/games-common.css" />
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0d7ff2",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        /* Custom styles for the connector lines simulation */
+        .connector-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .game-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .game-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .game-card.scale-105 {
+            transform: scale(1.05);
+        }
+
+        .anchor-point {
+            transition: transform 0.2s ease;
+        }
+
+        .game-card:hover .anchor-point {
+            transform: scale(1.2);
+        }
+
+        /* Connection line animation */
+        .connection-line {
+            stroke: #10b981;
+            stroke-width: 4;
+            fill: none;
+            stroke-linecap: round;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawLine 0.6s ease-out forwards;
+        }
+
+        @keyframes drawLine {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        /* Chinese word speaker style */
+        .chinese-word-speaker {
+            position: relative;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .chinese-word-speaker:hover {
+            color: #0d7ff2;
+        }
+
+        .chinese-word-speaker:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display h-screen flex flex-col overflow-hidden text-slate-900 dark:text-slate-100">
+    <!-- Common Game Header -->
+    <div id="game-header-container"></div>
+    <script>
+    // Insert common header
+    fetch('games-header.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('game-header-container').innerHTML = html;
+        // Execute scripts in the loaded HTML
+        const scripts = document.getElementById('game-header-container').querySelectorAll('script');
+        scripts.forEach(script => {
+            const newScript = document.createElement('script');
+            if (script.src) {
+                newScript.src = script.src;
+            } else {
+                newScript.textContent = script.textContent;
+            }
+            document.body.appendChild(newScript);
+        });
+      })
+      .catch(err => console.error('Failed to load game header:', err));
+    </script>
+    <!-- Main Game Area -->
+    <main class="flex-1 relative w-full max-w-6xl mx-auto   flex flex-col">
+        <!-- Real-time Stats Display -->
+        <div class=" text-center">
+            <p id="game-stats" class="text-sm font-semibold text-slate-600 dark:text-slate-400">
+                <span id="stats-correct">0</span>/<span id="stats-total">0</span> đúng · <span id="stats-percentage">0</span>%
+            </p>
+        </div>
+        <!-- Instructions -->
+        <div class="text-center mb-8 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-2">
+                Match Chinese Words with Meanings!
+            </h1>
+            <p id="instruction-text" class="text-slate-500 dark:text-slate-400 text-lg">
+                Click a Chinese word, then click its Vietnamese meaning to match them.
+            </p>
+        </div>
+        <!-- Game Board Container -->
+        <div class="relative flex-1 flex justify-between items-center gap-8 max-w-4xl mx-auto w-full">
+            <!-- SVG Layer for Connections -->
+            <svg id="connections-svg" class="connector-svg hidden md:block"></svg>
+            
+            <!-- Left Column: Chinese Words -->
+            <div id="words-column" class="flex flex-col gap-6 w-full max-w-[280px] z-20">
+                <!-- Cards will be dynamically inserted here -->
+            </div>
+            
+            <!-- Right Column: Vietnamese Meanings -->
+            <div id="meanings-column" class="flex flex-col gap-6 w-full max-w-[280px] z-20">
+                <!-- Cards will be dynamically inserted here -->
+            </div>
+        </div>
+        <!-- Bottom Action Bar -->
+        <div class="flex-none pt-8 pb-4 flex justify-center z-30">
+            <button id="finishBtn" disabled
+                class="relative overflow-hidden group bg-slate-300 dark:bg-slate-700 text-slate-500 dark:text-slate-400 shadow-xl rounded-full px-12 py-4 transition-all disabled:cursor-not-allowed">
+                <span class="relative z-10 flex items-center gap-3 text-xl font-bold tracking-wide">
+                    <span>Match all pairs first!</span>
+                    <span class="material-symbols-outlined text-2xl">lock</span>
+                </span>
+            </button>
+        </div>
+    </main>
+<script>
+// ========== API Client for authenticated requests ==========
+const API_BASE = '/api/games';
+
+// ========== Helper: Get categoryId from URL ==========
+function getCategoryIdFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('categoryId');
+}
+
+// ========== State ==========
+let cards = [];
+let totalPairs = 0;
+let matchedPairs = 0;
+let selectedWord = null;
+let matches = new Map(); // Store matched pairs
+let startTime = Date.now();
+let categoryId = null;
+let answers = []; // Track all matches { correct: true/false }
+
+// ========== Load Game Data ==========
+async function loadGameData() {
+    categoryId = getCategoryIdFromUrl();
+    if (!categoryId) {
+        alert('Không tìm thấy categoryId!');
+        window.location.href = '../user/games_home.html';
+        return;
+    }
+    
+    startTime = Date.now(); // Reset timer
+    answers = []; // Reset answers
+    
+    try {
+        const res = await fetch(`/api/games/matching?categoryId=${categoryId}&count=4`);
+        const data = await res.json();
+        
+        if (!data.success) {
+            alert('Không thể tải game: ' + (data.error?.message || 'Lỗi không xác định'));
+            window.location.href = '../user/games_home.html';
+            return;
+        }
+        
+        cards = data.data.cards;
+        totalPairs = data.data.totalPairs;
+        matchedPairs = 0;
+        
+        renderCards();
+        updateHeader();
+    } catch (err) {
+        alert('Lỗi khi gọi API: ' + err.message);
+        window.location.href = '../user/games_home.html';
+    }
+}
+
+// ========== Render Cards ==========
+function renderCards() {
+    const wordsColumn = document.getElementById('words-column');
+    const meaningsColumn = document.getElementById('meanings-column');
+    
+    wordsColumn.innerHTML = '';
+    meaningsColumn.innerHTML = '';
+    
+    // Separate words and meanings
+    const words = cards.filter(c => c.type === 'word');
+    const meanings = cards.filter(c => c.type === 'meaning');
+    
+    // Render word cards
+    words.forEach(card => {
+        const cardEl = createWordCard(card);
+        wordsColumn.appendChild(cardEl);
+    });
+    
+    // Render meaning cards
+    meanings.forEach(card => {
+        const cardEl = createMeaningCard(card);
+        meaningsColumn.appendChild(cardEl);
+    });
+}
+
+// ========== Create Word Card ==========
+function createWordCard(card) {
+    const div = document.createElement('div');
+    div.className = 'game-card group relative bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-primary/50 shadow-md rounded-full h-20 flex items-center justify-center cursor-pointer select-none transition-all';
+    div.dataset.cardId = card.id;
+    div.dataset.pairId = card.pairId;
+    div.dataset.type = card.type;
+    
+    div.innerHTML = `
+        <span class="chinese-word-speaker text-xl md:text-2xl font-bold text-slate-700 dark:text-slate-200" data-word="${card.content}">${card.content}</span>
+        <div class="anchor-point absolute -right-3 top-1/2 -translate-y-1/2 size-6 bg-slate-300 dark:bg-slate-600 group-hover:bg-primary border-4 border-white dark:border-slate-800 rounded-full shadow-sm z-30 transition-colors"></div>
+    `;
+    
+    // Click anywhere on card to select and play audio
+    div.onclick = (e) => {
+        e.stopPropagation();
+        // Play audio when clicking anywhere on the card
+        playChineseWord(card.content);
+        // Also select the card for matching
+        selectWord(card);
+    };
+    
+    return div;
+}
+
+// ========== Play Chinese Word Audio ==========
+function playChineseWord(text) {
+    if (window.speakText) {
+        window.speakText(text, 0.8);
+    }
+}
+
+// ========== Create Meaning Card ==========
+function createMeaningCard(card) {
+    const div = document.createElement('div');
+    div.className = 'game-card group relative bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-primary/50 shadow-md rounded-full h-20 flex items-center px-2 cursor-pointer select-none transition-all';
+    div.dataset.cardId = card.id;
+    div.dataset.pairId = card.pairId;
+    div.dataset.type = card.type;
+    
+    // Get icon based on meaning
+    const icon = getMeaningIcon(card.content);
+    
+    div.innerHTML = `
+        <div class="anchor-point absolute -left-3 top-1/2 -translate-y-1/2 size-6 bg-slate-300 dark:bg-slate-600 group-hover:bg-primary border-4 border-white dark:border-slate-800 rounded-full shadow-sm z-30 transition-colors"></div>
+        <div class="flex items-center gap-4 pl-2 w-full">
+            <div class="size-14 rounded-full ${icon.bgColor} flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined ${icon.textColor} text-3xl">${icon.name}</span>
+            </div>
+            <span class="text-xl font-medium text-slate-700 dark:text-slate-200">${card.content}</span>
+        </div>
+    `;
+    
+    div.onclick = () => selectMeaning(card);
+    
+    return div;
+}
+
+// ========== Get Icon for Meaning ==========
+function getMeaningIcon(meaning) {
+    // Simple icon mapping - can be expanded
+    const icons = {
+        'bg-blue-100': { name: 'chair_alt', textColor: 'text-blue-500' },
+        'bg-orange-100': { name: 'directions_run', textColor: 'text-orange-500' },
+        'bg-green-100': { name: 'restaurant', textColor: 'text-green-500' },
+        'bg-purple-100': { name: 'sentiment_satisfied', textColor: 'text-purple-500' },
+        'bg-red-100': { name: 'favorite', textColor: 'text-red-500' },
+        'bg-yellow-100': { name: 'wb_sunny', textColor: 'text-yellow-500' },
+    };
+    
+    const colors = Object.keys(icons);
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    
+    return {
+        bgColor: randomColor,
+        name: icons[randomColor].name,
+        textColor: icons[randomColor].textColor
+    };
+}
+
+// ========== Select Word ==========
+function selectWord(card) {
+    // Check if already matched
+    if (matches.has(card.pairId)) return;
+    
+    // Deselect previous
+    document.querySelectorAll('[data-type="word"]').forEach(el => {
+        el.classList.remove('border-primary', 'shadow-lg', 'shadow-primary/20', 'bg-blue-50', 'dark:bg-blue-900/20', 'scale-105');
+        el.classList.add('border-slate-200', 'dark:border-slate-700', 'bg-white', 'dark:bg-slate-800');
+    });
+    
+    // Select current with vivid background
+    const cardEl = document.querySelector(`[data-card-id="${card.id}"]`);
+    cardEl.classList.remove('border-slate-200', 'dark:border-slate-700', 'bg-white', 'dark:bg-slate-800');
+    cardEl.classList.add('border-primary', 'shadow-lg', 'shadow-primary/20', 'bg-blue-50', 'dark:bg-blue-900/20', 'scale-105');
+    
+    selectedWord = card;
+    updateInstruction('Now select the matching Vietnamese meaning');
+}
+
+// ========== Select Meaning ==========
+function selectMeaning(card) {
+    if (!selectedWord) {
+        updateInstruction('Please select a Chinese word first!');
+        return;
+    }
+    
+    // Check if already matched
+    if (matches.has(card.pairId)) return;
+    
+    // Check if pair matches
+    if (selectedWord.pairId === card.pairId) {
+        matchCorrect(selectedWord, card);
+    } else {
+        matchWrong(selectedWord, card);
+    }
+}
+
+// ========== Match Correct ==========
+function matchCorrect(wordCard, meaningCard) {
+    const wordEl = document.querySelector(`[data-card-id="${wordCard.id}"]`);
+    const meaningEl = document.querySelector(`[data-card-id="${meaningCard.id}"]`);
+    
+    // Draw connection line
+    drawConnectionLine(wordEl, meaningEl);
+    
+    // Update styling
+    wordEl.classList.remove('border-primary', 'border-slate-200', 'dark:border-slate-700');
+    wordEl.classList.add('border-green-500', 'bg-green-50', 'dark:bg-green-900/20');
+    wordEl.querySelector('.chinese-word-speaker').classList.add('text-green-600', 'dark:text-green-400');
+    
+    meaningEl.classList.remove('border-slate-200', 'dark:border-slate-700');
+    meaningEl.classList.add('border-green-500', 'bg-green-50', 'dark:bg-green-900/20');
+    const meaningTextSpan = meaningEl.querySelector('.flex.items-center span:last-child');
+    if (meaningTextSpan) {
+        meaningTextSpan.classList.add('text-green-600', 'dark:text-green-400');
+    }
+    
+    // Add check icons
+    const checkIcon = '<div class="absolute -top-2 -right-2 w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center shadow-lg z-40"><span class="material-symbols-outlined text-lg">check</span></div>';
+    wordEl.style.position = 'relative';
+    meaningEl.style.position = 'relative';
+    wordEl.insertAdjacentHTML('beforeend', checkIcon);
+    meaningEl.insertAdjacentHTML('beforeend', checkIcon);
+    
+    // Keep word clickable for audio, remove selection
+    const originalWordContent = wordCard.content;
+    wordEl.onclick = (e) => {
+        if (e.target.classList.contains('chinese-word-speaker')) {
+            playChineseWord(originalWordContent);
+        }
+    };
+    const wordSpan = wordEl.querySelector('.chinese-word-speaker');
+    if (wordSpan) {
+        wordSpan.onclick = () => playChineseWord(originalWordContent);
+    }
+    
+    meaningEl.onclick = null;
+    
+    // Store match
+    matches.set(wordCard.pairId, true);
+    matchedPairs++;
+    
+    // Track answer
+    answers.push({ correct: true, wordPair: wordCard.pairId });
+    
+    // Reset selection
+    selectedWord = null;
+    
+    // Update UI
+    updateInstruction('Great match! Keep going!');
+    updateHeader();
+    
+    // Check if all matched
+    if (matchedPairs === totalPairs) {
+        setTimeout(finishGame, 500);
+    }
+}
+
+// ========== Draw Connection Line ==========
+function drawConnectionLine(wordEl, meaningEl) {
+    const svg = document.getElementById('connections-svg');
+    if (!svg) return;
+    
+    // Get positions of anchor points
+    const wordAnchor = wordEl.querySelector('.anchor-point');
+    const meaningAnchor = meaningEl.querySelector('.anchor-point');
+    
+    const wordRect = wordAnchor.getBoundingClientRect();
+    const meaningRect = meaningAnchor.getBoundingClientRect();
+    const svgRect = svg.getBoundingClientRect();
+    
+    // Calculate relative positions
+    const x1 = wordRect.left + wordRect.width / 2 - svgRect.left;
+    const y1 = wordRect.top + wordRect.height / 2 - svgRect.top;
+    const x2 = meaningRect.left + meaningRect.width / 2 - svgRect.left;
+    const y2 = meaningRect.top + meaningRect.height / 2 - svgRect.top;
+    
+    // Create curved path
+    const midX = (x1 + x2) / 2;
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    const d = `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`;
+    
+    path.setAttribute('d', d);
+    path.setAttribute('class', 'connection-line');
+    
+    svg.appendChild(path);
+}
+
+// ========== Match Wrong ==========
+function matchWrong(wordCard, meaningCard) {
+    const wordEl = document.querySelector(`[data-card-id="${wordCard.id}"]`);
+    const meaningEl = document.querySelector(`[data-card-id="${meaningCard.id}"]`);
+    
+    // Track wrong answer
+    answers.push({ correct: false, wordPair: wordCard.pairId, attempted: meaningCard.pairId });
+    
+    // Flash red
+    wordEl.classList.add('border-red-500', 'bg-red-50', 'dark:bg-red-900/20');
+    meaningEl.classList.add('border-red-500', 'bg-red-50', 'dark:bg-red-900/20');
+    
+    updateInstruction('Not a match! Try again.');
+    
+    // Reset after delay
+    setTimeout(() => {
+        wordEl.classList.remove('border-red-500', 'bg-red-50', 'dark:bg-red-900/20', 'border-primary', 'shadow-lg', 'shadow-primary/20', 'bg-blue-50', 'dark:bg-blue-900/20', 'scale-105');
+        wordEl.classList.add('border-slate-200', 'dark:border-slate-700', 'bg-white', 'dark:bg-slate-800');
+        meaningEl.classList.remove('border-red-500', 'bg-red-50', 'dark:bg-red-900/20');
+        meaningEl.classList.add('border-slate-200', 'dark:border-slate-700');
+        selectedWord = null;
+        updateInstruction('Click a Chinese word to start');
+    }, 800);
+}
+
+// ========== Update Instruction ==========
+function updateInstruction(text) {
+    document.getElementById('instruction-text').textContent = text;
+}
+
+// ========== Update Header ==========
+function updateHeader() {
+    if (window.updateGameHeaderProgress) {
+        window.updateGameHeaderProgress({
+            current: matchedPairs,
+            total: totalPairs,
+            score: matchedPairs * 10,
+            label: 'Pairs',
+            animateScore: matchedPairs > 0
+        });
+    }
+    
+    // Update real-time stats
+    const statsCorrect = document.getElementById('stats-correct');
+    const statsTotal = document.getElementById('stats-total');
+    const statsPercentage = document.getElementById('stats-percentage');
+    
+    if (statsCorrect) statsCorrect.textContent = matchedPairs;
+    if (statsTotal) statsTotal.textContent = totalPairs;
+    if (statsPercentage) {
+        const percentage = totalPairs > 0 ? Math.round((matchedPairs / totalPairs) * 100) : 0;
+        statsPercentage.textContent = percentage;
+    }
+}
+
+// ========== Finish Game ==========
+function finishGame() {
+    updateInstruction('Perfect! All pairs matched!');
+    
+    const finishBtn = document.getElementById('finishBtn');
+    finishBtn.disabled = false;
+    finishBtn.className = 'relative overflow-hidden group bg-primary hover:bg-blue-600 text-white shadow-xl shadow-blue-500/30 rounded-full px-12 py-4 transition-all hover:scale-105 active:scale-95';
+    finishBtn.innerHTML = `
+        <span class="relative z-10 flex items-center gap-3 text-xl font-bold tracking-wide">
+            <span>Continue</span>
+            <span class="material-symbols-outlined text-2xl">arrow_forward</span>
+        </span>
+        <div class="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent z-0"></div>
+    `;
+    finishBtn.onclick = showResult;
+}
+
+// ========== Submit Game Result ==========
+async function submitGameResult() {
+    if (!categoryId) return;
+    
+    const duration = Math.floor((Date.now() - startTime) / 1000); // seconds
+    const correctAnswers = answers.filter(a => a.correct).length;
+    
+    try {
+        const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+        if (!token) {
+            console.warn('No auth token found, skipping result submission');
+            return;
+        }
+        
+        const response = await fetch('/api/games/session', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                gameType: 'matching',
+                categoryId: categoryId,
+                score: matchedPairs * 10,
+                totalQuestions: totalPairs,
+                correctAnswers: matchedPairs,
+                answers: answers,
+                duration: duration,
+                timeTaken: duration
+            })
+        });
+        
+        if (!response.ok) {
+            console.error('Failed to submit game result:', await response.text());
+        } else {
+            console.log('Game result submitted successfully');
+        }
+    } catch (error) {
+        console.error('Error submitting game result:', error);
+    }
+}
+
+// ========== Show Result ==========
+function showResult() {
+    // Submit results to backend
+    submitGameResult();
+    
+    const main = document.querySelector('main');
+    
+    // Calculate accurate statistics based on all attempts
+    const totalAttempts = answers.length; // Total tries (correct + wrong)
+    const correctAttempts = answers.filter(a => a.correct).length; // Successful matches
+    const wrongAttempts = answers.filter(a => !a.correct).length; // Failed attempts
+    const correctPairs = matchedPairs; // Final pairs matched
+    const totalPoints = correctPairs * 10;
+    
+    // Calculate accuracy: (correct attempts / total attempts) * 100
+    const percentage = totalAttempts > 0 ? Math.round((correctAttempts / totalAttempts) * 100) : 100;
+    
+    // Determine performance level based on accuracy
+    let performanceEmoji = '🎉';
+    let performanceText = 'Xuất sắc!';
+    let performanceColor = 'from-green-500 to-emerald-500';
+    
+    if (percentage >= 90) {
+        performanceEmoji = '🏆';
+        performanceText = 'Hoàn hảo!';
+        performanceColor = 'from-yellow-400 to-amber-500';
+    } else if (percentage >= 70) {
+        performanceEmoji = '🎉';
+        performanceText = 'Rất tốt!';
+        performanceColor = 'from-green-500 to-emerald-500';
+    } else if (percentage >= 50) {
+        performanceEmoji = '👍';
+        performanceText = 'Tốt!';
+        performanceColor = 'from-blue-500 to-cyan-500';
+    } else {
+        performanceEmoji = '💪';
+        performanceText = 'Cố gắng lên!';
+        performanceColor = 'from-orange-500 to-red-500';
+    }
+    
+    // Create result overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn';
+    overlay.innerHTML = `
+        <div class="bg-gradient-to-br from-white via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-3xl shadow-2xl p-8 max-w-lg w-[90vw] border-4 border-gradient-to-r from-cyan-200 via-blue-200 to-purple-200 dark:border-gray-700 transform animate-scaleIn">
+            <div class="text-center">
+                <div class="text-8xl mb-4 animate-bounce">${performanceEmoji}</div>
+                <h2 class="text-4xl font-black bg-gradient-to-r ${performanceColor} bg-clip-text text-transparent mb-2">${performanceText}</h2>
+                <p class="text-xl text-gray-600 dark:text-gray-300 mb-6">Hoàn thành trò chơi ghép đôi!</p>
+                
+                <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg mb-6">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="text-center p-4 bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-xl">
+                            <div class="text-3xl font-black text-green-600 dark:text-green-400">${correctPairs}/${totalPairs}</div>
+                            <div class="text-sm text-green-700 dark:text-green-300 font-semibold">Cặp đúng</div>
+                        </div>
+                        <div class="text-center p-4 bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/30 dark:to-cyan-900/30 rounded-xl">
+                            <div class="text-3xl font-black text-blue-600 dark:text-blue-400">${percentage}%</div>
+                            <div class="text-sm text-blue-700 dark:text-blue-300 font-semibold">Chính xác</div>
+                        </div>
+                        <div class="text-center p-4 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-xl">
+                            <div class="text-3xl font-black text-purple-600 dark:text-purple-400">${totalPoints}</div>
+                            <div class="text-sm text-purple-700 dark:text-purple-300 font-semibold">Điểm</div>
+                        </div>
+                        <div class="text-center p-4 bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30 rounded-xl">
+                            <div class="text-3xl font-black text-amber-600 dark:text-amber-400">${wrongAttempts}</div>
+                            <div class="text-sm text-amber-700 dark:text-amber-300 font-semibold">Lần sai</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex gap-3">
+                    <button onclick="location.reload()" class="flex-1 bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-6 py-3 rounded-full font-bold hover:scale-105 transition-transform shadow-lg">
+                        🔄 Chơi lại
+                    </button>
+                    <button onclick="window.location.href='../user/games_home.html'" class="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-full font-bold hover:scale-105 transition-transform shadow-lg">
+                        🏠 Về trang chủ
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Add animation styles
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
+        .animate-scaleIn { animation: scaleIn 0.4s ease-out; }
+    `;
+    document.head.appendChild(style);
+    
+    document.body.appendChild(overlay);
+}
+
+// ========== Start Game ==========
+document.addEventListener('DOMContentLoaded', loadGameData);
+</script>
+</body>
+
+</html>

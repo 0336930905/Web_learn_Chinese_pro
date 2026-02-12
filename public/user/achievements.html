@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title data-i18n="achievements.pageTitle">Thành Tích - VocabHero</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🏆</text></svg>">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="../css/user-common.css" />
+    <!-- Translations -->
+    <script src="../i18n/translations.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Theme Config -->
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4ce64c",
+                        "primary-dark": "#3db83d",
+                        "background-light": "#f8fbf8",
+                        "background-dark": "#112111",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1a2e1a",
+                        "text-main": "#0e1b0e",
+                        "text-secondary": "#509550",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"],
+                        "sans": ["Lexend", "sans-serif"],
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "1.5rem",
+                        "xl": "2rem",
+                        "2xl": "3rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        "soft": "0 4px 20px -2px rgba(76, 230, 76, 0.1)",
+                        "card": "0 2px 10px rgba(0, 0, 0, 0.03)",
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #e8f3e8;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d0e8d0;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .active-fill .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1;
+        }
+
+        .stat-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .badge-item {
+            transition: all 0.3s ease;
+        }
+
+        .badge-item:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .progress-ring {
+            transition: stroke-dashoffset 0.35s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+    </style>
+    <script src="../js/sidebar.js"></script>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-text-main dark:text-gray-100 antialiased overflow-hidden">
+    <div class="flex h-screen w-full">
+        <!-- Sidebar -->
+        <div id="sidebar-container" data-active-page="achievements"></div>
+        
+        <!-- Main Content -->
+        <main class="flex-1 h-full ml-64 overflow-y-auto bg-background-light dark:bg-background-dark p-4 md:p-8 lg:px-12">
+            <div class="max-w-7xl mx-auto">
+                <!-- Header -->
+                <div class="mb-8">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="bg-gradient-to-br from-yellow-400 to-yellow-600 p-3 rounded-2xl shadow-lg">
+                            <span class="material-symbols-outlined text-3xl text-white" style="font-variation-settings: 'FILL' 1">emoji_events</span>
+                        </div>
+                        <div>
+                            <h1 class="text-4xl md:text-5xl font-black text-text-main dark:text-white tracking-tight" data-i18n="achievements.title">
+                                Thành Tích
+                            </h1>
+                            <p class="text-text-secondary font-medium" data-i18n="achievements.subtitle">Theo dõi tiến độ học tập của bạn</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hero Stats Card -->
+                <div class="mb-8 bg-gradient-to-br from-primary via-green-500 to-emerald-500 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
+                    <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div class="flex items-center gap-6">
+                            <div class="relative">
+                                <svg class="w-32 h-32" viewBox="0 0 120 120">
+                                    <circle cx="60" cy="60" r="54" stroke="rgba(255,255,255,0.2)" stroke-width="8" fill="none" />
+                                    <circle id="progressRing" class="progress-ring" cx="60" cy="60" r="54" stroke="white" stroke-width="8" fill="none"
+                                        stroke-dasharray="339.292" stroke-dashoffset="100" stroke-linecap="round" />
+                                    <text id="levelText" x="60" y="60" text-anchor="middle" dy="8" fill="white" font-size="28" font-weight="bold">-</text>
+                                </svg>
+                                <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-white px-3 py-1 rounded-full shadow-lg">
+                                    <span class="text-primary font-black text-sm" data-i18n="achievements.levelBadge">Cấp độ</span>
+                                </div>
+                            </div>
+                            <div class="text-white">
+                                <p class="text-sm font-semibold opacity-90" data-i18n="achievements.experience">Kinh Nghiệm</p>
+                                <div class="flex items-baseline gap-2">
+                                    <p id="currentXP" class="text-5xl font-black">-</p>
+                                    <p class="text-xl font-bold opacity-75" data-i18n="achievements.xpLabel">XP</p>
+                                </div>
+                                <div class="mt-2 flex items-center gap-2">
+                                    <div class="bg-white/20 h-2 rounded-full w-48">
+                                        <div id="xpProgressBar" class="bg-white h-full rounded-full" style="width: 0%"></div>
+                                    </div>
+                                    <span id="xpProgress" class="text-sm font-bold">0/0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex gap-6">
+                            <div class="text-center">
+                                <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-4 mb-2">
+                                    <span class="material-symbols-outlined text-5xl text-white" style="font-variation-settings: 'FILL' 1">local_fire_department</span>
+                                </div>
+                                <p id="currentStreak" class="text-3xl font-black text-white">0</p>
+                                <p class="text-sm font-semibold text-white/80" data-i18n="achievements.streakDays">Ngày liên tiếp</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-4 mb-2">
+                                    <span class="material-symbols-outlined text-5xl text-white" style="font-variation-settings: 'FILL' 1">stars</span>
+                                </div>
+                                <p id="totalBadges" class="text-3xl font-black text-white">0</p>
+                                <p class="text-sm font-semibold text-white/80" data-i18n="achievements.badgesEarned">Huy hiệu</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <!-- Total Words Learned -->
+                    <div class="stat-card bg-surface-light dark:bg-surface-dark rounded-2xl p-6 shadow-card border border-gray-100 dark:border-gray-800">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-xl">
+                                <span class="material-symbols-outlined text-2xl text-blue-600 dark:text-blue-400">book</span>
+                            </div>
+                        </div>
+                        <p id="wordsLearned" class="text-3xl font-black text-text-main dark:text-white mb-1">-</p>
+                        <p class="text-sm font-semibold text-text-secondary" data-i18n="achievements.wordsLearned">Từ đã học</p>
+                    </div>
+
+                    <!-- Total Practice Time -->
+                    <div class="stat-card bg-surface-light dark:bg-surface-dark rounded-2xl p-6 shadow-card border border-gray-100 dark:border-gray-800">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="bg-purple-100 dark:bg-purple-900/30 p-3 rounded-xl">
+                                <span class="material-symbols-outlined text-2xl text-purple-600 dark:text-purple-400">schedule</span>
+                            </div>
+                        </div>
+                        <p id="totalPracticeHours" class="text-3xl font-black text-text-main dark:text-white mb-1">-</p>
+                        <p class="text-sm font-semibold text-text-secondary" data-i18n="achievements.totalPracticeHours">Thời gian học</p>
+                    </div>
+
+                    <!-- Games Played -->
+                    <div class="stat-card bg-surface-light dark:bg-surface-dark rounded-2xl p-6 shadow-card border border-gray-100 dark:border-gray-800">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="bg-amber-100 dark:bg-amber-900/30 p-3 rounded-xl">
+                                <span class="material-symbols-outlined text-2xl text-amber-600 dark:text-amber-400">sports_esports</span>
+                            </div>
+                        </div>
+                        <p id="accuracy" class="text-3xl font-black text-text-main dark:text-white mb-1">-</p>
+                        <p class="text-sm font-semibold text-text-secondary" data-i18n="achievements.accuracy">Độ chính xác</p>
+                    </div>
+
+                    <!-- Perfect Days -->
+                    <div class="stat-card bg-surface-light dark:bg-surface-dark rounded-2xl p-6 shadow-card border border-gray-100 dark:border-gray-800">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="bg-rose-100 dark:bg-rose-900/30 p-3 rounded-xl">
+                                <span class="material-symbols-outlined text-2xl text-rose-600 dark:text-rose-400">workspace_premium</span>
+                            </div>
+                        </div>
+                        <p id="perfectDays" class="text-3xl font-black text-text-main dark:text-white mb-1">-</p>
+                        <p class="text-sm font-semibold text-text-secondary" data-i18n="achievements.perfectDays">Ngày hoàn hảo</p>
+                    </div>
+                </div>
+
+                <!-- Learning Progress by Difficulty -->
+                <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 shadow-card border border-gray-100 dark:border-gray-800 mb-8">
+                    <h2 class="text-xl font-black text-text-main dark:text-white mb-6 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">bar_chart</span>
+                        <span data-i18n="achievements.progressByDifficulty">Tiến Độ Theo Độ Khó</span>
+                    </h2>
+                    <div id="difficultyProgressContainer" class="space-y-4">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Achievements/Badges -->
+                <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 shadow-card border border-gray-100 dark:border-gray-800 mb-8">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-black text-text-main dark:text-white flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">military_tech</span>
+                            <span data-i18n="achievements.achievementsBadges">Huy Hiệu & Thành Tựu</span>
+                        </h2>
+                        <span id="badgeCount" class="text-sm font-bold text-text-secondary">0/0 đạt được</span>
+                    </div>
+                    <div id="badgesContainer" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Streak Calendar -->
+                <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 shadow-card border border-gray-100 dark:border-gray-800 mb-8">
+                    <h2 id="calendarTitle" class="text-xl font-black text-text-main dark:text-white mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">calendar_month</span>
+                        <span data-i18n="achievements.streakCalendar">Lịch Học Tập</span>
+                    </h2>
+                    <div class="grid grid-cols-7 gap-1 mb-2">
+                        <div class="text-center text-xs font-bold text-text-secondary">T2</div>
+                        <div class="text-center text-xs font-bold text-text-secondary">T3</div>
+                        <div class="text-center text-xs font-bold text-text-secondary">T4</div>
+                        <div class="text-center text-xs font-bold text-text-secondary">T5</div>
+                        <div class="text-center text-xs font-bold text-text-secondary">T6</div>
+                        <div class="text-center text-xs font-bold text-text-secondary">T7</div>
+                        <div class="text-center text-xs font-bold text-text-secondary">CN</div>
+                    </div>
+                    <div id="calendarContainer" class="grid grid-cols-7 gap-1">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                    <div class="mt-4 flex items-center justify-center gap-6 text-sm">
+                        <div class="flex items-center gap-2">
+                            <div class="w-4 h-4 bg-primary rounded"></div>
+                            <span class="font-medium text-text-secondary" data-i18n="achievements.calendarStudied">Đã học</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-4 h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                            <span class="font-medium text-text-secondary" data-i18n="achievements.calendarMissed">Bỏ lỡ</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-yellow-400 text-lg" style="font-variation-settings: 'FILL' 1">grade</span>
+                            <span class="font-medium text-text-secondary" data-i18n="achievements.calendarPerfect">Hoàn hảo</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 shadow-card border border-gray-100 dark:border-gray-800">
+                    <h2 class="text-xl font-black text-text-main dark:text-white mb-6 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">history</span>
+                        <span data-i18n="achievements.recentActivity">Hoạt Động Gần Đây</span>
+                    </h2>
+                    <div id="recentActivityContainer" class="space-y-4">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // API client for authenticated requests
+        class SimpleApiClient {
+            constructor() {
+                this.token = localStorage.getItem('authToken') 
+                          || localStorage.getItem('token') 
+                          || localStorage.getItem('jwtToken');
+            }
+            
+            async get(endpoint) {
+                const response = await fetch(`/api${endpoint}`, {
+                    headers: {
+                        'Authorization': `Bearer ${this.token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                return await response.json();
+            }
+        }
+        
+        const api = new SimpleApiClient();
+        
+        // Language initialization
+        async function initializeLanguage() {
+            try {
+                // Fetch user's language preference from settings
+                const response = await api.get('/settings');
+                if (response.success && response.data && response.data.settings && response.data.settings.language) {
+                    i18n.setLanguage(response.data.settings.language);
+                } else {
+                    // Default to Vietnamese if no preference
+                    i18n.setLanguage('vi');
+                }
+            } catch (error) {
+                console.error('Failed to load language preference:', error);
+                // Fallback to Vietnamese
+                i18n.setLanguage('vi');
+            }
+        }
+        
+        // Fetch and display achievements data
+        let achievementsData = null;
+
+        async function loadAchievements() {
+            try {
+                if (!api.token) {
+                    console.warn('⚠️ No authentication token found, redirecting to login...');
+                    window.location.href = '../login_screen.html';
+                    return;
+                }
+
+                console.log('🔑 Token found, fetching achievements and stats...');
+                
+                // Fetch data from NEW Activities & Achievements API
+                const [statsResult, achievementsResult, activitiesResult, oldAchievementsResult] = await Promise.all([
+                    api.get('/activities/stats'),
+                    api.get('/activities/achievements'),
+                    api.get('/activities?page=1&limit=10&sortOrder=desc'),
+                    api.get('/achievements') // Keep old endpoint for backward compatibility
+                ]);
+                
+                console.log('📊 Stats:', statsResult);
+                console.log('🏆 Achievements:', achievementsResult);
+                console.log('📝 Activities:', activitiesResult);
+                
+                // Check authentication
+                if (!statsResult.success && (statsResult.error?.code === 'AUTH_UNAUTHORIZED' || statsResult.error?.code === 'AUTH_TOKEN_EXPIRED')) {
+                    console.error('🔐 Token invalid or expired, redirecting to login...');
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('jwtToken');
+                    window.location.href = '../login_screen.html';
+                    return;
+                }
+
+                // Combine data from both APIs
+                achievementsData = {
+                    stats: statsResult.success ? statsResult.data : {},
+                    achievements: achievementsResult.success ? achievementsResult.data.achievements : [],
+                    activities: activitiesResult.success ? activitiesResult.data.activities : [],
+                    oldData: oldAchievementsResult.success ? oldAchievementsResult.data : {}
+                };
+                
+                displayAchievements(achievementsData);
+            } catch (error) {
+                console.error('❌ Error loading achievements:', error);
+                alert('Không thể tải dữ liệu thành tích: ' + error.message);
+            }
+        }
+
+        function displayAchievements(data) {
+            // Use old API data for stats that aren't in new API yet, fallback to new API
+            const oldStats = data.oldData?.stats || {};
+            const newStats = data.stats || {};
+            
+            // Display stats from NEW Activities API (preferred) with fallback to old data
+            const level = oldStats.level || 1;
+            const totalXP = oldStats.totalXP || oldStats.experience || 0;
+            const currentLevelXP = oldStats.currentXP || (totalXP % 1000);
+            const xpForNextLevel = oldStats.nextLevelXP || 1000;
+            
+            // Update hero stats
+            document.getElementById('levelText').textContent = level;
+            document.getElementById('currentXP').textContent = totalXP.toLocaleString();
+            
+            // Update XP progress
+            const xpPercentage = (currentLevelXP / xpForNextLevel) * 100;
+            document.getElementById('xpProgressBar').style.width = xpPercentage + '%';
+            document.getElementById('xpProgress').textContent = currentLevelXP + '/' + xpForNextLevel;
+            
+            // Update progress ring
+            updateProgressRing(currentLevelXP, xpForNextLevel);
+            
+            // Update stats grid - Use NEW Activities stats first, fallback to old
+            document.getElementById('wordsLearned').textContent = oldStats.wordsLearned || 0;
+            document.getElementById('totalPracticeHours').textContent = (oldStats.totalPracticeHours || 0).toFixed(1) + 'h';
+            document.getElementById('accuracy').textContent = (newStats.averageScore || oldStats.accuracy || 0) + '%';
+            document.getElementById('perfectDays').textContent = oldStats.perfectDays || 0;
+            
+            // Update streak info - Use NEW Activities current streak!
+            document.getElementById('currentStreak').textContent = newStats.currentStreak || oldStats.currentStreak || 0;
+            
+            // Update badge count from NEW Achievements API
+            const achievements = data.achievements || [];
+            const unlockedCount = achievements.filter(a => a.isUnlocked).length;
+            document.getElementById('totalBadges').textContent = unlockedCount;
+            document.getElementById('badgeCount').textContent = `${unlockedCount}/${achievements.length} ${i18n.t('achievements.badgesEarned')}`;
+            
+            // Render difficulty progress from NEW Activities API
+            if (newStats.byDifficulty) {
+                // Calculate difficulty progress from Activities stats
+                const difficultyProgress = Object.entries(newStats.byDifficulty).map(([level, completed]) => {
+                    // Target: aim for 10 tests per difficulty level as baseline
+                    // Can be adjusted based on actual vocabulary count per difficulty
+                    const target = 10;
+                    const percentage = completed > 0 ? Math.min(100, (completed / target) * 100) : 0;
+                    
+                    return {
+                        level: level, // Keep original: beginner, intermediate, advanced, native
+                        completed: completed,
+                        total: target,
+                        percentage: percentage
+                    };
+                });
+                
+                // Filter out difficulties with 0 tests and sort by difficulty order
+                const difficultyOrder = ['beginner', 'intermediate', 'advanced', 'native'];
+                const sortedProgress = difficultyProgress
+                    .sort((a, b) => difficultyOrder.indexOf(a.level) - difficultyOrder.indexOf(b.level));
+                
+                renderDifficultyProgress(sortedProgress);
+            } else if (data.oldData?.difficultyProgress) {
+                // Fallback to old data format
+                renderDifficultyProgress(data.oldData.difficultyProgress);
+            } else {
+                // Show empty state with all difficulty levels at 0
+                const defaultProgress = [
+                    { level: 'beginner', completed: 0, total: 10, percentage: 0 },
+                    { level: 'intermediate', completed: 0, total: 10, percentage: 0 },
+                    { level: 'advanced', completed: 0, total: 10, percentage: 0 },
+                    { level: 'native', completed: 0, total: 10, percentage: 0 }
+                ];
+                renderDifficultyProgress(defaultProgress);
+            }
+            
+            // Render badges/achievements from NEW API
+            if (achievements.length > 0) {
+                renderBadges(achievements);
+            } else if (data.oldData?.badges) {
+                renderBadges(data.oldData.badges);
+            }
+            
+            // Render calendar (use old data if available)
+            if (data.oldData?.calendar) {
+                renderCalendar(data.oldData.calendar);
+            } else {
+                // Generate calendar from activities
+                const practiceDays = data.activities
+                    .map(a => new Date(a.createdAt).toISOString().split('T')[0])
+                    .filter((date, index, self) => self.indexOf(date) === index);
+                renderCalendar(practiceDays);
+            }
+            
+            // Render recent activity from NEW Activities API
+            if (data.activities && data.activities.length > 0) {
+                renderRecentActivity(data.activities);
+            } else if (data.oldData?.recentActivity) {
+                renderRecentActivity(data.oldData.recentActivity);
+            }
+        }
+
+        function updateProgressRing(current, max) {
+            const ring = document.getElementById('progressRing');
+            const percentage = (current / max) * 100;
+            const circumference = 339.292;
+            const offset = circumference - (percentage / 100 * circumference);
+            ring.style.strokeDashoffset = offset;
+        }
+
+        function renderDifficultyProgress(difficultyProgress) {
+            const container = document.getElementById('difficultyProgressContainer');
+            container.innerHTML = '';
+            
+            // Map difficulty levels to display info  
+            const difficultyMap = {
+                'beginner': { 
+                    label: i18n.t('achievements.beginner'), 
+                    color: 'green',
+                    bgClass: 'bg-green-500', 
+                    textClass: 'text-green-700',
+                    darkTextClass: 'dark:text-green-400'
+                },
+                'intermediate': { 
+                    label: i18n.t('achievements.intermediate'), 
+                    color: 'blue',
+                    bgClass: 'bg-blue-500', 
+                    textClass: 'text-blue-700',
+                    darkTextClass: 'dark:text-blue-400'
+                },
+                'advanced': { 
+                    label: i18n.t('achievements.advanced'), 
+                    color: 'purple',
+                    bgClass: 'bg-purple-500', 
+                    textClass: 'text-purple-700',
+                    darkTextClass: 'dark:text-purple-400'
+                },
+                'native': { 
+                    label: i18n.t('achievements.native'), 
+                    color: 'red',
+                    bgClass: 'bg-red-500', 
+                    textClass: 'text-red-700',
+                    darkTextClass: 'dark:text-red-400'
+                },
+                // Legacy support for old format
+                'Easy': { 
+                    label: 'Easy', 
+                    color: 'green',
+                    bgClass: 'bg-green-500', 
+                    textClass: 'text-green-700',
+                    darkTextClass: 'dark:text-green-400'
+                },
+                'Medium': { 
+                    label: 'Medium', 
+                    color: 'yellow',
+                    bgClass: 'bg-yellow-500', 
+                    textClass: 'text-yellow-700',
+                    darkTextClass: 'dark:text-yellow-400'
+                },
+                'Hard': { 
+                    label: 'Hard', 
+                    color: 'red',
+                    bgClass: 'bg-red-500', 
+                    textClass: 'text-red-700',
+                    darkTextClass: 'dark:text-red-400'
+                }
+            };
+            
+            difficultyProgress.forEach(({ level, completed, learned, total, percentage }) => {
+                const info = difficultyMap[level] || difficultyMap['beginner'];
+                const completedCount = completed || learned || 0;
+                const totalCount = total || 10;
+                const progressPercentage = percentage || 0;
+                
+                const html = `
+                    <div class="group">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-bold ${info.textClass} ${info.darkTextClass}">
+                                ${info.label}
+                            </span>
+                            <span class="text-sm font-semibold text-text-main dark:text-white">
+                                ${completedCount}/${totalCount} ${i18n.t('achievements.tests')}
+                            </span>
+                        </div>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+                            <div class="${info.bgClass} h-full rounded-full transition-all duration-500 group-hover:opacity-90" 
+                                 style="width: ${Math.min(100, progressPercentage)}%">
+                            </div>
+                        </div>
+                        <p class="text-xs text-text-secondary mt-1">
+                            ${Math.round(progressPercentage)}% ${i18n.t('achievements.completed')}
+                            ${completedCount > 0 ? `· ${completedCount} ${i18n.t('achievements.completed')}` : ''}
+                        </p>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', html);
+            });
+            
+            // Show empty state if no progress
+            if (difficultyProgress.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-text-secondary">
+                        <span class="material-symbols-outlined text-4xl mb-2 opacity-30">quiz</span>
+                        <p>${i18n.t('achievements.noData')}</p>
+                        <p class="text-xs mt-1">${i18n.t('achievements.completeFirst')}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderBadges(badges) {
+            const container = document.getElementById('badgesContainer');
+            container.innerHTML = '';
+            
+            // Badge name translations mapping
+            const badgeNameMap = {
+                'Tốc Độ Ánh Sáng': 'badgeLightningSpeed',
+                'Bước Đầu Tiên': 'badgeFirstStep',
+                'Bậc Thầy Kiểm Tra': 'badgeTestMaster',
+                'Kỷ Lục Gia': 'badgeRecordHolder',
+                'Chuỗi 3 Ngày': 'badgeStreak3',
+                'Chuỗi 7 Ngày': 'badgeStreak7',
+                'Chuỗi 30 Ngày': 'badgeStreak30',
+            };
+            
+            badges.forEach(badge => {
+                // Support both old (unlocked, name) and new (isUnlocked, title) format
+                const isUnlocked = badge.isUnlocked ?? badge.unlocked ?? false;
+                const badgeName = badge.title || badge.name || 'Unknown';
+                const badgeIcon = badge.icon || '🏆';
+                const opacity = isUnlocked ? 'opacity-100' : 'opacity-30';
+                const progressInfo = (!isUnlocked && badge.progress !== undefined) 
+                    ? `<span class="text-[10px] text-gray-500 dark:text-gray-400">${badge.progress}/${badge.target}</span>` 
+                    : '';
+                
+                // Translate badge name
+                const translationKey = badgeNameMap[badgeName];
+                const translatedName = translationKey ? i18n.t(`achievements.${translationKey}`, badgeName) : badgeName;
+                
+                const html = `
+                    <div class="badge-item flex flex-col items-center gap-2 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl ${opacity}" title="${badge.description || translatedName}">
+                        <div class="text-4xl">${badgeIcon}</div>
+                        <span class="text-xs font-bold text-center text-text-main dark:text-white">${translatedName}</span>
+                        ${progressInfo}
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        function renderCalendar(practiceDays) {
+            const container = document.getElementById('calendarContainer');
+            container.innerHTML = '';
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            // Show last 28 days (4 weeks)
+            for (let i = 27; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                const day = date.getDate().toString().padStart(2, '0');
+                const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                const year = date.getFullYear().toString().slice(-2); // Last 2 digits
+                
+                const hasPractice = practiceDays.includes(dateStr);
+                const isToday = i === 0;
+                
+                // Enhanced styling: Gradient for practiced days, clean look for empty days
+                const bgClass = hasPractice 
+                    ? 'bg-gradient-to-br from-primary to-green-600 text-white shadow-lg shadow-green-500/30 border-transparent' 
+                    : 'bg-white dark:bg-gray-800 text-gray-400 dark:text-gray-500 border border-gray-100 dark:border-gray-700';
+                
+                // Highlight today
+                const ringClass = isToday 
+                    ? 'ring-2 ring-primary ring-offset-2 dark:ring-offset-gray-900' 
+                    : '';
+                
+                const html = `
+                    <div class="${bgClass} ${ringClass} aspect-square rounded-2xl flex flex-col items-center justify-center p-1 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-default relative overflow-hidden group" 
+                         title="${date.toLocaleDateString('vi-VN')}">
+                        <span class="text-sm font-bold leading-tight">${day}</span>
+                        <span class="text-[0.55rem] uppercase tracking-tighter opacity-80 leading-tight">${month}/${year}</span>
+                        
+                        ${hasPractice ? '<div class="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors"></div>' : ''}
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', html);
+            }
+        }
+
+        function renderRecentActivity(activities) {
+            const container = document.getElementById('recentActivityContainer');
+            container.innerHTML = '';
+            
+            if (activities.length === 0) {
+                container.innerHTML = `<p class="text-center text-text-secondary py-4" data-i18n="achievements.noActivity">${i18n.t('achievements.noActivity')}</p>`;
+                return;
+            }
+            
+            // Game type translation keys
+            const gameTypeKeys = {
+                'vocabulary-cards': 'Thẻ từ vựng',
+                'fill-in-blanks': 'Điền chỗ trống',
+                'matching': 'Ghép từ',
+                'listening-quiz': 'Nghe hiểu',
+                'reverse-quiz': 'Quiz ngược',
+                'test-comprehensive': 'Kiểm tra tổng hợp',
+                'listening': 'Luyện Nghe',
+                'quiz': 'Trắc nghiệm',
+                'speaking': 'Luyện nói',
+                'test': i18n.t('achievements.activityTest', 'Bài kiểm tra')
+            };
+            
+            const gameIcons = {
+                'vocabulary-cards': '📚',
+                'fill-in-blanks': '✏️',
+                'matching': '🔗',
+                'listening-quiz': '🎧',
+                'reverse-quiz': '🔄',
+                'test-comprehensive': '📝',
+                'listening': 'headphones',
+                'quiz': 'quiz',
+                'speaking': 'mic',
+                'test': '📝'
+            };
+            
+            activities.forEach(activity => {
+                // Support both old format (date) and new format (createdAt)
+                const activityDate = new Date(activity.createdAt || activity.date);
+                const timeAgo = getTimeAgo(activityDate);
+                const gameName = gameTypeKeys[activity.gameType] || activity.gameType;
+                
+                // Handle missing icon fallback
+                const gameIconKey = Object.keys(gameIcons).find(key => activity.gameType && activity.gameType.includes(key));
+                const gameIcon = gameIcons[activity.gameType] || (gameIconKey ? gameIcons[gameIconKey] : '🎮');
+                
+                // Support both old format (score, total, accuracy) and new format (correctAnswers, totalQuestions, percentage)
+                const correctAnswers = activity.correctAnswers ?? activity.score ?? 0;
+                const totalQuestions = activity.totalQuestions ?? activity.total ?? 0;
+                const accuracy = activity.percentage ?? activity.accuracy ?? 0;
+                
+                // Show XP if available (from new Activities API)
+                const xpBadge = activity.xpEarned 
+                    ? `<span class="px-2 py-0.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 text-xs font-bold rounded-full">+${activity.xpEarned} XP</span>`
+                    : '';
+                
+                const html = `
+                    <div class="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800/30 rounded-xl">
+                        <div class="text-3xl">${gameIcon}</div>
+                        <div class="flex-1">
+                            <p class="font-bold text-text-main dark:text-white">${gameName}</p>
+                            <p class="text-sm text-text-secondary">${correctAnswers}/${totalQuestions} ${i18n.t('achievements.correct')} · ${accuracy}%</p>
+                        </div>
+                        <div class="flex flex-col items-end gap-1">
+                            ${xpBadge}
+                            <span class="text-xs text-text-secondary">${timeAgo}</span>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            
+            if (seconds < 60) return i18n.t('achievements.timeJustNow', 'Vừa xong');
+            if (seconds < 3600) return Math.floor(seconds / 60) + ' ' + i18n.t('achievements.timeMinutesAgo', 'phút trước');
+            if (seconds < 86400) return Math.floor(seconds / 3600) + ' ' + i18n.t('achievements.timeHoursAgo', 'giờ trước');
+            if (seconds < 604800) return Math.floor(seconds / 86400) + ' ' + i18n.t('achievements.timeDaysAgo', 'ngày trước');
+            
+            return date.toLocaleDateString('vi-VN');
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Initialize language first
+            await initializeLanguage();
+            // Then load achievements data
+            loadAchievements();
+            
+            // Register callback for language changes
+            if (typeof i18n !== 'undefined' && typeof i18n.onLanguageChange === 'function') {
+                i18n.onLanguageChange(() => {
+                    console.log('🌐 Language changed, updating achievements...');
+                    // Re-display achievements with new language
+                    if (achievementsData) {
+                        displayAchievements(achievementsData);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Danh Sách Từ Vựng - Thú Cưng Của Tôi</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>📝</text></svg>">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="../css/user-common.css" />
+    <!-- Translations -->
+    <script src="../i18n/translations.js"></script>
+    <!-- API Client -->
+    <script src="../js/api-client.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Theme Config -->
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4ce64c",
+                        "primary-dark": "#3db83d",
+                        "background-light": "#f8fbf8",
+                        "background-dark": "#112111",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1a2e1a",
+                        "text-main": "#0e1b0e",
+                        "text-secondary": "#509550",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"],
+                        "sans": ["Lexend", "sans-serif"],
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "1.5rem",
+                        "xl": "2rem",
+                        "2xl": "3rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        "soft": "0 4px 20px -2px rgba(76, 230, 76, 0.1)",
+                        "card": "0 2px 10px rgba(0, 0, 0, 0.03)",
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+
+        /* Custom scrollbar for clean look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #e8f3e8;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d0e8d0;
+        }
+        
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .active-fill .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1;
+        }
+        
+        /* Flashcard styles */
+        .flashcard-view .word-card {
+            min-height: 300px;
+        }
+        
+        /* Toast notification styles */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            font-weight: 500;
+            z-index: 9999;
+            animation: slideIn 0.3s ease-out, slideOut 0.3s ease-in 2.7s;
+            max-width: 400px;
+        }
+        
+        .toast-success {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+        }
+        
+        .toast-error {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            color: white;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+    </style>
+    <script src="../js/sidebar.js"></script>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-text-main dark:text-gray-100 antialiased overflow-hidden">
+    <div class="flex h-screen w-full">
+        <!-- Sidebar -->
+        <div id="sidebar-container" data-active-page="categories"></div>
+        <!-- Main Content -->
+        <main class="flex-1 h-full ml-64 overflow-y-auto bg-background-light dark:bg-background-dark p-4 md:p-8 lg:px-12">
+            <div class="max-w-5xl mx-auto flex flex-col h-full">
+                <!-- Header Section -->
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+                    <div>
+                        <div class="flex items-center gap-3 mb-2">
+                            <h1 class="text-4xl font-black text-text-main dark:text-white tracking-tight"></h1>
+                            <div class="bg-primary/20 p-2 rounded-xl text-primary-dark dark:text-primary">
+                                <span class="material-symbols-outlined"></span>
+                            </div>
+                        </div>
+                        <p class="text-text-secondary font-medium">12 từ để học • Luyện tập lần cuối 2 ngày trước</p>
+                    </div>
+                    <div class="flex gap-3">
+                        <button
+                            class="hidden md:flex items-center gap-2 px-6 py-3 bg-white dark:bg-surface-dark border-2 border-primary/20 hover:border-primary text-text-main dark:text-white rounded-full font-bold transition-all shadow-sm hover:shadow-md active:scale-95">
+                            <span class="material-symbols-outlined text-primary">smart_toy</span>
+                            <span data-i18n="categoryWordList.practiceGames">Luyện Tập Trò Chơi</span>
+                        </button>
+                        <button id="openAddVocabModal"
+                            class="flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-full font-bold transition-all shadow-md shadow-primary/30 hover:shadow-lg hover:shadow-primary/40 active:scale-95">
+                            <span class="material-symbols-outlined">add</span>
+                            <span data-i18n="categoryWordList.addNewWord">Thêm Từ Mới</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- Filters & Controls -->
+                <div
+                    class="sticky top-0 z-20 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm py-2 mb-6">
+                    <div
+                        class="flex flex-col sm:flex-row gap-4 justify-between items-center bg-surface-light dark:bg-surface-dark p-2 rounded-2xl shadow-card border border-gray-100 dark:border-gray-800">
+                        <!-- Search -->
+                        <div class="relative w-full sm:w-96 group">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span
+                                    class="material-symbols-outlined text-gray-400 group-focus-within:text-primary transition-colors">search</span>
+                            </div>
+                            <input
+                                class="block w-full pl-10 pr-3 py-2.5 border-none rounded-xl leading-5 bg-gray-50 dark:bg-gray-800 text-text-main dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 sm:text-sm transition-all"
+                                placeholder="Tìm kiếm từ trong Thú Cưng Của Tôi..." type="text" id="searchInput" />
+                        </div>
+                        <!-- View Toggle -->
+                        <div class="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl w-full sm:w-auto">
+                            <button id="listViewBtn"
+                                class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-surface-dark text-primary-dark dark:text-primary shadow-sm font-bold text-sm transition-all">
+                                <span class="material-symbols-outlined text-[20px]"
+                                    style="font-variation-settings: 'FILL' 1">view_list</span>
+                                <span data-i18n="categoryWordList.listView">Danh Sách</span>
+                            </button>
+                            <button id="flashcardsViewBtn"
+                                class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-gray-500 hover:text-text-main dark:hover:text-white font-medium text-sm transition-all">
+                                <span class="material-symbols-outlined text-[20px]">grid_view</span>
+                                <span data-i18n="categoryWordList.flashcardsView">Flashcards</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Word List -->
+                <div id="wordListContainer" class="flex flex-col gap-4 pb-12">
+                 
+                </div>
+                <!-- Footer / Pagination -->
+                <div class="flex justify-center pb-8">
+                    <button
+                        class="text-text-secondary hover:text-primary text-sm font-medium flex items-center gap-1 transition-colors">
+                        <span data-i18n="categoryWordList.loadMore">Tải thêm từ</span>
+                        <span class="material-symbols-outlined">expand_more</span>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Add Vocabulary Modal -->
+    <div id="addVocabModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div class="bg-surface-light dark:bg-surface-dark rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <!-- Modal Header -->
+            <div class="sticky top-0 bg-gradient-to-r from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 px-8 py-6 border-b border-gray-100 dark:border-gray-800 rounded-t-3xl backdrop-blur-sm">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div id="modalIconBg" class="bg-primary text-white p-3 rounded-2xl">
+                            <span id="modalIcon" class="material-symbols-outlined text-2xl">add_circle</span>
+                        </div>
+                        <div>
+                            <h2 id="modalTitle" class="text-2xl font-black text-text-main dark:text-white" data-i18n="categoryWordList.modalTitleAdd">Thêm Từ Vựng Mới</h2>
+                            <p id="modalDescription" class="text-sm text-text-secondary" data-i18n="categoryWordList.modalDescription">Mở rộng bộ từ vựng của bạn</p>
+                        </div>
+                    </div>
+                    <button id="closeAddVocabModal" class="text-gray-400 hover:text-text-main dark:hover:text-white p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
+                        <span class="material-symbols-outlined text-3xl">close</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Modal Body -->
+            <form id="addVocabForm" class="p-8 space-y-6">
+                <!-- Traditional Chinese -->
+                <div class="space-y-2">
+                    <label class="flex items-center gap-2 text-sm font-bold text-text-main dark:text-white">
+                        <span class="material-symbols-outlined text-primary text-lg">translate</span>
+                        <span data-i18n="categoryWordList.traditionalChinese">Tiếng Trung Phồn Thể</span> <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="traditionalInput" name="traditional" required
+                        class="w-full px-4 py-3 bg-background-light dark:bg-background-dark border-2 border-gray-200 dark:border-gray-700 rounded-2xl focus:border-primary focus:ring-4 focus:ring-primary/20 text-text-main dark:text-white font-medium transition-all"
+                        placeholder="例: 狗">
+                </div>
+                
+                <!-- Simplified Chinese -->
+                <div class="space-y-2">
+                    <label class="flex items-center gap-2 text-sm font-bold text-text-main dark:text-white">
+                        <span class="material-symbols-outlined text-primary text-lg">abc</span>
+                        Tiếng Trung Giản Thể
+                    </label>
+                    <input type="text" id="simplifiedInput" name="simplified"
+                        class="w-full px-4 py-3 bg-background-light dark:bg-background-dark border-2 border-gray-200 dark:border-gray-700 rounded-2xl focus:border-primary focus:ring-4 focus:ring-primary/20 text-text-main dark:text-white font-medium transition-all"
+                        placeholder="例: 狗">
+                </div>
+                
+                <!-- Pinyin -->
+                <div class="space-y-2">
+                    <label class="flex items-center gap-2 text-sm font-bold text-text-main dark:text-white">
+                        <span class="material-symbols-outlined text-primary text-lg">spellcheck</span>
+                        Phiên Âm (Pinyin) <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="pinyinInput" name="pinyin" required
+                        class="w-full px-4 py-3 bg-background-light dark:bg-background-dark border-2 border-gray-200 dark:border-gray-700 rounded-2xl focus:border-primary focus:ring-4 focus:ring-primary/20 text-text-main dark:text-white font-medium transition-all"
+                        placeholder="例: gǒu">
+                </div>
+                
+                <!-- Vietnamese Meaning -->
+                <div class="space-y-2">
+                    <label class="flex items-center gap-2 text-sm font-bold text-text-main dark:text-white">
+                        <span class="material-symbols-outlined text-primary text-lg">description</span>
+                        Nghĩa Tiếng Việt <span class="text-red-500">*</span>
+                    </label>
+                    <textarea id="meaningInput" name="meaning" required rows="3"
+                        class="w-full px-4 py-3 bg-background-light dark:bg-background-dark border-2 border-gray-200 dark:border-gray-700 rounded-2xl focus:border-primary focus:ring-4 focus:ring-primary/20 text-text-main dark:text-white font-medium transition-all resize-none"
+                        placeholder="例: Con chó"></textarea>
+                </div>
+                
+                <!-- Image URL -->
+                <div class="space-y-2">
+                    <label class="flex items-center gap-2 text-sm font-bold text-text-main dark:text-white">
+                        <span class="material-symbols-outlined text-primary text-lg">notes</span>
+                        Câu ví dụ
+                    </label>
+                    <input type="text" id="exampleInput" name="example"
+                        class="w-full px-4 py-3 bg-background-light dark:bg-background-dark border-2 border-gray-200 dark:border-gray-700 rounded-2xl focus:border-primary focus:ring-4 focus:ring-primary/20 text-text-main dark:text-white font-medium transition-all"
+                        placeholder="例: 小狗很可愛">
+                    <p class="text-xs text-text-secondary">Không bắt buộc</p>
+                </div>
+                
+                <!-- Audio File -->
+                <div class="space-y-2">
+                    <label class="flex items-center gap-2 text-sm font-bold text-text-main dark:text-white">
+                        <span class="material-symbols-outlined text-primary text-lg">volume_up</span>
+                        File âm thanh
+                    </label>
+                    <div class="relative">
+                        <input type="file" id="audioFileInput" accept="audio/*"
+                            class="hidden" onchange="handleAudioFileSelect(event)">
+                        <button type="button" onclick="document.getElementById('audioFileInput').click()"
+                            class="w-full px-4 py-3 bg-background-light dark:bg-background-dark border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-2xl hover:border-primary focus:border-primary focus:ring-4 focus:ring-primary/20 text-text-main dark:text-white font-medium transition-all flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined">upload_file</span>
+                            <span id="audioFileName">Chọn file âm thanh (MP3, WAV...)</span>
+                        </button>
+                    </div>
+                    <div id="audioPreview" class="hidden mt-2">
+                        <audio controls class="w-full rounded-lg">
+                            <source id="audioSource" src="" type="audio/mpeg">
+                            Trình duyệt không hỗ trợ phát audio.
+                        </audio>
+                        <button type="button" onclick="clearAudioFile()" 
+                            class="mt-2 text-sm text-red-500 hover:text-red-700 flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm">delete</span>
+                            Xóa file
+                        </button>
+                    </div>
+                    <input type="hidden" id="audioUrlInput" name="audioUrl">
+                    <p class="text-xs text-text-secondary">Không bắt buộc - Hỗ trợ MP3, WAV, OGG</p>
+                </div>
+                
+                <!-- Image File -->
+                <div class="space-y-2">
+                    <label class="flex items-center gap-2 text-sm font-bold text-text-main dark:text-white">
+                        <span class="material-symbols-outlined text-primary text-lg">image</span>
+                        Hình ảnh minh họa
+                    </label>
+                    <div class="relative">
+                        <input type="file" id="imageFileInput" accept="image/*"
+                            class="hidden" onchange="handleImageFileSelect(event)">
+                        <button type="button" onclick="document.getElementById('imageFileInput').click()"
+                            class="w-full px-4 py-3 bg-background-light dark:bg-background-dark border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-2xl hover:border-primary focus:border-primary focus:ring-4 focus:ring-primary/20 text-text-main dark:text-white font-medium transition-all flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined">upload_file</span>
+                            <span id="imageFileName">Chọn hình ảnh (JPG, PNG...)</span>
+                        </button>
+                    </div>
+                    <div id="imagePreview" class="hidden mt-2">
+                        <img id="imagePreviewImg" src="" alt="Preview" 
+                            class="w-full max-h-48 object-cover rounded-lg border-2 border-gray-200 dark:border-gray-700">
+                        <button type="button" onclick="clearImageFile()" 
+                            class="mt-2 text-sm text-red-500 hover:text-red-700 flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm">delete</span>
+                            Xóa hình
+                        </button>
+                    </div>
+                    <input type="hidden" id="imageUrlInput" name="imageUrl">
+                    <p class="text-xs text-text-secondary">Không bắt buộc - Hỗ trợ JPG, PNG, GIF (tối đa 5MB)</p>
+                </div>
+                
+                <!-- Difficulty Level -->
+                <div class="space-y-2">
+                    <label class="flex items-center gap-2 text-sm font-bold text-text-main dark:text-white">
+                        <span class="material-symbols-outlined text-primary text-lg">bar_chart</span>
+                        Độ Khó
+                    </label>
+                    <div class="grid grid-cols-4 gap-3">
+                        <button type="button" class="difficulty-btn px-4 py-3 rounded-2xl border-2 border-green-200 bg-green-50 dark:bg-green-900/20 dark:border-green-800 text-green-700 dark:text-green-400 font-bold hover:border-green-500 transition-all" data-difficulty="beginner">
+                            Sơ cấp
+                        </button>
+                        <button type="button" class="difficulty-btn px-4 py-3 rounded-2xl border-2 border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-800 text-blue-700 dark:text-blue-400 font-bold hover:border-blue-500 transition-all" data-difficulty="intermediate">
+                            Trung cấp
+                        </button>
+                        <button type="button" class="difficulty-btn px-4 py-3 rounded-2xl border-2 border-orange-200 bg-orange-50 dark:bg-orange-900/20 dark:border-orange-800 text-orange-700 dark:text-orange-400 font-bold hover:border-orange-500 transition-all" data-difficulty="advanced">
+                            Cao cấp
+                        </button>
+                        <button type="button" class="difficulty-btn px-4 py-3 rounded-2xl border-2 border-red-200 bg-red-50 dark:bg-red-900/20 dark:border-red-800 text-red-700 dark:text-red-400 font-bold hover:border-red-500 transition-all" data-difficulty="native">
+                            Bản ngữ
+                        </button>
+                    </div>
+                    <input type="hidden" id="difficultyInput" name="difficulty" value="beginner">
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex gap-4 pt-4">
+                    <button type="button" id="cancelAddVocab"
+                        class="flex-1 px-6 py-4 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-text-main dark:text-white rounded-2xl font-bold transition-all">
+                        <span data-i18n="categoryWordList.cancel">Hủy</span>
+                    </button>
+                    <button type="submit" id="submitVocabBtn"
+                        class="flex-1 px-6 py-4 bg-primary hover:bg-primary-dark text-white rounded-2xl font-bold transition-all shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 flex items-center justify-center gap-2">
+                        <span id="submitIcon" class="material-symbols-outlined">check_circle</span>
+                        <span id="submitText" data-i18n="categoryWordList.submit">Thêm Từ Vựng</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // ========== Language Initialization ==========
+        async function initializeLanguage() {
+            try {
+                const response = await apiClient.get('/settings');
+                if (response.success && response.data && response.data.settings && response.data.settings.language) {
+                    i18n.setLanguage(response.data.settings.language);
+                } else {
+                    i18n.setLanguage('vi');
+                }
+            } catch (error) {
+                console.error('Failed to load language preference:', error);
+                i18n.setLanguage('vi');
+            }
+        }
+        
+        // ========== Global State ==========
+        let vocabularyList = [];
+        let filteredVocabulary = [];
+        let currentCategory = null;
+        let categoryId = null;
+        let currentView = 'list';
+        let searchQuery = '';
+        let editingVocabId = null;
+        let selectedAudioFile = null;
+        let selectedImageFile = null;
+        
+        // ========== DOM Elements ==========
+        const listViewBtn = document.getElementById('listViewBtn');
+        const flashcardsViewBtn = document.getElementById('flashcardsViewBtn');
+        const wordListContainer = document.getElementById('wordListContainer');
+        const searchInput = document.getElementById('searchInput');
+        const addVocabModal = document.getElementById('addVocabModal');
+        const openAddVocabModalBtn = document.getElementById('openAddVocabModal');
+        const closeAddVocabModalBtn = document.getElementById('closeAddVocabModal');
+        const cancelAddVocabBtn = document.getElementById('cancelAddVocab');
+        const addVocabForm = document.getElementById('addVocabForm');
+        const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+        const difficultyInput = document.getElementById('difficultyInput');
+        
+        // ========== File Handling Functions ==========
+        function handleAudioFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // Validate file type
+            if (!file.type.startsWith('audio/')) {
+                showError('Vui lòng chọn file âm thanh hợp lệ');
+                return;
+            }
+            
+            // Validate file size (max 10MB)
+            const maxSize = 10 * 1024 * 1024;
+            if (file.size > maxSize) {
+                showError('File âm thanh không được vượt quá 10MB');
+                return;
+            }
+            
+            selectedAudioFile = file;
+            document.getElementById('audioFileName').textContent = file.name;
+            
+            // Create preview URL
+            const audioURL = URL.createObjectURL(file);
+            const audioSource = document.getElementById('audioSource');
+            audioSource.src = audioURL;
+            audioSource.type = file.type;
+            
+            const audioPlayer = audioSource.parentElement;
+            audioPlayer.load();
+            
+            document.getElementById('audioPreview').classList.remove('hidden');
+            
+            // Convert to base64 for storage (tạm thời)
+            convertFileToBase64(file, (base64) => {
+                document.getElementById('audioUrlInput').value = base64;
+            });
+        }
+        
+        function handleImageFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                showError('Vui lòng chọn file hình ảnh hợp lệ');
+                return;
+            }
+            
+            // Validate file size (max 5MB)
+            const maxSize = 5 * 1024 * 1024;
+            if (file.size > maxSize) {
+                showError('File hình ảnh không được vượt quá 5MB');
+                return;
+            }
+            
+            selectedImageFile = file;
+            document.getElementById('imageFileName').textContent = file.name;
+            
+            // Create preview URL
+            const imageURL = URL.createObjectURL(file);
+            const imagePreviewImg = document.getElementById('imagePreviewImg');
+            imagePreviewImg.src = imageURL;
+            
+            document.getElementById('imagePreview').classList.remove('hidden');
+            
+            // Convert to base64 for storage (tạm thời)
+            convertFileToBase64(file, (base64) => {
+                document.getElementById('imageUrlInput').value = base64;
+            });
+        }
+        
+        function clearAudioFile() {
+            selectedAudioFile = null;
+            document.getElementById('audioFileInput').value = '';
+            document.getElementById('audioFileName').textContent = 'Chọn file âm thanh (MP3, WAV...)';
+            document.getElementById('audioUrlInput').value = '';
+            document.getElementById('audioPreview').classList.add('hidden');
+        }
+        
+        function clearImageFile() {
+            selectedImageFile = null;
+            document.getElementById('imageFileInput').value = '';
+            document.getElementById('imageFileName').textContent = 'Chọn hình ảnh (JPG, PNG...)';
+            document.getElementById('imageUrlInput').value = '';
+            document.getElementById('imagePreview').classList.add('hidden');
+        }
+        
+        function convertFileToBase64(file, callback) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                callback(e.target.result);
+            };
+            reader.onerror = function() {
+                showError('Lỗi khi đọc file');
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // Make functions global for inline onclick handlers
+        window.handleAudioFileSelect = handleAudioFileSelect;
+        window.handleImageFileSelect = handleImageFileSelect;
+        window.clearAudioFile = clearAudioFile;
+        window.clearImageFile = clearImageFile;
+        
+        // ========== Initialization ==========
+        async function initApp() {
+            // Initialize language first
+            await initializeLanguage();
+            
+            // Check authentication
+            if (!authAPI.isAuthenticated()) {
+                showError(i18n.t('categoryWordList.loginRequired'));
+                setTimeout(() => window.location.href = '/login_screen.html', 2000);
+                return;
+            }
+            
+            // Get categoryId from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            categoryId = urlParams.get('categoryId');
+            
+            if (!categoryId) {
+                showError('Không tìm thấy danh mục');
+                setTimeout(() => window.location.href = '/user/personal_vocabulary_categories_screen.html', 2000);
+                return;
+            }
+            
+            // Load category info and vocabulary
+            await loadCategoryInfo();
+            await loadVocabulary();
+        }
+        
+        // ========== Load Category Info ==========
+        async function loadCategoryInfo() {
+            try {
+                const response = await categoryAPI.getById(categoryId);
+                currentCategory = response.data;
+                
+                // Update page title
+                const categoryTitle = document.querySelector('h1.text-4xl');
+                if (categoryTitle) {
+                    categoryTitle.textContent = currentCategory.name;
+                }
+                
+                // Update breadcrumb if exists
+                const breadcrumb = document.querySelector('.text-gray-500');
+                if (breadcrumb) {
+                    breadcrumb.textContent = currentCategory.description || 'Danh sách từ vựng';
+                }
+            } catch (error) {
+                console.error('Load category error:', error);
+                showError('Không thể tải thông tin danh mục: ' + error.message);
+            }
+        }
+        
+        // ========== Load Vocabulary ==========
+        async function loadVocabulary() {
+            try {
+                const response = await vocabularyAPI.getByCategory(categoryId, {
+                    limit: 100,
+                    page: 1
+                });
+                
+                vocabularyList = response.data || [];
+                filteredVocabulary = [...vocabularyList];
+                renderVocabulary();
+            } catch (error) {
+                console.error('Load vocabulary error:', error);
+                showError(i18n.t('categoryWordList.loadError') + ': ' + error.message);
+                vocabularyList = [];
+                filteredVocabulary = [];
+                renderVocabulary();
+            }
+        }
+        
+        // ========== Render Vocabulary ==========
+        function renderVocabulary() {
+            wordListContainer.innerHTML = '';
+            
+            if (filteredVocabulary.length === 0) {
+                wordListContainer.innerHTML = `
+                    <div class="text-center py-12">
+                        <span class="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-4">
+                            library_books
+                        </span>
+                        <p class="text-gray-500 dark:text-gray-400 text-lg">
+                            ${searchQuery ? i18n.t('categoryWordList.noWordsFound') : i18n.t('categoryWordList.noWords')}
+                        </p>
+                        ${!searchQuery ? `<p class="text-gray-400 dark:text-gray-500 mt-2">${i18n.t('categoryWordList.addFirstWord')}</p>` : ''}
+                    </div>
+                `;
+                return;
+            }
+            
+            filteredVocabulary.forEach(vocab => {
+                const card = createVocabCard(vocab);
+                wordListContainer.appendChild(card);
+            });
+        }
+        
+        // ========== Create Vocabulary Card ==========
+        function createVocabCard(vocab) {
+            const card = document.createElement('div');
+            card.className = 'group bg-surface-light dark:bg-surface-dark rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-lg hover:border-primary/30 dark:hover:border-primary/50 transition-all';
+            
+            const difficultyColors = {
+                beginner: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+                intermediate: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+                advanced: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
+                native: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+            };
+            
+            const difficultyLabels = {
+                beginner: 'Sơ cấp',
+                intermediate: 'Trung cấp',
+                advanced: 'Cao cấp',
+                native: 'Bản ngữ'
+            };
+            
+            card.innerHTML = `
+                <div class="flex items-start justify-between gap-4">
+                    ${vocab.imageUrl ? `
+                    <div class="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden">
+                        <img src="${vocab.imageUrl}" alt="${vocab.traditional}" 
+                            class="w-full h-full object-cover"
+                            onerror="this.parentElement.style.display='none'">
+                    </div>
+                    ` : ''}
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-2">
+                            <h3 class="text-2xl font-bold text-text-main dark:text-white">${vocab.traditional}</h3>
+                            ${vocab.simplified !== vocab.traditional ? `<span class="text-xl text-gray-500 dark:text-gray-400">${vocab.simplified}</span>` : ''}
+                            <span class="text-sm px-3 py-1 rounded-full ${difficultyColors[vocab.difficulty] || difficultyColors.beginner}">
+                                ${difficultyLabels[vocab.difficulty] || 'Sơ cấp'}
+                            </span>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-300 mb-1">${vocab.pinyin}</p>
+                        <p class="text-text-main dark:text-gray-200 font-medium">${vocab.meaning}</p>
+                        ${vocab.example ? `<p class="text-sm text-gray-500 dark:text-gray-400 mt-2 italic">"${vocab.example}"</p>` : ''}
+                    </div>
+                    <div class="flex gap-2">
+                        ${vocab.audioUrl ? `
+                        <button onclick="playAudio('${vocab.audioUrl}')" class="p-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 text-primary transition-colors">
+                            <span class="material-symbols-outlined">volume_up</span>
+                        </button>
+                        ` : ''}
+                        <button onclick="editVocabulary('${vocab._id}')" class="p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400 transition-colors">
+                            <span class="material-symbols-outlined">edit</span>
+                        </button>
+                        <button onclick="deleteVocabulary('${vocab._id}')" class="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-colors">
+                            <span class="material-symbols-outlined">delete</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+        
+        // ========== Play Audio ==========
+        window.playAudio = function(audioUrl) {
+            const audio = new Audio(audioUrl);
+            audio.play().catch(err => {
+                console.error('Audio play error:', err);
+                showError('Không thể phát âm thanh');
+            });
+        };
+        
+        // ========== Search Functionality ==========
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value.toLowerCase().trim();
+            
+            if (!searchQuery) {
+                filteredVocabulary = [...vocabularyList];
+            } else {
+                filteredVocabulary = vocabularyList.filter(vocab => 
+                    vocab.traditional.toLowerCase().includes(searchQuery) ||
+                    vocab.simplified.toLowerCase().includes(searchQuery) ||
+                    vocab.pinyin.toLowerCase().includes(searchQuery) ||
+                    vocab.meaning.toLowerCase().includes(searchQuery)
+                );
+            }
+            
+            renderVocabulary();
+        });
+        
+        // ========== View Toggle ==========
+        listViewBtn.addEventListener('click', () => {
+            currentView = 'list';
+            updateViewButtons();
+            renderListView();
+        });
+        
+        flashcardsViewBtn.addEventListener('click', () => {
+            currentView = 'flashcards';
+            updateViewButtons();
+            renderFlashcardsView();
+        });
+        
+        function updateViewButtons() {
+            if (currentView === 'list') {
+                listViewBtn.className = 'flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-surface-dark text-primary-dark dark:text-primary shadow-sm font-bold text-sm transition-all';
+                flashcardsViewBtn.className = 'flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-gray-500 hover:text-text-main dark:hover:text-white font-medium text-sm transition-all';
+                
+                listViewBtn.querySelector('.material-symbols-outlined').style.fontVariationSettings = "'FILL' 1";
+                flashcardsViewBtn.querySelector('.material-symbols-outlined').style.fontVariationSettings = "'FILL' 0";
+            } else {
+                flashcardsViewBtn.className = 'flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-surface-dark text-primary-dark dark:text-primary shadow-sm font-bold text-sm transition-all';
+                listViewBtn.className = 'flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-gray-500 hover:text-text-main dark:hover:text-white font-medium text-sm transition-all';
+                
+                flashcardsViewBtn.querySelector('.material-symbols-outlined').style.fontVariationSettings = "'FILL' 1";
+                listViewBtn.querySelector('.material-symbols-outlined').style.fontVariationSettings = "'FILL' 0";
+            }
+        }
+        
+        function renderListView() {
+            wordListContainer.className = 'flex flex-col gap-4 pb-12';
+        }
+        
+        function renderFlashcardsView() {
+            wordListContainer.className = 'flashcard-view grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-12';
+        }
+        
+        // ========== Modal Management ==========
+        openAddVocabModalBtn.addEventListener('click', () => {
+            editingVocabId = null;
+            addVocabForm.reset();
+            difficultyInput.value = 'beginner';
+            resetDifficultyButtons();
+            clearAudioFile();
+            clearImageFile();
+            
+            // Update modal UI for Add mode
+            document.getElementById('modalTitle').textContent = 'Thêm Từ Vựng Mới';
+            document.getElementById('modalDescription').textContent = 'Mở rộng bộ từ vựng của bạn';
+            document.getElementById('modalIcon').textContent = 'add_circle';
+            document.getElementById('submitText').textContent = 'Thêm Từ Vựng';
+            document.getElementById('submitIcon').textContent = 'check_circle';
+            
+            addVocabModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        });
+        
+        const closeModal = () => {
+            addVocabModal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            addVocabForm.reset();
+            editingVocabId = null;
+            clearAudioFile();
+            clearImageFile();
+            
+            // Reset modal UI to Add mode
+            document.getElementById('modalTitle').textContent = 'Thêm Từ Vựng Mới';
+            document.getElementById('modalDescription').textContent = 'Mở rộng bộ từ vựng của bạn';
+            document.getElementById('modalIcon').textContent = 'add_circle';
+            document.getElementById('submitText').textContent = 'Thêm Từ Vựng';
+            document.getElementById('submitIcon').textContent = 'check_circle';
+        };
+        
+        closeAddVocabModalBtn.addEventListener('click', closeModal);
+        cancelAddVocabBtn.addEventListener('click', closeModal);
+        
+        addVocabModal.addEventListener('click', (e) => {
+            if (e.target === addVocabModal) {
+                closeModal();
+            }
+        });
+        
+        // ========== Difficulty Selection ==========
+        difficultyBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                resetDifficultyButtons();
+                btn.classList.add('ring-4', 'ring-offset-2');
+                btn.classList.remove('border-2');
+                difficultyInput.value = btn.dataset.difficulty;
+            });
+        });
+        
+        function resetDifficultyButtons() {
+            difficultyBtns.forEach(b => {
+                b.classList.remove('ring-4', 'ring-offset-2');
+                b.classList.add('border-2');
+            });
+        }
+        
+        // ========== Add/Edit Vocabulary ==========
+        addVocabForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(addVocabForm);
+            const vocabularyData = {
+                categoryId: categoryId,
+                traditional: formData.get('traditional').trim(),
+                simplified: formData.get('simplified').trim() || formData.get('traditional').trim(),
+                pinyin: formData.get('pinyin').trim(),
+                meaning: formData.get('meaning').trim(),
+                example: formData.get('example').trim(),
+                audioUrl: document.getElementById('audioUrlInput').value || '',
+                imageUrl: document.getElementById('imageUrlInput').value || '',
+                difficulty: formData.get('difficulty') || 'beginner'
+            };
+            
+            try {
+                if (editingVocabId) {
+                    // Update existing
+                    await vocabularyAPI.update(editingVocabId, vocabularyData);
+                    showSuccess(i18n.t('categoryWordList.updateSuccess'));
+                } else {
+                    // Create new
+                    await vocabularyAPI.create(vocabularyData);
+                    showSuccess(i18n.t('categoryWordList.addSuccess'));
+                }
+                
+                closeModal();
+                await loadVocabulary();
+            } catch (error) {
+                console.error('Save vocabulary error:', error);
+                showError('Lỗi: ' + error.message);
+            }
+        });
+        
+        // ========== Edit Vocabulary ==========
+        window.editVocabulary = async function(vocabId) {
+            try {
+                const response = await vocabularyAPI.getById(vocabId);
+                const vocab = response.data;
+                
+                editingVocabId = vocabId;
+                
+                // Fill form
+                document.getElementById('traditionalInput').value = vocab.traditional;
+                document.getElementById('simplifiedInput').value = vocab.simplified;
+                document.getElementById('pinyinInput').value = vocab.pinyin;
+                document.getElementById('meaningInput').value = vocab.meaning;
+                document.getElementById('exampleInput').value = vocab.example || '';
+                
+                // Handle audio
+                if (vocab.audioUrl) {
+                    document.getElementById('audioUrlInput').value = vocab.audioUrl;
+                    document.getElementById('audioFileName').textContent = 'File âm thanh hiện tại';
+                    const audioSource = document.getElementById('audioSource');
+                    audioSource.src = vocab.audioUrl;
+                    audioSource.type = vocab.audioUrl.startsWith('data:') ? 'audio/mpeg' : 'audio/mpeg';
+                    audioSource.parentElement.load();
+                    document.getElementById('audioPreview').classList.remove('hidden');
+                }
+                
+                // Handle image
+                if (vocab.imageUrl) {
+                    document.getElementById('imageUrlInput').value = vocab.imageUrl;
+                    document.getElementById('imageFileName').textContent = 'Hình ảnh hiện tại';
+                    document.getElementById('imagePreviewImg').src = vocab.imageUrl;
+                    document.getElementById('imagePreview').classList.remove('hidden');
+                }
+                
+                difficultyInput.value = vocab.difficulty;
+                
+                // Update difficulty buttons
+                resetDifficultyButtons();
+                difficultyBtns.forEach(btn => {
+                    if (btn.dataset.difficulty === vocab.difficulty) {
+                        btn.classList.add('ring-4', 'ring-offset-2');
+                        btn.classList.remove('border-2');
+                    }
+                });
+                
+                // Update modal UI for Edit mode
+                document.getElementById('modalTitle').textContent = 'Chỉnh Sửa Từ Vựng';
+                document.getElementById('modalDescription').textContent = 'Cập nhật thông tin từ vựng';
+                document.getElementById('modalIcon').textContent = 'edit';
+                document.getElementById('submitText').textContent = 'Cập Nhật';
+                document.getElementById('submitIcon').textContent = 'save';
+                
+                addVocabModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            } catch (error) {
+                console.error('Load vocabulary error:', error);
+                showError('Không thể tải thông tin từ vựng: ' + error.message);
+            }
+        };
+        
+        // ========== Delete Vocabulary ==========
+        window.deleteVocabulary = async function(vocabId) {
+            if (!confirm('Bạn có chắc chắn muốn xóa từ vựng này?')) {
+                return;
+            }
+            
+            try {
+                await vocabularyAPI.delete(vocabId);
+                showSuccess(i18n.t('categoryWordList.deleteSuccess'));
+                await loadVocabulary();
+            } catch (error) {
+                console.error('Delete vocabulary error:', error);
+                showError('Không thể xóa từ vựng: ' + error.message);
+            }
+        };
+        
+        // ========== Notifications ==========
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined">${type === 'success' ? 'check_circle' : 'error'}</span>
+                    <span>${message}</span>
+                </div>
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+        
+        function showError(message) {
+            showToast(message, 'error');
+        }
+        
+        function showSuccess(message) {
+            showToast(message, 'success');
+        }
+        
+        // ========== Initialize App ==========
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+
+</html>

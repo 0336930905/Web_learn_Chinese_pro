@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Kids Vocabulary Learning</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎮</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="../css/games-common.css" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0ea5e9",
+                        "secondary": "#ff6bcb",
+                        "accent-purple": "#c084fc",
+                        "accent-yellow": "#fcd34d",
+                        "accent-green": "#4ade80",
+                        "background-light": "#fefefe",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" },
+                },
+            },
+        }
+
+    </script>
+    <style>
+        body {
+            background: #f5f7f8 !important;
+        }
+
+        @keyframes blob {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            25% {
+                transform: translate(20px, -50px) scale(1.1);
+            }
+
+            50% {
+                transform: translate(-20px, 20px) scale(0.9);
+            }
+
+            75% {
+                transform: translate(50px, 50px) scale(1.05);
+            }
+        }
+
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+
+        .animation-delay-4000 {
+            animation-delay: 4s;
+        }
+
+        .delay-75 {
+            animation-delay: 75ms;
+        }
+
+        .delay-150 {
+            animation-delay: 150ms;
+        }
+        #background-color-icon {
+            background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1)) !important;
+            color: #4e4a4a !important;
+            border-color: #cccccc 3px !important ;
+        }
+        #background-color-icon > #voiceSelect{
+             color: #4e4a4a !important;
+        }
+    </style>
+</head>
+
+<body class="font-display text-slate-900 min-h-screen" style="background: #f5f7f8;">
+    <!-- Header -->
+    <div id="game-header-container"></div>
+    <script>
+        // Insert common header
+        fetch('games-header.html')
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('game-header-container').innerHTML = html;
+                // Execute scripts in the loaded HTML
+                const scripts = document.getElementById('game-header-container').querySelectorAll('script');
+                scripts.forEach(script => {
+                    const newScript = document.createElement('script');
+                    if (script.src) {
+                        newScript.src = script.src;
+                    } else {
+                        newScript.textContent = script.textContent;
+                    }
+                    document.body.appendChild(newScript);
+                });
+            })
+            .catch(err => console.error('Failed to load game header:', err));
+    </script>
+    <main class="flex-1 flex items-center justify-center relative w-full">
+        <button id="prevBtn" onclick="previousCard()"
+            class="absolute left-8 lg:left-24 w-12 h-12 bg-white rounded-full shadow-md border-2 border-slate-200 flex items-center justify-center text-slate-600 hover:text-primary hover:border-primary/50 transition-all hover:scale-110 z-10">
+            <span class="material-symbols-outlined">chevron_left</span>
+        </button>
+        <div class="relative group">
+            <div class="absolute -top-5 left-1/2 transform -translate-x-1/2 z-20">
+                <div onclick="speakCurrentWord()"
+                    class="bg-primary/90 hover:bg-primary text-white px-6 py-2 rounded-full shadow-lg flex items-center space-x-2 text-sm font-bold uppercase tracking-wider animate-bounce border-2 border-white cursor-pointer hover:scale-105 transition-transform">
+                    <span class="material-symbols-outlined text-base">volume_up</span>
+                    <span>Listen carefully</span>
+                </div>
+            </div>
+            <div id="cardContainer"
+                class="bg-white rounded-3xl shadow-xl border-2 border-slate-200 p-8 w-[90vw] max-w-lg md:max-w-xl lg:max-w-2xl relative flex flex-col items-center justify-center min-h-[400px] transition-all duration-300 hover:shadow-2xl">
+                <div class="absolute top-6 left-6">
+                    <span id="progressBadge"
+                        class="bg-green-100 text-green-700 shadow-md px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-1 border-2 border-green-200">
+                        <span class="material-symbols-outlined text-sm">school</span> <span id="progressText">1 /
+                            10</span>
+                    </span>
+                </div>
+                <div class="absolute top-6 right-6 flex gap-2">
+                    <button
+                        class="w-9 h-9 rounded-full bg-yellow-100 shadow-md hover:shadow-lg hover:scale-110 hover:bg-yellow-200 text-yellow-700 transition-all flex items-center justify-center border border-yellow-200">
+                        <span class="material-symbols-outlined text-sm">star</span>
+                    </button>
+                    <button
+                        class="w-9 h-9 rounded-full bg-blue-100 shadow-md hover:shadow-lg hover:scale-110 hover:bg-blue-200 text-blue-700 transition-all flex items-center justify-center border border-blue-200">
+                        <span class="material-symbols-outlined text-sm">menu</span>
+                    </button>
+                </div>
+                <div class="flex flex-row items-center justify-center w-full gap-8 mt-4">
+                    <div id="letterDisplay"
+                        class="text-[150px] md:text-[180px] font-black text-primary leading-none select-none drop-shadow-lg">
+                        坐
+                    </div>
+                    <div class="bg-blue-50 p-6 rounded-3xl border-2 border-blue-200 shadow-lg">
+                        <div id="imageContainer"
+                            class="w-32 h-32 md:w-40 md:h-40 flex items-center justify-center text-6xl">
+                            🪑
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-6">
+                    <h1 id="traditionalText" class="text-5xl font-extrabold text-primary mb-2">坐</h1>
+                    <p id="pinyinText" class="text-2xl text-blue-600 font-semibold mb-2">zuò</p>
+                    <p id="meaningText" class="text-xl text-slate-600 font-semibold">Ngồi</p>
+                </div>
+                <div class="absolute bottom-6 right-6">
+                    <span id="difficultyBadge"
+                        class="bg-blue-100 text-blue-700 shadow-md px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-1 border-2 border-blue-200">
+                        <span class="material-symbols-outlined text-sm">emoji_events</span> <span
+                            id="difficultyText">Easy</span>
+                    </span>
+                </div>
+            </div>
+            <div class="absolute -bottom-16 left-1/2 transform -translate-x-1/2 flex flex-col items-center">
+                <div class="relative">
+                    <div id="recordPingEffect" class="absolute inset-0 bg-pink-400/30 rounded-full animate-ping"
+                        style="display: none;"></div>
+                    <button onclick="recordUserSpeech()"
+                        class="w-20 h-20 bg-pink-500 hover:bg-pink-600 rounded-full shadow-lg border-4 border-white hover:scale-110 flex flex-col items-center justify-center transition-all duration-200 cursor-pointer">
+                        <span class="material-symbols-outlined text-white text-3xl mb-1">mic</span>
+                        <span class="text-[10px] font-bold text-white uppercase">Record</span>
+                    </button>
+                </div>
+                <div class="flex items-end justify-center h-4 space-x-1 mt-2">
+                    <div class="w-1 bg-gradient-to-t from-pink-400 to-purple-500 rounded-full h-2 animate-pulse"></div>
+                    <div
+                        class="w-1 bg-gradient-to-t from-purple-400 to-blue-500 rounded-full h-4 animate-pulse delay-75">
+                    </div>
+                    <div
+                        class="w-1 bg-gradient-to-t from-blue-400 to-cyan-500 rounded-full h-3 animate-pulse delay-150">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button id="nextBtn" onclick="nextCard()"
+            class="absolute right-8 lg:right-24 w-12 h-12 bg-white rounded-full shadow-md border-2 border-slate-200 flex items-center justify-center text-slate-600 hover:text-primary hover:border-primary/50 transition-all hover:scale-110 z-10">
+            <span class="material-symbols-outlined">chevron_right</span>
+        </button>
+    </main>
+
+    <script>
+        // ========== Helper: Get categoryId from URL ==========
+        function getCategoryIdFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('categoryId');
+        }
+
+        // ========== State ==========
+        let cards = [];
+        let currentIndex = 0;
+        let isPlaying = false; // Track if audio is currently playing
+        let isRecording = false; // Track if recording is in progress
+        let recognition = null; // Speech recognition instance
+        let correctAnswers = 0; // Track correct pronunciation attempts
+        let attemptsForCurrentCard = 0; // Track attempts for current word (max 3)
+        let totalAttempts = 0; // Track total attempts across all cards
+
+        // ========== Initialize Speech Recognition ==========
+        function initSpeechRecognition() {
+            // Check if browser supports Speech Recognition
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+            if (!SpeechRecognition) {
+                console.warn('Speech Recognition not supported in this browser');
+                return null;
+            }
+
+            recognition = new SpeechRecognition();
+            recognition.lang = 'zh-TW'; // Taiwanese Mandarin
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 3;
+
+            recognition.onstart = () => {
+                console.log('Speech recognition started');
+                isRecording = true;
+                updateBottomButton('recording');
+            };
+
+            recognition.onresult = (event) => {
+                const results = Array.from(event.results[0]);
+                const transcripts = results.map(r => r.transcript);
+                console.log('Recognized:', transcripts);
+
+                checkPronunciation(transcripts);
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                isRecording = false;
+                updateBottomButton('default');
+
+                if (event.error === 'no-speech') {
+                    updateTopBadge('tryagain');
+                    setTimeout(() => updateTopBadge('listen'), 2000);
+                }
+            };
+
+            recognition.onend = () => {
+                console.log('Speech recognition ended');
+                isRecording = false;
+            };
+
+            return recognition;
+        }
+
+        // ========== Load Vocabulary Cards ==========
+        async function loadVocabularyCards() {
+            const categoryId = getCategoryIdFromUrl();
+            if (!categoryId) {
+                alert('Không tìm thấy categoryId!');
+                window.location.href = '../user/games_home.html';
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/games/vocabulary-cards?categoryId=${categoryId}&count=10`);
+                const data = await res.json();
+
+                if (!data.success) {
+                    alert('Không thể tải từ vựng: ' + (data.error?.message || 'Lỗi không xác định'));
+                    window.location.href = '../user/games_home.html';
+                    return;
+                }
+
+                cards = data.data;
+                currentIndex = 0;
+
+                // Initialize speech recognition
+                initSpeechRecognition();
+
+                renderCard();
+                updateHeader();
+            } catch (err) {
+                alert('Lỗi khi gọi API: ' + err.message);
+                window.location.href = '../user/games_home.html';
+            }
+        }
+
+        // ========== Render Current Card ==========
+        function renderCard() {
+            if (cards.length === 0) return;
+
+            const card = cards[currentIndex];
+
+            // Update letter display
+            document.getElementById('letterDisplay').textContent = card.letter;
+
+            // Update main display
+            document.getElementById('traditionalText').textContent = card.traditional;
+            document.getElementById('pinyinText').textContent = card.pinyin;
+            document.getElementById('meaningText').textContent = card.meaning;
+
+            // Update progress
+            document.getElementById('progressText').textContent = `${currentIndex + 1} / ${cards.length}`;
+
+            // Update difficulty badge
+            const difficultyMap = {
+                'beginner': 'Dễ',
+                'intermediate': 'Trung bình',
+                'advanced': 'Khó',
+                'Easy': 'Dễ',
+                'Medium': 'Trung bình',
+                'Hard': 'Khó'
+            };
+            document.getElementById('difficultyText').textContent = difficultyMap[card.difficulty] || card.difficulty;
+
+            // Update emoji based on word meaning (simple mapping)
+            const emojiMap = {
+                '坐': '🪑', '站': '🧍', '走': '🚶', '跑': '🏃',
+                '吃': '🍽️', '喝': '🥤', '睡': '😴', '笑': '😄',
+                '哭': '😢', '看': '👀', '听': '👂', '说': '💬'
+            };
+            const emoji = emojiMap[card.traditional] || '📚';
+            document.getElementById('imageContainer').textContent = emoji;
+
+            // Update button states
+            document.getElementById('prevBtn').disabled = currentIndex === 0;
+            document.getElementById('nextBtn').disabled = currentIndex === cards.length - 1;
+
+            // Update button opacity
+            document.getElementById('prevBtn').style.opacity = currentIndex === 0 ? '0.5' : '1';
+            document.getElementById('nextBtn').style.opacity = currentIndex === cards.length - 1 ? '0.5' : '1';
+
+            // Reset top badge to default state
+            updateTopBadge('listen');
+
+            // Reset bottom button to default state
+            updateBottomButton('default');
+
+            // Reset attempts for this card
+            attemptsForCurrentCard = 0;
+
+            // Auto-play audio when card is rendered
+            setTimeout(() => {
+                speakCurrentWord();
+            }, 300);
+        }
+
+        // ========== Next Card ==========
+        function nextCard() {
+            if (currentIndex < cards.length - 1) {
+                currentIndex++;
+
+                // Show "Next card!" badge briefly
+                updateTopBadge('next');
+                setTimeout(() => {
+                    renderCard();
+                    updateHeader();
+                }, 300);
+            }
+        }
+
+        // ========== Previous Card ==========
+        function previousCard() {
+            if (currentIndex > 0) {
+                currentIndex--;
+
+                // Show "Next card!" badge briefly
+                updateTopBadge('next');
+                setTimeout(() => {
+                    renderCard();
+                    updateHeader();
+                }, 300);
+            }
+        }
+
+        // ========== Update Top Badge ==========
+        function updateTopBadge(state) {
+            const badge = document.querySelector('.absolute.-top-5 > div');
+            if (!badge) return;
+
+            const iconSpan = badge.querySelector('.material-symbols-outlined');
+            const textSpan = badge.querySelector('span:last-child');
+
+            switch (state) {
+                case 'listen':
+                    badge.className = 'bg-primary/90 hover:bg-primary text-white px-6 py-2 rounded-full shadow-lg flex items-center space-x-2 text-sm font-bold uppercase tracking-wider animate-bounce border-2 border-white cursor-pointer hover:scale-105 transition-transform';
+                    iconSpan.textContent = 'volume_up';
+                    textSpan.textContent = 'Listen carefully';
+                    break;
+
+                case 'playing':
+                    badge.className = 'bg-purple-500 text-white px-6 py-2 rounded-full shadow-lg flex items-center space-x-2 text-sm font-bold uppercase tracking-wider animate-pulse border-2 border-white cursor-pointer hover:scale-105 transition-transform';
+                    iconSpan.textContent = 'graphic_eq';
+                    textSpan.textContent = 'Playing...';
+                    break;
+
+                case 'success':
+                    badge.className = 'bg-green-500 text-white px-6 py-2 rounded-full shadow-lg flex items-center space-x-2 text-sm font-bold uppercase tracking-wider border-2 border-white cursor-pointer hover:scale-105 transition-transform';
+                    iconSpan.textContent = 'check_circle';
+                    textSpan.textContent = 'Great job!';
+                    break;
+
+                case 'next':
+                    badge.className = 'bg-amber-500 text-white px-6 py-2 rounded-full shadow-lg flex items-center space-x-2 text-sm font-bold uppercase tracking-wider animate-bounce border-2 border-white cursor-pointer hover:scale-105 transition-transform';
+                    iconSpan.textContent = 'arrow_forward';
+                    textSpan.textContent = 'Next card!';
+                    break;
+
+                case 'correct':
+                    badge.className = 'bg-green-500 text-white px-6 py-2 rounded-full shadow-lg flex items-center space-x-2 text-sm font-bold uppercase tracking-wider animate-bounce border-2 border-white cursor-pointer hover:scale-105 transition-transform';
+                    iconSpan.textContent = 'check_circle';
+                    textSpan.textContent = 'Perfect! 太棒了!';
+                    break;
+
+                case 'wrong':
+                    badge.className = 'bg-red-500 text-white px-6 py-2 rounded-full shadow-lg flex items-center space-x-2 text-sm font-bold uppercase tracking-wider animate-pulse border-2 border-white cursor-pointer hover:scale-105 transition-transform';
+                    iconSpan.textContent = 'cancel';
+                    textSpan.textContent = 'Try again!';
+                    break;
+
+                case 'tryagain':
+                    badge.className = 'bg-yellow-500 text-white px-6 py-2 rounded-full shadow-lg flex items-center space-x-2 text-sm font-bold uppercase tracking-wider animate-pulse border-2 border-white cursor-pointer hover:scale-105 transition-transform';
+                    iconSpan.textContent = 'mic_off';
+                    textSpan.textContent = 'No sound detected';
+                    break;
+            }
+        }
+
+        // ========== Update Bottom Button (Record Button) ==========
+        function updateBottomButton(state) {
+            const button = document.querySelector('button[onclick="recordUserSpeech()"]');
+            const pingEffect = document.getElementById('recordPingEffect');
+            if (!button) return;
+
+            const iconSpan = button.querySelector('.material-symbols-outlined');
+            const textSpan = button.querySelector('span:last-child');
+
+            switch (state) {
+                case 'default':
+                    button.className = 'w-20 h-20 bg-pink-500 hover:bg-pink-600 rounded-full shadow-lg border-4 border-white hover:scale-110 flex flex-col items-center justify-center transition-all duration-200 cursor-pointer';
+                    button.disabled = false;
+                    iconSpan.textContent = 'mic';
+                    textSpan.textContent = 'Record';
+                    if (pingEffect) pingEffect.style.display = 'none';
+                    break;
+
+                case 'recording':
+                    button.className = 'w-20 h-20 bg-red-500 rounded-full shadow-lg border-4 border-white animate-pulse flex flex-col items-center justify-center transition-all duration-200 cursor-pointer';
+                    iconSpan.textContent = 'mic';
+                    textSpan.textContent = 'Listening';
+                    if (pingEffect) pingEffect.style.display = 'block';
+                    break;
+
+                case 'analyzing':
+                    button.className = 'w-20 h-20 bg-yellow-500 rounded-full shadow-lg border-4 border-white animate-pulse flex flex-col items-center justify-center transition-all duration-200';
+                    iconSpan.textContent = 'settings_voice';
+                    textSpan.textContent = 'Checking';
+                    if (pingEffect) pingEffect.style.display = 'none';
+                    break;
+
+                case 'correct':
+                    button.className = 'w-20 h-20 bg-green-500 rounded-full shadow-lg border-4 border-white animate-bounce flex flex-col items-center justify-center transition-all duration-200';
+                    iconSpan.textContent = 'check_circle';
+                    textSpan.textContent = 'Correct!';
+                    if (pingEffect) pingEffect.style.display = 'none';
+                    break;
+
+                case 'wrong':
+                    button.className = 'w-20 h-20 bg-red-400 rounded-full shadow-lg border-4 border-white animate-pulse flex flex-col items-center justify-center transition-all duration-200 opacity-50 cursor-not-allowed';
+                    button.disabled = true; // Disable button when wrong
+                    iconSpan.textContent = 'cancel';
+                    textSpan.textContent = 'Try again';
+                    if (pingEffect) pingEffect.style.display = 'none';
+                    break;
+
+                case 'disabled':
+                    button.className = 'w-20 h-20 bg-slate-400 rounded-full shadow-lg border-4 border-white flex flex-col items-center justify-center transition-all duration-200 opacity-50 cursor-not-allowed';
+                    button.disabled = true; // Disable during playback
+                    iconSpan.textContent = 'mic_off';
+                    textSpan.textContent = 'Wait...';
+                    if (pingEffect) pingEffect.style.display = 'none';
+                    break;
+            }
+        }
+
+        // ========== Speak Current Word (Playback Only) ==========
+        function speakCurrentWord() {
+            if (cards.length === 0) return;
+            if (isPlaying) return; // Prevent multiple simultaneous plays
+
+            const card = cards[currentIndex];
+            isPlaying = true;
+
+            // Update badge to "Playing..." state
+            updateTopBadge('playing');
+
+            // Disable Record button during playback
+            updateBottomButton('disabled');
+
+            // Speak the word
+            if (window.speakText) {
+                window.speakText(card.traditional, 0.8);
+
+                // Estimate speech duration (rough approximation)
+                const estimatedDuration = card.traditional.length * 500 + 1000;
+
+                // Reset after speaking
+                setTimeout(() => {
+                    isPlaying = false;
+                    updateTopBadge('success');
+
+                    // Return to default state after a moment
+                    setTimeout(() => {
+                        updateTopBadge('listen');
+                        updateBottomButton('default'); // Re-enable Record button
+                    }, 1500);
+                }, estimatedDuration);
+            } else {
+                // Fallback if speakText not available
+                isPlaying = false;
+                updateTopBadge('listen');
+                updateBottomButton('default');
+            }
+        }
+
+        // ========== Record User Speech (Speech Recognition) ==========
+        function recordUserSpeech() {
+            if (cards.length === 0) return;
+            if (isRecording) return; // Already recording
+            if (isPlaying) {
+                // Prevent recording while audio is playing
+                alert('⏸️ Vui lòng đợi âm thanh phát xong!');
+                return;
+            }
+            if (!recognition) {
+                alert('抱歉，您的瀏覽器不支持語音識別功能。請使用 Chrome 或 Edge 瀏覽器。');
+                return;
+            }
+
+            try {
+                recognition.start();
+                console.log('Starting speech recognition...');
+            } catch (error) {
+                console.error('Failed to start recognition:', error);
+                updateBottomButton('default');
+            }
+        }
+
+        // ========== Check Pronunciation ==========
+        function checkPronunciation(transcripts) {
+            if (cards.length === 0) return;
+
+            const card = cards[currentIndex];
+            const correctWord = card.traditional;
+
+            // Update button to analyzing state
+            updateBottomButton('analyzing');
+
+            // Check if any of the recognized alternatives match
+            const isCorrect = transcripts.some(transcript => {
+                const cleanTranscript = transcript.trim();
+                // Exact match or contains the correct character
+                return cleanTranscript === correctWord || cleanTranscript.includes(correctWord);
+            });
+
+            setTimeout(() => {
+                totalAttempts++;
+
+                if (isCorrect) {
+                    // Correct pronunciation
+                    correctAnswers++;
+                    updateTopBadge('correct');
+                    updateBottomButton('correct');
+
+                    // Update score with animation
+                    if (window.animateScoreUpdate) {
+                        window.animateScoreUpdate(correctAnswers * 10);
+                    }
+
+                    // Auto-advance to next card after celebration
+                    setTimeout(() => {
+                        if (currentIndex < cards.length - 1) {
+                            nextCard();
+                        } else {
+                            // Last card completed - show summary
+                            showCompletionSummary();
+                        }
+                    }, 2000);
+                } else {
+                    // Incorrect pronunciation
+                    attemptsForCurrentCard++;
+                    updateTopBadge('wrong');
+                    updateBottomButton('wrong');
+
+                    if (attemptsForCurrentCard >= 3) {
+                        // Failed 3 times - skip to next card
+                        setTimeout(() => {
+                            updateTopBadge('next');
+                            const textSpan = document.querySelector('.absolute.-top-5 > div span:last-child');
+                            if (textSpan) textSpan.textContent = 'Moving on...';
+
+                            setTimeout(() => {
+                                if (currentIndex < cards.length - 1) {
+                                    nextCard();
+                                } else {
+                                    // Last card - show summary
+                                    showCompletionSummary();
+                                }
+                            }, 1500);
+                        }, 2000);
+                    } else {
+                        // Still have attempts left - play correct pronunciation
+                        setTimeout(() => {
+                            speakCurrentWord();
+                        }, 3500);
+
+                        // Reset to default after audio finishes
+                        setTimeout(() => {
+                            updateTopBadge('listen');
+                            updateBottomButton('default');
+                        }, 6500);
+                    }
+                }
+
+                updateHeader();
+            }, 800);
+        }
+
+        // ========== Show Completion Summary ==========
+        function showCompletionSummary() {
+            const percentage = Math.round((correctAnswers / cards.length) * 100);
+            const avgAttempts = (totalAttempts / cards.length).toFixed(1);
+
+            // Determine performance level
+            let performanceEmoji = '🎉';
+            let performanceText = 'Xuất sắc!';
+            let performanceColor = 'text-green-600';
+
+            if (percentage >= 90) {
+                performanceEmoji = '🏆';
+                performanceText = 'Hoàn hảo!';
+                performanceColor = 'text-yellow-600';
+            } else if (percentage >= 70) {
+                performanceEmoji = '🎉';
+                performanceText = 'Rất tốt!';
+                performanceColor = 'text-green-600';
+            } else if (percentage >= 50) {
+                performanceEmoji = '👍';
+                performanceText = 'Tốt!';
+                performanceColor = 'text-blue-600';
+            } else {
+                performanceEmoji = '💪';
+                performanceText = 'Cố gắng lên!';
+                performanceColor = 'text-orange-600';
+            }
+
+            // Create overlay
+            const overlay = document.createElement('div');
+            overlay.className = 'fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn';
+            overlay.innerHTML = `
+                <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-lg w-[90vw] border-2 border-slate-200 transform animate-scaleIn">
+                    <div class="text-center">
+                        <div class="text-8xl mb-4 animate-bounce">${performanceEmoji}</div>
+                        <h2 class="text-4xl font-black ${performanceColor} mb-2">${performanceText}</h2>
+                        <p class="text-xl text-slate-600 mb-6">恭喜完成！</p>
+                        
+                        <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200 mb-6">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="text-center p-4 bg-green-100 rounded-xl border border-green-200">
+                                    <div class="text-3xl font-black text-green-600">${correctAnswers}/${cards.length}</div>
+                                    <div class="text-sm text-green-700 font-semibold">Đúng</div>
+                                </div>
+                                <div class="text-center p-4 bg-blue-100 rounded-xl border border-blue-200">
+                                    <div class="text-3xl font-black text-blue-600">${percentage}%</div>
+                                    <div class="text-sm text-blue-700 font-semibold">Chính xác</div>
+                                </div>
+                                <div class="text-center p-4 bg-purple-100 rounded-xl border border-purple-200">
+                                    <div class="text-3xl font-black text-purple-600">${correctAnswers * 10}</div>
+                                    <div class="text-sm text-purple-700 font-semibold">Điểm</div>
+                                </div>
+                                <div class="text-center p-4 bg-amber-100 rounded-xl border border-amber-200">
+                                    <div class="text-3xl font-black text-amber-600">${avgAttempts}</div>
+                                    <div class="text-sm text-amber-700 font-semibold">TB Thử/Từ</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-3">
+                            <button onclick="location.reload()" class="flex-1 bg-primary hover:bg-blue-600 text-white px-6 py-3 rounded-full font-bold hover:scale-105 transition-transform shadow-md">
+                                🔄 Chơi lại
+                            </button>
+                            <button onclick="window.location.href='../user/games_home.html'" class="flex-1 bg-slate-600 hover:bg-slate-700 text-white px-6 py-3 rounded-full font-bold hover:scale-105 transition-transform shadow-md">
+                                🏠 Về trang chủ
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Add animation styles
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                @keyframes scaleIn {
+                    from { transform: scale(0.8); opacity: 0; }
+                    to { transform: scale(1); opacity: 1; }
+                }
+                .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
+                .animate-scaleIn { animation: scaleIn 0.4s ease-out; }
+            `;
+            document.head.appendChild(style);
+
+            document.body.appendChild(overlay);
+        }
+
+        // ========== Update Header ==========
+        function updateHeader() {
+            if (window.updateGameHeaderProgress) {
+                window.updateGameHeaderProgress({
+                    current: currentIndex + 1,
+                    total: cards.length,
+                    score: correctAnswers * 10,
+                    label: 'Card',
+                    animateScore: false
+                });
+            }
+        }
+
+        // ========== Start Game ==========
+        document.addEventListener('DOMContentLoaded', loadVocabularyCards);
+
+        // Simple dark mode toggle for demonstration purposes
+        // Ideally this would be connected to a toggle button, but applying system preference automatically
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+
+</body>
+
+</html>

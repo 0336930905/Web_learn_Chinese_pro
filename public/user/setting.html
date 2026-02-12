@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title data-i18n="settings.pageTitle">Trang Cài đặt Ứng dụng - Học Từ Vựng</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>⚙️</text></svg>">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="../css/user-common.css" />
+    <script src="../js/sidebar.js"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4ce64c",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#112111",
+                        "accent-blue": "#4cc9f0",
+                        "accent-purple": "#7209b7",
+                        "accent-yellow": "#ffbe0b"
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+
+        .custom-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 12px;
+            background: #e2e8f0;
+            border-radius: 9999px;
+            outline: none;
+        }
+
+        .custom-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: #4ce64c;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 4px solid white;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 min-h-screen">
+
+    <!-- Mobile Header -->
+    <div class="lg:hidden flex items-center justify-between p-4 bg-white dark:bg-zinc-900 border-b border-slate-200 dark:border-zinc-800 sticky top-0 z-30">
+        <div class="flex items-center gap-3">
+            <button id="mobile-menu-toggle" class="p-2 -ml-2 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-600 dark:text-slate-300">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+            <h1 class="font-bold text-lg text-slate-900 dark:text-white tracking-tight">VocabHero</h1>
+        </div>
+        <div class="size-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">
+            HV
+        </div>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu-overlay" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity opacity-0"></div>
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar Navigation -->
+        <div id="sidebar-container" data-active-page="settings" class="hidden lg:block flex-shrink-0 transition-transform duration-300 z-50"></div>
+        <!-- Main Content Area -->
+        <main class="flex-1 h-full overflow-y-auto w-full lg:ml-64 p-4 lg:p-12 scroll-smooth">
+            <div class="max-w-4xl mx-auto space-y-8 pb-20">
+                <!-- Section 1: Profile -->
+                <section>
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-3xl font-black text-slate-900 dark:text-white" data-i18n="settings.profileSection">Hồ sơ của bé</h2>
+                            <p class="text-slate-500" data-i18n="settings.profileDescription">Quản lý thông tin cá nhân của bé</p>
+                        </div>
+                    </div>
+                    <div
+                        class="bg-white dark:bg-zinc-900 p-8 rounded-xl border border-slate-100 dark:border-zinc-800 shadow-sm flex flex-col md:flex-row items-center gap-10">
+                        <div class="relative group">
+                            <div
+                                class="size-32 rounded-full overflow-hidden border-4 border-primary/30 bg-slate-100 flex items-center justify-center">
+                                <div class="w-full h-full bg-cover bg-center" data-alt="Ảnh đại diện hoạt hình của bé"
+                                    style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDLSkkxOVPnOJIhDKgyHUW8d7WkKWDpEzqn_WVdSkS9jfm9XLKK3vUcNeNB9NJrNFhy07OrLQBHY1QiBbUudvT8B2dFhHowX6hMHhWnggkpDk5qnJ0OROdKnx4-_vkt1fMsL-1q1N922uyi6Fka1lCSh_T-PPEveK0AQRYJziDznE9FcsJm6KBeUOZ0ICCHqssla0csKHkd2pJ_fpssd8q0irIT9D__4g-nXgb8H7f-YXTZbndifSuMcSiTXUiCzeLYsyWJbMZFbxM')">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex-1 space-y-4 w-full">
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 ml-1" data-i18n="settings.displayName">Tên
+                                    hiển thị</label>
+                                <input  style="pointer-events: none; opacity: 0.6; user-select: none;"
+                                    class="w-full px-6 py-4 rounded-full border-2 border-slate-100 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-950 focus:border-primary focus:ring-0 outline-none transition-all text-lg font-medium"
+                                    data-i18n-placeholder="settings.displayNamePlaceholder" placeholder="Nhập tên của bé..." type="text" value="Bé Gấu" />
+                            </div>
+                            <button
+                                class="px-6 py-3 rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-slate-400 text-sm font-bold hover:bg-primary/10 hover:text-primary transition-all"
+                                onclick="window.location.href='user_profile.html'">
+                                <span data-i18n="settings.changeAvatar">Thay đổi ảnh đại diện</span>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+                <!-- Section 2: Sound Settings -->
+                <section>
+                    <h2 class="text-2xl font-black text-slate-900 dark:text-white mb-6" data-i18n="settings.soundSection">Âm thanh</h2>
+                    <div
+                        class="bg-white dark:bg-zinc-900 p-8 rounded-xl border border-slate-100 dark:border-zinc-800 shadow-sm space-y-8">
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <label class="font-bold flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-primary">music_note</span>
+                                    <span data-i18n="settings.backgroundMusic">Nhạc nền</span>
+                                </label>
+                                <span class="text-sm font-bold text-slate-400">75%</span>
+                            </div>
+                            <input class="custom-slider" type="range" value="75" />
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <label class="font-bold flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-primary">sports_esports</span>
+                                    <span data-i18n="settings.gameSound">Âm thanh trò chơi</span>
+                                </label>
+                                <span class="text-sm font-bold text-slate-400">90%</span>
+                            </div>
+                            <input class="custom-slider" type="range" value="90" />
+                        </div>
+                    </div>
+                </section>
+                <!-- Section 3: Interface Theme -->
+                <section>
+                    <h2 class="text-2xl font-black text-slate-900 dark:text-white mb-6" data-i18n="settings.interfaceSection">Giao diện</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <label class="relative cursor-pointer group">
+                            <input checked="" class="peer sr-only" name="theme" type="radio" />
+                            <div
+                                class="p-6 bg-white dark:bg-zinc-900 rounded-xl border-4 border-slate-100 dark:border-zinc-800 peer-checked:border-primary transition-all flex items-center gap-4">
+                                <div
+                                    class="size-14 rounded-full bg-orange-100 flex items-center justify-center text-orange-500">
+                                    <span class="material-symbols-outlined text-3xl fill-[1]">light_mode</span>
+                                </div>
+                                <div class="text-left">
+                                    <p class="font-bold text-lg" data-i18n="settings.lightMode">Chế độ sáng</p>
+                                    <p class="text-sm text-slate-500" data-i18n="settings.lightModeDesc">Thích hợp cho ban ngày</p>
+                                </div>
+                            </div>
+                        </label>
+                        <label class="relative cursor-pointer group">
+                            <input class="peer sr-only" name="theme" type="radio" />
+                            <div
+                                class="p-6 bg-white dark:bg-zinc-900 rounded-xl border-4 border-slate-100 dark:border-zinc-800 peer-checked:border-primary transition-all flex items-center gap-4">
+                                <div
+                                    class="size-14 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-500">
+                                    <span class="material-symbols-outlined text-3xl fill-[1]">dark_mode</span>
+                                </div>
+                                <div class="text-left">
+                                    <p class="font-bold text-lg" data-i18n="settings.darkMode">Chế độ tối</p>
+                                    <p class="text-sm text-slate-500" data-i18n="settings.darkModeDesc">Dịu mắt cho buổi tối</p>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </section>
+                <!-- Section 4: Language Settings -->
+                <section>
+                    <h2 class="text-2xl font-black text-slate-900 dark:text-white mb-6" data-i18n="settings.languageSection">Ngôn ngữ</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <label class="relative cursor-pointer group">
+                            <input class="peer sr-only" name="language" type="radio" value="en" />
+                            <div class="p-4 bg-white dark:bg-zinc-900 rounded-xl border-4 border-slate-100 dark:border-zinc-800 peer-checked:border-primary transition-all flex flex-col items-center gap-2 text-center hover:bg-slate-50 dark:hover:bg-zinc-800">
+                                <span class="text-3xl">🇺🇸</span>
+                                <span class="font-bold">English</span>
+                            </div>
+                        </label>
+                        <label class="relative cursor-pointer group">
+                            <input checked="" class="peer sr-only" name="language" type="radio" value="vi" />
+                            <div class="p-4 bg-white dark:bg-zinc-900 rounded-xl border-4 border-slate-100 dark:border-zinc-800 peer-checked:border-primary transition-all flex flex-col items-center gap-2 text-center hover:bg-slate-50 dark:hover:bg-zinc-800">
+                                <span class="text-3xl">🇻🇳</span>
+                                <span class="font-bold">Tiếng Việt</span>
+                            </div>
+                        </label>
+                        <label class="relative cursor-pointer group">
+                            <input class="peer sr-only" name="language" type="radio" value="tw" />
+                            <div class="p-4 bg-white dark:bg-zinc-900 rounded-xl border-4 border-slate-100 dark:border-zinc-800 peer-checked:border-primary transition-all flex flex-col items-center gap-2 text-center hover:bg-slate-50 dark:hover:bg-zinc-800">
+                                <span class="text-3xl">🇹🇼</span>
+                                <span class="font-bold">Tiếng Đài Loan</span>
+                            </div>
+                        </label>
+                    </div>
+                </section>
+                <!-- Footer Actions -->
+             
+            </div>
+        </main>
+    </div>
+    <script src="../js/api-client.js"></script>
+    <script src="../i18n/translations.js"></script>
+    <script>
+        // Language initialization
+        async function initializeLanguage() {
+            try {
+                const token = localStorage.getItem('authToken') 
+                              || localStorage.getItem('token') 
+                              || localStorage.getItem('jwtToken');
+                if (!token) return;
+                
+                const apiClient = new ApiClient();
+                const response = await apiClient.get('/auth/profile');
+                const user = response.data;
+                const settings = user.settings || {};
+                
+                if (settings.language) {
+                    i18n.setLanguage(settings.language);
+                } else {
+                    i18n.setLanguage('vi');
+                }
+            } catch (error) {
+                console.error('Failed to load language preference:', error);
+                i18n.setLanguage('vi');
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Initialize language first
+            await initializeLanguage();
+            
+            // Check authentication BEFORE doing anything else (support multiple key names)
+            const token = localStorage.getItem('authToken') 
+                          || localStorage.getItem('token') 
+                          || localStorage.getItem('jwtToken');
+            console.log('🔍 Checking token in setting.html:', token);
+            console.log('🔍 All localStorage keys:', Object.keys(localStorage));
+            console.log('🔍 All localStorage data:', JSON.stringify(localStorage));
+            
+            if (!token) {
+                console.error('❌ No token found!');
+                alert('⚠️ Bạn chưa đăng nhập!\n\nVui lòng đăng nhập trước khi truy cập trang Cài đặt.');
+                window.location.href = '/login_screen.html';
+                return; // Stop execution
+            }
+            
+            console.log('✅ Token found, length:', token.length);
+            
+            // Normalize: if found with old key, migrate to new key
+            if (!localStorage.getItem('authToken') && token) {
+                console.log('🔄 Migrating token to authToken key...');
+                localStorage.setItem('authToken', token);
+                localStorage.removeItem('token');
+                localStorage.removeItem('jwtToken');
+            }
+
+            const apiClient = new ApiClient();
+            
+            // Find buttons by content to avoid class name collisions
+            const allButtons = Array.from(document.querySelectorAll('button'));
+            const saveBtn = allButtons.find(b => b.textContent.trim() === 'Lưu thay đổi' || b.textContent.trim() === 'Save Changes');
+            const cancelBtn = allButtons.find(b => b.textContent.trim() === 'Hủy' || b.textContent.trim() === 'Cancel');
+            
+            // Elements
+            const nameInput = document.querySelector('input[type="text"]');
+            const avatarDisplay = document.querySelector('.size-32 .bg-cover');
+            const bgMusicSlider = document.querySelectorAll('input[type="range"]')[0];
+            const sfxSlider = document.querySelectorAll('input[type="range"]')[1];
+            const themeRadios = document.querySelectorAll('input[name="theme"]');
+            const langRadios = document.querySelectorAll('input[name="language"]');
+
+            // Find logout button more robustly
+            const findLogoutButton = () => {
+                 const buttons = Array.from(document.querySelectorAll('button'));
+                 return buttons.find(b => b.textContent.includes('Đăng xuất') || b.querySelector('span')?.textContent === 'logout');
+            };
+            const logoutBtn = findLogoutButton();
+
+            // Load Settings
+            try {
+                const response = await apiClient.get('/auth/profile');
+                const user = response.data;
+                const settings = user.settings || {};
+
+                // 1. Profile
+                if (user.fullName) nameInput.value = user.fullName;
+                
+                // 2. Avatar - Update display
+                if (user.avatar && avatarDisplay) {
+                    avatarDisplay.style.backgroundImage = `url('${user.avatar}')`;
+                } else if (user.fullName && avatarDisplay) {
+                    // Use initials as fallback
+                    const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.fullName)}&background=4ce64c&color=fff&size=256`;
+                    avatarDisplay.style.backgroundImage = `url('${defaultAvatar}')`;
+                }
+                
+                // 3. Sound
+                if (settings.sound) {
+                    if (settings.sound.bgMusic !== undefined) {
+                        bgMusicSlider.value = settings.sound.bgMusic;
+                        bgMusicSlider.previousElementSibling.querySelector('span:last-child').textContent = settings.sound.bgMusic + '%';
+                    }
+                    if (settings.sound.gameSFX !== undefined) {
+                        sfxSlider.value = settings.sound.gameSFX;
+                        sfxSlider.previousElementSibling.querySelector('span:last-child').textContent = settings.sound.gameSFX + '%';
+                    }
+                }
+
+                // 3. Theme
+                if (settings.theme) {
+                    themeRadios.forEach(r => r.checked = r.nextElementSibling.innerText.includes(settings.theme === 'light' ? 'sáng' : 'tối') || (settings.theme === 'light' ? r.nextElementSibling.querySelector('span.material-symbols-outlined').textContent === 'light_mode' : r.nextElementSibling.querySelector('span.material-symbols-outlined').textContent === 'dark_mode'));
+                     // Simpler: map via index or assume structure. 
+                     // Let's assume standard HTML structure: Light is first, Dark is second
+                     if(settings.theme === 'light') themeRadios[0].checked = true;
+                     else if (settings.theme === 'dark') themeRadios[1].checked = true;
+                }
+
+                // 4. Language
+                if (settings.language) {
+                    langRadios.forEach(r => {
+                        if (r.value === settings.language) r.checked = true;
+                    });
+                     // Set local storage to match cloud
+                    if (window.i18n && window.i18n.currentLang !== settings.language) {
+                         window.i18n.setLanguage(settings.language);
+                    }
+                }
+
+            } catch (error) {
+                console.error('Failed to load settings', error);
+                // Handle authentication errors with clear messaging
+                if (error.status === 401) {
+                    alert('🔒 Phiên đăng nhập đã hết hạn!\n\nVui lòng đăng nhập lại.');
+                    localStorage.removeItem('authToken'); // Clear invalid token
+                    window.location.href = '/login_screen.html';
+                } else {
+                    alert('❌ Lỗi tải dữ liệu: ' + (error.message || 'Không thể kết nối đến server'));
+                }
+            }
+
+            // Update Audio Slider Text
+            [bgMusicSlider, sfxSlider].forEach(slider => {
+                slider.addEventListener('input', (e) => {
+                    e.target.previousElementSibling.querySelector('span:last-child').textContent = e.target.value + '%';
+                });
+            });
+
+            // Language change handler - Apply immediately
+            langRadios.forEach(radio => {
+                radio.addEventListener('change', async (e) => {
+                    const newLang = e.target.value;
+                    
+                    try {
+                        // Update backend immediately
+                        const currentSettings = {
+                            fullName: nameInput.value,
+                            settings: {
+                                theme: document.querySelector('input[name="theme"]:checked') ? 
+                                    (document.querySelector('input[name="theme"]:checked').nextElementSibling.querySelector('.material-symbols-outlined').textContent === 'dark_mode' ? 'dark' : 'light') : 'light',
+                                language: newLang,
+                                sound: {
+                                    bgMusic: parseInt(bgMusicSlider.value),
+                                    gameSFX: parseInt(sfxSlider.value)
+                                }
+                            }
+                        };
+                        
+                        await apiClient.put('/auth/profile', currentSettings);
+                        
+                        // Apply language immediately
+                        i18n.setLanguage(newLang);
+                        
+                        console.log('✅ Language changed to:', newLang);
+                        
+                        // Show success message in new language
+                        alert(i18n.t('settings.languageChanged'));
+                    } catch (error) {
+                        console.error('Failed to update language:', error);
+                        // Revert radio button on error
+                        langRadios.forEach(r => {
+                            if (r.value === i18n.currentLang) r.checked = true;
+                        });
+                        alert(i18n.t('settings.languageError'));
+                    }
+                });
+            });
+
+            // Save Settings
+            saveBtn.addEventListener('click', async () => {
+                const startText = saveBtn.textContent.trim();
+                saveBtn.querySelector('span').textContent = i18n.t('settings.saving');
+                saveBtn.disabled = true;
+
+                try {
+                    const selectedTheme = document.querySelector('input[name="theme"]:checked');
+                    // Determine theme value: Light is first -> 'light', Dark is second -> 'dark'
+                    // Or check the adjacent text/icon
+                    let themeVal = 'light';
+                    if (selectedTheme) {
+                        const icon = selectedTheme.nextElementSibling.querySelector('.material-symbols-outlined').textContent;
+                        themeVal = icon === 'dark_mode' ? 'dark' : 'light';
+                    }
+
+                    const selectedLang = document.querySelector('input[name="language"]:checked');
+
+                    const payload = {
+                        fullName: nameInput.value,
+                        settings: {
+                            theme: themeVal,
+                            language: selectedLang ? selectedLang.value : 'vi',
+                            sound: {
+                                bgMusic: parseInt(bgMusicSlider.value),
+                                gameSFX: parseInt(sfxSlider.value)
+                            }
+                        }
+                    };
+
+                    await apiClient.put('/auth/profile', payload);
+                    
+                    // Update Local Storage for i18n
+                    localStorage.setItem('preferredLanguage', payload.settings.language);
+                    if (window.i18n) window.i18n.setLanguage(payload.settings.language);
+
+                    alert(i18n.t('settings.settingsSaved'));
+                } catch (error) {
+                    console.error(error);
+                    if (error.status === 401) {
+                        alert(i18n.t('settings.loginExpired'));
+                        localStorage.removeItem('authToken');
+                        window.location.href = '/login_screen.html';
+                    } else {
+                        alert(i18n.t('settings.saveError') + (error.message || i18n.t('settings.tryAgain')));
+                    }
+                } finally {
+                    saveBtn.querySelector('span').textContent = i18n.t('settings.saveChanges');
+                    saveBtn.disabled = false;
+                }
+            });
+
+            // Cancel
+            cancelBtn.addEventListener('click', () => {
+                window.location.reload();
+            });
+
+            // Logout
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', () => {
+                    console.log('🚪 Logging out...');
+                    // Remove all possible token keys
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('jwtToken');
+                    localStorage.removeItem('user');
+                    window.location.href = '/login_screen.html';
+                });
+            }
+
+            // Mobile Menu Logic
+            const menuToggle = document.getElementById('mobile-menu-toggle');
+            const sidebarContainer = document.getElementById('sidebar-container');
+            const overlay = document.getElementById('mobile-menu-overlay');
+            let isMenuOpen = false;
+
+            function toggleMenu() {
+                isMenuOpen = !isMenuOpen;
+                if (isMenuOpen) {
+                    sidebarContainer.classList.remove('hidden');
+                    sidebarContainer.classList.add('fixed', 'inset-y-0', 'left-0', 'shadow-2xl', 'animate-slide-in');
+                    overlay.classList.remove('hidden');
+                    // Add small delay for opacity transition
+                    setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+                } else {
+                    sidebarContainer.classList.add('hidden');
+                    sidebarContainer.classList.remove('fixed', 'inset-y-0', 'left-0', 'shadow-2xl', 'animate-slide-in');
+                    overlay.classList.add('opacity-0');
+                    setTimeout(() => overlay.classList.add('hidden'), 300);
+                }
+            }
+
+            if (menuToggle) menuToggle.addEventListener('click', toggleMenu);
+            if (overlay) overlay.addEventListener('click', toggleMenu);
+
+            // Handle resize
+            window.addEventListener('resize', () => {
+                if (window.innerWidth >= 1024) { // lg breakpoint
+                    sidebarContainer.classList.remove('hidden', 'fixed', 'inset-y-0', 'left-0', 'shadow-2xl');
+                    sidebarContainer.classList.add('block');
+                    overlay.classList.add('hidden', 'opacity-0');
+                    isMenuOpen = false;
+                } else if (!isMenuOpen) {
+                    sidebarContainer.classList.add('hidden');
+                    sidebarContainer.classList.remove('block');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

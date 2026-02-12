@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="../css/user-common.css" />
+    <script src="../js/sidebar.js"></script>
+    <script src="../i18n/translations.js"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4ce64c",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#112111",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <title data-i18n="userProfile.pageTitle">Cập nhật Tài khoản Quản trị viên</title>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-slate-100 antialiased min-h-screen">
+
+    <!-- Mobile Header -->
+    <div class="lg:hidden flex items-center justify-between p-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30">
+        <div class="flex items-center gap-3">
+            <button id="mobile-menu-toggle" class="p-2 -ml-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300">
+                <span class="material-icons">menu</span>
+            </button>
+            <h1 class="font-bold text-lg text-slate-900 dark:text-white tracking-tight">VocabHero</h1>
+        </div>
+        <div class="size-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">
+            HV
+        </div>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu-overlay" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity opacity-0"></div>
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar Navigation -->
+        <div id="sidebar-container" data-active-page="settings" class="hidden lg:block flex-shrink-0 transition-transform duration-300 z-50"></div>
+        
+        <!-- Main Content -->
+        <main class="flex-1 h-full overflow-y-auto w-full lg:ml-64 p-4 lg:p-12 scroll-smooth">
+            <div class="max-w-5xl mx-auto pb-20 space-y-8">
+            <header class="mb-8">
+                <h1 class="text-3xl font-bold text-slate-900 dark:text-white" data-i18n="userProfile.pageTitle">Cập nhật Tài khoản</h1>
+                <p class="text-slate-500 dark:text-slate-400 mt-2" data-i18n="userProfile.pageDescription">Quản lý thông tin hồ sơ và bảo mật tài khoản quản trị
+                    viên của bạn.</p>
+            </header>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Section 1: Personal Information -->
+                <section class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-primary/5">
+                    <div class="mb-6">
+                        <h2 class="text-xl font-semibold text-slate-900 dark:text-white" data-i18n="userProfile.personalInfoSection">Thông tin cá nhân</h2>
+                        <p class="text-sm text-slate-500 mt-1" data-i18n="userProfile.personalInfoDesc">Cập nhật ảnh đại diện và thông tin cơ bản.</p>
+                    </div>
+                    
+                    <!-- Avatar Upload -->
+                    <div class="flex flex-col items-center gap-4 mb-6">
+                        <div class="relative group">
+                            <img alt="Admin Avatar" id="avatar_preview"
+                                class="w-32 h-32 rounded-full border-4 border-primary/10 object-cover"
+                                data-alt="Admin user profile picture circular shape"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbUw8-RfG0944VcnGM9Tjzi9SCRWT3I4eFs_9jG94-RAvTLSesTUvkOwWprGr2uRaquHi2qhDEe1wFgQ5nD0d9F9vSkjWOGkCD4m4MyP5-VY-DhTk1Bmj51Oj7RBVtZT5ytDqXb8_mJpqgiKHnmIcLI3NyOLWCjQrEgXw2zvtHjOG0S7NffJZh1h73B72TQP0dpbdAkMjjfmuhzdBiFmtfS1xhtJ-prSWuIL8YdVM0aBdsLiqTTFYPaO9CZet0tTNhRtxc93jdJys" />
+                            <input type="file" id="avatar_input" accept="image/*" class="hidden" onchange="handleAvatarChange(event)" />
+                            <button type="button" onclick="document.getElementById('avatar_input').click()"
+                                class="absolute bottom-0 right-0 bg-primary text-slate-900 p-2 rounded-full shadow-lg hover:scale-110 transition-transform">
+                                <span class="material-icons text-sm leading-none">photo_camera</span>
+                            </button>
+                        </div>
+                        <div class="text-center">
+                            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider" data-i18n="userProfile.avatarLabel">Ảnh đại diện</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Info Fields -->
+                    <div class="space-y-4">
+                        <div class="space-y-2">
+                            <label class="text-sm font-semibold text-slate-700 dark:text-slate-300"
+                                for="full_name" data-i18n="userProfile.fullName">Họ và tên</label>
+                            <input
+                                class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
+                                id="full_name" type="text" value="Quản trị viên" />
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm font-semibold text-slate-700 dark:text-slate-300"
+                                for="email" data-i18n="userProfile.email">Địa chỉ Email</label>
+                            <input
+                                class="w-full bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-slate-500 cursor-not-allowed outline-none"
+                                id="email" readonly="" type="email" value="admin@learntaiwanese.com" />
+                            <p class="text-xs text-slate-400" data-i18n="userProfile.emailNote">Email được sử dụng để đăng nhập và không thể thay đổi.</p>
+                        </div>
+                    </div>
+                </section>
+                <!-- Section 2: Change Password -->
+                <section class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-primary/5">
+                    <div class="mb-6">
+                        <h2 class="text-xl font-semibold text-slate-900 dark:text-white" data-i18n="userProfile.passwordSection">Đổi mật khẩu</h2>
+                        <p class="text-sm text-slate-500 mt-1" data-i18n="userProfile.passwordDescription">Đảm bảo tài khoản của bạn đang sử dụng mật khẩu mạnh để
+                            bảo mật.</p>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="space-y-2">
+                            <label class="text-sm font-semibold text-slate-700 dark:text-slate-300"
+                                for="current_password" data-i18n="userProfile.currentPassword">Mật khẩu hiện tại</label>
+                            <div class="relative">
+                                <input
+                                    class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
+                                    id="current_password" placeholder="••••••••" type="password" />
+                                <button class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                                    <span class="material-icons text-[20px]">visibility_off</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 gap-4">
+                            <div class="space-y-2">
+                                <label class="text-sm font-semibold text-slate-700 dark:text-slate-300"
+                                    for="new_password" data-i18n="userProfile.newPassword">Mật khẩu mới</label>
+                                <div class="relative">
+                                    <input
+                                        class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
+                                        id="new_password" placeholder="••••••••" type="password" />
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-sm font-semibold text-slate-700 dark:text-slate-300"
+                                    for="confirm_password" data-i18n="userProfile.confirmPassword">Xác nhận mật khẩu mới</label>
+                                <div class="relative">
+                                    <input
+                                        class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
+                                        id="confirm_password" placeholder="••••••••" type="password" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pt-2">
+                            <a class="text-primary hover:underline text-sm font-medium flex items-center gap-1"
+                                href="#" onclick="event.preventDefault(); openForgotPasswordModal();">
+                                <span class="material-icons text-sm">help_outline</span>
+                                Quên mật khẩu?
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            
+            <!-- Footer Actions -->
+            <div class="mt-6">
+                <div class="flex items-center justify-end gap-4 pt-4 border-t border-primary/5">
+                    <button
+                        class="px-8 py-2.5 text-slate-600 dark:text-slate-300 font-semibold hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg transition-all">
+                        <span data-i18n="userProfile.cancel">Hủy</span>
+                    </button>
+                    <button
+                        class="px-8 py-2.5 bg-primary hover:bg-primary/90 text-slate-900 font-semibold rounded-lg shadow-lg shadow-primary/25 transition-all">
+                        <span data-i18n="userProfile.saveChanges">Lưu thay đổi</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgotPasswordModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-md w-full p-8 transform transition-all">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <span class="material-icons text-primary">lock_reset</span>
+                    Khôi phục mật khẩu
+                </h3>
+                <button onclick="closeForgotPasswordModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            
+            <p class="text-slate-600 dark:text-slate-400 mb-6">
+                Nhập địa chỉ email của bạn và chúng tôi sẽ gửi liên kết đặt lại mật khẩu.
+            </p>
+            
+            <div class="space-y-4">
+                <div class="space-y-2">
+                    <label class="text-sm font-semibold text-slate-700 dark:text-slate-300" for="reset_email">Email</label>
+                    <input
+                        class="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none"
+                        id="reset_email"
+                        type="email"
+                        placeholder="Email đã đăng ký"
+                        required />
+                </div>
+                
+                <div id="resetMessage" class="hidden p-3 rounded-lg text-sm"></div>
+                
+                <button
+                    id="sendResetBtn"
+                    onclick="sendPasswordResetEmail()"
+                    class="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 rounded-lg shadow-lg shadow-primary/25 transition-all flex items-center justify-center gap-2">
+                    <span class="material-icons text-xl">send</span>
+                    Gửi email khôi phục
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/api-client.js"></script>
+    <script>
+        // Language initialization
+        async function initializeLanguage() {
+            try {
+                const apiClient = new ApiClient();
+                const response = await apiClient.get('/auth/profile');
+                const user = response.data;
+                const settings = user.settings || {};
+                
+                if (settings.language) {
+                    i18n.setLanguage(settings.language);
+                } else {
+                    i18n.setLanguage('vi');
+                }
+            } catch (error) {
+                console.error('Failed to load language preference:', error);
+                i18n.setLanguage('vi');
+            }
+        }
+        
+        // Global user data
+        let currentUser = null;
+        let selectedAvatarFile = null;
+        
+        // Handle avatar file selection
+        function handleAvatarChange(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                alert('⚠️ Vui lòng chọn file hình ảnh');
+                return;
+            }
+            
+            // Validate file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('⚠️ Kích thước file không được vượt quá 5MB');
+                return;
+            }
+            
+            // Store file for upload
+            selectedAvatarFile = file;
+            
+            // Preview image
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('avatar_preview').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+            
+            console.log('✅ Avatar selected:', file.name);
+        }
+        
+        // Load user profile on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Initialize language first
+            await initializeLanguage();
+            
+            // Check authentication
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                alert('⚠️ Vui lòng đăng nhập để truy cập trang này');
+                window.location.href = '/login_screen.html';
+                return;
+            }
+            
+            const apiClient = new ApiClient();
+            
+            try {
+                // Load user profile
+                const response = await apiClient.get('/auth/profile');
+                currentUser = response.data;
+                
+                // Populate form fields
+                document.getElementById('full_name').value = currentUser.fullName || '';
+                document.getElementById('email').value = currentUser.email || '';
+                
+                // Set avatar if available
+                if (currentUser.avatar) {
+                    document.getElementById('avatar_preview').src = currentUser.avatar;
+                }
+                
+                console.log('✅ User profile loaded:', currentUser);
+            } catch (error) {
+                console.error('Failed to load profile:', error);
+                if (error.status === 401) {
+                    alert('🔒 Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+                    localStorage.removeItem('authToken');
+                    window.location.href = '/login_screen.html';
+                } else {
+                    alert('❌ Không thể tải thông tin người dùng');
+                }
+            }
+        });
+        
+        function openForgotPasswordModal() {
+            const modal = document.getElementById('forgotPasswordModal');
+            const emailInput = document.getElementById('reset_email');
+            const messageDiv = document.getElementById('resetMessage');
+            
+            // Auto-fill email from current user
+            if (currentUser && currentUser.email) {
+                emailInput.value = currentUser.email;
+                emailInput.disabled = true; // Make it read-only
+                emailInput.classList.add('cursor-not-allowed', 'bg-slate-100', 'dark:bg-slate-700');
+            }
+            
+            messageDiv.classList.add('hidden');
+            modal.classList.remove('hidden');
+        }
+        
+        function closeForgotPasswordModal() {
+            const modal = document.getElementById('forgotPasswordModal');
+            const emailInput = document.getElementById('reset_email');
+            
+            // Re-enable email input for next time
+            emailInput.disabled = false;
+            emailInput.classList.remove('cursor-not-allowed', 'bg-slate-100', 'dark:bg-slate-700');
+            
+            modal.classList.add('hidden');
+        }
+        
+        async function sendPasswordResetEmail() {
+            const emailInput = document.getElementById('reset_email');
+            const email = emailInput.value.trim();
+            const messageDiv = document.getElementById('resetMessage');
+            const sendBtn = document.getElementById('sendResetBtn');
+            
+            if (!email) {
+                messageDiv.textContent = '⚠️ Vui lòng nhập địa chỉ email';
+                messageDiv.className = 'p-3 rounded-lg text-sm bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300';
+                messageDiv.classList.remove('hidden');
+                return;
+            }
+            
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                messageDiv.textContent = '⚠️ Email không hợp lệ';
+                messageDiv.className = 'p-3 rounded-lg text-sm bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300';
+                messageDiv.classList.remove('hidden');
+                return;
+            }
+            
+            // Disable button and show loading
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<span class="material-icons animate-spin text-xl">sync</span> Đang gửi...';
+            
+            try {
+                const apiClient = new ApiClient();
+                const response = await apiClient.post('/auth/forgot-password', { email });
+                
+                if (response.success) {
+                    messageDiv.textContent = '✅ ' + (response.message || 'Email khôi phục đã được gửi! Vui lòng kiểm tra hộp thư của bạn.');
+                    messageDiv.className = 'p-3 rounded-lg text-sm bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300';
+                    messageDiv.classList.remove('hidden');
+                    
+                    // Close modal after 3 seconds
+                    setTimeout(() => {
+                        closeForgotPasswordModal();
+                    }, 3000);
+                } else {
+                    throw new Error(response.message || 'Gửi email thất bại');
+                }
+            } catch (error) {
+                console.error('Password reset error:', error);
+                messageDiv.textContent = '❌ ' + (error.message || 'Có lỗi xảy ra. Vui lòng thử lại.');
+                messageDiv.className = 'p-3 rounded-lg text-sm bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300';
+                messageDiv.classList.remove('hidden');
+            } finally {
+                // Re-enable button
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = '<span class="material-icons text-xl">send</span> Gửi email khôi phục';
+            }
+        }
+        
+        // Save profile changes
+        async function saveProfile() {
+            const fullName = document.getElementById('full_name').value.trim();
+            const currentPassword = document.getElementById('current_password').value;
+            const newPassword = document.getElementById('new_password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+            
+            // Get save button
+            const saveBtn = document.querySelector('button:contains("Lưu thay đổi")') || 
+                            Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Lưu thay đổi'));
+            
+            if (!saveBtn) {
+                alert('❌ Không tìm thấy nút lưu');
+                return;
+            }
+            
+            const originalText = saveBtn.innerHTML;
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<span class="material-icons animate-spin text-xl">sync</span> Đang lưu...';
+            
+            try {
+                const apiClient = new ApiClient();
+                const updateData = {};
+                
+                // Update full name if changed
+                if (fullName && fullName !== currentUser.fullName) {
+                    updateData.fullName = fullName;
+                }
+                
+                // Upload avatar if selected
+                if (selectedAvatarFile) {
+                    try {
+                        const avatarUrl = await uploadAvatar(selectedAvatarFile);
+                        updateData.avatar = avatarUrl;
+                        console.log('✅ Avatar uploaded:', avatarUrl);
+                    } catch (error) {
+                        console.error('Avatar upload failed:', error);
+                        throw new Error('Không thể tải lên ảnh đại diện: ' + error.message);
+                    }
+                }
+                
+                // Update password if provided
+                if (currentPassword && newPassword) {
+                    if (newPassword !== confirmPassword) {
+                        throw new Error('Mật khẩu xác nhận không khớp');
+                    }
+                    if (newPassword.length < 8) {
+                        throw new Error('Mật khẩu mới phải có ít nhất 8 ký tự');
+                    }
+                    
+                    updateData.currentPassword = currentPassword;
+                    updateData.newPassword = newPassword;
+                }
+                
+                if (Object.keys(updateData).length === 0) {
+                    alert('⚠️ Không có thay đổi nào để lưu');
+                    return;
+                }
+                
+                // Send update request
+                const response = await apiClient.put('/auth/profile', updateData);
+                
+                if (response.success) {
+                    alert('✅ Cập nhật thông tin thành công!');
+                    
+                    // Clear password fields
+                    document.getElementById('current_password').value = '';
+                    document.getElementById('new_password').value = '';
+                    document.getElementById('confirm_password').value = '';
+                    
+                    // Reload profile data
+                    const profileResponse = await apiClient.get('/auth/profile');
+                    currentUser = profileResponse.data;
+                    document.getElementById('full_name').value = currentUser.fullName || '';
+                    if (currentUser.avatar) {
+                        document.getElementById('avatar_preview').src = currentUser.avatar;
+                    }
+                    
+                    // Clear selected file
+                    selectedAvatarFile = null;
+                    document.getElementById('avatar_input').value = '';
+                } else {
+                    throw new Error(response.message || 'Cập nhật thất bại');
+                }
+            } catch (error) {
+                console.error('Update profile error:', error);
+                alert('❌ ' + (error.message || 'Có lỗi xảy ra khi cập nhật'));
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = originalText;
+            }
+        }
+        
+        // Upload avatar to server (converts to base64 or uploads to cloud storage)
+        async function uploadAvatar(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // For now, store as base64 data URL
+                    // In production, upload to cloud storage (AWS S3, Cloudinary, etc.)
+                    resolve(e.target.result);
+                };
+                reader.onerror = function(error) {
+                    reject(error);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        // Cancel button handler
+        function cancelChanges() {
+            if (currentUser) {
+                document.getElementById('full_name').value = currentUser.fullName || '';
+                document.getElementById('current_password').value = '';
+                document.getElementById('new_password').value = '';
+                document.getElementById('confirm_password').value = '';
+                
+                // Reset avatar preview
+                if (currentUser.avatar) {
+                    document.getElementById('avatar_preview').src = currentUser.avatar;
+                }
+                selectedAvatarFile = null;
+                document.getElementById('avatar_input').value = '';
+            }
+        }
+        
+        // Attach event listeners after DOM loads
+        window.addEventListener('DOMContentLoaded', () => {
+            // Save button
+            const saveBtn = Array.from(document.querySelectorAll('button')).find(b => 
+                b.textContent.includes('Lưu thay đổi')
+            );
+            if (saveBtn) {
+                saveBtn.addEventListener('click', saveProfile);
+            }
+            
+            // Cancel button
+            const cancelBtn = Array.from(document.querySelectorAll('button')).find(b => 
+                b.textContent.includes('Hủy')
+            );
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', cancelChanges);
+            }
+        });
+        
+        // Close modal when clicking outside
+        document.getElementById('forgotPasswordModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeForgotPasswordModal();
+            }
+        });
+        
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeForgotPasswordModal();
+            }
+        });
+
+        // Mobile Menu Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuToggle = document.getElementById('mobile-menu-toggle');
+            const sidebarContainer = document.getElementById('sidebar-container');
+            const overlay = document.getElementById('mobile-menu-overlay');
+            let isMenuOpen = false;
+
+            function toggleMenu() {
+                isMenuOpen = !isMenuOpen;
+                if (isMenuOpen) {
+                    sidebarContainer.classList.remove('hidden');
+                    sidebarContainer.classList.add('fixed', 'inset-y-0', 'left-0', 'shadow-2xl', 'animate-slide-in');
+                    overlay.classList.remove('hidden');
+                    // Add small delay for opacity transition
+                    setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+                } else {
+                    sidebarContainer.classList.add('hidden');
+                    sidebarContainer.classList.remove('fixed', 'inset-y-0', 'left-0', 'shadow-2xl', 'animate-slide-in');
+                    overlay.classList.add('opacity-0');
+                    setTimeout(() => overlay.classList.add('hidden'), 300);
+                }
+            }
+
+            menuToggle?.addEventListener('click', toggleMenu);
+            overlay?.addEventListener('click', toggleMenu);
+
+            // Handle resize
+            window.addEventListener('resize', () => {
+                if (window.innerWidth >= 1024) { // lg breakpoint
+                    sidebarContainer.classList.remove('hidden', 'fixed', 'inset-y-0', 'left-0', 'shadow-2xl');
+                    sidebarContainer.classList.add('block');
+                    overlay.classList.add('hidden', 'opacity-0');
+                    isMenuOpen = false;
+                } else if (!isMenuOpen) {
+                    sidebarContainer.classList.add('hidden');
+                    sidebarContainer.classList.remove('block');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

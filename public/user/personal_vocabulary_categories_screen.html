@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title data-i18n="personalCategories.pageTitle">Personal Vocabulary Categories</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>📁</text></svg>">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="../css/user-common.css" />
+    <!-- Translations -->
+    <script src="../i18n/translations.js"></script>
+    <!-- API Client -->
+    <script src="../js/api-client.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4ce64c",
+                        "primary-dark": "#3db83d",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#112111",
+                        "card-light": "#ffffff",
+                        "card-dark": "#1a2c1a",
+                        "text-main": "#0e1b0e",
+                        "text-secondary": "#509550",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"],
+                        "body": ["Lexend", "sans-serif"]
+                    },
+                    colors: {
+                        "primary": "#4ce64c",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#112111",
+                        "accent-blue": "#4cc9f0",
+                        "accent-purple": "#7209b7",
+                        "accent-yellow": "#ffbe0b"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "1.5rem",
+                        "xl": "2rem",
+                        "2xl": "2.5rem",
+                        "3xl": "3rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        "soft": "0 4px 20px -2px rgba(0, 0, 0, 0.05)",
+                        "fun": "0 8px 0px 0px rgba(0,0,0,0.1)",
+                        "fun-hover": "0 12px 0px 0px rgba(0,0,0,0.1)",
+                        "inner-glow": "inset 0 2px 4px 0 rgba(255, 255, 255, 0.3)"
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+
+        .folder-card {
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .folder-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 0px 0px rgba(76, 230, 76, 0.2);
+        }
+
+        .add-card:hover {
+            transform: translateY(-4px);
+            border-color: #4ce64c;
+            background-color: #f0fdf0;
+        }
+
+        /* Custom scrollbar for playful feel */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #dcfce7;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4ce64c;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .active-fill .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+    <script src="../js/sidebar.js"></script>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-text-main dark:text-white overflow-hidden">
+    <div class="flex h-screen w-full overflow-hidden">
+        <!-- Sidebar Navigation -->
+        <div id="sidebar-container" data-active-page="categories"></div>
+        <!-- Main Content Area -->
+        <main class="flex-1 ml-64 overflow-y-auto bg-background-light dark:bg-background-dark relative">
+            <!-- Decorative background blobs -->
+            <div
+                class="absolute top-0 right-0 -z-10 h-96 w-96 translate-x-1/3 -translate-y-1/3 rounded-full bg-primary/10 blur-3xl">
+            </div>
+            <div
+                class="absolute bottom-0 left-0 -z-10 h-64 w-64 -translate-x-1/3 translate-y-1/3 rounded-full bg-blue-400/10 blur-3xl">
+            </div>
+            <div class="mx-auto max-w-7xl px-8 py-8 md:px-12 md:py-10">
+                <!-- Header Section -->
+                <header class="mb-10 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+                    <div class="flex flex-col gap-2">
+                        <h1
+                            class="text-4xl md:text-5xl font-black tracking-tight text-text-main dark:text-white drop-shadow-sm" data-i18n="personalCategories.title">
+                            Bộ sưu tập 
+                        </h1>
+                        <p class="text-lg font-medium text-text-secondary dark:text-gray-400 max-w-md" data-i18n="personalCategories.subtitle">
+                            Quản lý danh sách từ vựng và học từ mới mỗi ngày! 🌟
+                        </p>
+                    </div>
+                    <!-- Search Bar -->
+                    <div class="relative w-full md:w-96">
+                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+                            <span class="material-symbols-outlined text-gray-400">search</span>
+                        </div>
+                        <input id="searchInput"
+                            class="block w-full rounded-2xl border-none bg-white py-4 pl-12 pr-4 text-base font-medium text-text-main shadow-fun placeholder:text-gray-400 focus:ring-4 focus:ring-primary/20 dark:bg-card-dark dark:text-white dark:placeholder:text-gray-500 transition-shadow"
+                            type="text" data-i18n="[placeholder]personalCategories.searchPlaceholder" />
+                    </div>
+                </header>
+                <!-- Filter Bar -->
+                <div class="mb-6 flex flex-wrap items-center gap-3">
+                    <span class="text-sm font-bold text-text-main dark:text-white" data-i18n="personalCategories.filterLabel">Lọc theo:</span>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="filter-btn px-4 py-2 rounded-full bg-primary text-white font-semibold text-sm transition-all shadow-sm hover:shadow-md" data-filter="all" data-i18n="personalCategories.filterAll">
+                            Tất cả
+                        </button>
+                        <button class="filter-btn px-4 py-2 rounded-full bg-white dark:bg-card-dark text-text-main dark:text-white border border-gray-200 dark:border-gray-700 font-medium text-sm hover:border-primary hover:text-primary transition-all" data-filter="learning" data-i18n="personalCategories.filterLearning">
+                            Đang học
+                        </button>
+                        <button class="filter-btn px-4 py-2 rounded-full bg-white dark:bg-card-dark text-text-main dark:text-white border border-gray-200 dark:border-gray-700 font-medium text-sm hover:border-primary hover:text-primary transition-all" data-filter="completed" data-i18n="personalCategories.filterCompleted">
+                            Đã hoàn thành
+                        </button>
+                        <button class="filter-btn px-4 py-2 rounded-full bg-white dark:bg-card-dark text-text-main dark:text-white border border-gray-200 dark:border-gray-700 font-medium text-sm hover:border-primary hover:text-primary transition-all" data-filter="new" data-i18n="personalCategories.filterNew">
+                            Mới tạo
+                        </button>
+                    </div>
+                </div>
+                <!-- Categories Grid -->
+                <div id="categoriesGrid" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    <!-- Create New Card -->
+                    <button id="openCreateCategoryModal"
+                        class="add-card group relative flex h-64 flex-col items-center justify-center gap-4 rounded-3xl border-4 border-dashed border-gray-300 bg-transparent p-6 text-center transition-all dark:border-gray-700">
+                        <div
+                            class="flex h-20 w-20 items-center justify-center rounded-full bg-primary text-white shadow-lg transition-transform group-hover:scale-110 group-hover:rotate-90">
+                            <span class="material-symbols-outlined text-5xl font-bold">add</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-xl font-bold text-text-main dark:text-white" data-i18n="personalCategories.createNew">Tạo mới</span>
+                            <span class="text-sm font-medium text-text-secondary dark:text-gray-400" data-i18n="personalCategories.createNewDesc">Thêm chủ đề mới</span>
+                        </div>
+                    </button>
+                    <!-- Loading Placeholder -->
+                    <div id="loadingPlaceholder" class="col-span-full flex justify-center items-center py-20">
+                        <div class="flex flex-col items-center gap-4">
+                            <div class="animate-spin h-12 w-12 border-4 border-primary border-t-transparent rounded-full"></div>
+                            <p class="text-lg font-medium text-text-secondary">Đang tải danh mục...</p>
+                        </div>
+                    </div>
+                    <!-- Categories will be dynamically inserted here -->
+                </div>
+                <!-- Quick Stats Section -->
+                <div
+                    class="mt-12 rounded-3xl bg-white dark:bg-card-dark p-8 shadow-sm border border-gray-100 dark:border-gray-800">
+                    <h2 class="text-2xl font-bold text-text-main dark:text-white mb-6 flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary">monitoring</span>
+                        <span data-i18n="personalCategories.progressTitle">Tiến trình học tập</span>
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="flex items-center gap-4 p-4 rounded-2xl bg-background-light dark:bg-white/5">
+                            <div
+                                class="h-12 w-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-300">
+                                <span class="material-symbols-outlined">style</span>
+                            </div>
+                            <div>
+                                <p class="text-sm text-text-secondary dark:text-gray-400 font-medium" data-i18n="personalCategories.totalWords">Tổng số từ</p>
+                                <p class="text-2xl font-black text-text-main dark:text-white">89</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 p-4 rounded-2xl bg-background-light dark:bg-white/5">
+                            <div
+                                class="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-300">
+                                <span class="material-symbols-outlined">check_circle</span>
+                            </div>
+                            <div>
+                                <p class="text-sm text-text-secondary dark:text-gray-400 font-medium" data-i18n="personalCategories.mastered">Đã thành thạo</p>
+                                <p class="text-2xl font-black text-text-main dark:text-white">42</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 p-4 rounded-2xl bg-background-light dark:bg-white/5">
+                            <div
+                                class="h-12 w-12 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-orange-600 dark:text-orange-300">
+                                <span class="material-symbols-outlined">hourglass_top</span>
+                            </div>
+                            <div>
+                                <p class="text-sm text-text-secondary dark:text-gray-400 font-medium" data-i18n="personalCategories.studyTime">Thời gian học</p>
+                                <p class="text-2xl font-black text-text-main dark:text-white">5h 20m</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Create New Category Modal -->
+    <div id="createCategoryModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div class="bg-white dark:bg-card-dark rounded-3xl shadow-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto">
+            <!-- Modal Header -->
+            <div class="sticky top-0 bg-gradient-to-br from-primary/20 via-blue-100/50 to-purple-100/50 dark:from-primary/20 dark:via-blue-900/30 dark:to-purple-900/30 px-8 py-6 border-b border-gray-100 dark:border-gray-800 rounded-t-3xl backdrop-blur-sm">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-gradient-to-br from-primary to-blue-500 text-white p-3 rounded-2xl shadow-lg">
+                            <span class="material-symbols-outlined text-2xl">create_new_folder</span>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-black text-text-main dark:text-white" data-i18n="personalCategories.modalCreateTitle">Tạo Danh Mục Mới</h2>
+                            <p class="text-sm text-text-secondary" id="categoryModalSubtitle" data-i18n="personalCategories.modalCreateSubtitle">Bắt đầu một chủ đề học mới</p>
+                        </div>
+                    </div>
+                    <button id="closeCreateCategoryModal" class="text-gray-400 hover:text-text-main dark:hover:text-white p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
+                        <span class="material-symbols-outlined text-3xl">close</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Modal Body -->
+            <form id="createCategoryForm" class="p-8 space-y-6">
+                <!-- Category Name -->
+                <div class="space-y-2">
+                    <label class="flex items-center gap-2 text-sm font-bold text-text-main dark:text-white">
+                        <span class="material-symbols-outlined text-primary text-lg">label</span>
+                        <span data-i18n="personalCategories.nameLabel">Tên Danh Mục</span> <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" name="name" required
+                        class="w-full px-4 py-3 bg-background-light dark:bg-background-dark border-2 border-gray-200 dark:border-gray-700 rounded-2xl focus:border-primary focus:ring-4 focus:ring-primary/20 text-text-main dark:text-white font-medium transition-all"
+                        data-i18n="[placeholder]personalCategories.namePlaceholder">
+                </div>
+                
+                <!-- Description -->
+                <div class="space-y-2">
+                    <label class="flex items-center gap-2 text-sm font-bold text-text-main dark:text-white">
+                        <span class="material-symbols-outlined text-primary text-lg">notes</span>
+                        <span data-i18n="personalCategories.descLabel">Mô Tả</span>
+                    </label>
+                    <textarea name="description" rows="3"
+                        class="w-full px-4 py-3 bg-background-light dark:bg-background-dark border-2 border-gray-200 dark:border-gray-700 rounded-2xl focus:border-primary focus:ring-4 focus:ring-primary/20 text-text-main dark:text-white font-medium transition-all resize-none"
+                        data-i18n="[placeholder]personalCategories.descPlaceholder"></textarea>
+                </div>
+                
+                <!-- Icon Selection -->
+                <div class="space-y-3">
+                    <label class="flex items-center gap-2 text-sm font-bold text-text-main dark:text-white">
+                        <span class="material-symbols-outlined text-primary text-lg">emoji_emotions</span>
+                        <span data-i18n="personalCategories.iconLabel">Chọn Biểu Tượng</span>
+                    </label>
+                    <div class="grid grid-cols-6 gap-3">
+                        <button type="button" class="icon-btn aspect-square p-3 rounded-2xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary bg-white dark:bg-background-dark hover:scale-110 transition-all text-2xl" data-icon="pets">
+                            🐾
+                        </button>
+                        <button type="button" class="icon-btn aspect-square p-3 rounded-2xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary bg-white dark:bg-background-dark hover:scale-110 transition-all text-2xl" data-icon="food">
+                            🍎
+                        </button>
+                        <button type="button" class="icon-btn aspect-square p-3 rounded-2xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary bg-white dark:bg-background-dark hover:scale-110 transition-all text-2xl" data-icon="beach">
+                            🏖️
+                        </button>
+                        <button type="button" class="icon-btn aspect-square p-3 rounded-2xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary bg-white dark:bg-background-dark hover:scale-110 transition-all text-2xl" data-icon="space">
+                            🚀
+                        </button>
+                        <button type="button" class="icon-btn aspect-square p-3 rounded-2xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary bg-white dark:bg-background-dark hover:scale-110 transition-all text-2xl" data-icon="palette">
+                            🎨
+                        </button>
+                        <button type="button" class="icon-btn aspect-square p-3 rounded-2xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary bg-white dark:bg-background-dark hover:scale-110 transition-all text-2xl" data-icon="school">
+                            📚
+                        </button>
+                        <button type="button" class="icon-btn aspect-square p-3 rounded-2xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary bg-white dark:bg-background-dark hover:scale-110 transition-all text-2xl" data-icon="music">
+                            🎵
+                        </button>
+                        <button type="button" class="icon-btn aspect-square p-3 rounded-2xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary bg-white dark:bg-background-dark hover:scale-110 transition-all text-2xl" data-icon="sports">
+                            ⚽
+                        </button>
+                        <button type="button" class="icon-btn aspect-square p-3 rounded-2xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary bg-white dark:bg-background-dark hover:scale-110 transition-all text-2xl" data-icon="nature">
+                            🌿
+                        </button>
+                        <button type="button" class="icon-btn aspect-square p-3 rounded-2xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary bg-white dark:bg-background-dark hover:scale-110 transition-all text-2xl" data-icon="travel">
+                            ✈️
+                        </button>
+                        <button type="button" class="icon-btn aspect-square p-3 rounded-2xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary bg-white dark:bg-background-dark hover:scale-110 transition-all text-2xl" data-icon="tech">
+                            💻
+                        </button>
+                        <button type="button" class="icon-btn aspect-square p-3 rounded-2xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary bg-white dark:bg-background-dark hover:scale-110 transition-all text-2xl" data-icon="heart">
+                            ❤️
+                        </button>
+                    </div>
+                    <input type="hidden" id="iconInput" value="pets">
+                </div>
+                
+                <!-- Color Theme -->
+                <div class="space-y-3">
+                    <label class="flex items-center gap-2 text-sm font-bold text-text-main dark:text-white">
+                        <span class="material-symbols-outlined text-primary text-lg">palette</span>
+                        <span data-i18n="personalCategories.colorLabel">Chọn Màu Chủ Đề</span>
+                    </label>
+                    <div class="grid grid-cols-6 gap-3">
+                        <button type="button" class="color-btn aspect-square rounded-2xl border-2 border-transparent hover:border-gray-800 dark:hover:border-white hover:scale-110 transition-all bg-gradient-to-br from-blue-400 to-blue-600 shadow-lg" data-color="blue"></button>
+                        <button type="button" class="color-btn aspect-square rounded-2xl border-2 border-transparent hover:border-gray-800 dark:hover:border-white hover:scale-110 transition-all bg-gradient-to-br from-amber-400 to-amber-600 shadow-lg" data-color="amber"></button>
+                        <button type="button" class="color-btn aspect-square rounded-2xl border-2 border-transparent hover:border-gray-800 dark:hover:border-white hover:scale-110 transition-all bg-gradient-to-br from-red-400 to-red-600 shadow-lg" data-color="red"></button>
+                        <button type="button" class="color-btn aspect-square rounded-2xl border-2 border-transparent hover:border-gray-800 dark:hover:border-white hover:scale-110 transition-all bg-gradient-to-br from-indigo-400 to-indigo-600 shadow-lg" data-color="indigo"></button>
+                        <button type="button" class="color-btn aspect-square rounded-2xl border-2 border-transparent hover:border-gray-800 dark:hover:border-white hover:scale-110 transition-all bg-gradient-to-br from-green-400 to-green-600 shadow-lg" data-color="green"></button>
+                        <button type="button" class="color-btn aspect-square rounded-2xl border-2 border-transparent hover:border-gray-800 dark:hover:border-white hover:scale-110 transition-all bg-gradient-to-br from-purple-400 to-purple-600 shadow-lg" data-color="purple"></button>
+                    </div>
+                    <input type="hidden" id="colorInput" value="blue">
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex gap-4 pt-4">
+                    <button type="button" id="cancelCreateCategory"
+                        class="flex-1 px-6 py-4 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-text-main dark:text-white rounded-2xl font-bold transition-all">
+                        Hủy
+                    </button>
+                    <button type="submit"
+                        class="flex-1 px-6 py-4 bg-gradient-to-r from-primary to-blue-500 hover:from-primary-dark hover:to-blue-600 text-white rounded-2xl font-bold transition-all shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined">add_circle</span>
+                        Tạo Danh Mục
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Edit Category Modal -->
+    <div id="editCategoryModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div class="bg-white dark:bg-card-dark rounded-3xl shadow-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto">
+            <!-- Modal Header -->
+            <div class="sticky top-0 bg-gradient-to-br from-amber-100/50 via-orange-100/50 to-yellow-100/50 dark:from-amber-900/30 dark:via-orange-900/30 dark:to-yellow-900/30 px-8 py-6 border-b border-gray-100 dark:border-gray-800 rounded-t-3xl backdrop-blur-sm">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-amber-600 dark:text-amber-400 text-3xl">edit</span>
+                        <h2 class="text-2xl font-extrabold text-slate-800 dark:text-white" data-i18n="personalCategories.modalEditTitle">Chỉnh sửa Danh mục</h2>
+                    </div>
+                    <button id="closeEditCategoryModal" type="button"
+                        class="flex h-10 w-10 items-center justify-center rounded-full bg-white/50 dark:bg-gray-800/50 text-slate-600 dark:text-gray-400 hover:bg-white dark:hover:bg-gray-800 transition-all">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Modal Body -->
+            <form id="editCategoryForm" class="p-8 space-y-6">
+                <input type="hidden" id="editCategoryId" />
+                
+                <!-- Category Name -->
+                <div class="space-y-2">
+                    <label class="text-sm font-bold text-slate-700 dark:text-gray-300 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-base text-primary">label</span>
+                        <span data-i18n="personalCategories.nameLabel">Tên Danh Mục</span>
+                    </label>
+                    <input type="text" id="editNameInput" required
+                        class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-2xl focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all bg-white dark:bg-gray-800 text-slate-800 dark:text-white"
+                        data-i18n="[placeholder]personalCategories.namePlaceholder" />
+                </div>
+                
+                <!-- Description -->
+                <div class="space-y-2">
+                    <label class="text-sm font-bold text-slate-700 dark:text-gray-300 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-base text-primary">description</span>
+                        <span data-i18n="personalCategories.descLabel">Mô Tả</span>
+                    </label>
+                    <textarea id="editDescriptionInput" rows="3"
+                        class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-2xl focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all resize-none bg-white dark:bg-gray-800 text-slate-800 dark:text-white"
+                        data-i18n="[placeholder]personalCategories.descPlaceholder"></textarea>
+                </div>
+                
+                <!-- Icon Selection -->
+                <div class="space-y-3">
+                    <label class="text-sm font-bold text-slate-700 dark:text-gray-300 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-base text-primary">emoji_emotions</span>
+                        <span data-i18n="personalCategories.iconLabel">Chọn Icon</span>
+                    </label>
+                    <div class="grid grid-cols-6 gap-2">
+                        <button type="button" class="edit-icon-btn h-12 w-12 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary hover:bg-primary/10 transition-all text-2xl flex items-center justify-center" data-icon="pets">🐾</button>
+                        <button type="button" class="edit-icon-btn h-12 w-12 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary hover:bg-primary/10 transition-all text-2xl flex items-center justify-center" data-icon="food">🍎</button>
+                        <button type="button" class="edit-icon-btn h-12 w-12 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary hover:bg-primary/10 transition-all text-2xl flex items-center justify-center" data-icon="beach">🏖️</button>
+                        <button type="button" class="edit-icon-btn h-12 w-12 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary hover:bg-primary/10 transition-all text-2xl flex items-center justify-center" data-icon="space">🚀</button>
+                        <button type="button" class="edit-icon-btn h-12 w-12 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary hover:bg-primary/10 transition-all text-2xl flex items-center justify-center" data-icon="palette">🎨</button>
+                        <button type="button" class="edit-icon-btn h-12 w-12 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary hover:bg-primary/10 transition-all text-2xl flex items-center justify-center" data-icon="school">📚</button>
+                        <button type="button" class="edit-icon-btn h-12 w-12 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary hover:bg-primary/10 transition-all text-2xl flex items-center justify-center" data-icon="music">🎵</button>
+                        <button type="button" class="edit-icon-btn h-12 w-12 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary hover:bg-primary/10 transition-all text-2xl flex items-center justify-center" data-icon="sports">⚽</button>
+                        <button type="button" class="edit-icon-btn h-12 w-12 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary hover:bg-primary/10 transition-all text-2xl flex items-center justify-center" data-icon="nature">🌿</button>
+                        <button type="button" class="edit-icon-btn h-12 w-12 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary hover:bg-primary/10 transition-all text-2xl flex items-center justify-center" data-icon="travel">✈️</button>
+                        <button type="button" class="edit-icon-btn h-12 w-12 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary hover:bg-primary/10 transition-all text-2xl flex items-center justify-center" data-icon="tech">💻</button>
+                        <button type="button" class="edit-icon-btn h-12 w-12 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary hover:bg-primary/10 transition-all text-2xl flex items-center justify-center" data-icon="heart">❤️</button>
+                    </div>
+                    <input type="hidden" id="editIconInput" required />
+                </div>
+                
+                <!-- Color Selection -->
+                <div class="space-y-3">
+                    <label class="text-sm font-bold text-slate-700 dark:text-gray-300 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-base text-primary">palette</span>
+                        <span data-i18n="personalCategories.colorLabel">Chọn Màu Chủ Đạo</span>
+                    </label>
+                    <div class="grid grid-cols-3 gap-3">
+                        <button type="button" class="edit-color-btn h-16 rounded-2xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary transition-all bg-blue-50 dark:bg-slate-800" data-color="blue">
+                            <span class="text-sm font-bold text-blue-600 dark:text-blue-300">Xanh Dương</span>
+                        </button>
+                        <button type="button" class="edit-color-btn h-16 rounded-2xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary transition-all bg-amber-50 dark:bg-yellow-900/20" data-color="amber">
+                            <span class="text-sm font-bold text-amber-600 dark:text-amber-300">Vàng Cam</span>
+                        </button>
+                        <button type="button" class="edit-color-btn h-16 rounded-2xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary transition-all bg-red-50 dark:bg-red-950/30" data-color="red">
+                            <span class="text-sm font-bold text-red-600 dark:text-red-300">Đỏ</span>
+                        </button>
+                        <button type="button" class="edit-color-btn h-16 rounded-2xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary transition-all bg-indigo-50 dark:bg-indigo-950/30" data-color="indigo">
+                            <span class="text-sm font-bold text-indigo-600 dark:text-indigo-300">Chàm</span>
+                        </button>
+                        <button type="button" class="edit-color-btn h-16 rounded-2xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary transition-all bg-primary/10 dark:bg-green-900/20" data-color="green">
+                            <span class="text-sm font-bold text-green-600 dark:text-green-300">Xanh Lá</span>
+                        </button>
+                        <button type="button" class="edit-color-btn h-16 rounded-2xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary transition-all bg-purple-50 dark:bg-purple-950/30" data-color="purple">
+                            <span class="text-sm font-bold text-purple-600 dark:text-purple-300">Tím</span>
+                        </button>
+                    </div>
+                    <input type="hidden" id="editColorInput" required />
+                </div>
+                
+                <!-- Form Actions -->
+                <div class="flex gap-3 pt-4">
+                    <button type="button" id="cancelEditCategory"
+                        class="flex-1 px-6 py-4 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-slate-700 dark:text-gray-300 rounded-2xl font-bold transition-all" data-i18n="personalCategories.cancel">
+                        Hủy
+                    </button>
+                    <button type="submit"
+                        class="flex-1 px-6 py-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-2xl font-bold transition-all shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40 flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined">save</span>
+                        <span data-i18n="personalCategories.saveButton">Lưu Thay Đổi</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteConfirmModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div class="bg-white dark:bg-card-dark rounded-3xl shadow-2xl max-w-md w-full p-8">
+            <div class="flex flex-col items-center text-center gap-4">
+                <div class="h-16 w-16 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-red-600 dark:text-red-400 text-4xl">delete</span>
+                </div>
+                <h3 class="text-2xl font-extrabold text-slate-800 dark:text-white" data-i18n="personalCategories.deleteTitle">Xóa Danh Mục?</h3>
+                <p class="text-sm text-slate-600 dark:text-gray-400" data-i18n="personalCategories.deleteDesc">Bạn có chắc chắn muốn xóa danh mục này? Tất cả từ vựng trong danh mục cũng sẽ bị xóa. Hành động này không thể hoàn tác.</p>
+                <div class="flex gap-3 w-full mt-4">
+                    <button id="cancelDelete"
+                        class="flex-1 px-6 py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-slate-700 dark:text-gray-300 rounded-2xl font-bold transition-all" data-i18n="personalCategories.cancel">
+                        Hủy
+                    </button>
+                    <button id="confirmDelete"
+                        class="flex-1 px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-2xl font-bold transition-all shadow-lg shadow-red-500/30 hover:shadow-xl hover:shadow-red-500/40" data-i18n="personalCategories.confirmDelete">
+                        Xóa
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== Language Initialization ==========
+        async function initializeLanguage() {
+            try {
+                const response = await apiClient.get('/settings');
+                if (response.success && response.data && response.data.settings && response.data.settings.language) {
+                    i18n.setLanguage(response.data.settings.language);
+                } else {
+                    i18n.setLanguage('vi');
+                }
+            } catch (error) {
+                console.error('Failed to load language preference:', error);
+                i18n.setLanguage('vi');
+            }
+            // Ensure translations are applied to all elements
+            i18n.updatePageContent();
+        }
+        
+        // ========== Global State ==========
+        let categories = [];
+        let filteredCategories = [];
+        let currentUser = null;
+        let currentFilter = 'all';
+        let searchQuery = '';
+        let categoryToDelete = null;
+
+        // ========== Color Theme Mapping ==========
+        const colorThemes = {
+            blue: { bg: 'bg-blue-50 dark:bg-slate-800', glow: 'bg-blue-200/50 dark:bg-blue-900/50', badge: 'text-blue-600 dark:text-blue-300', badgeBg: 'dark:bg-slate-900/50', progress: 'bg-blue-400', button: 'bg-blue-500 hover:bg-blue-600', hover: 'group-hover:text-blue-600', iconBg: 'dark:bg-slate-700', progressBg: 'dark:bg-slate-700', border: 'dark:border-slate-700' },
+            amber: { bg: 'bg-amber-50 dark:bg-yellow-900/20', glow: 'bg-amber-200/50 dark:bg-amber-700/30', badge: 'text-amber-600 dark:text-amber-300', badgeBg: 'dark:bg-yellow-900/50', progress: 'bg-amber-400', button: 'bg-amber-500 hover:bg-amber-600', hover: 'group-hover:text-amber-500', iconBg: 'dark:bg-yellow-900/40', progressBg: 'dark:bg-yellow-900/40', border: 'dark:border-yellow-900/30' },
+            red: { bg: 'bg-red-50 dark:bg-red-950/30', glow: 'bg-red-200/50 dark:bg-red-900/30', badge: 'text-red-600 dark:text-red-300', badgeBg: 'dark:bg-red-900/50', progress: 'bg-red-400', button: 'bg-red-500 hover:bg-red-600', hover: 'group-hover:text-red-500', iconBg: 'dark:bg-red-900/40', progressBg: 'dark:bg-red-900/40', border: 'dark:border-red-900/30' },
+            indigo: { bg: 'bg-indigo-50 dark:bg-indigo-950/30', glow: 'bg-indigo-200/50 dark:bg-indigo-900/30', badge: 'text-indigo-600 dark:text-indigo-300', badgeBg: 'dark:bg-indigo-900/50', progress: 'bg-indigo-400', button: 'bg-indigo-500 hover:bg-indigo-600', hover: 'group-hover:text-indigo-500', iconBg: 'dark:bg-indigo-900/40', progressBg: 'dark:bg-indigo-900/40', border: 'dark:border-indigo-900/30' },
+            green: { bg: 'bg-primary/10 dark:bg-green-900/20', glow: 'bg-green-200/50 dark:bg-green-900/30', badge: 'text-green-600 dark:text-green-300', badgeBg: 'dark:bg-green-900/50', progress: 'bg-primary', button: 'bg-primary hover:bg-primary-dark', hover: 'group-hover:text-primary', iconBg: 'dark:bg-green-900/40', progressBg: 'dark:bg-green-900/40', border: 'dark:border-green-900/30' },
+            purple: { bg: 'bg-purple-50 dark:bg-purple-950/30', glow: 'bg-purple-200/50 dark:bg-purple-900/30', badge: 'text-purple-600 dark:text-purple-300', badgeBg: 'dark:bg-purple-900/50', progress: 'bg-purple-400', button: 'bg-purple-500 hover:bg-purple-600', hover: 'group-hover:text-purple-500', iconBg: 'dark:bg-purple-900/40', progressBg: 'dark:bg-purple-900/40', border: 'dark:border-purple-900/30' }
+        };
+
+        // ========== Icon Mapping ==========
+        const iconMap = {
+            'pets': '🐾', 'food': '🍎', 'beach': '🏖️', 'space': '🚀', 'palette': '🎨',
+            'school': '📚', 'music': '🎵', 'sports': '⚽', 'nature': '🌿', 'travel': '✈️',
+            'tech': '💻', 'heart': '❤️'
+        };
+
+        // ========== DOM Elements ==========
+        const grid = document.getElementById('categoriesGrid');
+        const loading = document.getElementById('loadingPlaceholder');
+        const searchInput = document.getElementById('searchInput');
+
+        // ========== Initialization ==========
+        async function initApp() {
+            // Initialize language first
+            await initializeLanguage();
+            
+            // 1. Check Auth (Handle sloppy user ID)
+            if (!authAPI.isAuthenticated()) {
+                window.location.href = '../login_screen.html';
+                return;
+            }
+
+            currentUser = authAPI.getCurrentUser();
+            
+            // If user data is missing, fetch from API
+            if (!currentUser) {
+                console.warn('⚠️ User data missing in localStorage. Fetching from API...');
+                try {
+                    const profileResponse = await authAPI.getProfile();
+                    if (profileResponse.success && profileResponse.data) {
+                        currentUser = profileResponse.data;
+                        // Save to localStorage for next time
+                        localStorage.setItem('user', JSON.stringify(currentUser));
+                        console.log('✅ User data fetched and saved:', currentUser);
+                    } else {
+                        throw new Error('Failed to fetch user profile');
+                    }
+                } catch (error) {
+                    console.error('❌ Failed to fetch user profile:', error);
+                    showError('Không thể lấy thông tin người dùng');
+                    authAPI.logout();
+                    return;
+                }
+            }
+            
+            // Polyfill _id if missing but id exists
+            if (currentUser && !currentUser._id && currentUser.id) {
+                console.warn('Polyfilling currentUser._id from currentUser.id');
+                currentUser._id = currentUser.id;
+            }
+
+            if (!currentUser || !currentUser._id) {
+                console.error('Invalid user data (no identifier):', currentUser);
+                showError('Dữ liệu người dùng không hợp lệ');
+                authAPI.logout();
+                return;
+            }
+
+            console.log('✅ Logged in as:', currentUser);
+
+            // 2. Load Data
+            await loadCategories();
+        }
+
+        // ========== Data Loading ==========
+        async function loadCategories() {
+            try {
+                if (loading) loading.style.display = 'flex';
+                // Note: We don't wipe grid here so the "Create" button doesn't flicker significantly if we optimized,
+                // but for simplicity we'll render whole grid after load.
+
+                const response = await categoryAPI.getAll({ limit: 100 });
+                
+                if (response.success) {
+                    // Check if response.data is array or object with categories
+                    let rawCats = [];
+                    if (Array.isArray(response.data)) {
+                        rawCats = response.data;
+                    } else if (response.data && response.data.categories) {
+                        rawCats = response.data.categories;
+                    } else if (response.data && response.data.items) {
+                        rawCats = response.data.items;
+                    }
+
+                    // Map fields - categories already have userId from backend
+                    categories = rawCats;
+                    
+                    console.log('Categories loaded:', categories);
+                    applyFiltersAndSearch();
+                } else {
+                    console.error('Failed to load categories:', response);
+                    showError(i18n.t('personalCategories.errorLoad'));
+                }
+            } catch (error) {
+                console.error('Error loading categories:', error);
+                showError(i18n.t('personalCategories.errorConnection') + error.message);
+            } finally {
+                if (loading) loading.style.display = 'none';
+            }
+        }
+
+        // ========== Filtering & Searching ==========
+        function applyFiltersAndSearch() {
+            let result = [...categories];
+
+            // Search
+            if (searchQuery && searchQuery.trim() !== '') {
+                const query = searchQuery.toLowerCase().trim();
+                result = result.filter(cat => 
+                    (cat.name && cat.name.toLowerCase().includes(query)) || 
+                    (cat.description && cat.description.toLowerCase().includes(query))
+                );
+            }
+
+            // Filter
+            if (currentFilter === 'new') {
+                result.sort((a,b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+            } else if (currentFilter === 'learning') {
+                // Mock: random subset or real field
+                // result = result.filter(c => c.progress > 0);
+            } else if (currentFilter === 'completed') {
+                // result = result.filter(c => c.progress === 100);
+            }
+
+            filteredCategories = result;
+            renderCategories();
+        }
+
+        // ========== Rendering ==========
+        function renderCategories() {
+            if (!grid) return;
+
+            // Re-create the "Add New" button card
+            const addBtnHTML = `
+                <button id="openCreateCategoryModal" onclick="openCreateModal()"
+                    class="add-card group relative flex h-64 flex-col items-center justify-center gap-4 rounded-3xl border-4 border-dashed border-gray-300 bg-transparent p-6 text-center transition-all dark:border-gray-700">
+                    <div
+                        class="flex h-20 w-20 items-center justify-center rounded-full bg-primary text-white shadow-lg transition-transform group-hover:scale-110 group-hover:rotate-90">
+                        <span class="material-symbols-outlined text-5xl font-bold">add</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-xl font-bold text-text-main dark:text-white">${i18n.t('personalCategories.createNew')}</span>
+                        <span class="text-sm font-medium text-text-secondary dark:text-gray-400">${i18n.t('personalCategories.createNewDesc')}</span>
+                    </div>
+                </button>
+            `;
+
+            grid.innerHTML = addBtnHTML + filteredCategories.map(createCategoryCard).join('');
+        }
+
+        function createCategoryCard(category) {
+            const theme = colorThemes[category.color] || colorThemes.blue;
+            const icon = iconMap[category.icon] || category.icon || '📁';
+            const wordCount = category.wordCount || 0;
+            const progress = 0; // Fixed for now
+
+            // Creator info
+            let creatorName = i18n.t('personalCategories.system');
+            if (category.creator) {
+                creatorName = category.creator.fullName || category.creator.email || i18n.t('common.user');
+            } else if (category.userId === currentUser._id) {
+                creatorName = i18n.t('personalCategories.you');
+            }
+
+            // Privacy Badge
+            const privacyBadge = category.isPrivate 
+                ? `<div class="flex items-center gap-1 rounded-full bg-gray-100 dark:bg-gray-800 px-2 py-1 text-xs font-bold text-gray-500 dark:text-gray-400">
+                     <span class="material-symbols-outlined text-[14px]">lock</span> ${i18n.t('personalCategories.private')}
+                   </div>`
+                : `<div class="flex items-center gap-1 rounded-full bg-blue-100 dark:bg-blue-900/30 px-2 py-1 text-xs font-bold text-blue-600 dark:text-blue-400">
+                     <span class="material-symbols-outlined text-[14px]">public</span> ${i18n.t('personalCategories.public')}
+                   </div>`;
+
+            // Action Buttons (Only for owner or admin)
+            const isOwner = (category.userId === currentUser._id);
+            const isAdmin = currentUser.role === 'admin';
+            
+            const actionsHTML = (isOwner || isAdmin) ? `
+                <div class="absolute right-4 top-4 z-20 flex gap-2 opacity-0 transition-opacity group-hover:opacity-100">
+                    <button onclick="event.stopPropagation(); window.openEditModal('${category._id}')" 
+                        class="h-8 w-8 rounded-full bg-white p-1 shadow-sm hover:bg-gray-50 text-gray-600 transition-transform hover:scale-110 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-sm">edit</span>
+                    </button>
+                    <button onclick="event.stopPropagation(); window.openDeleteModal('${category._id}')" 
+                        class="h-8 w-8 rounded-full bg-white p-1 shadow-sm hover:bg-red-50 text-red-500 transition-transform hover:scale-110 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-sm">delete</span>
+                    </button>
+                </div>
+            ` : '';
+
+            return `
+                <div class="folder-card group relative h-64 overflow-hidden rounded-3xl border ${theme.bg} ${theme.border} p-6 shadow-soft transition-all hover:scale-[1.02] hover:shadow-fun-hover cursor-pointer"
+                     onclick="window.location.href='category_word_list_screen.html?categoryId=${category._id}'">
+                    
+                    ${actionsHTML}
+
+                    <!-- Glow Effect -->
+                     <div class="absolute -right-6 -top-6 h-32 w-32 rounded-full ${theme.glow} blur-2xl transition-all group-hover:scale-150"></div>
+                     
+                     <div class="relative z-10 flex h-full flex-col justify-between">
+                        <div class="flex items-start justify-between">
+                            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-3xl shadow-sm dark:bg-slate-700/50">
+                                ${icon}
+                            </div>
+                            <div class="flex flex-col items-end gap-1">
+                                ${privacyBadge}
+                                <span class="text-xs font-medium text-gray-400 italic">by ${creatorName}</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-800 dark:text-white line-clamp-1" title="${category.name}">${category.name}</h3>
+                            <p class="text-sm text-slate-500 line-clamp-2 mt-1">${category.description || i18n.t('personalCategories.noDescription')}</p>
+                        </div>
+
+                        <div class="space-y-2">
+                             <div class="flex justify-between text-xs font-bold text-slate-400">
+                                <span>${wordCount} ${i18n.t('personalCategories.words')}</span>
+                                <span>${progress}%</span>
+                             </div>
+                             <div class="h-2 w-full overflow-hidden rounded-full bg-white dark:bg-slate-700/30">
+                                <div class="h-full rounded-full ${theme.progress}" style="width: ${progress}%"></div>
+                             </div>
+                        </div>
+                     </div>
+                </div>
+            `;
+        }
+
+        // ========== Helper: Show Notifications ==========
+        function showError(msg) {
+             const div = document.createElement('div');
+             div.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-red-100 border border-red-400 text-red-700 px-6 py-3 rounded-full font-bold shadow-lg animate-bounce items-center gap-2 flex';
+             div.innerHTML = `<span class="material-symbols-outlined">error</span> ${msg}`;
+             document.body.appendChild(div);
+             setTimeout(() => div.remove(), 4000);
+        }
+        function showSuccess(msg) {
+             const div = document.createElement('div');
+             div.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-green-100 border border-green-400 text-green-700 px-6 py-3 rounded-full font-bold shadow-lg animate-bounce items-center gap-2 flex';
+             div.innerHTML = `<span class="material-symbols-outlined">check_circle</span> ${msg}`;
+             document.body.appendChild(div);
+             setTimeout(() => div.remove(), 3000);
+        }
+
+        // ========== Modal Actions ==========
+        function openCreateModal() {
+            document.getElementById('createCategoryModal').classList.remove('hidden');
+            // Re-apply translations to ensure placeholders are set
+            i18n.updatePageContent();
+        }
+        function closeCreateModal() {
+            document.getElementById('createCategoryModal').classList.add('hidden');
+            const form = document.getElementById('createCategoryForm');
+            if(form) form.reset();
+            // Reset icons highlight
+            document.querySelectorAll('.icon-btn').forEach(b => b.classList.remove('ring-4', 'ring-primary'));
+            document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('ring-4', 'ring-offset-2'));
+        }
+
+        // ========== Event Listeners Bindings ==========
+        
+        // Create Modal
+        document.getElementById('closeCreateCategoryModal')?.addEventListener('click', closeCreateModal);
+        document.getElementById('cancelCreateCategory')?.addEventListener('click', closeCreateModal);
+        document.getElementById('createCategoryModal')?.addEventListener('click', (e) => {
+             if(e.target === e.currentTarget) closeCreateModal();
+        });
+
+        // Edit Modal
+        document.getElementById('closeEditCategoryModal')?.addEventListener('click', () => document.getElementById('editCategoryModal').classList.add('hidden'));
+        document.getElementById('cancelEditCategory')?.addEventListener('click', () => document.getElementById('editCategoryModal').classList.add('hidden'));
+        document.getElementById('editCategoryModal')?.addEventListener('click', (e) => {
+             if(e.target === e.currentTarget) document.getElementById('editCategoryModal').classList.add('hidden');
+        });
+
+        // Delete Modal
+        document.getElementById('cancelDelete')?.addEventListener('click', () => document.getElementById('deleteConfirmModal').classList.add('hidden'));
+        document.getElementById('deleteConfirmModal')?.addEventListener('click', (e) => {
+             if(e.target === e.currentTarget) document.getElementById('deleteConfirmModal').classList.add('hidden');
+        });
+
+        // Forms
+        document.getElementById('createCategoryForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">progress_activity</span> ' + i18n.t('personalCategories.processing');
+
+            // Get values
+            const name = e.target.querySelector('input[name="name"]').value;
+            const desc = e.target.querySelector('textarea[name="description"]').value;
+            const icon = document.getElementById('iconInput').value;
+            const color = document.getElementById('colorInput').value;
+
+            try {
+                const res = await categoryAPI.create({ name, description: desc, icon, color });
+                if (res.success) {
+                    showSuccess(i18n.t('personalCategories.successCreate'));
+                    closeCreateModal();
+                    loadCategories();
+                } else {
+                    throw new Error(res.error?.message || 'Có lỗi xảy ra');
+                }
+            } catch (err) {
+                showError(err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        });
+
+        document.getElementById('editCategoryForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+             // Implementation for update
+             const id = document.getElementById('editCategoryId').value;
+             const name = document.getElementById('editNameInput').value;
+             const desc = document.getElementById('editDescriptionInput').value;
+             const icon = document.getElementById('editIconInput').value;
+             const color = document.getElementById('editColorInput').value;
+
+             try {
+                 const res = await categoryAPI.update(id, { name, description: desc, icon, color });
+                 if (res.success) {
+                    document.getElementById('editCategoryModal').classList.add('hidden');
+                    showSuccess(i18n.t('personalCategories.successUpdate'));
+                    loadCategories();
+                 } else {
+                     throw new Error(res.error?.message || 'Lỗi cập nhật');
+                 }
+             } catch(e) { showError(e.message); }
+        });
+
+        document.getElementById('confirmDelete')?.addEventListener('click', async () => {
+             if(categoryToDelete) {
+                  try {
+                      const res = await categoryAPI.delete(categoryToDelete);
+                      if(res.success) {
+                        document.getElementById('deleteConfirmModal').classList.add('hidden');
+                        showSuccess(i18n.t('personalCategories.successDelete'));
+                        loadCategories();
+                      } else {
+                          throw new Error(res.error?.message);
+                      }
+                  } catch(e) { showError(e.message); }
+             }
+        });
+
+        // Filter / Search Buttons
+        searchInput?.addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            applyFiltersAndSearch();
+        });
+        
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => {
+                     b.classList.remove('bg-primary', 'text-white', 'shadow-sm');
+                     b.classList.add('bg-white', 'dark:bg-card-dark', 'text-text-main', 'dark:text-white', 'border', 'border-gray-200', 'dark:border-gray-700');
+                });
+                btn.classList.add('bg-primary', 'text-white', 'shadow-sm');
+                btn.classList.remove('bg-white', 'dark:bg-card-dark', 'text-text-main', 'dark:text-white', 'border', 'border-gray-200', 'dark:border-gray-700');
+                currentFilter = btn.dataset.filter;
+                applyFiltersAndSearch();
+            });
+        });
+
+        // Icon/Color pickers
+        document.querySelectorAll('.icon-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.icon-btn').forEach(b => b.classList.remove('ring-4', 'ring-primary', 'ring-offset-2'));
+                btn.classList.add('ring-4', 'ring-primary', 'ring-offset-2');
+                document.getElementById('iconInput').value = btn.dataset.icon;
+            });
+        });
+        document.querySelectorAll('.color-btn').forEach(btn => {
+             btn.addEventListener('click', () => {
+                document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('ring-4', 'ring-offset-2'));
+                btn.classList.add('ring-4', 'ring-offset-2');
+                document.getElementById('colorInput').value = btn.dataset.color;
+            });
+        });
+        document.querySelectorAll('.edit-icon-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.edit-icon-btn').forEach(b => b.classList.remove('ring-4', 'ring-primary'));
+                btn.classList.add('ring-4', 'ring-primary');
+                document.getElementById('editIconInput').value = btn.dataset.icon;
+            });
+        });
+        document.querySelectorAll('.edit-color-btn').forEach(btn => {
+             btn.addEventListener('click', () => {
+                document.querySelectorAll('.edit-color-btn').forEach(b => b.classList.remove('ring-4', 'ring-primary'));
+                btn.classList.add('ring-4', 'ring-primary');
+                document.getElementById('editColorInput').value = btn.dataset.color;
+            });
+        });
+        
+        // Expose helper to window for inline HTML onclicks
+        window.openCreateModal = openCreateModal;
+        window.openEditModal = async (id) => {
+            const cat = categories.find(c => c._id === id);
+            if(!cat) return;
+            
+            // Populate form
+            document.getElementById('editCategoryId').value = cat._id;
+            document.getElementById('editNameInput').value = cat.name;
+            document.getElementById('editDescriptionInput').value = cat.description || '';
+            document.getElementById('editIconInput').value = cat.icon;
+            document.getElementById('editColorInput').value = cat.color;
+
+            // Highlight active selections
+            document.querySelectorAll('.edit-icon-btn').forEach(btn => {
+                const isActive = btn.dataset.icon === cat.icon;
+                btn.classList.toggle('ring-4', isActive);
+                btn.classList.toggle('ring-primary', isActive);
+            });
+            document.querySelectorAll('.edit-color-btn').forEach(btn => {
+                const isActive = btn.dataset.color === cat.color;
+                btn.classList.toggle('ring-4', isActive);
+                btn.classList.toggle('ring-primary', isActive);
+            });
+
+            document.getElementById('editCategoryModal').classList.remove('hidden');
+        };
+        
+        window.openDeleteModal = (id) => {
+            categoryToDelete = id;
+            document.getElementById('deleteConfirmModal').classList.remove('hidden');
+        };
+
+        // ========== Init ==========
+        document.addEventListener('DOMContentLoaded', initApp);
+
+    </script>
+</body>
+
+</html>

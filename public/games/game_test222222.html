@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Kiểm tra kiến thức - VocabHero</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>📝</text></svg>">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="../css/user-common.css" />
+    <link rel="stylesheet" href="../css/games-common.css" />
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="../js/api-client.js"></script>
+    <!-- Theme Config -->
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4ce64c",
+                        "primary-dark": "#3db83d",
+                        "background-light": "#f8fbf8",
+                        "background-dark": "#0e1b0e",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#182618",
+                        "text-main": "#0e1b0e",
+                        "text-muted": "#6b7280",
+                    },
+                    fontFamily: {
+                        "sans": ["Lexend", "sans-serif"],
+                        "display": ["Lexend", "sans-serif"],
+                    },
+                    animation: {
+                        "bounce-slow": "bounce 3s infinite",
+                        "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Game Specific Styles */
+        .game-transition {
+            transition: all 0.3s ease-in-out;
+        }
+        
+        .option-card {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .option-card:hover:not(:disabled) {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .option-card.selected {
+            border-color: #4ce64c;
+            background-color: #efffef;
+        }
+        
+        .dark .option-card.selected {
+            background-color: rgba(76, 230, 76, 0.1);
+        }
+
+        /* Card Hover Effect - matching game_listen.html */
+        .card-hover {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Matching Game Styles */
+        .game-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .game-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .game-card.scale-105 {
+            transform: scale(1.05);
+        }
+
+        .anchor-point {
+            transition: transform 0.2s ease;
+        }
+
+        .game-card:hover .anchor-point {
+            transform: scale(1.2);
+        }
+
+        /* Connection line animation */
+        .connection-line {
+            stroke: #10b981;
+            stroke-width: 4;
+            fill: none;
+            stroke-linecap: round;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawLine 0.6s ease-out forwards;
+        }
+
+        @keyframes drawLine {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        /* Fill in Blank Styles */
+        .tile-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .tile-hover:hover:not(:disabled) {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Modal Styles */
+        .modal {
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-text-main dark:text-gray-100 min-h-screen flex flex-col font-display">
+
+    <!-- Header Container -->
+    <div id="game-header-container"></div>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col p-4 md:p-8 max-w-5xl mx-auto w-full">
+        
+        <!-- Progress Info (Hidden initially) -->
+        <div id="game-progress" class="hidden mb-6 animate-in slide-in-from-top duration-500">
+            <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-3">
+                    <span id="current-question-type" class="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-bold uppercase tracking-wider">
+                        Listening
+                    </span>
+                    <span class="text-sm font-semibold text-text-muted">Câu <span id="current-q-num">1</span>/<span id="total-q-num">20</span></span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-yellow-500">bolt</span>
+                    <span id="streak-counter" class="font-bold">0</span>
+                    <span class="text-text-muted text-xs ml-1">Streak</span>
+                </div>
+            </div>
+            <div class="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                <div id="progress-bar" class="h-full bg-primary transition-all duration-500 ease-out" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Game Container -->
+        <div id="game-container" class="flex-1 flex flex-col items-center justify-center min-h-[400px] relative">
+            <!-- Loading State -->
+            <div id="loading-state" class="absolute inset-0 flex flex-col items-center justify-center bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm z-10 hidden">
+                <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+                <p class="text-text-muted font-medium animate-pulse">Đang tải đề thi...</p>
+            </div>
+
+            <!-- Intro / Ready State (Initial View under Modal) -->
+            <div id="intro-placeholder" class="text-center opacity-50">
+                <span class="material-symbols-outlined text-8xl text-gray-300 dark:text-gray-700 mb-4">quiz</span>
+                <p class="text-xl text-gray-400">Sẵn sàng để thử thách kiến thức!</p>
+            </div>
+
+            <!-- Listening Game Template -->
+            <div id="game-listening" class="game-template hidden w-full max-w-3xl animate-in zoom-in-95 duration-300">
+                <div class="flex flex-col items-center text-center gap-4 mb-8">
+                    <h2 class="text-slate-800 dark:text-slate-200 text-lg md:text-xl font-medium">Nghe và chọn đáp án đúng</h2>
+                    <div class="relative group">
+                        <!-- Ripple Effect Layers -->
+                        <div class="absolute inset-0 rounded-full bg-primary/20 animate-ping opacity-75"></div>
+                        <div class="absolute -inset-2 rounded-full bg-primary/10 animate-pulse"></div>
+                        <button class="play-audio-btn relative z-10 flex items-center justify-center w-24 h-24 md:w-32 md:h-32 rounded-full bg-primary text-white shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 group-hover:shadow-primary/50">
+                            <span class="material-symbols-outlined text-[48px] md:text-[64px]">volume_up</span>
+                        </button>
+                    </div>
+                    <button class="replay-audio-btn text-primary hover:text-primary-dark text-sm font-semibold flex items-center gap-1 transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">replay</span>
+                        Nhấn để nghe lại
+                    </button>
+                    <!-- Display Chinese word (hidden initially, shown after first play) -->
+                    <div class="word-display hidden mt-4 text-center">
+                        <div class="text-4xl md:text-5xl font-bold text-primary mb-2 chinese-word"></div>
+                        <div class="text-lg md:text-xl text-primary-dark pinyin-word"></div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 options-grid">
+                    <!-- Options injected here -->
+                </div>
+            </div>
+
+            <!-- Matching Game Template -->
+            <div id="game-matching" class="game-template hidden w-full max-w-5xl animate-in zoom-in-95 duration-300">
+                <div class="text-center mb-8">
+                    <h3 class="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white mb-2">Ghép từ với nghĩa!</h3>
+                    <p class="text-slate-500 dark:text-slate-400 text-lg" id="match-instruction">Nhấn vào từ tiếng Trung, sau đó nhấn vào nghĩa tiếng Việt tương ứng</p>
+                </div>
+                <div class="relative flex justify-between items-center gap-8 w-full">
+                    <!-- SVG Layer for Connection Lines -->
+                    <svg id="match-connections-svg" class="absolute top-0 left-0 w-full h-full pointer-events-none z-10"></svg>
+                    
+                    <!-- Left Column: Chinese Words -->
+                    <div id="match-left" class="flex flex-col gap-6 w-full max-w-[280px] z-20">
+                        <!-- Cards will be dynamically inserted here -->
+                    </div>
+                    
+                    <!-- Right Column: Vietnamese Meanings -->
+                    <div id="match-right" class="flex flex-col gap-6 w-full max-w-[280px] z-20">
+                        <!-- Cards will be dynamically inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fill in Blank Template -->
+            <div id="game-fill-blank" class="game-template hidden w-full max-w-4xl animate-in zoom-in-95 duration-300">
+                <div class="w-full bg-white dark:bg-slate-800 rounded-3xl p-8 lg:p-12 shadow-lg border-2 border-slate-200 dark:border-slate-700 mb-8 transition-all duration-300">
+                    <!-- Title Badge -->
+                    <div class="flex justify-center mb-6">
+                        <div class="bg-primary/10 dark:bg-primary/20 text-primary dark:text-blue-400 px-6 py-2 rounded-full border-2 border-primary/30 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-sm">edit_note</span>
+                            <span class="text-sm font-bold uppercase tracking-wider">Chọn từ đúng</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Question Display -->
+                    <div id="fill-question-display" class="flex flex-col items-center justify-center gap-4 min-h-[140px]">
+                        <!-- Dynamic content will be inserted here -->
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 options-grid">
+                    <!-- Options injected here -->
+                </div>
+            </div>
+
+            <!-- Reverse Quiz Template (VN -> CN) -->
+            <div id="game-reverse" class="game-template hidden w-full max-w-3xl animate-in zoom-in-95 duration-300">
+                <div class="flex flex-col items-center text-center gap-6 mb-8">
+                    <div class="p-6 bg-surface-light dark:bg-surface-dark rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 w-full">
+                        <span class="text-sm font-bold text-primary uppercase tracking-wider mb-2 block">Dịch sang tiếng Trung</span>
+                        <h2 class="text-3xl md:text-4xl font-black text-text-main dark:text-white" id="reverse-question">
+                            Xin chào
+                        </h2>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 options-grid">
+                    <!-- Options injected here -->
+                </div>
+            </div>
+
+            <!-- Skids Vocabulary Template (Flashcard Learning) -->
+            <div id="game-skids" class="game-template hidden w-full max-w-4xl animate-in zoom-in-95 duration-300">
+                <div class="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-3xl shadow-2xl border-2 border-blue-200 dark:border-gray-700 p-8 md:p-12 relative">
+                    <!-- Top badge -->
+                    <div class="absolute top-6 left-6">
+                        <span class="bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 shadow-md px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-1 border-2 border-green-200 dark:border-green-700">
+                            <span class="material-symbols-outlined text-sm">school</span>
+                            <span>Học từ vựng</span>
+                        </span>
+                    </div>
+                    
+                    <!-- Main content -->
+                    <div class="flex flex-col md:flex-row items-center justify-center gap-8 mt-8">
+                        <!-- Large Chinese character -->
+                        <div class="text-[120px] md:text-[160px] font-black text-primary dark:text-blue-400 leading-none select-none drop-shadow-lg skids-chinese">
+                            坐
+                        </div>
+                        
+                        <!-- Emoji/Image -->
+                        <div class="bg-white dark:bg-gray-800 p-8 rounded-3xl border-2 border-blue-200 dark:border-gray-600 shadow-lg">
+                            <div class="w-32 h-32 md:w-40 md:h-40 flex items-center justify-center text-7xl md:text-8xl skids-emoji">
+                                🪑
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Word details -->
+                    <div class="text-center mt-8 space-y-3">
+                        <h1 class="text-4xl md:text-5xl font-extrabold text-primary dark:text-blue-400 skids-traditional">坐</h1>
+                        <p class="text-2xl md:text-3xl text-blue-600 dark:text-blue-300 font-semibold skids-pinyin">zuò</p>
+                        <p class="text-xl md:text-2xl text-gray-700 dark:text-gray-300 font-semibold skids-meaning">Ngồi</p>
+                    </div>
+                    
+                    <!-- Listen button -->
+                    <div class="flex justify-center mt-8">
+                        <button class="skids-listen-btn bg-primary hover:bg-blue-600 text-white px-8 py-4 rounded-full shadow-lg flex items-center gap-3 text-lg font-bold uppercase tracking-wider hover:scale-105 active:scale-95 transition-all border-2 border-white dark:border-gray-700">
+                            <span class="material-symbols-outlined text-2xl">volume_up</span>
+                            <span>Nghe phát âm</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Next Button Area -->
+        <div class="mt-8 flex justify-center h-12">
+            <button id="next-btn" class="hidden px-8 py-2 bg-primary text-white font-bold rounded-full shadow-lg shadow-primary/30 hover:scale-105 active:scale-95 transition-all text-lg flex items-center gap-2">
+                Tiếp tục <span class="material-symbols-outlined">arrow_forward</span>
+            </button>
+        </div>
+    </main>
+
+    <!-- Difficulty Selection Modal -->
+    <div id="difficulty-modal" class="modal active fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div class="bg-white dark:bg-surface-dark w-full max-w-md rounded-3xl p-6 md:p-8 shadow-2xl transform transition-all scale-100">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 text-primary">
+                    <span class="material-symbols-outlined text-4xl">inventory_2</span>
+                </div>
+                <h2 class="text-2xl font-black mb-2">Chọn Mức Độ Thử Thách</h2>
+                <p class="text-text-muted text-sm">Hãy chọn cấp độ phù hợp với khả năng của bạn để bắt đầu bài kiểm tra.</p>
+            </div>
+            
+            <div class="space-y-3">
+                <!-- Beginner Option -->
+                <button type="button" data-diff="Easy" class="diff-btn group w-full p-4 rounded-xl border-2 border-gray-100 dark:border-gray-700 hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/10 transition-all flex items-center gap-4 text-left">
+                   
+                    <div class="flex-1">
+                        <div class="font-bold text-gray-800 dark:text-white group-hover:text-green-600">Cơ Bản (Easy)</div>
+                        <div class="text-xs text-slate-500">Dành cho người mới bắt đầu</div>
+                    </div>
+                    <div class="text-green-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span class="material-symbols-outlined">check_circle</span>
+                    </div>
+                </button>
+
+                <!-- Intermediate Option -->
+                <button type="button" data-diff="Medium" class="diff-btn group w-full p-4 rounded-xl border-2 border-gray-100 dark:border-gray-700 hover:border-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/10 transition-all flex items-center gap-4 text-left relative overflow-hidden">
+                    <div class="w-10 h-10 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined">hiking</span>
+                    </div>
+                    <div class="flex-1">
+                        <div class="font-bold text-gray-800 dark:text-white group-hover:text-yellow-600">Trung Bình (Medium)</div>
+                        <div class="text-xs text-slate-500">Yêu cầu Level 3 trở lên</div>
+                    </div>
+                    <!-- Lock Overlay -->
+                    <div class="lock-overlay hidden absolute inset-0 bg-gray-100/50 dark:bg-gray-900/50 backdrop-blur-[1px] flex items-center justify-center cursor-not-allowed">
+                        <span class="material-symbols-outlined text-gray-400">lock</span>
+                    </div>
+                </button>
+
+                <!-- Advanced Option -->
+                <button type="button" data-diff="Hard" class="diff-btn group w-full p-4 rounded-xl border-2 border-gray-100 dark:border-gray-700 hover:border-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition-all flex items-center gap-4 text-left relative overflow-hidden">
+                    <div class="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined">mountain_flag</span>
+                    </div>
+                    <div class="flex-1">
+                        <div class="font-bold text-gray-800 dark:text-white group-hover:text-red-600">Khó (Hard)</div>
+                        <div class="text-xs text-slate-500">Yêu cầu Level 5 trở lên</div>
+                    </div>
+                    <!-- Lock Overlay -->
+                    <div class="lock-overlay hidden absolute inset-0 bg-gray-100/50 dark:bg-gray-900/50 backdrop-blur-[1px] flex items-center justify-center cursor-not-allowed">
+                        <span class="material-symbols-outlined text-gray-400">lock</span>
+                    </div>
+                </button>
+            </div>
+            
+            <div class="mt-6 text-center">
+                 <a href="games_home.html" class="text-sm text-text-muted hover:text-primary transition-colors">Quay lại trang chủ</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Modal -->
+    <div id="result-modal" class="modal fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+        <div class="bg-surface-light dark:bg-surface-dark w-full max-w-sm rounded-3xl p-8 shadow-2xl text-center relative overflow-hidden">
+            <!-- Background Confetti Effect -->
+            <div class="absolute inset-0 pointer-events-none opacity-10" style="background-image: radial-gradient(#4ce64c 2px, transparent 2px); background-size: 20px 20px;"></div>
+
+            <div class="w-24 h-24 bg-gradient-to-br from-yellow-300 to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-yellow-500/30 animate-bounce-slow">
+                <span class="text-5xl">🏆</span>
+            </div>
+            
+            <h2 class="text-3xl font-black text-text-main dark:text-white mb-2">Kết Thúc!</h2>
+            <p class="text-text-muted mb-6">Bạn đã hoàn thành bài kiểm tra.</p>
+            
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl">
+                    <div class="text-xs text-text-muted uppercase font-bold tracking-wider mb-1">Điểm số</div>
+                    <div class="text-2xl font-black text-primary" id="result-score">0</div>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl">
+                    <div class="text-xs text-text-muted uppercase font-bold tracking-wider mb-1">Chính xác</div>
+                    <div class="text-2xl font-black text-blue-500" id="result-accuracy">0%</div>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <button onclick="location.reload()" class="w-full py-3 bg-primary text-white font-bold rounded-xl shadow-lg hover:brightness-110 active:scale-95 transition-all">
+                    Làm lại bài thi
+                </button>
+                <a href="games_home.html" class="block w-full py-3 bg-gray-100 dark:bg-gray-800 text-text-main dark:text-gray-300 font-bold rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-all">
+                    Về trang chủ
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Insert Header
+        fetch('games-header.html')
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('game-header-container').innerHTML = html;
+                // Scripts handling
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                Array.from(tempDiv.querySelectorAll('script')).forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                    newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                    document.body.appendChild(newScript);
+                });
+            });
+
+        // ==========================================
+        // Game Logic
+        // ==========================================
+
+        const gameState = {
+            questions: [],
+            currIdx: 0,
+            score: 0,
+            streak: 0,
+            difficulty: 'Easy',
+            userLevel: 1 // Will be fetched
+        };
+
+        const GAME_TYPES = {
+            LISTENING: 'listening',
+            MATCHING: 'matching',
+            FILL_BLANK: 'fill_blank',
+            REVERSE: 'reverse',
+            SKIDS: 'skids_vocabulary'
+        };
+
+        // DOM Elements
+        const modal = document.getElementById('difficulty-modal');
+        const progressBar = document.getElementById('progress-bar');
+        const currentQNum = document.getElementById('current-q-num');
+        const totalQNum = document.getElementById('total-q-num');
+        const gameContainer = document.getElementById('game-container');
+        const nextBtn = document.getElementById('next-btn');
+
+        // Init
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkUserLevel();
+            setupDifficultyModal();
+        });
+
+        // 1. Check Level Logic
+        async function checkUserLevel() {
+            try {
+                // Simulate fetching user level from API or LocalStorage
+                // In real app: const user = await authAPI.getProfile(); gameState.userLevel = user.stats.level;
+                // For demo/prototype without full backend:
+                const storedLevel = 1; // Default
+                // We'll trust authAPI if available later, for now mock:
+                gameState.userLevel = 5; // Unlocking everything for testing
+                console.log("User Level:", gameState.userLevel);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // 2. Setup Difficulty Modal
+        function setupDifficultyModal() {
+            const btns = document.querySelectorAll('.diff-btn');
+            btns.forEach(btn => {
+                const diff = btn.dataset.diff;
+                const lock = btn.querySelector('.lock-overlay');
+                
+                // Logic based on requirements
+                // Level < 3: Only Easy
+                // Level >= 3: Easy, Medium
+                // Level >= 5: All
+                
+                let locked = false;
+                if (diff === 'Medium' && gameState.userLevel < 3) locked = true;
+                if (diff === 'Hard' && gameState.userLevel < 5) locked = true;
+
+                if (locked) {
+                    lock.classList.remove('hidden');
+                    btn.classList.add('opacity-70', 'cursor-not-allowed');
+                    btn.disabled = true;
+                } else {
+                    btn.onclick = () => startGame(diff);
+                }
+            });
+        }
+
+        // 3. Start Game
+        async function startGame(difficulty) {
+            gameState.difficulty = difficulty;
+            modal.classList.remove('active');
+            
+            // Show loading
+            document.getElementById('intro-placeholder').classList.add('hidden');
+            document.getElementById('loading-state').classList.remove('hidden');
+            document.getElementById('game-progress').classList.remove('hidden');
+            
+            try {
+                // Call API
+                const response = await window.gameAPI.getTestQuestions(difficulty);
+                const questions = response.data;
+                
+                if (!questions || questions.length === 0) {
+                   alert("Không tìm thấy câu hỏi cho cấp độ này (Admin chưa tạo dữ liệu).");
+                   location.reload();
+                   return;
+                }
+
+                gameState.questions = questions;
+                gameState.score = 0;
+                gameState.currIdx = 0;
+                gameState.streak = 0;
+                gameState.history = []; 
+
+                document.getElementById('total-q-num').innerText = questions.length;
+                document.getElementById('loading-state').classList.add('hidden');
+                
+                renderQuestion();
+
+            } catch (err) {
+                console.error(err);
+                const msg = err.data && err.data.error ? err.data.error.message : err.message;
+                alert("Lỗi tải câu hỏi: " + msg);
+                location.reload();
+            }
+        }
+
+        // 4. Render Question
+        function renderQuestion() {
+            const q = gameState.questions[gameState.currIdx];
+            
+            // Update Progress
+            const progress = ((gameState.currIdx) / gameState.questions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            currentQNum.innerText = gameState.currIdx + 1;
+            document.getElementById('current-question-type').innerText = getTypeName(q.type);
+            
+            // Clear container
+            document.querySelectorAll('.game-template').forEach(el => el.classList.add('hidden'));
+            nextBtn.classList.add('hidden');
+            
+            // Render specific type
+            if (q.type === 'listening') {
+                renderListening(q);
+            } else if (q.type === 'matching') {
+                renderMatching(q);
+            } else if (q.type === 'fill_blank') {
+                renderFillBlank(q);
+            } else if (q.type === 'reverse') {
+                renderReverse(q);
+            } else if (q.type === 'skids_vocabulary') {
+                renderSkidsVocabulary(q);
+            }
+        }
+        
+        function getTypeName(type) {
+            const names = {
+                'listening': 'Nghe hiểu',
+                'matching': 'Ghép từ',
+                'fill_blank': 'Trắc nghiệm', 
+                'reverse': 'Dịch thuật',
+                'skids_vocabulary': 'Học từ vựng'
+            };
+            return names[type] || 'Quiz';
+        }
+
+        // --- Renderers ---
+
+        // A. LISTENING
+        function renderListening(q) {
+            const container = document.getElementById('game-listening');
+            container.classList.remove('hidden');
+            
+            // Hide word display initially
+            const wordDisplay = container.querySelector('.word-display');
+            const chineseWord = container.querySelector('.chinese-word');
+            const pinyinWord = container.querySelector('.pinyin-word');
+            wordDisplay.classList.add('hidden');
+            chineseWord.textContent = '';
+            pinyinWord.textContent = '';
+            
+            // Play audio function
+            const playAudio = () => {
+                // Show word after playing
+                wordDisplay.classList.remove('hidden');
+                chineseWord.textContent = q.correctAnswer.traditional || q.correctAnswer.simplified;
+                pinyinWord.textContent = q.correctAnswer.pinyin;
+                
+                if (q.correctAnswer.audioUrl && q.correctAnswer.audioUrl.length > 5) {
+                    new Audio(q.correctAnswer.audioUrl).play().catch(e => {
+                        console.warn("Audio play failed, fallback to TTS", e);
+                        speak(q.correctAnswer.traditional);
+                    });
+                } else {
+                    speak(q.correctAnswer.traditional);
+                }
+            };
+            
+            // Setup Audio Buttons
+            const playBtn = container.querySelector('.play-audio-btn');
+            const replayBtn = container.querySelector('.replay-audio-btn');
+            playBtn.onclick = playAudio;
+            replayBtn.onclick = playAudio;
+            
+            // Render Options - matching game_listen.html style
+            const grid = container.querySelector('.options-grid');
+            grid.innerHTML = '';
+            q.options.forEach(opt => {
+                const el = document.createElement('button');
+                el.className = 'option-card card-hover group relative flex flex-col gap-4 p-6 rounded-xl bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 hover:border-primary/50 dark:hover:border-primary/50 shadow-sm text-left transition-all';
+                el.innerHTML = `
+                    <div class="flex items-center justify-between w-full">
+                        <span class="text-slate-800 dark:text-slate-100 font-bold text-xl">${opt.meaning}</span>
+                        <div class="w-6 h-6 rounded-full border-2 border-slate-200 dark:border-slate-600 group-hover:border-primary group-hover:bg-primary/10 flex items-center justify-center transition-colors">
+                            <div class="w-2.5 h-2.5 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        </div>
+                    </div>
+                `;
+                el.onclick = () => handleAnswer(q, opt.id === q.correctAnswer.id, el);
+                grid.appendChild(el);
+            });
+        }
+        
+        function speak(text) {
+            if ('speechSynthesis' in window && text && text.trim().length > 0) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'zh-CN';
+                utterance.onerror = (event) => {
+                    // Only log non-trivial errors
+                    if (event.error !== 'canceled' && event.error !== 'interrupted') {
+                        console.warn('Speech error:', event.error);
+                    }
+                };
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // B. MATCHING
+        function renderMatching(q) {
+            const container = document.getElementById('game-matching');
+            container.classList.remove('hidden');
+            
+            const leftCol = document.getElementById('match-left');
+            const rightCol = document.getElementById('match-right');
+            leftCol.innerHTML = ''; 
+            rightCol.innerHTML = '';
+            
+            let selectedLeft = null;
+            let matchesFound = 0;
+            const totalPairs = q.pairs.left.length;
+            
+            const handleMatch = (side, id, el) => {
+                if (el.classList.contains('matched')) return;
+                
+                if (side === 'left') {
+                    // Deselect previous word
+                    leftCol.querySelectorAll('.game-card').forEach(c => {
+                        c.classList.remove('border-primary', 'shadow-lg', 'shadow-primary/20', 'bg-blue-50', 'dark:bg-blue-900/20', 'scale-105');
+                        c.classList.add('border-slate-200', 'dark:border-slate-700', 'bg-white', 'dark:bg-slate-800');
+                    });
+                    
+                    // Select current word
+                    el.classList.remove('border-slate-200', 'dark:border-slate-700', 'bg-white', 'dark:bg-slate-800');
+                    el.classList.add('border-primary', 'shadow-lg', 'shadow-primary/20', 'bg-blue-50', 'dark:bg-blue-900/20', 'scale-105');
+                    
+                    selectedLeft = {id, el};
+                    
+                    // Update instruction
+                    const instruction = document.getElementById('match-instruction');
+                    if (instruction) instruction.textContent = 'Bây giờ chọn nghĩa tiếng Việt tương ứng';
+                } else {
+                    if (!selectedLeft) return; 
+                    
+                    const leftId = selectedLeft.id;
+                    const rightId = id;
+                    
+                    if (leftId === rightId) {
+                        // Correct match
+                        matchCorrectPair(selectedLeft.el, el);
+                        matchesFound++;
+                        selectedLeft = null;
+                        
+                        // Update instruction
+                        const instruction = document.getElementById('match-instruction');
+                        if (instruction) instruction.textContent = 'Tuyệt vời! Tiếp tục ghép những cặp còn lại';
+                        
+                        if (matchesFound === totalPairs) {
+                            setTimeout(() => handleAnswer(q, true, null), 500);
+                        }
+                    } else {
+                        // Wrong match
+                        matchWrongPair(selectedLeft.el, el);
+                        selectedLeft = null;
+                        
+                        // Update instruction
+                        const instruction = document.getElementById('match-instruction');
+                        if (instruction) instruction.textContent = 'Không đúng! Thử lại nhé';
+                    }
+                }
+            };
+
+            // Render Left (Chinese) - Word Cards with anchor points
+            q.pairs.left.forEach(item => {
+                const el = document.createElement('div');
+                el.className = 'game-card group relative bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-primary/50 shadow-md rounded-full h-20 flex items-center justify-center cursor-pointer select-none transition-all';
+                el.dataset.id = item.id;
+                
+                el.innerHTML = `
+                    <span class="chinese-word-speaker text-xl md:text-2xl font-bold text-slate-700 dark:text-slate-200" data-word="${item.text}">${item.text}</span>
+                    <div class="anchor-point absolute -right-3 top-1/2 -translate-y-1/2 size-6 bg-slate-300 dark:bg-slate-600 group-hover:bg-primary border-4 border-white dark:border-slate-800 rounded-full shadow-sm z-30 transition-colors"></div>
+                `;
+                
+                // Click to select and play audio
+                el.onclick = (e) => {
+                    e.stopPropagation();
+                    if (window.speakText) {
+                        window.speakText(item.text, 0.8);
+                    }
+                    handleMatch('left', item.id, el);
+                };
+                
+                leftCol.appendChild(el);
+            });
+
+            // Render Right (Vietnamese) - Meaning Cards with icons
+            q.pairs.right.forEach(item => {
+                const el = document.createElement('div');
+                el.className = 'game-card group relative bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-primary/50 shadow-md rounded-full h-20 flex items-center px-2 cursor-pointer select-none transition-all';
+                el.dataset.id = item.id;
+                
+                const icon = getMeaningIcon(item.text);
+                
+                el.innerHTML = `
+                    <div class="anchor-point absolute -left-3 top-1/2 -translate-y-1/2 size-6 bg-slate-300 dark:bg-slate-600 group-hover:bg-primary border-4 border-white dark:border-slate-800 rounded-full shadow-sm z-30 transition-colors"></div>
+                    <div class="flex items-center gap-4 pl-2 w-full">
+                        <div class="size-14 rounded-full ${icon.bgColor} flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined ${icon.textColor} text-3xl">${icon.name}</span>
+                        </div>
+                        <span class="text-xl font-medium text-slate-700 dark:text-slate-200">${item.text}</span>
+                    </div>
+                `;
+                
+                el.onclick = () => handleMatch('right', item.id, el);
+                rightCol.appendChild(el);
+            });
+        }
+        
+        // Helper: Get icon for meaning
+        function getMeaningIcon(meaning) {
+            const icons = {
+                'bg-blue-100': { name: 'star', textColor: 'text-blue-500' },
+                'bg-orange-100': { name: 'emoji_people', textColor: 'text-orange-500' },
+                'bg-green-100': { name: 'local_florist', textColor: 'text-green-500' },
+                'bg-purple-100': { name: 'favorite', textColor: 'text-purple-500' },
+                'bg-red-100': { name: 'wb_sunny', textColor: 'text-red-500' },
+                'bg-yellow-100': { name: 'lightbulb', textColor: 'text-yellow-600' },
+            };
+            
+            const colors = Object.keys(icons);
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            return {
+                bgColor: randomColor,
+                name: icons[randomColor].name,
+                textColor: icons[randomColor].textColor
+            };
+        }
+        
+        // Helper: Match correct pair
+        function matchCorrectPair(wordEl, meaningEl) {
+            // Draw connection line
+            drawConnectionLine(wordEl, meaningEl);
+            
+            // Update styling
+            wordEl.classList.remove('border-primary', 'border-slate-200', 'dark:border-slate-700', 'bg-blue-50', 'dark:bg-blue-900/20');
+            wordEl.classList.add('border-green-500', 'bg-green-50', 'dark:bg-green-900/20', 'matched');
+            wordEl.querySelector('.chinese-word-speaker').classList.add('text-green-600', 'dark:text-green-400');
+            
+            meaningEl.classList.remove('border-slate-200', 'dark:border-slate-700');
+            meaningEl.classList.add('border-green-500', 'bg-green-50', 'dark:bg-green-900/20', 'matched');
+            const meaningTextSpan = meaningEl.querySelector('.flex.items-center span:last-child');
+            if (meaningTextSpan) {
+                meaningTextSpan.classList.add('text-green-600', 'dark:text-green-400');
+            }
+            
+            // Add check icons
+            const checkIcon = '<div class="absolute -top-2 -right-2 w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center shadow-lg z-40"><span class="material-symbols-outlined text-lg">check</span></div>';
+            wordEl.style.position = 'relative';
+            meaningEl.style.position = 'relative';
+            wordEl.insertAdjacentHTML('beforeend', checkIcon);
+            meaningEl.insertAdjacentHTML('beforeend', checkIcon);
+            
+            // Keep word clickable for audio
+            const wordContent = wordEl.querySelector('.chinese-word-speaker').dataset.word;
+            wordEl.onclick = (e) => {
+                if (window.speakText) {
+                    window.speakText(wordContent, 0.8);
+                }
+            };
+            meaningEl.onclick = null;
+        }
+        
+        // Helper: Draw connection line
+        function drawConnectionLine(wordEl, meaningEl) {
+            const svg = document.getElementById('match-connections-svg');
+            if (!svg) return;
+            
+            const wordAnchor = wordEl.querySelector('.anchor-point');
+            const meaningAnchor = meaningEl.querySelector('.anchor-point');
+            
+            const wordRect = wordAnchor.getBoundingClientRect();
+            const meaningRect = meaningAnchor.getBoundingClientRect();
+            const svgRect = svg.getBoundingClientRect();
+            
+            const x1 = wordRect.left + wordRect.width / 2 - svgRect.left;
+            const y1 = wordRect.top + wordRect.height / 2 - svgRect.top;
+            const x2 = meaningRect.left + meaningRect.width / 2 - svgRect.left;
+            const y2 = meaningRect.top + meaningRect.height / 2 - svgRect.top;
+            
+            const midX = (x1 + x2) / 2;
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            const d = `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`;
+            
+            path.setAttribute('d', d);
+            path.setAttribute('class', 'connection-line');
+            
+            svg.appendChild(path);
+        }
+        
+        // Helper: Match wrong pair
+        function matchWrongPair(wordEl, meaningEl) {
+            wordEl.classList.add('border-red-500', 'bg-red-50', 'dark:bg-red-900/20');
+            meaningEl.classList.add('border-red-500', 'bg-red-50', 'dark:bg-red-900/20');
+            
+            setTimeout(() => {
+                wordEl.classList.remove('border-red-500', 'bg-red-50', 'dark:bg-red-900/20', 'border-primary', 'shadow-lg', 'shadow-primary/20', 'bg-blue-50', 'dark:bg-blue-900/20', 'scale-105');
+                wordEl.classList.add('border-slate-200', 'dark:border-slate-700', 'bg-white', 'dark:bg-slate-800');
+                meaningEl.classList.remove('border-red-500', 'bg-red-50', 'dark:bg-red-900/20');
+                meaningEl.classList.add('border-slate-200', 'dark:border-slate-700');
+                
+                const instruction = document.getElementById('match-instruction');
+                if (instruction) instruction.textContent = 'Nhấn vào từ tiếng Trung để bắt đầu';
+            }, 800);
+        }
+
+        // C. FILL BLANK (Recycled as Standard Quiz CN -> VN) since currently backend only returns word for fill_blank
+        function renderFillBlank(q) {
+            const container = document.getElementById('game-fill-blank');
+            container.classList.remove('hidden');
+            
+            // Render question display
+            const displayDiv = document.getElementById('fill-question-display');
+            displayDiv.innerHTML = '';
+            
+            // Chinese character with speaker
+            const wordContainer = document.createElement('div');
+            wordContainer.className = 'flex items-center gap-3 mb-4';
+            
+            const speakerBtn = document.createElement('button');
+            speakerBtn.className = 'inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary hover:bg-blue-600 text-white shadow-md hover:scale-110 transition-all';
+            speakerBtn.innerHTML = '<span class="material-symbols-outlined">volume_up</span>';
+            speakerBtn.onclick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (window.speakText) {
+                    window.speakText(q.correctAnswer.traditional || q.correctAnswer.simplified);
+                }
+            };
+            
+            const wordSpan = document.createElement('span');
+            wordSpan.textContent = q.correctAnswer.traditional || q.correctAnswer.simplified;
+            wordSpan.className = 'text-5xl md:text-6xl font-black text-primary dark:text-blue-400';
+            
+            wordContainer.appendChild(speakerBtn);
+            wordContainer.appendChild(wordSpan);
+            displayDiv.appendChild(wordContainer);
+            
+            // Meaning and Pinyin badges
+            const infoContainer = document.createElement('div');
+            infoContainer.className = 'flex flex-wrap justify-center gap-3 text-lg mt-4';
+            
+            const pinyinBadge = document.createElement('span');
+            pinyinBadge.className = 'px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full border border-blue-200 dark:border-blue-800 font-semibold';
+            pinyinBadge.textContent = q.correctAnswer.pinyin;
+            
+            const hintText = document.createElement('span');
+            hintText.className = 'px-4 py-2 bg-gray-100 dark:bg-gray-900/30 text-gray-700 dark:text-gray-300 rounded-full border border-gray-200 dark:border-gray-800 font-semibold';
+            hintText.textContent = 'Chọn nghĩa tiếng Việt';
+            
+            infoContainer.appendChild(pinyinBadge);
+            infoContainer.appendChild(hintText);
+            displayDiv.appendChild(infoContainer);
+            
+            // Render Options (Meanings) - tile hover style
+            const grid = container.querySelector('.options-grid');
+            grid.innerHTML = '';
+            q.options.forEach(opt => {
+                const el = document.createElement('button');
+                el.className = 'tile-hover relative flex flex-col items-center justify-center p-6 h-32 rounded-2xl bg-white dark:bg-gray-800 border-b-4 border-gray-200 dark:border-gray-700 shadow-lg transition-all duration-300 cursor-pointer group';
+                
+                const textSpan = document.createElement('span');
+                textSpan.className = 'text-2xl md:text-3xl font-bold text-gray-800 dark:text-white group-hover:scale-110 transition-transform';
+                textSpan.textContent = opt.meaning;
+                
+                el.appendChild(textSpan);
+                el.onclick = () => handleAnswer(q, opt.id === q.correctAnswer.id, el);
+                grid.appendChild(el);
+            });
+        }
+
+        // D. REVERSE (VN -> CN)
+        function renderReverse(q) {
+            const container = document.getElementById('game-reverse');
+            container.classList.remove('hidden');
+            
+            document.getElementById('reverse-question').textContent = q.correctAnswer.meaning;
+            
+            const grid = container.querySelector('.options-grid');
+            grid.innerHTML = '';
+            q.options.forEach(opt => {
+                const el = document.createElement('button');
+                el.className = 'option-card w-full p-6 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-surface-light dark:bg-surface-dark flex flex-col items-center gap-2 hover:border-primary transition-colors';
+                el.innerHTML = `
+                    <span class="text-2xl font-bold">${opt.traditional}</span>
+                    <span class="text-sm text-text-muted">${opt.pinyin}</span>
+                `;
+                el.onclick = () => handleAnswer(q, opt.id === q.correctAnswer.id, el);
+                grid.appendChild(el);
+            });
+        }
+
+        // E. SKIDS VOCABULARY (Flashcard Learning)
+        function renderSkidsVocabulary(q) {
+            const container = document.getElementById('game-skids');
+            if (!container) {
+                console.error('Skids vocabulary container not found');
+                return;
+            }
+            container.classList.remove('hidden');
+            
+            // Get word data
+            const word = q.correctAnswer || q.data || q.word;
+            if (!word) {
+                console.error('No word data found for skids vocabulary');
+                return;
+            }
+            
+            // Update Chinese character display
+            const chineseEl = container.querySelector('.skids-chinese');
+            if (chineseEl) chineseEl.textContent = word.traditional || word.simplified || '?';
+            
+            // Update traditional text
+            const traditionalEl = container.querySelector('.skids-traditional');
+            if (traditionalEl) traditionalEl.textContent = word.traditional || word.simplified || '?';
+            
+            // Update pinyin
+            const pinyinEl = container.querySelector('.skids-pinyin');
+            if (pinyinEl) pinyinEl.textContent = word.pinyin || '';
+            
+            // Update meaning
+            const meaningEl = container.querySelector('.skids-meaning');
+            if (meaningEl) meaningEl.textContent = word.meaning || '';
+            
+            // Update emoji/image (use first character of meaning as hint, or random emoji)
+            const emojiEl = container.querySelector('.skids-emoji');
+            if (emojiEl) {
+                const emojiMap = {
+                    'ngồi': '🪑', 'chạy': '🏃', 'ăn': '🍽️', 'uống': '🥤', 
+                    'ngủ': '😴', 'đi': '🚶', 'nhà': '🏠', 'xe': '🚗',
+                    'sách': '📚', 'bút': '✏️', 'bàn': '🪑', 'ghế': '🪑',
+                    'mèo': '🐱', 'chó': '🐶', 'cây': '🌳', 'hoa': '🌸',
+                    'mưa': '🌧️', 'nắng': '☀️', 'gió': '💨', 'mây': '☁️'
+                };
+                const meaningLower = (word.meaning || '').toLowerCase();
+                let emoji = '📝'; // default
+                for (const [key, value] of Object.entries(emojiMap)) {
+                    if (meaningLower.includes(key)) {
+                        emoji = value;
+                        break;
+                    }
+                }
+                emojiEl.textContent = emoji;
+            }
+            
+            // Setup audio button
+            const listenBtn = container.querySelector('.skids-listen-btn');
+            if (listenBtn) {
+                listenBtn.onclick = () => {
+                    const textToSpeak = word.traditional || word.simplified;
+                    if (textToSpeak && textToSpeak.trim().length > 0) {
+                        // Wait for voices to load if needed
+                        if (window.speechSynthesis.getVoices().length === 0) {
+                            window.speechSynthesis.addEventListener('voiceschanged', () => {
+                                if (window.speakText) {
+                                    window.speakText(textToSpeak);
+                                } else {
+                                    speak(textToSpeak);
+                                }
+                            }, { once: true });
+                        } else {
+                            if (window.speakText) {
+                                window.speakText(textToSpeak);
+                            } else {
+                                speak(textToSpeak);
+                            }
+                        }
+                    }
+                };
+            }
+            
+            // For skids vocabulary, automatically show next button after a delay
+            setTimeout(() => {
+                nextBtn.classList.remove('hidden');
+                nextBtn.innerHTML = `Tiếp tục <span class="material-symbols-outlined">arrow_forward</span>`;
+                nextBtn.className = 'px-8 py-2 bg-primary hover:bg-blue-600 text-white font-bold rounded-full shadow-lg shadow-primary/30 hover:scale-105 active:scale-95 transition-all text-lg flex items-center gap-2';
+                nextBtn.onclick = () => {
+                    // For skids, just proceed to next without scoring
+                    gameState.currIdx++;
+                    canAnswer = true;
+                    if (gameState.currIdx >= gameState.questions.length) {
+                        endGame();
+                    } else {
+                        renderQuestion();
+                    }
+                };
+            }, 1500); // Show next button after 1.5s
+        }
+
+        // 5. Handle Answer
+        let canAnswer = true;
+        
+        function handleAnswer(q, isCorrect, element) {
+            if (!canAnswer && q.type !== 'matching') return;
+            
+            if (q.type !== 'matching') {
+                canAnswer = false;
+                
+                // For listening type, show all correct/incorrect answers like game_listen.html
+                if (q.type === 'listening') {
+                    const container = document.getElementById('game-listening');
+                    const buttons = container.querySelectorAll('.options-grid button');
+                    
+                    buttons.forEach((btn, i) => {
+                        btn.disabled = true;
+                        btn.classList.remove('border-primary/50', 'bg-blue-50', 'dark:bg-blue-900/20', 'hover:border-primary/50');
+                        
+                        if (q.options[i].id === q.correctAnswer.id) {
+                            btn.classList.add('border-green-500', 'bg-green-50', 'dark:bg-green-900/20');
+                            // Add check icon
+                            const checkIcon = document.createElement('div');
+                            checkIcon.className = 'absolute -top-3 -right-3 w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center shadow-lg';
+                            checkIcon.innerHTML = '<span class="material-symbols-outlined text-xl">check</span>';
+                            btn.style.position = 'relative';
+                            btn.appendChild(checkIcon);
+                        } else if (btn === element && !isCorrect) {
+                            btn.classList.add('border-red-500', 'bg-red-50', 'dark:bg-red-900/20');
+                            // Add X icon
+                            const xIcon = document.createElement('div');
+                            xIcon.className = 'absolute -top-3 -right-3 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg';
+                            xIcon.innerHTML = '<span class="material-symbols-outlined text-xl">close</span>';
+                            btn.style.position = 'relative';
+                            btn.appendChild(xIcon);
+                        }
+                    });
+                    
+                    // Update next button with feedback - matching game_listen.html style
+                    nextBtn.innerHTML = `<span>${isCorrect ? 'Đúng rồi! Tiếp tục' : 'Sai rồi! Tiếp tục'}</span><span class="material-symbols-outlined">arrow_forward</span>`;
+                    nextBtn.className = `px-8 py-2 ${isCorrect ? 'bg-green-500 hover:bg-green-600' : 'bg-orange-500 hover:bg-orange-600'} text-white font-bold rounded-full shadow-lg transition-all text-lg flex items-center gap-2`;
+                } else if (q.type === 'fill_blank') {
+                    // For fill_blank type, show correct/incorrect similar to listening
+                    const container = document.getElementById('game-fill-blank');
+                    const buttons = container.querySelectorAll('.options-grid button');
+                    
+                    buttons.forEach((btn, i) => {
+                        btn.disabled = true;
+                        btn.classList.remove('hover:border-primary/50', 'cursor-pointer');
+                        
+                        if (q.options[i].id === q.correctAnswer.id) {
+                            // Correct answer - green gradient
+                            btn.className = 'relative flex flex-col items-center justify-center p-6 h-32 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-lg ring-4 ring-green-500 transition-all duration-300';
+                            btn.querySelector('span').className = 'text-2xl md:text-3xl font-bold';
+                            // Add check icon
+                            const checkIcon = document.createElement('div');
+                            checkIcon.className = 'absolute -top-2 -right-2 w-10 h-10 bg-white text-green-600 rounded-full flex items-center justify-center shadow-lg z-40';
+                            checkIcon.innerHTML = '<span class="material-symbols-outlined text-2xl font-bold">check</span>';
+                            btn.appendChild(checkIcon);
+                        } else if (btn === element && !isCorrect) {
+                            // Wrong selected answer - red gradient
+                            btn.className = 'relative flex flex-col items-center justify-center p-6 h-32 rounded-2xl bg-gradient-to-br from-red-500 to-rose-600 text-white shadow-lg ring-4 ring-red-500 transition-all duration-300';
+                            btn.querySelector('span').className = 'text-2xl md:text-3xl font-bold';
+                            // Add X icon
+                            const xIcon = document.createElement('div');
+                            xIcon.className = 'absolute -top-2 -right-2 w-10 h-10 bg-white text-red-600 rounded-full flex items-center justify-center shadow-lg z-40';
+                            xIcon.innerHTML = '<span class="material-symbols-outlined text-2xl font-bold">close</span>';
+                            btn.appendChild(xIcon);
+                        }
+                    });
+                    
+                    // Update next button
+                    nextBtn.innerHTML = `<span>${isCorrect ? '✓ Chính xác!' : '✗ Sai rồi!'}</span><span class="material-symbols-outlined">arrow_forward</span>`;
+                    nextBtn.className = `px-8 py-2 ${isCorrect ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'} text-white font-bold rounded-full shadow-lg transition-all text-lg flex items-center gap-2`;
+                } else {
+                    // For other types (reverse), keep original behavior
+                    if (isCorrect) {
+                        element.classList.add('!bg-green-100', '!border-green-500', 'dark:!bg-green-900/30');
+                    } else {
+                        element.classList.add('!bg-red-100', '!border-red-500', 'dark:!bg-red-900/30');
+                    }
+                }
+                
+                if (isCorrect) {
+                    gameState.score += 10;
+                    gameState.streak++;
+                } else {
+                    gameState.streak = 0;
+                }
+                
+                gameState.history.push({
+                    questionId: q.id,
+                    isCorrect: isCorrect,
+                    type: q.type
+                });
+
+                document.getElementById('streak-counter').textContent = gameState.streak;
+                nextBtn.classList.remove('hidden');
+                nextBtn.onclick = handleNext;
+            } else {
+                // Matching type logic
+                gameState.score += 20;
+                gameState.streak++; 
+                
+                 gameState.history.push({
+                    questionId: q.id,
+                    isCorrect: true, 
+                    type: q.type
+                });
+                
+                nextBtn.classList.remove('hidden');
+                nextBtn.onclick = handleNext;
+            }
+        }
+
+        function handleNext() {
+            gameState.currIdx++;
+            canAnswer = true;
+            
+            if (gameState.currIdx >= gameState.questions.length) {
+                endGame();
+            } else {
+                renderQuestion();
+            }
+        }
+
+        async function endGame() {
+            document.getElementById('game-container').classList.add('hidden');
+            document.getElementById('result-modal').classList.add('active');
+            
+            const accuracy = Math.round((gameState.score / (gameState.questions.length * 10)) * 100); 
+            document.getElementById('result-score').textContent = gameState.score;
+            document.getElementById('result-accuracy').textContent = Math.min(accuracy, 100) + "%";
+            
+             // Submit to Backend
+            try {
+               const result = await window.gameAPI.submitTestResult({
+                   score: gameState.score,
+                   totalQuestions: gameState.questions.length,
+                   level: gameState.level, // Current Difficulty
+                   details: gameState.history 
+               });
+               
+               if(result.data && result.data.xpGained) {
+                   const xpEl = document.createElement('div');
+                   xpEl.className = 'text-yellow-500 font-bold text-xl mt-4 animate-bounce';
+                   xpEl.innerHTML = `+${result.data.xpGained} XP`;
+                   
+                   if (result.data.leveledUp) {
+                        xpEl.innerHTML += ` <br> <span class="text-primary text-2xl">LEVEL UP! ⬆️ ${result.data.newLevel}</span>`;
+                   }
+                   
+                   document.querySelector('#result-modal .p-6').appendChild(xpEl);
+               }
+               
+            } catch (err) {
+               console.error("Failed to save result", err);
+            }
+        }
+
+    </script>
+</body>
+</html>

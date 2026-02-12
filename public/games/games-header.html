@@ -1,0 +1,36 @@
+﻿<!-- Common Game Header -->
+<header class="flex items-center justify-between whitespace-nowrap px-6 py-4 lg:px-12 lg:py-6">
+    <div class="flex items-center gap-4">
+        <a href="../user/games_home.html"
+        id="background-color-icon"
+            class="group flex items-center justify-center size-12 rounded-full bg-white dark:bg-[#1e2a36] shadow-sm hover:shadow-md transition-all duration-200 text-slate-500 dark:text-slate-300 hover:text-primary dark:hover:text-primary">
+            <span class="material-symbols-outlined" style="font-size: 28px;">arrow_back</span>
+        </a>
+        
+        
+       
+    </div>
+    <!-- Progress Bar (Segmented) -->
+    <div class="flex flex-1 max-w-md mx-8 flex-col gap-2">
+        <div class="flex justify-between items-center px-1">
+            <span class="game-header-progress-label text-xs font-bold uppercase tracking-wider text-slate-400 ">Level 1</span>
+            <span class="game-header-progress-value text-xs font-bold text-primary">1/10</span>
+        </div>
+        <div class="flex gap-1.5 h-3 w-full">
+            <div class="h-full w-full rounded-full bg-primary shadow-sm shadow-primary/30"></div>
+            <div class="h-full w-full rounded-full bg-primary shadow-sm shadow-primary/30"></div>
+            <div class="h-full w-full rounded-full bg-primary shadow-sm shadow-primary/30"></div>
+            <div class="h-full w-full rounded-full bg-slate-200 dark:bg-[#2a3847]"></div>
+            <div class="h-full w-full rounded-full bg-slate-200 dark:bg-[#2a3847]"></div>
+        </div>
+    </div>
+    <!-- Score Counter -->
+    <div id="background-color-icon" class="flex items-center gap-2 bg-white dark:bg-[#1e2a36] pl-2 pr-4 py-2 rounded-full shadow-sm">
+        <div class="flex items-center justify-center size-8 bg-amber-100 dark:bg-amber-900/30 rounded-full text-amber-500">
+            <span class="material-symbols-outlined fill-current" style="font-variation-settings: 'FILL' 1;">star</span>
+        </div>
+        <span class="game-header-score text-lg font-bold text-slate-700 ">0</span>
+    </div>
+</header>
+<!-- End Common Game Header -->
+<script src="games-header.js"></script>

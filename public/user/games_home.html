@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title data-i18n="gamesHome.pageTitle">Menu Chọn Trò Chơi Học Tập</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎮</text></svg>">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="../css/user-common.css" />
+    <!-- Translations -->
+    <script src="../i18n/translations.js"></script>
+    <!-- API Client -->
+    <script src="../js/api-client.js"></script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .active-fill .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+    <script src="../js/sidebar.js"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4ce64c",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#112111",
+                        "accent-blue": "#4cc9f0",
+                        "accent-purple": "#7209b7",
+                        "accent-yellow": "#ffbe0b"
+                    },
+                    fontFamily: {
+                        "display": ["Lexend"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style type="text/tailwindcss">
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+        .game-card-shadow {
+            box-shadow: 0 10px 0px 0px #e2e8f0;
+        }
+        .game-card-shadow:hover {
+            box-shadow: 0 4px 0px 0px #e2e8f0;
+            transform: translateY(6px);
+        }
+        .floating-stars {
+            background-image: radial-gradient(circle, #fbbf24 1px, transparent 1px);
+            background-size: 100px 100px;
+        }
+        .nav-item-active {
+            @apply bg-primary text-[#0e1b0e] shadow-lg shadow-primary/20;
+        }
+        .sidebar-height {
+            height: 100vh;
+            position: sticky;
+            top: 0;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark min-h-screen text-[#0e1b0e] font-display selection:bg-primary/30">
+    <div class="flex">
+        <!-- Side Navigation -->
+        <div id="sidebar-container" data-active-page="games"></div>
+        <!-- Main Content Area -->
+        <div class="relative flex-1 ml-64 min-h-screen overflow-hidden">
+            <div class="absolute inset-0 pointer-events-none opacity-20 floating-stars"></div>
+            <div class="absolute top-20 right-10 text-primary/40">
+                <span class="material-symbols-outlined text-6xl">grade</span>
+            </div>
+            <div class="absolute bottom-20 left-10 text-primary/40">
+                <span class="material-symbols-outlined text-6xl">music_note</span>
+            </div>
+            <main class="relative z-10">
+                <div class="mx-auto max-w-7xl px-8 py-8 md:px-12 md:py-10">
+                    <!-- Header and Category Selector Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-2">
+                        <!-- Left: Title and Description (8 cols) -->
+                        <div class="lg:col-span-8">
+                            <h1
+                                class="text-4xl md:text-5xl font-extrabold text-[#0e1b0e] dark:text-white mb-4 tracking-tight" data-i18n="gamesHome.title">
+                                Menu Chọn Trò Chơi Học Tập
+                            </h1>
+                            <p class="text-lg text-gray-600 dark:text-gray-300 font-medium" data-i18n="gamesHome.subtitle">
+                                Chào mừng bé quay lại! Hãy chọn một trò chơi thật vui để bắt đầu khám phá những từ vựng
+                                mới nhé!
+                            </p>
+                        </div>
+
+                        <!-- Right: Category Selector (4 cols) -->
+                        <div class="lg:col-span-4">
+                            <div
+                                class=" from-white to-primary/5 dark:from-zinc-900 dark:to-primary/10 rounded-2xl p-5  top-4">
+                                <!-- Loading State -->
+                                <div id="categorySelectLoading"
+                                    class="flex flex-col items-center gap-3 p-4 bg-white/50 dark:bg-zinc-800/50 rounded-xl backdrop-blur-sm">
+                                    <div
+                                        class="animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent">
+                                    </div>
+                                    <span class="text-gray-600 dark:text-gray-300 text-sm font-medium" data-i18n="gamesHome.loadingCategories">Đang tải danh
+                                        mục...</span>
+                                </div>
+
+                                <!-- Empty State -->
+                                <div id="categorySelectEmpty"
+                                    class="hidden p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl border-2 border-yellow-300 dark:border-yellow-900/50">
+                                    <div class="flex flex-col items-center text-center gap-3 mb-3">
+                                        <span
+                                            class="material-symbols-outlined text-4xl text-yellow-600">folder_off</span>
+                                        <span class="font-bold text-sm text-yellow-800 dark:text-yellow-400" data-i18n="gamesHome.noCategories">Chưa có bộ
+                                            đề nào</span>
+                                    </div>
+                                    <p class="text-xs text-yellow-700 dark:text-yellow-400 mb-3 text-center" data-i18n="gamesHome.noCategoriesDesc">
+                                        Hãy tạo danh mục và thêm từ vựng trước!
+                                    </p>
+                                    <a href="personal_vocabulary_categories_screen.html"
+                                        class="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-white text-sm font-bold rounded-full transition-all w-full justify-center shadow-lg">
+                                        <span class="material-symbols-outlined">add</span>
+                                        <span data-i18n="gamesHome.createCategory">Tạo danh mục mới</span>
+                                    </a>
+                                </div>
+
+                                <!-- Category Select -->
+                                <div id="categorySelectContainer" class="hidden">
+                                    <select id="categorySelect"
+                                        class="w-full px-4 py-3 text-base font-semibold bg-white dark:bg-zinc-800 border-2 border-primary/40 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary/40 focus:border-primary transition-all cursor-pointer shadow-sm hover:shadow-md">
+                                        <option value="" data-i18n="gamesHome.selectPlaceholder">-- Chọn bộ từ vựng --</option>
+                                    </select>
+
+                                    <!-- Selected Category Info -->
+                                    <div style="display: none;" id="selectedCategoryInfo"
+                                        class="hidden mt-4 p-4 bg-gradient-to-br from-primary/15 to-primary/5 dark:from-primary/25 dark:to-primary/10 rounded-xl border-2 border-primary/40 shadow-lg">
+                                        <div class="flex items-center gap-3">
+                                            <span id="selectedIcon"
+                                                class="material-symbols-outlined text-3xl text-primary"
+                                                style="font-variation-settings: 'FILL' 1;">folder</span>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="font-bold text-sm text-[#0e1b0e] dark:text-white mb-1"
+                                                    id="selectedName"></div>
+                                                <div
+                                                    class="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+                                                    <span class="font-semibold" id="selectedWordCountText"></span>
+                                                    <span>•</span>
+                                                    <span id="selectedBadge"></span>
+                                                </div>
+                                            </div>
+                                            <div class="text-2xl">✅</div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Games Grid Section -->
+                    <div id="gamesSection" class="hidden">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-6 items-end">
+                            <!-- Left: Section Title -->
+                            <div class="flex items-center gap-3 mb-2 md:mb-0">
+                                <span class="material-symbols-outlined text-4xl text-primary"
+                                    style="font-variation-settings: 'FILL' 1;">sports_esports</span>
+                                <div>
+                                    <h3 class="text-2xl font-bold text-[#0e1b0e] dark:text-white" data-i18n="gamesHome.gamesListTitle">Danh sách trò chơi</h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="gamesHome.gamesListSubtitle">Click vào game để bắt đầu chơi</p>
+                                </div>
+                            </div>
+
+                            <!-- Right: Compact Voice Settings -->
+                            <div class="bg-white dark:bg-zinc-900 rounded-2xl p-4 border-2 border-gray-100 dark:border-zinc-800 shadow-sm relative overflow-hidden group hover:border-primary/30 transition-all">
+                                <div class="flex flex-col md:flex-row gap-3">
+                                    <div class="flex-1 relative group/select">
+                                        <select id="voiceSelect"
+                                            class="w-full pl-10 pr-8 py-2.5 text-sm bg-gray-50 dark:bg-zinc-800/50 border-2 border-gray-200 dark:border-zinc-700 hover:border-primary/50 focus:border-primary rounded-xl appearance-none outline-none transition-all font-medium text-[#0e1b0e] dark:text-gray-200 cursor-pointer">
+                                            <option value="" disabled>⏳ Đang tải giọng...</option>
+                                        </select>
+                                        <div class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-hover/select:text-primary transition-colors">
+                                            <span class="material-symbols-outlined text-lg">record_voice_over</span>
+                                        </div>
+                                        <div class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                                            <span class="material-symbols-outlined text-lg">expand_more</span>
+                                        </div>
+                                    </div>
+
+                                    <button onclick="testCurrentVoice()"
+                                        class="px-4 py-2.5 bg-primary hover:bg-primary/90 text-[#0e1b0e] text-sm font-bold rounded-xl shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center gap-2 whitespace-nowrap">
+                                        <span class="material-symbols-outlined text-lg">volume_up</span>
+                                        <span data-i18n="gamesHome.testVoice">Nghe thử</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                            <div onclick="playGame('game_listen.html')"
+                                class="bg-white dark:bg-zinc-900 rounded-3xl p-6 flex flex-col justify-between h-64 text-center transition-all duration-300 game-card-shadow group border-2 border-gray-100 dark:border-zinc-800 cursor-pointer">
+                                <div class="flex flex-col items-center">
+                                    <div
+                                        class="w-16 h-16 mb-3 bg-pink-100 dark:bg-pink-900/30 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <span class="material-symbols-outlined text-4xl text-pink-500"
+                                            style="font-variation-settings: 'FILL' 1">volume_up</span>
+                                    </div>
+                                    <h3 class="text-lg font-bold text-[#0e1b0e] dark:text-white mb-1" data-i18n="gamesHome.game1Title">Nghe – Chọn đúng
+                                    </h3>
+                                    <p class="text-gray-500 dark:text-gray-400 text-xs" data-i18n="gamesHome.game1Desc">Luyện đôi tai tinh anh</p>
+                                </div>
+                                <div
+                                    class="w-full py-3 bg-primary text-[#0e1b0e] font-bold rounded-full shadow-lg shadow-primary/30 group-hover:brightness-105 transition-all flex items-center justify-center gap-2 text-sm">
+                                    <span data-i18n="gamesHome.selectSet">Chọn bộ đề</span>
+                                    <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                                </div>
+                            </div>
+                            <div onclick="playGame('game_match_word.html')"
+                                class="bg-white dark:bg-zinc-900 rounded-3xl p-6 flex flex-col justify-between h-64 text-center transition-all duration-300 game-card-shadow group border-2 border-gray-100 dark:border-zinc-800 cursor-pointer">
+                                <div class="flex flex-col items-center">
+                                    <div
+                                        class="w-16 h-16 mb-3 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <span class="material-symbols-outlined text-4xl text-blue-500"
+                                            style="font-variation-settings: 'FILL' 1">extension</span>
+                                    </div>
+                                    <h3 class="text-lg font-bold text-[#0e1b0e] dark:text-white mb-1" data-i18n="gamesHome.game2Title">Ghép chữ – Ghép
+                                        nghĩa</h3>
+                                    <p class="text-gray-500 dark:text-gray-400 text-xs" data-i18n="gamesHome.game2Desc">Nối từ với nghĩa chính xác</p>
+                                </div>
+                                <div
+                                    class="w-full py-3 bg-primary text-[#0e1b0e] font-bold rounded-full shadow-lg shadow-primary/30 group-hover:brightness-105 transition-all flex items-center justify-center gap-2 text-sm">
+                                    <span data-i18n="gamesHome.selectSet">Chọn bộ đề</span>
+                                    <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                                </div>
+                            </div>
+                            <div onclick="playGame('game_fill_in_the_blanks.html')"
+                                class="bg-white dark:bg-zinc-900 rounded-3xl p-6 flex flex-col justify-between h-64 text-center transition-all duration-300 game-card-shadow group border-2 border-gray-100 dark:border-zinc-800 cursor-pointer">
+                                <div class="flex flex-col items-center">
+                                    <div
+                                        class="w-16 h-16 mb-3 bg-orange-100 dark:bg-orange-900/30 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <span class="material-symbols-outlined text-4xl text-orange-500"
+                                            style="font-variation-settings: 'FILL' 1">edit_square</span>
+                                    </div>
+                                    <h3 class="text-lg font-bold text-[#0e1b0e] dark:text-white mb-1" data-i18n="gamesHome.game3Title">Điền từ còn thiếu
+                                    </h3>
+                                    <p class="text-gray-500 dark:text-gray-400 text-xs" data-i18n="gamesHome.game3Desc">Thử tài ghi nhớ mặt chữ</p>
+                                </div>
+                                <div
+                                    class="w-full py-3 bg-primary text-[#0e1b0e] font-bold rounded-full shadow-lg shadow-primary/30 group-hover:brightness-105 transition-all flex items-center justify-center gap-2 text-sm">
+                                    <span data-i18n="gamesHome.selectSet">Chọn bộ đề</span>
+                                    <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                                </div>
+                            </div>
+                            <div onclick="playGame('game_reverse_quiz.html')"
+                                class="bg-white dark:bg-zinc-900 rounded-3xl p-6 flex flex-col justify-between h-64 text-center transition-all duration-300 game-card-shadow group border-2 border-gray-100 dark:border-zinc-800 cursor-pointer">
+                                <div class="flex flex-col items-center">
+                                    <div
+                                        class="w-16 h-16 mb-3 bg-purple-100 dark:bg-purple-900/30 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <span class="material-symbols-outlined text-4xl text-purple-500"
+                                            style="font-variation-settings: 'FILL' 1">translate</span>
+                                    </div>
+                                    <h3 class="text-lg font-bold text-[#0e1b0e] dark:text-white mb-1" data-i18n="gamesHome.game4Title">Trắc nghiệm Việt -
+                                        Anh</h3>
+                                    <p class="text-gray-500 dark:text-gray-400 text-xs" data-i18n="gamesHome.game4Desc">Dịch từ Việt sang Anh</p>
+                                </div>
+                                <div
+                                    class="w-full py-3 bg-primary text-[#0e1b0e] font-bold rounded-full shadow-lg shadow-primary/30 group-hover:brightness-105 transition-all flex items-center justify-center gap-2 text-sm">
+                                    <span data-i18n="gamesHome.selectSet">Chọn bộ đề</span>
+                                    <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                                </div>
+                            </div>
+                            <div onclick="playGame('game_skids_vocabulary.html')"
+                                class="bg-white dark:bg-zinc-900 rounded-3xl p-6 flex flex-col justify-between h-64 text-center transition-all duration-300 game-card-shadow group border-2 border-gray-100 dark:border-zinc-800 cursor-pointer">
+                                <div class="flex flex-col items-center">
+                                    <div
+                                        class="w-16 h-16 mb-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <span class="material-symbols-outlined text-4xl text-emerald-500"
+                                            style="font-variation-settings: 'FILL' 1">forest</span>
+                                    </div>
+                                    <h3 class="text-lg font-bold text-[#0e1b0e] dark:text-white mb-1" data-i18n="gamesHome.game5Title">nghe và phát âm
+                                    </h3>
+                                    <p class="text-gray-500 dark:text-gray-400 text-xs" data-i18n="gamesHome.game5Desc">Chăm sóc Cây Kiến Thức</p>
+                                </div>
+                                <div
+                                    class="w-full py-3 bg-primary text-[#0e1b0e] font-bold rounded-full shadow-lg shadow-primary/30 group-hover:brightness-105 transition-all flex items-center justify-center gap-2 text-sm">
+                                    <span data-i18n="gamesHome.selectSet">Chọn bộ đề</span>
+                                    <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                                </div>
+                            </div>
+
+                            <!-- New Game Card: Test Functionality -->
+                            <div onclick="playGame('game_test.html')"
+                                class="bg-white dark:bg-zinc-900 rounded-3xl p-6 flex flex-col justify-between h-64 text-center transition-all duration-300 game-card-shadow group border-2 border-gray-100 dark:border-zinc-800 cursor-pointer">
+                                <div class="flex flex-col items-center">
+                                    <div
+                                        class="w-16 h-16 mb-3 bg-red-100 dark:bg-red-900/30 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <span class="material-symbols-outlined text-4xl text-red-500"
+                                            style="font-variation-settings: 'FILL' 1">quiz</span>
+                                    </div>
+                                    <h3 class="text-lg font-bold text-[#0e1b0e] dark:text-white mb-1" data-i18n="gamesHome.game6Title"> kiểm tra</h3>
+                                    <p class="text-gray-500 dark:text-gray-400 text-xs" data-i18n="gamesHome.game6Desc">Thử thách kiến thức</p>
+                                </div>
+                                <div
+                                    class="w-full py-3 bg-primary text-[#0e1b0e] font-bold rounded-full shadow-lg shadow-primary/30 group-hover:brightness-105 transition-all flex items-center justify-center gap-2 text-sm">
+                                    <span data-i18n="gamesHome.startTest">Bắt đầu thi</span>
+                                    <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                                </div>
+                            </div>
+                         
+                        </div>
+                    </div>
+                </div>
+                <footer class="mt-12 text-center pb-10 px-8">
+                    <p class="text-sm text-gray-400 font-medium">© 2024 VocaKids - Học tập là niềm vui!</p>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // ========== Language Initialization ==========
+        async function initializeLanguage() {
+            try {
+                const response = await apiClient.get('/settings');
+                if (response.success && response.data && response.data.settings && response.data.settings.language) {
+                    i18n.setLanguage(response.data.settings.language);
+                } else {
+                    i18n.setLanguage('vi');
+                }
+            } catch (error) {
+                console.error('Failed to load language preference:', error);
+                i18n.setLanguage('vi');
+            }
+            // Ensure translations are applied
+            i18n.updatePageContent();
+        }
+        
+        // ========== Global State ==========
+        let categories = [];
+        let selectedCategoryId = null;
+        let selectedCategory = null;
+
+        // ========== Update Category Select Options ==========
+        function updateCategorySelectOptions() {
+            const select = document.getElementById('categorySelect');
+            if (!select || categories.length === 0) return;
+
+            // Save current selection
+            const currentValue = select.value;
+
+            // Re-render options with new translations
+            select.innerHTML = `<option value="">${i18n.t('gamesHome.selectPlaceholder')}</option>`;
+            categories.forEach(cat => {
+                const badge = cat.isAdmin ? `👑 ${i18n.t('gamesHome.adminBadge')}` : `👤 ${i18n.t('gamesHome.myBadge')}`;
+                const translatedName = i18n.translateCategoryName(cat.name);
+                const option = document.createElement('option');
+                option.value = cat._id;
+                option.textContent = `${translatedName} (${cat.wordCount} ${i18n.t('gamesHome.wordsCount')}) ${badge}`;
+                option.dataset.category = JSON.stringify(cat);
+                select.appendChild(option);
+            });
+
+            // Restore selection
+            if (currentValue) {
+                select.value = currentValue;
+                // Update the displayed info as well
+                if (selectedCategory) {
+                    displaySelectedCategory();
+                }
+            }
+
+            console.log('✅ Updated category select options for language:', i18n.currentLang);
+        }
+
+        // ========== Initialize ==========
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Initialize language first
+            await initializeLanguage();
+            
+            // Wait for authAPI to be available
+            if (typeof authAPI === 'undefined') {
+                console.error('❌ authAPI not loaded!');
+                setTimeout(() => window.location.reload(), 1000);
+                return;
+            }
+
+            // Check authentication using authAPI
+            if (!authAPI.isAuthenticated()) {
+                console.log('⚠️ Not authenticated, redirecting to login...');
+                window.location.href = '../login_screen.html';
+                return;
+            }
+            console.log('✅ Authenticated, loading games home...');
+
+            // Load categories on page load
+            loadCategoriesForSelect();
+
+            // Register callback for language changes
+            i18n.onLanguageChange(() => {
+                console.log('🌐 Language changed, updating category select...');
+                updateCategorySelectOptions();
+            });
+        });
+
+        // ========== Load Categories for Select ==========
+        async function loadCategoriesForSelect() {
+            const loading = document.getElementById('categorySelectLoading');
+            const empty = document.getElementById('categorySelectEmpty');
+            const container = document.getElementById('categorySelectContainer');
+            const select = document.getElementById('categorySelect');
+
+            loading.classList.remove('hidden');
+            empty.classList.add('hidden');
+            container.classList.add('hidden');
+
+            try {
+                const response = await authAPI.get('/categories/for-games');
+                categories = response.data;
+
+                console.log('📊 Loaded categories:', categories);
+
+                if (categories.length === 0) {
+                    loading.classList.add('hidden');
+                    empty.classList.remove('hidden');
+                } else {
+                    // Populate select dropdown with current language
+                    updateCategorySelectOptions();
+
+                    // Add change event listener
+                    select.addEventListener('change', onCategoryChange);
+
+                    loading.classList.add('hidden');
+                    container.classList.remove('hidden');
+
+                    // Restore from localStorage
+                    restoreSavedCategory();
+                }
+            } catch (error) {
+                console.error('Load categories error:', error);
+                loading.classList.add('hidden');
+                empty.classList.remove('hidden');
+                showError(i18n.t('gamesHome.noCategoriesDesc'));
+            }
+        }
+
+        // ========== Restore Saved Category ==========
+        function restoreSavedCategory() {
+            const savedCategoryId = localStorage.getItem('selectedCategoryId');
+            const savedCategory = localStorage.getItem('selectedCategory');
+
+            if (savedCategoryId && savedCategory) {
+                const select = document.getElementById('categorySelect');
+
+                // Check if saved category still exists in the list
+                const option = select.querySelector(`option[value="${savedCategoryId}"]`);
+                if (option) {
+                    // Set select value
+                    select.value = savedCategoryId;
+
+                    // Restore global state
+                    selectedCategoryId = savedCategoryId;
+                    selectedCategory = JSON.parse(savedCategory);
+
+                    console.log('✅ Restored saved category:', selectedCategory);
+
+                    // Show selected category info
+                    displaySelectedCategory();
+
+                    // Show games section
+                    document.getElementById('gamesSection').classList.remove('hidden');
+                } else {
+                    // Category no longer exists, clear localStorage
+                    console.log('⚠️ Saved category not found, clearing localStorage');
+                    localStorage.removeItem('selectedCategoryId');
+                    localStorage.removeItem('selectedCategory');
+                }
+            }
+        }
+
+        // ========== On Category Change ==========
+        function onCategoryChange(event) {
+            const select = event.target;
+            const selectedOption = select.options[select.selectedIndex];
+
+            if (!select.value) {
+                // No category selected
+                selectedCategoryId = null;
+                selectedCategory = null;
+                document.getElementById('selectedCategoryInfo').classList.add('hidden');
+                document.getElementById('gamesSection').classList.add('hidden');
+                // Clear localStorage
+                localStorage.removeItem('selectedCategoryId');
+                localStorage.removeItem('selectedCategory');
+                return;
+            }
+
+            // Get category data
+            selectedCategoryId = select.value;
+            selectedCategory = JSON.parse(selectedOption.dataset.category);
+
+            console.log('✅ Selected category:', selectedCategory);
+
+            // Save to localStorage
+            localStorage.setItem('selectedCategoryId', selectedCategoryId);
+            localStorage.setItem('selectedCategory', JSON.stringify(selectedCategory));
+
+            // Show selected category info
+            displaySelectedCategory();
+
+            // Show games section
+            document.getElementById('gamesSection').classList.remove('hidden');
+
+            // Smooth scroll to games section
+            setTimeout(() => {
+                document.getElementById('gamesSection').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }, 100);
+        }
+
+        // ========== Display Selected Category ==========
+        function displaySelectedCategory() {
+            const info = document.getElementById('selectedCategoryInfo');
+            const iconMap = {
+                'pets': 'pets',
+                'restaurant': 'restaurant',
+                'home': 'home',
+                'school': 'school'
+            };
+
+            document.getElementById('selectedIcon').textContent = iconMap[selectedCategory.icon] || 'folder';
+            
+            // Translate category name
+            const translatedName = i18n.translateCategoryName(selectedCategory.name);
+            document.getElementById('selectedName').textContent = translatedName;
+            
+            // Update word count with translation
+            const wordCountElement = document.getElementById('selectedWordCountText');
+            if (wordCountElement) {
+                wordCountElement.innerHTML = `<span id="selectedWordCount">${selectedCategory.wordCount}</span> ${i18n.t('gamesHome.vocabulary')}`;
+            }
+            
+            // Update badge with translation
+            document.getElementById('selectedBadge').innerHTML = selectedCategory.isAdmin
+                ? `<span class="font-bold text-yellow-700 dark:text-yellow-500">👑 ${i18n.t('gamesHome.adminBadge')}</span>`
+                : `<span class="font-bold text-green-700 dark:text-green-500">👤 ${i18n.t('gamesHome.myBadge')}</span>`;
+
+            info.classList.remove('hidden');
+        }
+
+        // ========== Play Game ==========
+        function playGame(gameUrl) {
+            // Special handling for game_test.html - no category needed
+            if (gameUrl === 'game_test.html') {
+                console.log('🎯 Starting test game (no category required)');
+                window.location.href = `../games/${gameUrl}`;
+                return;
+            }
+            
+            // For other games, check if category is selected
+            if (!selectedCategoryId) {
+                showError(i18n.t('gamesHome.selectCategoryError'));
+
+                // Highlight the select box
+                const select = document.getElementById('categorySelect');
+                select.classList.add('ring-4', 'ring-red-500', 'border-red-500');
+                select.focus();
+
+                setTimeout(() => {
+                    select.classList.remove('ring-4', 'ring-red-500', 'border-red-500');
+                }, 2000);
+
+                // Scroll to select
+                select.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            // Redirect to game with categoryId
+            console.log(`🎮 Starting game: ${gameUrl} with category: ${selectedCategoryId}`);
+            window.location.href = `../games/${gameUrl}?categoryId=${selectedCategoryId}`;
+        }
+
+        // ========== Show Error Toast ==========
+        function showError(message) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-4 rounded-2xl shadow-xl z-50 animate-slide-in';
+            toast.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined">error</span>
+                    <span class="font-medium">${message}</span>
+                </div>
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Make functions global
+        window.playGame = playGame;
+    </script>
+    <script src="../games/games-header.js"></script>
+
+</body>
+
+</html>

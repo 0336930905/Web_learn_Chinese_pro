@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Reverse Quiz Game</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎮</text></svg>">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="../css/games-common.css" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0d7ff2",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+        }
+
+        .dark .glass-effect {
+            background: rgba(34, 26, 16, 0.7);
+        }
+
+        .pattern-bg {
+            background-image: radial-gradient(#f49d25 1px, transparent 1px);
+            background-size: 24px 24px;
+            opacity: 0.1;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display min-h-screen flex flex-col overflow-hidden text-text-main dark:text-white transition-colors duration-200">
+    <!-- Decorative Background Pattern -->
+    <div class="fixed inset-0 pattern-bg pointer-events-none z-0"></div>
+    <!-- Common Game Header -->
+    <div id="game-header-container"></div>
+    <script>
+    // Insert common header
+    fetch('games-header.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('game-header-container').innerHTML = html;
+        // Execute scripts in the loaded HTML
+        const scripts = document.getElementById('game-header-container').querySelectorAll('script');
+        scripts.forEach(script => {
+            const newScript = document.createElement('script');
+            if (script.src) {
+                newScript.src = script.src;
+            } else {
+                newScript.textContent = script.textContent;
+            }
+            document.body.appendChild(newScript);
+        });
+      })
+      .catch(err => console.error('Failed to load game header:', err));
+    </script>
+        <!-- Main Game Content -->
+        <main class="flex-1 flex flex-col items-center justify-center p-4 md:p-8 w-full max-w-6xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full h-full lg:h-auto items-center">
+                <!-- Left Column: The Stage (Image & Prompt) -->
+                <div class="lg:col-span-7 flex flex-col w-full h-full justify-center">
+                    <!-- Question Prompt -->
+                    <h1
+                        class="text-3xl md:text-4xl lg:text-5xl font-bold text-center lg:text-left mb-8 text-gray-800 dark:text-gray-100 drop-shadow-sm leading-tight">
+                        Nhìn ảnh và đoán nghĩa.<br />
+                        <span class="text-primary">đây là gì?</span>
+                    </h1>
+                    <!-- Image Card -->
+                    <div
+                        class="relative w-full aspect-[4/3] rounded-xl overflow-hidden shadow-2xl bg-surface-light dark:bg-surface-dark border-4 border-white dark:border-surface-dark ring-1 ring-black/5 group">
+                        <!-- Countdown Timer Overlay (Top Right) -->
+                        <div class="absolute top-6 right-6 z-20">
+                            <div
+                                class="relative flex items-center justify-center size-20 rounded-full bg-white dark:bg-surface-dark shadow-lg">
+                                <svg class="transform -rotate-90 size-20" viewbox="0 0 100 100">
+                                    <circle class="dark:stroke-gray-700" cx="50" cy="50" fill="none" r="45"
+                                        stroke="#e5e7eb" stroke-width="8"></circle>
+                                    <circle class="text-primary transition-all duration-1000 ease-linear" cx="50"
+                                        cy="50" fill="none" r="45" stroke="currentColor" stroke-dasharray="283"
+                                        stroke-dashoffset="70" stroke-linecap="round" stroke-width="8"></circle>
+                                </svg>
+                                <div class="absolute flex flex-col items-center">
+                                    <span class="text-xl font-bold text-gray-800 dark:text-white leading-none">15</span>
+                                    <span
+                                        class="text-[10px] uppercase font-bold text-text-muted dark:text-gray-400 mt-0.5">Sec</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Main Image -->
+                        <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+                            data-alt="A close up of a happy child smiling brightly outdoors"
+                            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDjKg3iIv3jIveELoNW93gCcsPEfVVC0ad0jjJjIsp1vEhkO8bwJOx6r97GOinghkV45sT59VJZ5IlgFXGbpAV882qoY0MdfwUv0FeCyKhqE1l7P7Xcc5MwKjxR0FsWSFNhSrQx7hrvq-McznapWp38kFKIo5EMmjgpPJ_WZWPX2BVctNkCs5-MvAAarCz9vTqug1cdj5KgALtu9ZdB6O7eRI3wS5zE3NjbK1irutsD_tRVfDDawWbLwj8YbJjUddWE5z10U353kaw');">
+                        </div>
+                        <!-- Label Overlay (Optional Hint) -->
+                        <div class="absolute bottom-6 left-6 z-20">
+                            <div class="px-4 py-2 bg-white/90 dark:bg-black/60 backdrop-blur-sm rounded-lg shadow-sm">
+                                <p class="text-sm font-medium text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-primary text-lg">lightbulb</span>
+                                    Hint: It shows happiness
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Column: Answer Grid -->
+                <div class="lg:col-span-5 w-full flex flex-col justify-center gap-4 lg:pl-8">
+                    <div class="grid grid-cols-2 gap-4 w-full">
+                        <!-- Option 1 -->
+                        <button
+                            class="group relative flex flex-col items-center justify-center p-6 lg:p-8 h-32 lg:h-40 rounded-xl bg-white dark:bg-surface-dark border-b-4 border-gray-200 dark:border-gray-700 hover:border-primary active:border-primary active:translate-y-1 transition-all duration-200 shadow-sm hover:shadow-xl hover:shadow-primary/10">
+                            <div
+                                class="size-10 mb-2 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-500 dark:text-blue-300 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <span class="material-symbols-outlined">sentiment_dissatisfied</span>
+                            </div>
+                            <span
+                                class="text-xl lg:text-2xl font-bold text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors">Cry</span>
+                            <div
+                                class="absolute inset-0 border-2 border-transparent group-hover:border-primary rounded-xl pointer-events-none transition-colors">
+                            </div>
+                        </button>
+                        <!-- Option 2 (Correct) -->
+                        <button
+                            class="group relative flex flex-col items-center justify-center p-6 lg:p-8 h-32 lg:h-40 rounded-xl bg-white dark:bg-surface-dark border-b-4 border-gray-200 dark:border-gray-700 hover:border-primary active:border-primary active:translate-y-1 transition-all duration-200 shadow-sm hover:shadow-xl hover:shadow-primary/10">
+                            <div
+                                class="size-10 mb-2 rounded-full bg-orange-50 dark:bg-orange-900/30 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <span class="material-symbols-outlined">sentiment_very_satisfied</span>
+                            </div>
+                            <span
+                                class="text-xl lg:text-2xl font-bold text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors">Smile</span>
+                            <div
+                                class="absolute inset-0 border-2 border-transparent group-hover:border-primary rounded-xl pointer-events-none transition-colors">
+                            </div>
+                        </button>
+                        <!-- Option 3 -->
+                        <button
+                            class="group relative flex flex-col items-center justify-center p-6 lg:p-8 h-32 lg:h-40 rounded-xl bg-white dark:bg-surface-dark border-b-4 border-gray-200 dark:border-gray-700 hover:border-primary active:border-primary active:translate-y-1 transition-all duration-200 shadow-sm hover:shadow-xl hover:shadow-primary/10">
+                            <div
+                                class="size-10 mb-2 rounded-full bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <span class="material-symbols-outlined">directions_run</span>
+                            </div>
+                            <span
+                                class="text-xl lg:text-2xl font-bold text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors">Run</span>
+                            <div
+                                class="absolute inset-0 border-2 border-transparent group-hover:border-primary rounded-xl pointer-events-none transition-colors">
+                            </div>
+                        </button>
+                        <!-- Option 4 -->
+                        <button
+                            class="group relative flex flex-col items-center justify-center p-6 lg:p-8 h-32 lg:h-40 rounded-xl bg-white dark:bg-surface-dark border-b-4 border-gray-200 dark:border-gray-700 hover:border-primary active:border-primary active:translate-y-1 transition-all duration-200 shadow-sm hover:shadow-xl hover:shadow-primary/10">
+                            <div
+                                class="size-10 mb-2 rounded-full bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <span class="material-symbols-outlined">chair_alt</span>
+                            </div>
+                            <span
+                                class="text-xl lg:text-2xl font-bold text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors">Sit</span>
+                            <div
+                                class="absolute inset-0 border-2 border-transparent group-hover:border-primary rounded-xl pointer-events-none transition-colors">
+                            </div>
+                        </button>
+                    </div>
+                    <div class="mt-6 flex justify-center lg:justify-start">
+                        <button
+                            class="flex items-center gap-2 px-6 py-3 rounded-full bg-gray-100 dark:bg-surface-dark text-text-muted dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-sm font-bold">
+                            <span class="material-symbols-outlined text-[20px]">volume_up</span>
+                            Listen to question
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!-- Mobile Bottom Progress (Visible only on small screens) -->
+        <div
+            class="md:hidden w-full px-6 py-4 bg-white dark:bg-surface-dark border-t border-gray-100 dark:border-gray-800">
+            <div class="flex justify-between w-full mb-2 text-xs font-bold text-text-muted dark:text-gray-400">
+                <span>Question 3/10</span>
+                <span>30%</span>
+            </div>
+            <div class="w-full h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                <div class="h-full bg-primary rounded-full" style="width: 30%;"></div>
+            </div>
+        </div>
+    </div>
+
+<script>
+// ========== Helper: Get categoryId from URL ==========
+function getCategoryIdFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('categoryId');
+}
+
+// ========== State ==========
+let questions = [];
+let currentIndex = 0;
+let score = 0;
+let timer = null;
+let timeLeft = 15;
+
+// ========== Load Questions ==========
+async function loadQuestions() {
+    const categoryId = getCategoryIdFromUrl();
+    if (!categoryId) {
+        alert('Không tìm thấy categoryId!');
+        window.location.href = '../user/games_home.html';
+        return;
+    }
+    try {
+        const res = await fetch(`/api/games/reverse-quiz?categoryId=${categoryId}&count=10`);
+        const data = await res.json();
+        if (!data.success) {
+            alert('Không thể tải câu hỏi: ' + (data.error?.message || 'Lỗi không xác định'));
+            window.location.href = '../user/games_home.html';
+            return;
+        }
+        questions = data.data;
+        currentIndex = 0;
+        score = 0;
+        
+        // Initialize header with unified function
+        if (window.updateGameHeaderProgress) {
+            window.updateGameHeaderProgress({
+                current: 1,
+                total: questions.length,
+                score: 0,
+                label: 'Question',
+                animateScore: false
+            });
+        }
+        
+        renderQuestion();
+    } catch (err) {
+        alert('Lỗi khi gọi API: ' + err.message);
+        window.location.href = '../user/games_home.html';
+    }
+}
+
+// ========== Render Question ==========
+function renderQuestion() {
+    const q = questions[currentIndex];
+    if (!q) {
+        renderResult();
+        return;
+    }
+
+    // Update progress
+    updateProgress();
+
+    // Reset timer
+    resetTimer();
+
+    // Update image
+    const imageDiv = document.querySelector('.bg-cover.bg-center');
+    imageDiv.style.backgroundImage = `url('${q.imageUrl}')`;
+    imageDiv.setAttribute('data-alt', q.meaning);
+
+    // Update hint
+    const hintDiv = document.querySelector('.absolute.bottom-6.left-6 p');
+    hintDiv.innerHTML = `<span class="material-symbols-outlined text-primary text-lg">lightbulb</span>
+        Hint: ${q.pinyin}`;
+
+    // Render options
+    const optionsContainer = document.querySelector('.grid.grid-cols-2.gap-4');
+    optionsContainer.innerHTML = '';
+    
+    q.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'group relative flex flex-col items-center justify-center p-6 lg:p-8 h-32 lg:h-40 rounded-xl bg-white dark:bg-surface-dark border-b-4 border-gray-200 dark:border-gray-700 hover:border-primary active:border-primary active:translate-y-1 transition-all duration-200 shadow-sm hover:shadow-xl hover:shadow-primary/10';
+        btn.onclick = () => selectAnswer(idx);
+        
+        // Icon placeholder
+        const iconDiv = document.createElement('div');
+        iconDiv.className = 'size-10 mb-2 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-500 dark:text-blue-300 flex items-center justify-center group-hover:scale-110 transition-transform';
+        iconDiv.innerHTML = '<span class="material-symbols-outlined">translate</span>';
+        
+        // Meaning text (English/Vietnamese)
+        const meaningSpan = document.createElement('span');
+        meaningSpan.className = 'text-xl lg:text-2xl font-bold text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors text-center';
+        meaningSpan.textContent = opt.meaning;
+        
+        // Pinyin text (smaller)
+        const pinyinSpan = document.createElement('span');
+       
+        
+        btn.appendChild(iconDiv);
+        btn.appendChild(meaningSpan);
+        btn.appendChild(pinyinSpan);
+        
+        optionsContainer.appendChild(btn);
+    });
+
+    // Update listen button
+    const listenBtn = document.querySelector('.mt-6 button');
+    listenBtn.onclick = () => speakQuestion();
+}
+
+// ========== Timer Functions ==========
+function resetTimer() {
+    if (timer) clearInterval(timer);
+    timeLeft = 15;
+    updateTimerDisplay();
+    
+    timer = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+        
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            // Auto move to next question when time's up
+            setTimeout(() => {
+                currentIndex++;
+                renderQuestion();
+            }, 500);
+        }
+    }, 1000);
+}
+
+function updateTimerDisplay() {
+    const timerText = document.querySelector('.absolute.flex.flex-col.items-center span.text-xl');
+    if (timerText) timerText.textContent = timeLeft;
+    
+    // Update circular progress
+    const circle = document.querySelector('.text-primary.transition-all');
+    if (circle) {
+        const progress = (timeLeft / 15) * 283;
+        circle.setAttribute('stroke-dashoffset', 283 - progress);
+    }
+}
+
+// ========== Select Answer ==========
+function selectAnswer(idx) {
+    if (timer) clearInterval(timer);
+    
+    const q = questions[currentIndex];
+    const isCorrect = q.options[idx].isCorrect;
+    const optionsContainer = document.querySelector('.grid.grid-cols-2.gap-4');
+    const buttons = Array.from(optionsContainer.children);
+    
+    // Highlight correct and selected answers
+    buttons.forEach((btn, i) => {
+        btn.disabled = true;
+        btn.classList.remove('hover:border-primary');
+        
+        if (q.options[i].isCorrect) {
+            btn.classList.remove('border-gray-200');
+            btn.classList.add('border-green-500', 'bg-green-50', 'dark:bg-green-900/30');
+        } else if (i === idx) {
+            btn.classList.remove('border-gray-200');
+            btn.classList.add('border-red-500', 'bg-red-50', 'dark:bg-red-900/30');
+        }
+    });
+    
+    // Update score
+    if (isCorrect) {
+        score++;
+        // Update score display immediately with animation
+        if (window.animateScoreUpdate) {
+            window.animateScoreUpdate(score);
+        }
+    }
+    
+    // Move to next question after delay
+    setTimeout(() => {
+        currentIndex++;
+        renderQuestion();
+    }, 1500);
+}
+
+// ========== Speak Question ==========
+function speakQuestion() {
+    const q = questions[currentIndex];
+    if (window.speakText) {
+        window.speakText(q.traditional || q.simplified, 0.8);
+    }
+}
+
+// ========== Update Progress ==========
+function updateProgress() {
+    // Use unified progress update function
+    if (window.updateGameHeaderProgress) {
+        window.updateGameHeaderProgress({
+            current: currentIndex + 1,
+            total: questions.length,
+            score: score,
+            label: 'Question',
+            animateScore: false
+        });
+    }
+    
+    // Update mobile progress bar (bottom of screen on mobile)
+    const mobileProgressContainer = document.querySelector('.md\\:hidden');
+    if (mobileProgressContainer) {
+        const mobileQuestionText = mobileProgressContainer.querySelector('.flex.justify-between span:first-child');
+        const mobilePercentText = mobileProgressContainer.querySelector('.flex.justify-between span:last-child');
+        const mobileBar = mobileProgressContainer.querySelector('.h-full.bg-primary');
+        
+        const percent = Math.round(((currentIndex + 1) / questions.length) * 100);
+        
+        if (mobileQuestionText) {
+            mobileQuestionText.textContent = `Question ${currentIndex + 1}/${questions.length}`;
+        }
+        if (mobilePercentText) {
+            mobilePercentText.textContent = `${percent}%`;
+        }
+        if (mobileBar) {
+            mobileBar.style.width = `${percent}%`;
+            mobileBar.style.transition = 'width 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+        }
+    }
+}
+
+// ========== Render Result ==========
+function renderResult() {
+    if (timer) clearInterval(timer);
+    
+    const percentage = Math.round((score / questions.length) * 100);
+    
+    // Determine performance level
+    let performanceEmoji = '🎉';
+    let performanceText = 'Xuất sắc!';
+    let performanceColor = 'from-green-500 to-emerald-500';
+    
+    if (percentage >= 90) {
+        performanceEmoji = '🏆';
+        performanceText = 'Hoàn hảo!';
+        performanceColor = 'from-yellow-400 to-amber-500';
+    } else if (percentage >= 70) {
+        performanceEmoji = '🎉';
+        performanceText = 'Rất tốt!';
+        performanceColor = 'from-green-500 to-emerald-500';
+    } else if (percentage >= 50) {
+        performanceEmoji = '👍';
+        performanceText = 'Tốt!';
+        performanceColor = 'from-blue-500 to-cyan-500';
+    } else {
+        performanceEmoji = '💪';
+        performanceText = 'Cố gắng lên!';
+        performanceColor = 'from-orange-500 to-red-500';
+    }
+    
+    // Create overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn';
+    overlay.innerHTML = `
+        <div class="bg-gradient-to-br from-white via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-3xl shadow-2xl p-8 max-w-lg w-[90vw] border-4 border-gradient-to-r from-cyan-200 via-blue-200 to-purple-200 dark:border-gray-700 transform animate-scaleIn">
+            <div class="text-center">
+                <div class="text-8xl mb-4 animate-bounce">${performanceEmoji}</div>
+                <h2 class="text-4xl font-black bg-gradient-to-r ${performanceColor} bg-clip-text text-transparent mb-2">${performanceText}</h2>
+                <p class="text-xl text-gray-600 dark:text-gray-300 mb-6">Hoàn thành Quiz!</p>
+                
+                <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg mb-6">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="text-center p-4 bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-xl">
+                            <div class="text-3xl font-black text-green-600 dark:text-green-400">${score}/${questions.length}</div>
+                            <div class="text-sm text-green-700 dark:text-green-300 font-semibold">Đúng</div>
+                        </div>
+                        <div class="text-center p-4 bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/30 dark:to-cyan-900/30 rounded-xl">
+                            <div class="text-3xl font-black text-blue-600 dark:text-blue-400">${percentage}%</div>
+                            <div class="text-sm text-blue-700 dark:text-blue-300 font-semibold">Chính xác</div>
+                        </div>
+                        <div class="text-center p-4 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-xl">
+                            <div class="text-3xl font-black text-purple-600 dark:text-purple-400">${score * 10}</div>
+                            <div class="text-sm text-purple-700 dark:text-purple-300 font-semibold">Điểm</div>
+                        </div>
+                        <div class="text-center p-4 bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30 rounded-xl">
+                            <div class="text-3xl font-black text-amber-600 dark:text-amber-400">${questions.length - score}</div>
+                            <div class="text-sm text-amber-700 dark:text-amber-300 font-semibold">Câu sai</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex gap-3">
+                    <button onclick="location.reload()" class="flex-1 bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-6 py-3 rounded-full font-bold hover:scale-105 transition-transform shadow-lg">
+                        🔄 Chơi lại
+                    </button>
+                    <button onclick="window.location.href='../user/games_home.html'" class="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-full font-bold hover:scale-105 transition-transform shadow-lg">
+                        🏠 Về trang chủ
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Add animation styles
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
+        .animate-scaleIn { animation: scaleIn 0.4s ease-out; }
+    `;
+    document.head.appendChild(style);
+    
+    document.body.appendChild(overlay);
+}
+
+// ========== Start Game ==========
+document.addEventListener('DOMContentLoaded', () => {
+    // Load questions after a short delay to ensure header is ready
+    setTimeout(loadQuestions, 200);
+});
+</script>
+</body>
+
+</html>

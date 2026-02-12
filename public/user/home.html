@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Student Personalized Dashboard</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🌱</text></svg>">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="../css/user-common.css" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4ce64c",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#112111",
+                        "accent-blue": "#4cc9f0",
+                        "accent-purple": "#7209b7",
+                        "accent-yellow": "#ffbe0b"
+                    },
+                    fontFamily: {
+                        "display": ["Lexend"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .active-fill .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+    <script src="../js/sidebar.js"></script>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-slate-100 min-h-screen">
+    <div class="flex min-h-screen">
+        <!-- Side Navigation -->
+        <div id="sidebar-container" data-active-page="home"></div>
+        <!-- Main Content Area -->
+        <main class="flex-1 ml-64 min-h-screen">
+            <!-- Header -->
+          
+            <!-- Dashboard Grid -->
+            <div class="p-8 @container">
+                <div class="grid grid-cols-12 gap-6">
+                    <!-- 1. Recent Activity Card -->
+                    <section
+                        class="col-span-12 @[1200px]:col-span-8 bg-white dark:bg-slate-900 rounded-xl shadow-sm overflow-hidden border border-slate-200 dark:border-slate-800 flex flex-col @md:flex-row transition-transform hover:scale-[1.01]">
+                        <div class="w-full @md:w-1/3 h-48 @md:h-auto bg-cover bg-center"
+                            data-alt="Vibrant space scene with planets and stars"
+                            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD152pF0dzaw3vZY85-jZOP8tmZjNOvSuYm7TElR_Fq4wBLg_9GGWIXSwrJK7NU-mKgdY_8eiByAGNcxNNyl0KnJt-BFFJ0h5WQBmh673V_XWI5VeSpDuSi1D5_kynMZRNklceOqftirCKzNK3Q0DaAoQD3j2v3gLo9Jz3G_zpWVsLX7zJX_flsYCip-alupk8HTJA4wjS1XIyfquK7AjolxRTdQk8_x8fxc6tTZ2WxUzsdKTm__eFS5gHBJHBVSXfDJpzW-gVEFfI');">
+                        </div>
+                        <div class="p-6 flex-1 flex flex-col justify-between">
+                            <div>
+                                <div
+                                    class="inline-flex items-center px-3 py-1 rounded-full bg-accent-blue/10 text-accent-blue text-xs font-bold mb-3 uppercase tracking-wider">
+                                    Đang học</div>
+                                <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Thám hiểm không gian</h3>
+                                <p class="text-slate-500 dark:text-slate-400 mb-4">Bạn đang học <b>'Gravity'</b>
+                                    và <b>'Galaxy'</b>. Chỉ còn 5 từ nữa là qua màn!</p>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex-1 max-w-[200px] mr-4">
+                                    <div class="flex justify-between text-xs mb-1 font-medium">
+                                        <span>85% Hoàn thành</span>
+                                    </div>
+                                    <div class="w-full bg-slate-100 dark:bg-slate-800 h-3 rounded-full overflow-hidden">
+                                        <div
+                                            class="bg-accent-blue h-full w-[85%] rounded-full shadow-[0_0_10px_rgba(76,201,240,0.5)]">
+                                        </div>
+                                    </div>
+                                </div>
+                                <button
+                                    class="bg-primary text-slate-900 font-bold px-8 py-3 rounded-full hover:brightness-105 transition-all shadow-lg shadow-primary/20 flex items-center gap-2">
+                                    Tiếp tục <span class="material-symbols-outlined">play_circle</span>
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                    <!-- 2. Knowledge Tree Widget -->
+                    <section
+                        class="col-span-12 @[1200px]:col-span-4 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 flex flex-col items-center text-center">
+                        <div class="flex items-center justify-between w-full mb-4">
+                            <h3 class="font-bold text-lg">Cây kiến thức</h3>
+                            <span class="material-symbols-outlined text-slate-400">info</span>
+                        </div>
+                        <div class="relative size-40 bg-primary/5 rounded-full flex items-center justify-center mb-4">
+                            <!-- Visual Tree Representation -->
+                            <div class="flex flex-col items-center">
+                                <span class="material-symbols-outlined text-7xl text-primary"
+                                    style="font-variation-settings: 'FILL' 1;">forest</span>
+                            </div>
+                            <!-- Small pulsing glow for growth -->
+                            <div
+                                class="absolute inset-0 rounded-full border-4 border-dashed border-primary/20 animate-spin-slow">
+                            </div>
+                        </div>
+                        <h4 class="font-bold text-xl text-slate-900 dark:text-white mb-1">Sồi non</h4>
+                        <p class="text-sm text-slate-500 mb-6">Đã thuộc 42 từ</p>
+                        <div class="w-full space-y-2">
+                            <div class="flex justify-between text-xs font-bold text-slate-400">
+                                <span>Mầm</span>
+                                <span class="text-primary">Cây non</span>
+                                <span>Nở hoa</span>
+                            </div>
+                            <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                                <div class="bg-primary h-full w-[60%] rounded-full"></div>
+                            </div>
+                        </div>
+                    </section>
+                    <!-- 3. Daily Mission Checklist -->
+                    <section
+                        class="col-span-12 @[1200px]:col-span-5 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-accent-purple">rocket_launch</span>
+                                <h3 class="font-bold text-lg">Nhiệm vụ hàng ngày</h3>
+                            </div>
+                            <span
+                                class="text-xs bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full text-slate-500 font-bold">Còn 12h</span>
+                        </div>
+                        <div class="space-y-4">
+                            <label
+                                class="flex items-center gap-4 p-4 rounded-xl border border-slate-100 dark:border-slate-800 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group">
+                                <input checked=""
+                                    class="size-6 rounded-md border-slate-300 text-primary focus:ring-primary"
+                                    type="checkbox" />
+                                <div class="flex-1">
+                                    <p class="font-bold text-slate-800 dark:text-slate-200 line-through opacity-50">
+                                        Học 5 từ mới</p>
+                                    <p class="text-xs text-slate-400">+50 Điểm</p>
+                                </div>
+                                <span class="material-symbols-outlined text-primary">check_circle</span>
+                            </label>
+                            <label
+                                class="flex items-center gap-4 p-4 rounded-xl border border-slate-100 dark:border-slate-800 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group">
+                                <input class="size-6 rounded-md border-slate-300 text-primary focus:ring-primary"
+                                    type="checkbox" />
+                                <div class="flex-1">
+                                    <p
+                                        class="font-bold text-slate-800 dark:text-slate-200 group-hover:text-primary transition-colors">
+                                        Hoàn thành 1 trò chơi nhỏ</p>
+                                    <p class="text-xs text-slate-400">+10 Đá quý</p>
+                                </div>
+                                <span class="material-symbols-outlined text-slate-300">circle</span>
+                            </label>
+                            <label
+                                class="flex items-center gap-4 p-4 rounded-xl border border-slate-100 dark:border-slate-800 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group">
+                                <input class="size-6 rounded-md border-slate-300 text-primary focus:ring-primary"
+                                    type="checkbox" />
+                                <div class="flex-1">
+                                    <p
+                                        class="font-bold text-slate-800 dark:text-slate-200 group-hover:text-primary transition-colors">
+                                        Điểm tối đa: Động vật</p>
+                                    <p class="text-xs text-slate-400">+100 Điểm</p>
+                                </div>
+                                <span class="material-symbols-outlined text-slate-300">circle</span>
+                            </label>
+                        </div>
+                    </section>
+                    <!-- 4. Recommended Categories -->
+                    <section class="col-span-12 @[1200px]:col-span-7">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-lg">Khám phá danh mục mới</h3>
+                            <a class="text-primary text-sm font-bold hover:underline" href="#">Xem tất cả</a>
+                        </div>
+                        <div class="grid grid-cols-2 @[600px]:grid-cols-3 gap-4">
+                            <!-- Category 1 -->
+                            <div
+                                class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:shadow-md transition-all cursor-pointer group">
+                                <div
+                                    class="size-12 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                    <span class="material-symbols-outlined text-orange-500">pets</span>
+                                </div>
+                                <h4 class="font-bold text-slate-900 dark:text-white">Động vật</h4>
+                                <p class="text-xs text-slate-500">12 Bài học</p>
+                            </div>
+                            <!-- Category 2 -->
+                            <div
+                                class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:shadow-md transition-all cursor-pointer group">
+                                <div
+                                    class="size-12 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                    <span class="material-symbols-outlined text-emerald-500">restaurant</span>
+                                </div>
+                                <h4 class="font-bold text-slate-900 dark:text-white">Đồ ăn</h4>
+                                <p class="text-xs text-slate-500">8 Bài học</p>
+                            </div>
+                            <!-- Category 3 -->
+                            <div
+                                class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:shadow-md transition-all cursor-pointer group">
+                                <div
+                                    class="size-12 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                    <span class="material-symbols-outlined text-indigo-500">directions_car</span>
+                                </div>
+                                <h4 class="font-bold text-slate-900 dark:text-white">Du lịch</h4>
+                                <p class="text-xs text-slate-500">15 Bài học</p>
+                            </div>
+                            <!-- Category 4 -->
+                            <div
+                                class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:shadow-md transition-all cursor-pointer group">
+                                <div
+                                    class="size-12 rounded-lg bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                    <span class="material-symbols-outlined text-pink-500">palette</span>
+                                </div>
+                                <h4 class="font-bold text-slate-900 dark:text-white">Nghệ thuật</h4>
+                                <p class="text-xs text-slate-500">6 Bài học</p>
+                            </div>
+                            <!-- Category 5 -->
+                            <div
+                                class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:shadow-md transition-all cursor-pointer group">
+                                <div
+                                    class="size-12 rounded-lg bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                    <span class="material-symbols-outlined text-cyan-500">science</span>
+                                </div>
+                                <h4 class="font-bold text-slate-900 dark:text-white">Khoa học</h4>
+                                <p class="text-xs text-slate-500">10 Bài học</p>
+                            </div>
+                            <!-- Category 6 -->
+                            <div
+                                class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:shadow-md transition-all cursor-pointer group">
+                                <div
+                                    class="size-12 rounded-lg bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                    <span class="material-symbols-outlined text-rose-500">music_note</span>
+                                </div>
+                                <h4 class="font-bold text-slate-900 dark:text-white">Âm nhạc</h4>
+                                <p class="text-xs text-slate-500">9 Bài học</p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

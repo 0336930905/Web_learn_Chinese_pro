@@ -1,0 +1,52 @@
+{
+  "name": "learn-taiwanese-pro",
+  "version": "2.0.0",
+  "description": "Ứng dụng học tiếng Đài Loan (Taiwanese) - API Backend (Clean Architecture)",
+  "main": "api/index.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "vercel dev",
+    "deploy": "vercel --prod",
+    "db:setup": "node src/database/setup.js",
+    "db:seed": "node src/database/seed.js",
+    "db:clear": "node clear-vocab-categories.js",
+    "db:add-admin": "node add-admin-categories.js",
+    "db:setup-old": "node database/setup.js setup",
+    "db:reset": "node database/setup.js reset",
+    "db:test": "node database/setup.js test",
+    "db:migrate:settings": "node src/database/migrations/add-settings-to-users.js",
+    "db:migrate:private-categories": "node src/database/migrations/add-private-categories.js",
+    "db:clean:categories": "node src/database/migrations/clean-old-categories.js",
+    "db:reset:categories": "node src/database/migrations/reset-categories.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test:settings": "node src/tests/test-settings-api.js",
+    "test:categories": "node src/tests/test-categories-api.js"
+  },
+  "keywords": [
+    "taiwanese",
+    "chinese",
+    "learning",
+    "vocabulary",
+    "education",
+    "vercel",
+    "serverless",
+    "clean-architecture"
+  ],
+  "author": "Learn Taiwanese Pro Team",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.13.5",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^17.2.4",
+    "google-auth-library": "^10.5.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongodb": "^6.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0",
+    "vercel": "^33.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

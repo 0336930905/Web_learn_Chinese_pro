@@ -1,0 +1,275 @@
+{
+  "name": "Learn Taiwanese Pro API",
+  "description": "API Collection for Learn Taiwanese Pro - Chinese/Taiwanese Learning Platform",
+  "baseUrl": "{{baseUrl}}",
+  "variables": {
+    "baseUrl": "http://localhost:3000/api",
+    "token": "",
+    "userId": "",
+    "categoryId": "",
+    "vocabularyId": ""
+  },
+  "requests": [
+    {
+      "name": "Health Check",
+      "method": "GET",
+      "url": "{{baseUrl}}",
+      "description": "Check API status and get endpoint information"
+    },
+    {
+      "name": "Register User",
+      "method": "POST",
+      "url": "{{baseUrl}}/auth/register",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "email": "newuser@example.com",
+        "password": "password123",
+        "fullName": "New User"
+      },
+      "description": "Register a new user account"
+    },
+    {
+      "name": "Login",
+      "method": "POST",
+      "url": "{{baseUrl}}/auth/login",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "email": "student1@example.com",
+        "password": "student123"
+      },
+      "description": "Login and get JWT token. Save the token for subsequent requests.",
+      "tests": "// Save token from response\nif (response.data.data.token) {\n  setVariable('token', response.data.data.token);\n  setVariable('userId', response.data.data._id);\n}"
+    },
+    {
+      "name": "Get Profile",
+      "method": "GET",
+      "url": "{{baseUrl}}/auth/profile",
+      "headers": {
+        "Authorization": "Bearer {{token}}"
+      },
+      "description": "Get current user profile (requires authentication)"
+    },
+    {
+      "name": "Get Categories",
+      "method": "GET",
+      "url": "{{baseUrl}}/categories?type=admin",
+      "headers": {
+        "Authorization": "Bearer {{token}}"
+      },
+      "description": "Get list of categories. Query params: type (admin/personal)",
+      "tests": "// Save first category ID\nif (response.data.data && response.data.data.length > 0) {\n  setVariable('categoryId', response.data.data[0]._id);\n}"
+    },
+    {
+      "name": "Create Category",
+      "method": "POST",
+      "url": "{{baseUrl}}/categories",
+      "headers": {
+        "Authorization": "Bearer {{token}}",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "name": "My Custom Category",
+        "description": "Personal vocabulary collection",
+        "imageUrl": "https://images.unsplash.com/photo-1516797107243-bac7b98473b8"
+      },
+      "description": "Create a new category",
+      "tests": "// Save created category ID\nif (response.data.data._id) {\n  setVariable('categoryId', response.data.data._id);\n}"
+    },
+    {
+      "name": "Get Category Detail",
+      "method": "GET",
+      "url": "{{baseUrl}}/categories/{{categoryId}}",
+      "headers": {
+        "Authorization": "Bearer {{token}}"
+      },
+      "description": "Get category details by ID"
+    },
+    {
+      "name": "Update Category",
+      "method": "PUT",
+      "url": "{{baseUrl}}/categories/{{categoryId}}",
+      "headers": {
+        "Authorization": "Bearer {{token}}",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "name": "Updated Category Name",
+        "description": "Updated description"
+      },
+      "description": "Update category (requires ownership or admin role)"
+    },
+    {
+      "name": "Delete Category",
+      "method": "DELETE",
+      "url": "{{baseUrl}}/categories/{{categoryId}}",
+      "headers": {
+        "Authorization": "Bearer {{token}}"
+      },
+      "description": "Delete category (requires ownership or admin role)"
+    },
+    {
+      "name": "Get Vocabulary",
+      "method": "GET",
+      "url": "{{baseUrl}}/vocabulary?categoryId={{categoryId}}&limit=10",
+      "headers": {
+        "Authorization": "Bearer {{token}}"
+      },
+      "description": "Get vocabulary list. Query params: categoryId, difficulty, search, limit, skip",
+      "tests": "// Save first vocabulary ID\nif (response.data.data.vocabulary && response.data.data.vocabulary.length > 0) {\n  setVariable('vocabularyId', response.data.data.vocabulary[0]._id);\n}"
+    },
+    {
+      "name": "Create Vocabulary",
+      "method": "POST",
+      "url": "{{baseUrl}}/vocabulary",
+      "headers": {
+        "Authorization": "Bearer {{token}}",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "categoryId": "{{categoryId}}",
+        "traditional": "你好",
+        "simplified": "你好",
+        "pinyin": "nǐ hǎo",
+        "vietnamese": "Xin chào",
+        "audioUrl": "https://example.com/audio/nihao.mp3",
+        "imageUrl": "https://images.unsplash.com/photo-1528605248644-14dd04022da1",
+        "difficulty": "beginner",
+        "tags": ["chào hỏi", "cơ bản"],
+        "examples": [
+          {
+            "traditional": "你好嗎？",
+            "pinyin": "nǐ hǎo ma?",
+            "vietnamese": "Bạn khỏe không?",
+            "audioUrl": "https://example.com/audio/nihaoma.mp3"
+          }
+        ]
+      },
+      "description": "Create new vocabulary",
+      "tests": "// Save created vocabulary ID\nif (response.data.data._id) {\n  setVariable('vocabularyId', response.data.data._id);\n}"
+    },
+    {
+      "name": "Get Vocabulary Detail",
+      "method": "GET",
+      "url": "{{baseUrl}}/vocabulary/{{vocabularyId}}",
+      "headers": {
+        "Authorization": "Bearer {{token}}"
+      },
+      "description": "Get vocabulary details by ID"
+    },
+    {
+      "name": "Update Vocabulary",
+      "method": "PUT",
+      "url": "{{baseUrl}}/vocabulary/{{vocabularyId}}",
+      "headers": {
+        "Authorization": "Bearer {{token}}",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "vietnamese": "Xin chào (updated)",
+        "difficulty": "intermediate"
+      },
+      "description": "Update vocabulary (requires permission)"
+    },
+    {
+      "name": "Delete Vocabulary",
+      "method": "DELETE",
+      "url": "{{baseUrl}}/vocabulary/{{vocabularyId}}",
+      "headers": {
+        "Authorization": "Bearer {{token}}"
+      },
+      "description": "Delete vocabulary (requires permission)"
+    },
+    {
+      "name": "Get Listening Quiz",
+      "method": "GET",
+      "url": "{{baseUrl}}/games/listening-quiz?categoryId={{categoryId}}&limit=5",
+      "headers": {
+        "Authorization": "Bearer {{token}}"
+      },
+      "description": "Generate listening quiz for a category. Returns quizzes with audio and multiple choice options."
+    },
+    {
+      "name": "Get Matching Game",
+      "method": "GET",
+      "url": "{{baseUrl}}/games/matching-game?categoryId={{categoryId}}&limit=6",
+      "headers": {
+        "Authorization": "Bearer {{token}}"
+      },
+      "description": "Generate matching game for a category. Returns pairs to match."
+    },
+    {
+      "name": "Update Progress",
+      "method": "POST",
+      "url": "{{baseUrl}}/progress/update",
+      "headers": {
+        "Authorization": "Bearer {{token}}",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "vocabularyId": "{{vocabularyId}}",
+        "gameType": "listeningQuiz",
+        "isCorrect": true,
+        "timeTaken": 3000
+      },
+      "description": "Update learning progress after answering. Updates memory level, streak, experience, etc."
+    },
+    {
+      "name": "Get Words to Review",
+      "method": "GET",
+      "url": "{{baseUrl}}/progress/review",
+      "headers": {
+        "Authorization": "Bearer {{token}}"
+      },
+      "description": "Get list of words that need review today (based on spaced repetition)"
+    },
+    {
+      "name": "Get Dashboard Stats",
+      "method": "GET",
+      "url": "{{baseUrl}}/dashboard/stats",
+      "headers": {
+        "Authorization": "Bearer {{token}}"
+      },
+      "description": "Get comprehensive user statistics: learned words, streak, activities, game stats, etc."
+    }
+  ],
+  "folders": [
+    {
+      "name": "Authentication",
+      "requests": ["Health Check", "Register User", "Login", "Get Profile"]
+    },
+    {
+      "name": "Categories",
+      "requests": ["Get Categories", "Create Category", "Get Category Detail", "Update Category", "Delete Category"]
+    },
+    {
+      "name": "Vocabulary",
+      "requests": ["Get Vocabulary", "Create Vocabulary", "Get Vocabulary Detail", "Update Vocabulary", "Delete Vocabulary"]
+    },
+    {
+      "name": "Games",
+      "requests": ["Get Listening Quiz", "Get Matching Game"]
+    },
+    {
+      "name": "Progress & Stats",
+      "requests": ["Update Progress", "Get Words to Review", "Get Dashboard Stats"]
+    }
+  ],
+  "environments": [
+    {
+      "name": "Local Development",
+      "variables": {
+        "baseUrl": "http://localhost:3000/api"
+      }
+    },
+    {
+      "name": "Production",
+      "variables": {
+        "baseUrl": "https://your-project.vercel.app/api"
+      }
+    }
+  ]
+}

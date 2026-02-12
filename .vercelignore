@@ -1,0 +1,55 @@
+# Dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Build output
+.vercel
+.next
+dist
+build
+
+# Development files
+*.log
+*.tmp
+*.swp
+.DS_Store
+Thumbs.db
+
+# Database files
+*.db
+*.sqlite
+
+# Backup files
+backups/
+*.backup
+
+# Documentation (optional - comment out if you want to include docs)
+# docs/
+
+# Test files
+src/tests/
+*.test.js
+*.spec.js
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
+
+# Git
+.git
+.gitignore
+
+# Database scripts that shouldn't run on serverless
+server.js
+add-admin-categories.js
+clear-vocab-categories.js
+examples.js

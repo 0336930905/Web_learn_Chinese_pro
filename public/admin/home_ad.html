@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Trang Quản trị Hệ thống | Admin Portal</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script src="/js/admin-sidebar.js"></script>
+     <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4ce64c",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#112111",
+                        "sidebar-light": "#ffffff",
+                        "sidebar-dark": "#1a2e1a",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-200 antialiased">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Admin Sidebar (dynamically loaded) -->
+        <div id="admin-sidebar-container"></div>
+        
+        <main class="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark p-8">
+            <div class="max-w-7xl mx-auto space-y-8">
+                <div class="flex justify-between items-start md:items-center flex-col md:flex-row gap-4">
+                    <div>
+                        <h1 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Tổng quan Quản trị
+                        </h1>
+                        <p class="text-slate-500 dark:text-slate-400 mt-1">Chào mừng quay trở lại. Hệ thống đang hoạt
+                            động ổn định.</p>
+                    </div>
+                    <div class="flex gap-3">
+                        <button
+                            class="bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 px-4 py-2.5 rounded-lg font-medium transition-all flex items-center gap-2 text-sm shadow-sm">
+                            <span class="material-symbols-outlined text-lg">notifications</span>
+                            Thông báo
+                        </button>
+                        <button
+                            class="bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg font-medium transition-all flex items-center gap-2 text-sm shadow-md shadow-primary/20">
+                            <span class="material-symbols-outlined text-lg">settings</span>
+                            Cấu hình chung
+                        </button>
+                    </div>
+                </div>
+                <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div
+                        class="stat-card bg-card-light dark:bg-card-dark p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wide">
+                                Tổng người dùng</p>
+                            <h3 class="text-3xl font-bold mt-1 text-slate-900 dark:text-white">2,845</h3>
+                            <div
+                                class="flex items-center gap-1 mt-2 text-green-600 bg-green-50 dark:bg-green-900/20 w-fit px-2 py-0.5 rounded text-xs font-bold">
+                                <span class="material-symbols-outlined text-sm">trending_up</span>
+                                <span>+124 tuần này</span>
+                            </div>
+                        </div>
+                        <div
+                            class="size-14 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600">
+                            <span class="material-symbols-outlined text-3xl">groups</span>
+                        </div>
+                    </div>
+                    <div
+                        class="stat-card bg-card-light dark:bg-card-dark p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wide">
+                                Tổng từ vựng</p>
+                            <h3 class="text-3xl font-bold mt-1 text-slate-900 dark:text-white">12,500</h3>
+                            <div
+                                class="flex items-center gap-1 mt-2 text-slate-500 bg-slate-100 dark:bg-slate-800 w-fit px-2 py-0.5 rounded text-xs font-bold">
+                                <span class="material-symbols-outlined text-sm">add</span>
+                                <span>50 từ mới hôm nay</span>
+                            </div>
+                        </div>
+                        <div
+                            class="size-14 rounded-xl bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center text-purple-600">
+                            <span class="material-symbols-outlined text-3xl">library_books</span>
+                        </div>
+                    </div>
+                    <div
+                        class="stat-card bg-card-light dark:bg-card-dark p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wide">
+                                Trạng thái hệ thống</p>
+                            <h3 class="text-3xl font-bold mt-1 text-green-600">Ổn định</h3>
+                            <div class="flex items-center gap-1 mt-2 text-slate-500 text-xs font-medium">
+                                <span class="material-symbols-outlined text-sm text-green-500">check_circle</span>
+                                <span>Uptime: 99.9%</span>
+                            </div>
+                        </div>
+                        <div
+                            class="size-14 rounded-xl bg-green-50 dark:bg-green-900/20 flex items-center justify-center text-green-600">
+                            <span class="material-symbols-outlined text-3xl">dns</span>
+                        </div>
+                    </div>
+                </section>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <section class="lg:col-span-1 space-y-6">
+                        <div
+                            class="bg-card-light dark:bg-card-dark rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6 h-full flex flex-col">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg text-indigo-600">
+                                    <span class="material-symbols-outlined">database</span>
+                                </div>
+                                <h2 class="text-xl font-bold text-slate-900 dark:text-white">Quản lý Dữ liệu</h2>
+                            </div>
+                            <div class="space-y-4 flex-1">
+                                <div
+                                    class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
+                                    <h4 class="font-semibold text-sm mb-1">Sao lưu hệ thống</h4>
+                                    <p class="text-xs text-slate-500 mb-4">Tạo bản sao lưu toàn bộ cơ sở dữ liệu hiện
+                                        tại.</p>
+                                    <button
+                                        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg font-medium text-sm transition-colors flex items-center justify-center gap-2">
+                                        <span class="material-symbols-outlined text-lg">backup</span>
+                                        Sao lưu ngay
+                                    </button>
+                                </div>
+                                <div
+                                    class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
+                                    <h4 class="font-semibold text-sm mb-1">Khôi phục dữ liệu</h4>
+                                    <p class="text-xs text-slate-500 mb-4">Khôi phục hệ thống từ bản sao lưu gần nhất.
+                                    </p>
+                                    <button
+                                        class="w-full bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-700 dark:text-white border border-slate-300 dark:border-slate-600 py-2.5 rounded-lg font-medium text-sm transition-colors flex items-center justify-center gap-2">
+                                        <span class="material-symbols-outlined text-lg">restore</span>
+                                        Khôi phục dữ liệu
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mt-6 pt-6 border-t border-slate-100 dark:border-slate-700 text-center">
+                                <p class="text-xs text-slate-400">Lần sao lưu cuối: <span
+                                        class="font-semibold text-slate-600 dark:text-slate-300">Hôm nay, 08:00
+                                        AM</span></p>
+                            </div>
+                        </div>
+                    </section>
+                    <section class="lg:col-span-2">
+                        <div
+                            class="bg-card-light dark:bg-card-dark rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden h-full flex flex-col">
+                            <div
+                                class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                                <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-slate-400">history</span>
+                                    Lịch sử Backup
+                                </h2>
+                                <button class="text-primary text-sm font-semibold hover:underline">Xem tất cả</button>
+                            </div>
+                            <div class="overflow-x-auto flex-1">
+                                <table class="w-full text-left border-collapse">
+                                    <thead class="bg-slate-50 dark:bg-slate-800/50">
+                                        <tr>
+                                            <th
+                                                class="px-6 py-4 font-semibold text-xs text-slate-500 uppercase tracking-wider">
+                                                Tên bản sao lưu</th>
+                                            <th
+                                                class="px-6 py-4 font-semibold text-xs text-slate-500 uppercase tracking-wider">
+                                                Thời gian</th>
+                                            <th
+                                                class="px-6 py-4 font-semibold text-xs text-slate-500 uppercase tracking-wider">
+                                                Kích thước</th>
+                                            <th
+                                                class="px-6 py-4 font-semibold text-xs text-slate-500 uppercase tracking-wider">
+                                                Trạng thái</th>
+                                            <th
+                                                class="px-6 py-4 font-semibold text-xs text-slate-500 uppercase tracking-wider text-right">
+                                                Hành động</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+                                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                                            <td class="px-6 py-4">
+                                                <div class="flex items-center gap-3">
+                                                    <div
+                                                        class="size-8 rounded bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600">
+                                                        <span
+                                                            class="material-symbols-outlined text-sm">folder_zip</span>
+                                                    </div>
+                                                    <span
+                                                        class="font-medium text-sm text-slate-900 dark:text-slate-200">backup_auto_20231024.zip</span>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 text-sm text-slate-500">24/10/2023 08:00</td>
+                                            <td class="px-6 py-4 text-sm text-slate-500 font-mono">2.4 GB</td>
+                                            <td class="px-6 py-4">
+                                                <span
+                                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800">
+                                                    <span class="size-1.5 rounded-full bg-green-500"></span>
+                                                    Hoàn thành
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 text-right">
+                                                <button class="text-slate-400 hover:text-primary transition-colors p-1">
+                                                    <span class="material-symbols-outlined text-lg">download</span>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                                            <td class="px-6 py-4">
+                                                <div class="flex items-center gap-3">
+                                                    <div
+                                                        class="size-8 rounded bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600">
+                                                        <span
+                                                            class="material-symbols-outlined text-sm">folder_zip</span>
+                                                    </div>
+                                                    <span
+                                                        class="font-medium text-sm text-slate-900 dark:text-slate-200">backup_manual_20231023.zip</span>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 text-sm text-slate-500">23/10/2023 15:30</td>
+                                            <td class="px-6 py-4 text-sm text-slate-500 font-mono">2.3 GB</td>
+                                            <td class="px-6 py-4">
+                                                <span
+                                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800">
+                                                    <span class="size-1.5 rounded-full bg-green-500"></span>
+                                                    Hoàn thành
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 text-right">
+                                                <button class="text-slate-400 hover:text-primary transition-colors p-1">
+                                                    <span class="material-symbols-outlined text-lg">download</span>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                                            <td class="px-6 py-4">
+                                                <div class="flex items-center gap-3">
+                                                    <div
+                                                        class="size-8 rounded bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600">
+                                                        <span
+                                                            class="material-symbols-outlined text-sm">folder_zip</span>
+                                                    </div>
+                                                    <span
+                                                        class="font-medium text-sm text-slate-900 dark:text-slate-200">backup_auto_20231023.zip</span>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 text-sm text-slate-500">23/10/2023 08:00</td>
+                                            <td class="px-6 py-4 text-sm text-slate-500 font-mono">2.3 GB</td>
+                                            <td class="px-6 py-4">
+                                                <span
+                                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800">
+                                                    <span class="size-1.5 rounded-full bg-yellow-500"></span>
+                                                    Cảnh báo
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 text-right">
+                                                <button class="text-slate-400 hover:text-primary transition-colors p-1">
+                                                    <span class="material-symbols-outlined text-lg">download</span>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                                            <td class="px-6 py-4">
+                                                <div class="flex items-center gap-3">
+                                                    <div
+                                                        class="size-8 rounded bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600">
+                                                        <span
+                                                            class="material-symbols-outlined text-sm">folder_zip</span>
+                                                    </div>
+                                                    <span
+                                                        class="font-medium text-sm text-slate-900 dark:text-slate-200">backup_auto_20231022.zip</span>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 text-sm text-slate-500">22/10/2023 08:00</td>
+                                            <td class="px-6 py-4 text-sm text-slate-500 font-mono">2.3 GB</td>
+                                            <td class="px-6 py-4">
+                                                <span
+                                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800">
+                                                    <span class="size-1.5 rounded-full bg-green-500"></span>
+                                                    Hoàn thành
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 text-right">
+                                                <button class="text-slate-400 hover:text-primary transition-colors p-1">
+                                                    <span class="material-symbols-outlined text-lg">download</span>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Listen and Choose Game</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎮</text></svg>">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="../css/games-common.css" />
+    <!-- Translations -->
+    <script src="../i18n/translations.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0d7ff2",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        .card-hover {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display min-h-screen flex flex-col">
+    <!-- Common Game Header -->
+    <div id="game-header-container"></div>
+    <script>
+    // Insert common header
+    fetch('games-header.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('game-header-container').innerHTML = html;
+        // Execute scripts in the loaded HTML
+        const scripts = document.getElementById('game-header-container').querySelectorAll('script');
+        scripts.forEach(script => {
+            const newScript = document.createElement('script');
+            if (script.src) {
+                newScript.src = script.src;
+            } else {
+                newScript.textContent = script.textContent;
+            }
+            document.body.appendChild(newScript);
+        });
+      })
+      .catch(err => console.error('Failed to load game header:', err));
+    </script>
+        <!-- Main Content Area -->
+        <main class="flex-grow flex flex-col items-center justify-center  px-4 sm:px-6">
+            <!-- Real-time Stats Display -->
+            <div class="mb-4 text-center">
+                <p id="game-stats" class="text-sm font-semibold text-slate-600 dark:text-slate-400">
+                    <span id="stats-correct">0</span>/<span id="stats-total">0</span> đúng · <span id="stats-percentage">0</span>%
+                </p>
+            </div>
+            <div class="max-w-4xl w-full flex flex-col gap-8 md:gap-12">
+                <!-- Interaction Zone: Speaker -->
+                <section id="speaker-section"
+                    class="flex flex-col items-center text-center gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    <h2 id="instruction-text" class="text-slate-800 dark:text-slate-200 text-lg md:text-xl font-medium"></h2>
+                    <div class="relative group">
+                        <!-- Ripple Effect Layers -->
+                        <div class="absolute inset-0 rounded-full bg-primary/20 animate-ping opacity-75"></div>
+                        <div class="absolute -inset-2 rounded-full bg-primary/10 animate-pulse"></div>
+                        <button id="playAudioBtn"
+                            class="relative z-10 flex items-center justify-center w-24 h-24 md:w-32 md:h-32 rounded-full bg-primary text-white shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 group-hover:shadow-primary/50">
+                            <span class="material-symbols-outlined text-[48px] md:text-[64px]">volume_up</span>
+                        </button>
+                    </div>
+                    <button id="replayBtn"
+                        class="text-primary hover:text-blue-600 dark:hover:text-blue-400 text-sm font-semibold flex items-center gap-1 transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">replay</span>
+                        <span id="listen-again-text"></span>
+                    </button>
+                    <!-- Display Chinese word (hidden initially, shown after first play) -->
+                    <div id="wordDisplay" class="hidden mt-4 text-center">
+                        <div class="text-4xl md:text-5xl font-bold text-primary mb-2" id="chineseWord"></div>
+                        <div class="text-lg md:text-xl text-blue-600 dark:text-blue-400" id="pinyinWord"></div>
+                    </div>
+                </section>
+                <!-- Answer Grid -->
+                <section id="options-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 w-full">
+                    <!-- Options will be dynamically inserted here -->
+                </section>
+            </div>
+        </main>
+        <!-- Footer / Action Bar -->
+        <footer
+            class="sticky bottom-0 z-10 w-full bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 p-4 md:py-6">
+            <div class="max-w-4xl mx-auto flex justify-center items-center">
+                <button id="nextBtn" disabled
+                    class="flex items-center justify-center gap-2 bg-slate-300 dark:bg-slate-700 text-slate-500 dark:text-slate-400 font-bold text-lg px-8 py-3 rounded-full shadow-lg transition-all min-w-[160px] disabled:cursor-not-allowed">
+                    <span>Chọn đáp án</span>
+                </button>
+            </div>
+        </footer>
+    </div>
+<script>
+// ========== Language Initialization ==========
+async function initializeLanguage() {
+    try {
+        // Try to get language from settings API
+        const token = localStorage.getItem('authToken') 
+                   || localStorage.getItem('token') 
+                   || localStorage.getItem('jwtToken');
+        
+        if (token) {
+            const response = await fetch('/api/settings', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (response.ok) {
+                const result = await response.json();
+                if (result.success && result.data?.settings?.language) {
+                    i18n.setLanguage(result.data.settings.language);
+                    updateStaticTexts();
+                    return;
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Failed to load language preference:', error);
+    }
+    // Default to Vietnamese
+    i18n.setLanguage('vi');
+    updateStaticTexts();
+}
+
+// ========== Update Static Texts ==========
+function updateStaticTexts() {
+    document.getElementById('instruction-text').textContent = i18n.t('gameListen.instructionText');
+    document.getElementById('listen-again-text').textContent = i18n.t('gameListen.listenAgain');
+}
+
+// ========== Helper: Get categoryId from URL ==========
+function getCategoryIdFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('categoryId');
+}
+
+// ========== State ==========
+let questions = [];
+let currentIndex = 0;
+let score = 0;
+let selectedAnswer = null;
+let startTime = Date.now();
+let categoryId = null;
+let answers = []; // Track all answers for submission
+
+// ========== Load Questions ==========
+async function loadQuestions() {
+    categoryId = getCategoryIdFromUrl();
+    if (!categoryId) {
+        alert('Không tìm thấy categoryId!');
+        window.location.href = '../user/games_home.html';
+        return;
+    }
+    
+    startTime = Date.now();
+    answers = [];
+    
+    try {
+        // Get current language
+        const currentLang = i18n.currentLang;
+        const res = await fetch(`/api/games/listening-quiz?categoryId=${categoryId}&count=10&language=${currentLang}`);
+        const data = await res.json();
+        
+        if (!data.success) {
+            alert('Không thể tải câu hỏi: ' + (data.error?.message || 'Lỗi không xác định'));
+            window.location.href = '../user/games_home.html';
+            return;
+        }
+        
+        questions = data.data;
+        currentIndex = 0;
+        score = 0;
+        renderQuestion();
+    } catch (err) {
+        alert('Lỗi khi gọi API: ' + err.message);
+        window.location.href = '../user/games_home.html';
+    }
+}
+
+// ========== Render Question ==========
+function renderQuestion() {
+    const q = questions[currentIndex];
+    if (!q) {
+        renderResult();
+        return;
+    }
+    
+    // Reset selected answer
+    selectedAnswer = null;
+    
+    // Update progress in header using unified function
+    if (window.updateGameHeaderProgress) {
+        window.updateGameHeaderProgress({
+            current: currentIndex + 1,
+            total: questions.length,
+            score: score,
+            label: 'Question',
+            animateScore: false
+        });
+    }
+    
+    // Update real-time stats
+    const statsCorrect = document.getElementById('stats-correct');
+    const statsTotal = document.getElementById('stats-total');
+    const statsPercentage = document.getElementById('stats-percentage');
+    
+    if (statsCorrect) statsCorrect.textContent = score;
+    if (statsTotal) statsTotal.textContent = questions.length;
+    if (statsPercentage) {
+        const percentage = questions.length > 0 ? Math.round((score / questions.length) * 100) : 0;
+        statsPercentage.textContent = percentage;
+    }
+    
+    // Hide word display initially
+    document.getElementById('wordDisplay').classList.add('hidden');
+    document.getElementById('chineseWord').textContent = '';
+    document.getElementById('pinyinWord').textContent = '';
+    
+    // Setup audio buttons
+    const playBtn = document.getElementById('playAudioBtn');
+    const replayBtn = document.getElementById('replayBtn');
+    
+    playBtn.onclick = () => playAudio(q);
+    replayBtn.onclick = () => playAudio(q);
+    
+    // Render options
+    renderOptions(q.options);
+    
+    // Reset next button
+    const nextBtn = document.getElementById('nextBtn');
+    nextBtn.disabled = true;
+    nextBtn.className = 'flex items-center justify-center gap-2 bg-slate-300 dark:bg-slate-700 text-slate-500 dark:text-slate-400 font-bold text-lg px-8 py-3 rounded-full shadow-lg transition-all min-w-[160px] disabled:cursor-not-allowed';
+    nextBtn.innerHTML = `<span>${i18n.t('gameListen.selectAnswer')}</span>`;
+    nextBtn.onclick = null;
+}
+
+// ========== Play Audio ==========
+function playAudio(question) {
+    // Show word after playing
+    document.getElementById('wordDisplay').classList.remove('hidden');
+    document.getElementById('chineseWord').textContent = question.traditional || question.simplified;
+    document.getElementById('pinyinWord').textContent = question.pinyin;
+    
+    // Use TTS to speak the word
+    if (window.speakText) {
+        window.speakText(question.traditional || question.simplified);
+    }
+}
+
+// ========== Render Options ==========
+function renderOptions(options) {
+    const grid = document.getElementById('options-grid');
+    grid.innerHTML = '';
+    
+    options.forEach((option, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'card-hover group relative flex flex-col gap-4 p-6 rounded-xl bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 hover:border-primary/50 dark:hover:border-primary/50 shadow-sm text-left transition-all';
+        
+        // Backend already returns translated text based on language parameter
+        btn.innerHTML = `
+            <div class="flex items-center justify-between w-full">
+                <span class="text-slate-800 dark:text-slate-100 font-bold text-xl">${option.text}</span>
+                <div class="w-6 h-6 rounded-full border-2 border-slate-200 dark:border-slate-600 group-hover:border-primary group-hover:bg-primary/10 flex items-center justify-center transition-colors">
+                    <div class="w-2.5 h-2.5 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                </div>
+            </div>
+        `;
+        btn.onclick = () => selectAnswer(idx);
+        grid.appendChild(btn);
+    });
+}
+
+// ========== Select Answer ==========
+function selectAnswer(idx) {
+    selectedAnswer = idx;
+    
+    // Update UI
+    const grid = document.getElementById('options-grid');
+    const buttons = grid.querySelectorAll('button');
+    
+    buttons.forEach((btn, i) => {
+        btn.classList.remove('bg-blue-50', 'dark:bg-blue-900/20', 'border-primary', 'shadow-md', 'scale-[1.02]');
+        btn.classList.add('bg-white', 'dark:bg-slate-800', 'border-slate-100', 'dark:border-slate-700');
+        
+        if (i === idx) {
+            btn.classList.remove('bg-white', 'dark:bg-slate-800', 'border-slate-100', 'dark:border-slate-700');
+            btn.classList.add('bg-blue-50', 'dark:bg-blue-900/20', 'border-primary', 'shadow-md', 'scale-[1.02]');
+        }
+    });
+    
+    // Enable check button
+    const nextBtn = document.getElementById('nextBtn');
+    nextBtn.disabled = false;
+    nextBtn.className = 'flex items-center justify-center gap-2 bg-primary hover:bg-blue-600 text-white font-bold text-lg px-8 py-3 rounded-full shadow-lg shadow-primary/30 transition-all hover:translate-y-[-2px] active:translate-y-[0px] min-w-[160px]';
+    nextBtn.innerHTML = `<span>${i18n.t('gameListen.checkAnswer')}</span><span class="material-symbols-outlined">check_circle</span>`;
+    nextBtn.onclick = checkAnswer;
+}
+
+// ========== Check Answer ==========
+function checkAnswer() {
+    const q = questions[currentIndex];
+    const isCorrect = q.options[selectedAnswer].isCorrect;
+    
+    // Track answer
+    answers.push({
+        questionId: q._id || currentIndex,
+        correct: isCorrect,
+        selectedAnswer: selectedAnswer
+    });
+    
+    // Update UI to show correct/wrong
+    const grid = document.getElementById('options-grid');
+    const buttons = grid.querySelectorAll('button');
+    
+    buttons.forEach((btn, i) => {
+        btn.disabled = true;
+        btn.classList.remove('border-primary', 'bg-blue-50', 'dark:bg-blue-900/20');
+        
+        if (q.options[i].isCorrect) {
+            btn.classList.add('border-green-500', 'bg-green-50', 'dark:bg-green-900/20');
+            // Add check icon
+            const checkIcon = document.createElement('div');
+            checkIcon.className = 'absolute -top-3 -right-3 w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center shadow-lg';
+            checkIcon.innerHTML = '<span class="material-symbols-outlined text-xl">check</span>';
+            btn.style.position = 'relative';
+            btn.appendChild(checkIcon);
+        } else if (i === selectedAnswer && !isCorrect) {
+            btn.classList.add('border-red-500', 'bg-red-50', 'dark:bg-red-900/20');
+            // Add X icon
+            const xIcon = document.createElement('div');
+            xIcon.className = 'absolute -top-3 -right-3 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg';
+            xIcon.innerHTML = '<span class="material-symbols-outlined text-xl">close</span>';
+            btn.style.position = 'relative';
+            btn.appendChild(xIcon);
+        }
+    });
+    
+    // Update score
+    if (isCorrect) {
+        score++;
+        if (window.setGameHeaderScore) {
+            window.setGameHeaderScore(score);
+        }
+    }
+    
+    // Update next button
+    const nextBtn = document.getElementById('nextBtn');
+    nextBtn.innerHTML = `<span>${isCorrect ? i18n.t('gameListen.correctNext') : i18n.t('gameListen.wrongNext')}</span><span class="material-symbols-outlined">arrow_forward</span>`;
+    nextBtn.className = `flex items-center justify-center gap-2 ${isCorrect ? 'bg-green-500 hover:bg-green-600' : 'bg-orange-500 hover:bg-orange-600'} text-white font-bold text-lg px-8 py-3 rounded-full shadow-lg transition-all hover:translate-y-[-2px] active:translate-y-[0px] min-w-[160px]`;
+    nextBtn.onclick = () => {
+        currentIndex++;
+        renderQuestion();
+    };
+}
+
+// ========== Submit Game Result ==========
+async function submitGameResult() {
+    if (!categoryId) return;
+    
+    const duration = Math.floor((Date.now() - startTime) / 1000);
+    const correctAnswers = answers.filter(a => a.correct).length;
+    
+    try {
+        const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+        if (!token) {
+            console.warn('No auth token found, skipping result submission');
+            return;
+        }
+        
+        const response = await fetch('/api/games/session', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                gameType: 'listening-quiz',
+                categoryId: categoryId,
+                score: score * 10,
+                totalQuestions: questions.length,
+                correctAnswers: correctAnswers,
+                answers: answers,
+                duration: duration,
+                timeTaken: duration
+            })
+        });
+        
+        if (!response.ok) {
+            console.error('Failed to submit game result:', await response.text());
+        } else {
+            console.log('Game result submitted successfully');
+        }
+    } catch (error) {
+        console.error('Error submitting game result:', error);
+    }
+}
+
+// ========== Render Result ==========
+function renderResult() {
+    // Submit results to backend
+    submitGameResult();
+    
+    const main = document.querySelector('main');
+    const percentage = Math.round((score / questions.length) * 100);
+    const totalPoints = score * 10;
+    const wrongAnswers = questions.length - score;
+    
+    // Determine performance level
+    let performanceEmoji = '🎉';
+    let performanceText = i18n.t('gameListen.great');
+    let performanceColor = 'from-green-500 to-emerald-500';
+    
+    if (percentage >= 90) {
+        performanceEmoji = '🏆';
+        performanceText = i18n.t('gameListen.excellent');
+        performanceColor = 'from-yellow-400 to-amber-500';
+    } else if (percentage >= 70) {
+        performanceEmoji = '🎉';
+        performanceText = i18n.t('gameListen.great');
+        performanceColor = 'from-green-500 to-emerald-500';
+    } else if (percentage >= 50) {
+        performanceEmoji = '👍';
+        performanceText = i18n.t('gameListen.good');
+        performanceColor = 'from-blue-500 to-cyan-500';
+    } else {
+        performanceEmoji = '💪';
+        performanceText = i18n.t('gameListen.keepTrying');
+        performanceColor = 'from-orange-500 to-red-500';
+    }
+    
+    // Create result overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn';
+    overlay.innerHTML = `
+        <div class="bg-gradient-to-br from-white via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-3xl shadow-2xl p-8 max-w-lg w-[90vw] border-4 border-gradient-to-r from-cyan-200 via-blue-200 to-purple-200 dark:border-gray-700 transform animate-scaleIn">
+            <div class="text-center">
+                <div class="text-8xl mb-4 animate-bounce">${performanceEmoji}</div>
+                <h2 class="text-4xl font-black bg-gradient-to-r ${performanceColor} bg-clip-text text-transparent mb-2">${performanceText}</h2>
+                <p class="text-xl text-gray-600 dark:text-gray-300 mb-6">${i18n.t('gameListen.completedGame')}</p>
+                
+                <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg mb-6">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="text-center p-4 bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-xl">
+                            <div class="text-3xl font-black text-green-600 dark:text-green-400">${score}/${questions.length}</div>
+                            <div class="text-sm text-green-700 dark:text-green-300 font-semibold">${i18n.t('gameListen.correct')}</div>
+                        </div>
+                        <div class="text-center p-4 bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/30 dark:to-cyan-900/30 rounded-xl">
+                            <div class="text-3xl font-black text-blue-600 dark:text-blue-400">${percentage}%</div>
+                            <div class="text-sm text-blue-700 dark:text-blue-300 font-semibold">${i18n.t('gameListen.accuracy')}</div>
+                        </div>
+                        <div class="text-center p-4 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-xl">
+                            <div class="text-3xl font-black text-purple-600 dark:text-purple-400">${totalPoints}</div>
+                            <div class="text-sm text-purple-700 dark:text-purple-300 font-semibold">${i18n.t('gameListen.points')}</div>
+                        </div>
+                        <div class="text-center p-4 bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30 rounded-xl">
+                            <div class="text-3xl font-black text-amber-600 dark:text-amber-400">${wrongAnswers}</div>
+                            <div class="text-sm text-amber-700 dark:text-amber-300 font-semibold">${i18n.t('gameListen.wrong')}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex gap-3">
+                    <button onclick="location.reload()" class="flex-1 bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-6 py-3 rounded-full font-bold hover:scale-105 transition-transform shadow-lg">
+                        🔄 ${i18n.t('gameListen.playAgain')}
+                    </button>
+                    <button onclick="window.location.href='../user/games_home.html'" class="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-full font-bold hover:scale-105 transition-transform shadow-lg">
+                        🏠 ${i18n.t('gameListen.backHome')}
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Add animation styles
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
+        .animate-scaleIn { animation: scaleIn 0.4s ease-out; }
+    `;
+    document.head.appendChild(style);
+    
+    document.body.appendChild(overlay);
+}
+
+// ========== Register Language Change Callback ==========
+i18n.onLanguageChange(() => {
+    // Update static texts
+    updateStaticTexts();
+    
+    // Update next button text if it exists
+    const nextBtn = document.getElementById('nextBtn');
+    if (nextBtn && !nextBtn.disabled && nextBtn.onclick === checkAnswer) {
+        // Button is in "checkAnswer" state
+        nextBtn.innerHTML = `<span>${i18n.t('gameListen.checkAnswer')}</span><span class="material-symbols-outlined">check_circle</span>`;
+    } else if (nextBtn && nextBtn.disabled) {
+        // Button is in "selectAnswer" state
+        nextBtn.innerHTML = `<span>${i18n.t('gameListen.selectAnswer')}</span>`;
+    }
+    
+    // Reload questions with new language when language changes
+    // Only reload if game is not in progress to avoid disrupting gameplay
+    if (questions.length === 0 || currentIndex === 0) {
+        loadQuestions();
+    }
+    
+    // Note: Result overlay and correct/wrong states are handled by re-rendering if needed
+});
+
+// ========== Start Game ==========
+document.addEventListener('DOMContentLoaded', async () => {
+    await initializeLanguage();
+    loadQuestions();
+});
+</script>
+</body>
+
+</html>
