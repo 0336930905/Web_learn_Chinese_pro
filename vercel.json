@@ -7,15 +7,12 @@
       "destination": "/api/index.js"
     },
     {
+      "source": "/",
+      "destination": "/public/index.html"
+    },
+    {
       "source": "/:path*",
       "destination": "/public/:path*"
-    }
-  ],
-  "redirects": [
-    {
-      "source": "/index.html",
-      "destination": "/",
-      "permanent": true
     }
   ],
   "headers": [
