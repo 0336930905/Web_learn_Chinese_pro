@@ -163,32 +163,66 @@ const googleCallback = asyncHandler(async (req, res) => {
   try {
     const { code, error, error_description } = req.query;
     
+    // Log incoming request for debugging
+    console.log('📥 Google OAuth Callback:', {
+      timestamp: new Date().toISOString(),
+      query: req.query,
+      headers: {
+        'user-agent': req.headers['user-agent'],
+        'referer': req.headers.referer,
+        'host': req.headers.host
+      },
+      url: req.url,
+      method: req.method
+    });
+    
     // Handle OAuth errors
     if (error) {
-      console.error('Google OAuth error:', error, error_description);
+      console.error('❌ Google OAuth error:', {
+        error,
+        error_description,
+        timestamp: new Date().toISOString()
+      });
       return res.redirect(`/login_screen.html?error=${encodeURIComponent(error_description || error)}`);
     }
     
     if (!code) {
+      console.error('❌ Missing authorization code from Google', {
+        query: req.query,
+        timestamp: new Date().toISOString()
+      });
       return res.redirect('/login_screen.html?error=' + encodeURIComponent('Thiếu mã xác thực từ Google'));
     }
     
     // Exchange code for tokens
+    console.log('🔄 Exchanging authorization code for tokens...');
     const { tokens } = await googleClient.getToken(code);
     const idToken = tokens.id_token;
     
     if (!idToken) {
+      console.error('❌ No id_token received from Google', {
+        tokens: Object.keys(tokens),
+        timestamp: new Date().toISOString()
+      });
       return res.redirect('/login_screen.html?error=' + encodeURIComponent('Không nhận được token từ Google'));
     }
     
+    console.log('✅ ID token received, verifying...');
+    
     // Verify token
     const payload = await verifyGoogleToken(idToken);
+    console.log('✅ Token verified, user info:', {
+      email: payload.email,
+      name: payload.name,
+      picture: payload.picture ? 'present' : 'missing'
+    });
     
     // Find or create user
     const userService = new UserService(req.db);
     let user = await userService.collection.findOne({ email: payload.email });
     
     if (!user) {
+      console.log('👤 User not found, creating new user:', payload.email);
       // Create new user
       const newUser = {
         email: payload.email,
@@ -211,6 +245,9 @@ const googleCallback = asyncHandler(async (req, res) => {
       };
       const result = await userService.collection.insertOne(newUser);
       user = { ...newUser, _id: result.insertedId };
+      console.log('✅ New user created with ID:', user._id.toString());
+    } else {
+      console.log('✅ Existing user found:', user.email);
     }
     
     // Generate JWT
@@ -219,6 +256,7 @@ const googleCallback = asyncHandler(async (req, res) => {
       appConfig.jwt.secret,
       { expiresIn: appConfig.jwt.expiresIn }
     );
+    console.log('🔑 JWT token generated for user:', user.email);
     
     // Prepare user data for frontend (exclude password)
     const userData = {
@@ -241,16 +279,27 @@ const googleCallback = asyncHandler(async (req, res) => {
     const userAgent = req.headers['user-agent'] || '';
     const isMobileOrEmbedded = /Mobile|Android|iPhone|iPad|Zalo/i.test(userAgent);
     
+    console.log('🔀 Redirecting user:', {
+      email: user.email,
+      redirectUrl,
+      isMobile: isMobileOrEmbedded,
+      userAgent: userAgent.substring(0, 100) + '...'
+    });
+    
     if (isMobileOrEmbedded) {
       // Mobile-friendly redirect with parameters
+      console.log('📱 Using mobile redirect with URL parameters');
       const params = new URLSearchParams({
         token: token,
         user: JSON.stringify(userData)
       });
-      return res.redirect(`${redirectUrl}?auth=success&${params.toString()}`);
+      const finalUrl = `${redirectUrl}?auth=success&${params.toString()}`;
+      console.log('➡️ Mobile redirect to:', redirectUrl);
+      return res.redirect(finalUrl);
     }
     
     // Desktop: Use localStorage script with better error handling
+    console.log('💻 Using desktop redirect with localStorage');
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.end(`
       <!DOCTYPE html>
@@ -315,7 +364,16 @@ const googleCallback = asyncHandler(async (req, res) => {
       </html>
     `);
   } catch (error) {
-    console.error('Google callback error:', error);
+    console.error('❌ Google callback error:', {
+      error: error.message,
+      stack: error.stack,
+      timestamp: new Date().toISOString(),
+      query: req.query,
+      headers: {
+        'user-agent': req.headers['user-agent'],
+        'referer': req.headers.referer
+      }
+    });
     return res.redirect('/login_screen.html?error=' + encodeURIComponent('Lỗi xác thực: ' + error.message));
   }
 });
