@@ -1,7 +1,5 @@
 {
   "version": 2,
-  "name": "learn-taiwanese-pro",
-  "regions": ["sin1"],
   "buildCommand": "npm install",
   "rewrites": [
     {
