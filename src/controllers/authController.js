@@ -160,80 +160,164 @@ const googleAuth = asyncHandler(async (req, res) => {
 
 // Step 2: Google callback
 const googleCallback = asyncHandler(async (req, res) => {
-  const { code } = req.query;
-  if (!code) {
-    return res.status(400).json({ success: false, error: { message: 'Missing code from Google' } });
-  }
-  // Exchange code for tokens
-  const { tokens } = await googleClient.getToken(code);
-  const idToken = tokens.id_token;
-  if (!idToken) {
-    return res.status(400).json({ success: false, error: { message: 'No id_token from Google' } });
-  }
-  // Verify token
-  const payload = await verifyGoogleToken(idToken);
-  // Find or create user
-  const userService = new UserService(req.db);
-  let user = await userService.collection.findOne({ email: payload.email });
-  if (!user) {
-    // Create new user
-    const newUser = {
-      email: payload.email,
-      fullName: payload.name || '',
-      avatar: payload.picture || '',
-      password: '',
-      role: 'student',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      streak: { current: 0, longest: 0, lastStudyDate: null },
-      stats: { totalWords: 0, experience: 0, level: 1, accuracy: 0 },
-      settings: {
-        theme: 'light',
-        language: 'vi',
-        sound: {
-          bgMusic: 75,
-          gameSFX: 90
+  try {
+    const { code, error, error_description } = req.query;
+    
+    // Handle OAuth errors
+    if (error) {
+      console.error('Google OAuth error:', error, error_description);
+      return res.redirect(`/login_screen.html?error=${encodeURIComponent(error_description || error)}`);
+    }
+    
+    if (!code) {
+      return res.redirect('/login_screen.html?error=' + encodeURIComponent('Thiếu mã xác thực từ Google'));
+    }
+    
+    // Exchange code for tokens
+    const { tokens } = await googleClient.getToken(code);
+    const idToken = tokens.id_token;
+    
+    if (!idToken) {
+      return res.redirect('/login_screen.html?error=' + encodeURIComponent('Không nhận được token từ Google'));
+    }
+    
+    // Verify token
+    const payload = await verifyGoogleToken(idToken);
+    
+    // Find or create user
+    const userService = new UserService(req.db);
+    let user = await userService.collection.findOne({ email: payload.email });
+    
+    if (!user) {
+      // Create new user
+      const newUser = {
+        email: payload.email,
+        fullName: payload.name || '',
+        avatar: payload.picture || '',
+        password: '',
+        role: 'student',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        streak: { current: 0, longest: 0, lastStudyDate: null },
+        stats: { totalWords: 0, experience: 0, level: 1, accuracy: 0 },
+        settings: {
+          theme: 'light',
+          language: 'vi',
+          sound: {
+            bgMusic: 75,
+            gameSFX: 90
+          }
         }
-      }
+      };
+      const result = await userService.collection.insertOne(newUser);
+      user = { ...newUser, _id: result.insertedId };
+    }
+    
+    // Generate JWT
+    const token = jwt.sign(
+      { userId: user._id.toString(), email: user.email, role: user.role },
+      appConfig.jwt.secret,
+      { expiresIn: appConfig.jwt.expiresIn }
+    );
+    
+    // Prepare user data for frontend (exclude password)
+    const userData = {
+      _id: user._id.toString(),
+      id: user._id.toString(),
+      email: user.email,
+      fullName: user.fullName,
+      avatar: user.avatar,
+      role: user.role,
+      stats: user.stats,
+      streak: user.streak,
+      settings: user.settings
     };
-    const result = await userService.collection.insertOne(newUser);
-    user = { ...newUser, _id: result.insertedId };
+    
+    // Determine redirect URL
+    const redirectUrl = user.role === 'admin' ? '/admin/home_ad.html' : '/user/home.html';
+    
+    // For mobile/Zalo: Use URL parameters instead of localStorage
+    // Then use client-side script to move to localStorage
+    const userAgent = req.headers['user-agent'] || '';
+    const isMobileOrEmbedded = /Mobile|Android|iPhone|iPad|Zalo/i.test(userAgent);
+    
+    if (isMobileOrEmbedded) {
+      // Mobile-friendly redirect with parameters
+      const params = new URLSearchParams({
+        token: token,
+        user: JSON.stringify(userData)
+      });
+      return res.redirect(`${redirectUrl}?auth=success&${params.toString()}`);
+    }
+    
+    // Desktop: Use localStorage script with better error handling
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.end(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Đăng nhập thành công</title>
+        <style>
+          body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+          }
+          .container {
+            text-align: center;
+            padding: 2rem;
+          }
+          .spinner {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+          }
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="spinner"></div>
+          <h2>Đăng nhập Google thành công!</h2>
+          <p>Đang chuyển hướng...</p>
+        </div>
+        <script>
+          try {
+            // Store auth data
+            window.localStorage.setItem('authToken', '${token}');
+            window.localStorage.setItem('user', '${JSON.stringify(userData).replace(/'/g, "\\'").replace(/"/g, '\\"')}');
+            
+            // Redirect after short delay
+            setTimeout(function() {
+              window.location.href = '${redirectUrl}';
+            }, 500);
+          } catch (error) {
+            console.error('Auth error:', error);
+            // Fallback: redirect with parameters
+            window.location.href = '${redirectUrl}?auth=success&token=${token}&user=' + encodeURIComponent('${JSON.stringify(userData).replace(/'/g, "\\'").replace(/"/g, '\\"')}');
+          }
+        </script>
+      </body>
+      </html>
+    `);
+  } catch (error) {
+    console.error('Google callback error:', error);
+    return res.redirect('/login_screen.html?error=' + encodeURIComponent('Lỗi xác thực: ' + error.message));
   }
-  // Generate JWT
-  const token = jwt.sign(
-    { userId: user._id.toString(), email: user.email, role: user.role },
-    appConfig.jwt.secret,
-    { expiresIn: appConfig.jwt.expiresIn }
-  );
-  
-  // Prepare user data for frontend (exclude password)
-  const userData = {
-    _id: user._id.toString(),
-    id: user._id.toString(), // For compatibility
-    email: user.email,
-    fullName: user.fullName,
-    avatar: user.avatar,
-    role: user.role,
-    stats: user.stats,
-    streak: user.streak,
-    settings: user.settings
-  };
-  
-  // Redirect to frontend with token and user data
-  // For SPA: send HTML with script to store token and redirect
-  const redirectUrl = user.role === 'admin' ? '/admin/home_ad.html' : '/user/home.html';
-  
-  res.setHeader('Content-Type', 'text/html');
-  res.end(`
-    <html><body>
-    <script>
-      window.localStorage.setItem('authToken', '${token}');
-      window.localStorage.setItem('user', '${JSON.stringify(userData).replace(/'/g, "\\'")}');
-      window.location.href = '${redirectUrl}';
-    </script>
-    Đăng nhập Google thành công. Đang chuyển hướng...
-    </body></html>
-  `);
 });
 
 /**

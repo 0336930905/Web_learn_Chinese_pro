@@ -3,12 +3,12 @@
   "buildCommand": "npm install",
   "rewrites": [
     {
-      "source": "/api/(.*)",
+      "source": "/api/:path*",
       "destination": "/api/index.js"
     },
     {
-      "source": "/(.*)",
-      "destination": "/public/$1"
+      "source": "/:path*",
+      "destination": "/public/:path*"
     }
   ],
   "redirects": [

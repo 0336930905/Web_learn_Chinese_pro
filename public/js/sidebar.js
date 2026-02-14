@@ -507,6 +507,40 @@ function initializeChatbot() {
 
 // Initialize sidebar when DOM is loaded
 document.addEventListener('DOMContentLoaded', async function() {
+    // Handle OAuth callback parameters (for mobile/Zalo scenarios)
+    const urlParams = new URLSearchParams(window.location.search);
+    const authSuccess = urlParams.get('auth');
+    const tokenParam = urlParams.get('token');
+    const userParam = urlParams.get('user');
+    
+    if (authSuccess === 'success' && tokenParam && userParam) {
+        try {
+            // Store auth data from URL parameters to localStorage
+            localStorage.setItem('authToken', tokenParam);
+            localStorage.setItem('user', decodeURIComponent(userParam));
+            
+            console.log('✅ Auth data saved from URL parameters (mobile/Zalo flow)');
+            
+            // Clean URL to remove parameters
+            const cleanUrl = window.location.pathname;
+            window.history.replaceState({}, document.title, cleanUrl);
+            
+            // Show success message
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 z-50 max-w-md w-full mx-4';
+            alertDiv.innerHTML = `
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg shadow-lg flex items-center gap-2">
+                    <span class="material-symbols-outlined">check_circle</span>
+                    <span class="text-sm">Đăng nhập thành công!</span>
+                </div>
+            `;
+            document.body.appendChild(alertDiv);
+            setTimeout(() => alertDiv.remove(), 3000);
+        } catch (error) {
+            console.error('Failed to process auth parameters:', error);
+        }
+    }
+    
     const sidebarContainer = document.getElementById('sidebar-container');
     if (sidebarContainer) {
         const activePage = sidebarContainer.getAttribute('data-active-page') || 'home';

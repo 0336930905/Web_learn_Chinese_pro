@@ -24,6 +24,11 @@ const authRoutes = (router, db) => {
   // Google OAuth2
   router.get('/google', authController.googleAuth);
   router.get('/google/callback', authController.googleCallback);
+  
+  // Health check endpoint
+  router.get('/health', (req, res) => {
+    res.json({ success: true, message: 'Auth API is healthy', timestamp: new Date().toISOString() });
+  });
 
   // Protected routes
   router.get('/profile', verifyToken, authController.getProfile);
