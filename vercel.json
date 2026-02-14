@@ -3,6 +3,14 @@
   "buildCommand": "npm install",
   "rewrites": [
     {
+      "source": "/api/auth/google",
+      "destination": "/api/index.js"
+    },
+    {
+      "source": "/api/auth/google/callback",
+      "destination": "/api/index.js"
+    },
+    {
       "source": "/api/:path*",
       "destination": "/api/index.js"
     },
