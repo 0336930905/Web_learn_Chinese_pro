@@ -111,6 +111,41 @@
         .active-fill .material-symbols-outlined {
             font-variation-settings: 'FILL' 1;
         }
+        
+        /* Mobile Modal Adjustments */
+        @media (max-width: 640px) {
+            #createCategoryModal > div,
+            #editCategoryModal > div,
+            #deleteConfirmModal > div {
+                margin: 1rem;
+                max-height: calc(100vh - 2rem);
+            }
+            
+            /* Icon grid spacing on mobile */
+            .icon-btn,
+            .edit-icon-btn {
+                padding: 0.75rem;
+                font-size: 1.5rem;
+            }
+            
+            /* Color button sizing */
+            .color-btn,
+            .edit-color-btn {
+                width: 2.5rem;
+                height: 2.5rem;
+            }
+            
+            /* Header adjustments */
+            header h1 {
+                font-size: 1.5rem;
+            }
+            
+            /* Filter buttons wrap better */
+            .filter-btn {
+                font-size: 0.875rem;
+                padding: 0.5rem 0.75rem;
+            }
+        }
     </style>
     <script src="../js/sidebar.js"></script>
 </head>
@@ -120,7 +155,7 @@
         <!-- Sidebar Navigation -->
         <div id="sidebar-container" data-active-page="categories"></div>
         <!-- Main Content Area -->
-        <main class="flex-1 ml-64 overflow-y-auto bg-background-light dark:bg-background-dark relative">
+        <main class="flex-1 ml-0 md:ml-64 overflow-y-auto bg-background-light dark:bg-background-dark relative transition-all duration-300">
             <!-- Decorative background blobs -->
             <div
                 class="absolute top-0 right-0 -z-10 h-96 w-96 translate-x-1/3 -translate-y-1/3 rounded-full bg-primary/10 blur-3xl">
@@ -128,7 +163,7 @@
             <div
                 class="absolute bottom-0 left-0 -z-10 h-64 w-64 -translate-x-1/3 translate-y-1/3 rounded-full bg-blue-400/10 blur-3xl">
             </div>
-            <div class="mx-auto max-w-7xl px-8 py-8 md:px-12 md:py-10">
+            <div class="mx-auto max-w-7xl px-4 md:px-8 py-6 md:py-8 pt-20 md:pt-8">
                 <!-- Header Section -->
                 <header class="mb-10 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
                     <div class="flex flex-col gap-2">
@@ -169,7 +204,7 @@
                     </div>
                 </div>
                 <!-- Categories Grid -->
-                <div id="categoriesGrid" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div id="categoriesGrid" class="grid grid-cols-1 gap-4 md:gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     <!-- Create New Card -->
                     <button id="openCreateCategoryModal"
                         class="add-card group relative flex h-64 flex-col items-center justify-center gap-4 rounded-3xl border-4 border-dashed border-gray-300 bg-transparent p-6 text-center transition-all dark:border-gray-700">

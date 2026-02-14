@@ -77,6 +77,29 @@
             position: sticky;
             top: 0;
         }
+        
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .game-card-shadow {
+                box-shadow: 0 6px 0px 0px #e2e8f0;
+            }
+            
+            .game-card-shadow:hover {
+                box-shadow: 0 2px 0px 0px #e2e8f0;
+                transform: translateY(4px);
+            }
+            
+            /* Smaller decorative stars on mobile */
+            .floating-stars {
+                background-size: 50px 50px;
+                opacity: 0.1;
+            }
+            
+            /* Hide large decorative icons on mobile */
+            .absolute.material-symbols-outlined {
+                display: none;
+            }
+        }
     </style>
 </head>
 
@@ -86,7 +109,7 @@
         <!-- Side Navigation -->
         <div id="sidebar-container" data-active-page="games"></div>
         <!-- Main Content Area -->
-        <div class="relative flex-1 ml-64 min-h-screen overflow-hidden">
+        <div class="relative flex-1 ml-0 md:ml-64 min-h-screen overflow-hidden transition-all duration-300">
             <div class="absolute inset-0 pointer-events-none opacity-20 floating-stars"></div>
             <div class="absolute top-20 right-10 text-primary/40">
                 <span class="material-symbols-outlined text-6xl">grade</span>
@@ -95,16 +118,16 @@
                 <span class="material-symbols-outlined text-6xl">music_note</span>
             </div>
             <main class="relative z-10">
-                <div class="mx-auto max-w-7xl px-8 py-8 md:px-12 md:py-10">
+                <div class="mx-auto max-w-7xl px-4 md:px-8 py-6 md:py-8 pt-20 md:pt-8">
                     <!-- Header and Category Selector Grid -->
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-2">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-8 mb-2">
                         <!-- Left: Title and Description (8 cols) -->
                         <div class="lg:col-span-8">
                             <h1
-                                class="text-4xl md:text-5xl font-extrabold text-[#0e1b0e] dark:text-white mb-4 tracking-tight" data-i18n="gamesHome.title">
+                                class="text-2xl md:text-4xl lg:text-5xl font-extrabold text-[#0e1b0e] dark:text-white mb-4 tracking-tight" data-i18n="gamesHome.title">
                                 Menu Chọn Trò Chơi Học Tập
                             </h1>
-                            <p class="text-lg text-gray-600 dark:text-gray-300 font-medium" data-i18n="gamesHome.subtitle">
+                            <p class="text-sm md:text-lg text-gray-600 dark:text-gray-300 font-medium" data-i18n="gamesHome.subtitle">
                                 Chào mừng bé quay lại! Hãy chọn một trò chơi thật vui để bắt đầu khám phá những từ vựng
                                 mới nhé!
                             </p>
@@ -179,7 +202,7 @@
 
                     <!-- Games Grid Section -->
                     <div id="gamesSection" class="hidden">
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-6 items-end">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8 mb-6 items-end">
                             <!-- Left: Section Title -->
                             <div class="flex items-center gap-3 mb-2 md:mb-0">
                                 <span class="material-symbols-outlined text-4xl text-primary"
@@ -215,7 +238,7 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                        <div class="grid grid-cols-1 gap-4 md:gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                             <div onclick="playGame('game_listen.html')"
                                 class="bg-white dark:bg-zinc-900 rounded-3xl p-6 flex flex-col justify-between h-64 text-center transition-all duration-300 game-card-shadow group border-2 border-gray-100 dark:border-zinc-800 cursor-pointer">
                                 <div class="flex flex-col items-center">

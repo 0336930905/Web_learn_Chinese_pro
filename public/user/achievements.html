@@ -104,6 +104,55 @@
             transform: rotate(-90deg);
             transform-origin: 50% 50%;
         }
+        
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            /* Smaller text on mobile */
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            h2 {
+                font-size: 1.25rem;
+            }
+            
+            /* Compact stat cards */
+            .stat-card {
+                padding: 1rem;
+            }
+            
+            /* Smaller badges on mobile */
+            .badge-item {
+                font-size: 2rem;
+            }
+            
+            /* Calendar grid more compact */
+            #calendarContainer {
+                gap: 0.25rem;
+            }
+            
+            /* Hero stats more compact */
+            .progress-ring {
+                width: 80px;
+                height: 80px;
+            }
+            
+            /* Hide extra badges on mobile - show only first 6 */
+            #badgesContainer .badge-item:nth-child(n+7) {
+                display: none;
+            }
+            
+            #badgesContainer.show-all-badges .badge-item {
+                display: flex !important;
+            }
+        }
+        
+        /* Tablet adjustments */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .stat-card {
+                padding: 1.25rem;
+            }
+        }
     </style>
     <script src="../js/sidebar.js"></script>
 </head>
@@ -114,10 +163,10 @@
         <div id="sidebar-container" data-active-page="achievements"></div>
         
         <!-- Main Content -->
-        <main class="flex-1 h-full ml-64 overflow-y-auto bg-background-light dark:bg-background-dark p-4 md:p-8 lg:px-12">
+        <main class="flex-1 h-full ml-0 md:ml-64 overflow-y-auto bg-background-light dark:bg-background-dark p-4 md:p-8 lg:px-12 pt-20 md:pt-8 transition-all duration-300">
             <div class="max-w-7xl mx-auto">
                 <!-- Header -->
-                <div class="mb-8">
+                <div class="mb-6 md:mb-8">
                     <div class="flex items-center gap-3 mb-3">
                         <div class="bg-gradient-to-br from-yellow-400 to-yellow-600 p-3 rounded-2xl shadow-lg">
                             <span class="material-symbols-outlined text-3xl text-white" style="font-variation-settings: 'FILL' 1">emoji_events</span>
@@ -132,56 +181,59 @@
                 </div>
 
                 <!-- Hero Stats Card -->
-                <div class="mb-8 bg-gradient-to-br from-primary via-green-500 to-emerald-500 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+                <div class="mb-6 md:mb-8 bg-gradient-to-br from-primary via-green-500 to-emerald-500 rounded-2xl md:rounded-3xl p-4 md:p-8 shadow-2xl relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
-                    <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
-                        <div class="flex items-center gap-6">
-                            <div class="relative">
-                                <svg class="w-32 h-32" viewBox="0 0 120 120">
+                    <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6">
+                        <!-- Level & XP Section -->
+                        <div class="flex items-center gap-3 md:gap-6 w-full md:w-auto">
+                            <div class="relative flex-shrink-0">
+                                <svg class="w-20 h-20 md:w-32 md:h-32" viewBox="0 0 120 120">
                                     <circle cx="60" cy="60" r="54" stroke="rgba(255,255,255,0.2)" stroke-width="8" fill="none" />
                                     <circle id="progressRing" class="progress-ring" cx="60" cy="60" r="54" stroke="white" stroke-width="8" fill="none"
                                         stroke-dasharray="339.292" stroke-dashoffset="100" stroke-linecap="round" />
                                     <text id="levelText" x="60" y="60" text-anchor="middle" dy="8" fill="white" font-size="28" font-weight="bold">-</text>
                                 </svg>
-                                <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-white px-3 py-1 rounded-full shadow-lg">
-                                    <span class="text-primary font-black text-sm" data-i18n="achievements.levelBadge">Cấp độ</span>
+                                <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-white px-2 md:px-3 py-0.5 md:py-1 rounded-full shadow-lg">
+                                    <span class="text-primary font-black text-xs md:text-sm" data-i18n="achievements.levelBadge">Cấp độ</span>
                                 </div>
                             </div>
-                            <div class="text-white">
-                                <p class="text-sm font-semibold opacity-90" data-i18n="achievements.experience">Kinh Nghiệm</p>
-                                <div class="flex items-baseline gap-2">
-                                    <p id="currentXP" class="text-5xl font-black">-</p>
-                                    <p class="text-xl font-bold opacity-75" data-i18n="achievements.xpLabel">XP</p>
+                            <div class="text-white flex-1">
+                                <p class="text-xs md:text-sm font-semibold opacity-90" data-i18n="achievements.experience">Kinh Nghiệm</p>
+                                <div class="flex items-baseline gap-1 md:gap-2">
+                                    <p id="currentXP" class="text-3xl md:text-5xl font-black">-</p>
+                                    <p class="text-sm md:text-xl font-bold opacity-75" data-i18n="achievements.xpLabel">XP</p>
                                 </div>
-                                <div class="mt-2 flex items-center gap-2">
-                                    <div class="bg-white/20 h-2 rounded-full w-48">
+                                <div class="mt-1 md:mt-2 flex items-center gap-2">
+                                    <div class="bg-white/20 h-1.5 md:h-2 rounded-full w-32 md:w-48 flex-1 max-w-[200px]">
                                         <div id="xpProgressBar" class="bg-white h-full rounded-full" style="width: 0%"></div>
                                     </div>
-                                    <span id="xpProgress" class="text-sm font-bold">0/0</span>
+                                    <span id="xpProgress" class="text-xs md:text-sm font-bold whitespace-nowrap">0/0</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="flex gap-6">
+                        
+                        <!-- Stats Section -->
+                        <div class="flex gap-4 md:gap-6">
                             <div class="text-center">
-                                <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-4 mb-2">
-                                    <span class="material-symbols-outlined text-5xl text-white" style="font-variation-settings: 'FILL' 1">local_fire_department</span>
+                                <div class="bg-white/20 backdrop-blur-sm rounded-xl md:rounded-2xl p-2 md:p-4 mb-1 md:mb-2">
+                                    <span class="material-symbols-outlined text-3xl md:text-5xl text-white" style="font-variation-settings: 'FILL' 1">local_fire_department</span>
                                 </div>
-                                <p id="currentStreak" class="text-3xl font-black text-white">0</p>
-                                <p class="text-sm font-semibold text-white/80" data-i18n="achievements.streakDays">Ngày liên tiếp</p>
+                                <p id="currentStreak" class="text-2xl md:text-3xl font-black text-white">0</p>
+                                <p class="text-xs md:text-sm font-semibold text-white/80" data-i18n="achievements.streakDays">Ngày liên tiếp</p>
                             </div>
                             <div class="text-center">
-                                <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-4 mb-2">
-                                    <span class="material-symbols-outlined text-5xl text-white" style="font-variation-settings: 'FILL' 1">stars</span>
+                                <div class="bg-white/20 backdrop-blur-sm rounded-xl md:rounded-2xl p-2 md:p-4 mb-1 md:mb-2">
+                                    <span class="material-symbols-outlined text-3xl md:text-5xl text-white" style="font-variation-settings: 'FILL' 1">stars</span>
                                 </div>
-                                <p id="totalBadges" class="text-3xl font-black text-white">0</p>
-                                <p class="text-sm font-semibold text-white/80" data-i18n="achievements.badgesEarned">Huy hiệu</p>
+                                <p id="totalBadges" class="text-2xl md:text-3xl font-black text-white">0</p>
+                                <p class="text-xs md:text-sm font-semibold text-white/80" data-i18n="achievements.badgesEarned">Huy hiệu</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Stats Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
                     <!-- Total Words Learned -->
                     <div class="stat-card bg-surface-light dark:bg-surface-dark rounded-2xl p-6 shadow-card border border-gray-100 dark:border-gray-800">
                         <div class="flex items-center justify-between mb-4">
@@ -228,7 +280,7 @@
                 </div>
 
                 <!-- Learning Progress by Difficulty -->
-                <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 shadow-card border border-gray-100 dark:border-gray-800 mb-8">
+                <div class="bg-surface-light dark:bg-surface-dark rounded-xl md:rounded-2xl p-4 md:p-6 shadow-card border border-gray-100 dark:border-gray-800 mb-6 md:mb-8">
                     <h2 class="text-xl font-black text-text-main dark:text-white mb-6 flex items-center gap-2">
                         <span class="material-symbols-outlined text-primary">bar_chart</span>
                         <span data-i18n="achievements.progressByDifficulty">Tiến Độ Theo Độ Khó</span>
@@ -239,21 +291,26 @@
                 </div>
 
                 <!-- Achievements/Badges -->
-                <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 shadow-card border border-gray-100 dark:border-gray-800 mb-8">
-                    <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-xl font-black text-text-main dark:text-white flex items-center gap-2">
+                <div class="bg-surface-light dark:bg-surface-dark rounded-xl md:rounded-2xl p-4 md:p-6 shadow-card border border-gray-100 dark:border-gray-800 mb-6 md:mb-8">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 md:mb-6">
+                        <h2 class="text-lg md:text-xl font-black text-text-main dark:text-white flex items-center gap-2">
                             <span class="material-symbols-outlined text-primary">military_tech</span>
                             <span data-i18n="achievements.achievementsBadges">Huy Hiệu & Thành Tựu</span>
                         </h2>
-                        <span id="badgeCount" class="text-sm font-bold text-text-secondary">0/0 đạt được</span>
+                        <div class="flex items-center gap-2">
+                            <span id="badgeCount" class="text-xs md:text-sm font-bold text-text-secondary">0/0 đạt được</span>
+                            <button id="toggleBadges" class="md:hidden text-xs font-semibold text-primary hover:text-primary-dark transition-colors px-3 py-1 bg-primary/10 rounded-full">
+                                <span id="toggleBadgesText" data-i18n="achievements.showAll">Xem tất cả</span>
+                            </button>
+                        </div>
                     </div>
-                    <div id="badgesContainer" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+                    <div id="badgesContainer" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3 md:gap-4">
                         <!-- Will be populated by JavaScript -->
                     </div>
                 </div>
 
                 <!-- Streak Calendar -->
-                <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 shadow-card border border-gray-100 dark:border-gray-800 mb-8">
+                <div class="bg-surface-light dark:bg-surface-dark rounded-xl md:rounded-2xl p-4 md:p-6 shadow-card border border-gray-100 dark:border-gray-800 mb-6 md:mb-8">
                     <h2 id="calendarTitle" class="text-xl font-black text-text-main dark:text-white mb-4 flex items-center gap-2">
                         <span class="material-symbols-outlined text-primary">calendar_month</span>
                         <span data-i18n="achievements.streakCalendar">Lịch Học Tập</span>
@@ -287,7 +344,7 @@
                 </div>
 
                 <!-- Recent Activity -->
-                <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 shadow-card border border-gray-100 dark:border-gray-800">
+                <div class="bg-surface-light dark:bg-surface-dark rounded-xl md:rounded-2xl p-4 md:p-6 shadow-card border border-gray-100 dark:border-gray-800">
                     <h2 class="text-xl font-black text-text-main dark:text-white mb-6 flex items-center gap-2">
                         <span class="material-symbols-outlined text-primary">history</span>
                         <span data-i18n="achievements.recentActivity">Hoạt Động Gần Đây</span>
@@ -614,7 +671,15 @@
                 'Chuỗi 30 Ngày': 'badgeStreak30',
             };
             
-            badges.forEach(badge => {
+            // Sort badges: unlocked first, then by progress
+            const sortedBadges = [...badges].sort((a, b) => {
+                const aUnlocked = a.isUnlocked ?? a.unlocked ?? false;
+                const bUnlocked = b.isUnlocked ?? b.unlocked ?? false;
+                if (aUnlocked !== bUnlocked) return bUnlocked ? 1 : -1;
+                return 0;
+            });
+            
+            sortedBadges.forEach(badge => {
                 // Support both old (unlocked, name) and new (isUnlocked, title) format
                 const isUnlocked = badge.isUnlocked ?? badge.unlocked ?? false;
                 const badgeName = badge.title || badge.name || 'Unknown';
@@ -629,9 +694,9 @@
                 const translatedName = translationKey ? i18n.t(`achievements.${translationKey}`, badgeName) : badgeName;
                 
                 const html = `
-                    <div class="badge-item flex flex-col items-center gap-2 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl ${opacity}" title="${badge.description || translatedName}">
-                        <div class="text-4xl">${badgeIcon}</div>
-                        <span class="text-xs font-bold text-center text-text-main dark:text-white">${translatedName}</span>
+                    <div class="badge-item flex flex-col items-center gap-1 md:gap-2 p-2 md:p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl ${opacity}" title="${badge.description || translatedName}">
+                        <div class="text-2xl md:text-4xl">${badgeIcon}</div>
+                        <span class="text-[10px] md:text-xs font-bold text-center text-text-main dark:text-white leading-tight">${translatedName}</span>
                         ${progressInfo}
                     </div>
                 `;
@@ -764,6 +829,24 @@
             
             return date.toLocaleDateString('vi-VN');
         }
+
+        // Toggle badges visibility on mobile
+        let showAllBadges = false;
+        document.addEventListener('click', function(e) {
+            if (e.target.id === 'toggleBadges' || e.target.id === 'toggleBadgesText') {
+                showAllBadges = !showAllBadges;
+                const container = document.getElementById('badgesContainer');
+                const toggleText = document.getElementById('toggleBadgesText');
+                
+                if (showAllBadges) {
+                    container.classList.add('show-all-badges');
+                    toggleText.textContent = i18n.t('achievements.showLess', 'Thu gọn');
+                } else {
+                    container.classList.remove('show-all-badges');
+                    toggleText.textContent = i18n.t('achievements.showAll', 'Xem tất cả');
+                }
+            }
+        });
 
         // Initialize on load
         document.addEventListener('DOMContentLoaded', async function() {

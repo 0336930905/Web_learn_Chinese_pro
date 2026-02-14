@@ -29,6 +29,52 @@
         }
       }
       
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateX(-50%) translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(-50%) translateY(0);
+        }
+      }
+      
+      @keyframes slideOut {
+        from {
+          opacity: 1;
+          transform: translateX(-50%) translateY(0);
+        }
+        to {
+          opacity: 0;
+          transform: translateX(-50%) translateY(-20px);
+        }
+      }
+      
+      @media (min-width: 640px) {
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateX(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+        
+        @keyframes slideOut {
+          from {
+            opacity: 1;
+            transform: translateX(0);
+          }
+          to {
+            opacity: 0;
+            transform: translateX(20px);
+          }
+        }
+      }
+      
       .game-header-score {
         transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
       }
@@ -891,13 +937,16 @@ function testCurrentVoice() {
   
   console.log(`🔊 Testing voice: ${selectedValue}`);
 
-  // Show playing toast
+  // Show playing toast (mobile-friendly)
   const toast = document.createElement('div');
-  toast.className = 'fixed top-4 right-4 bg-primary text-[#0e1b0e] px-6 py-4 rounded-2xl shadow-xl z-50 animate-slide-in flex items-center gap-2 font-bold';
-  toast.innerHTML = '<span class="material-symbols-outlined">volume_up</span> <span>Đang đọc mẫu...</span>';
-  toast.style.animation = 'slideIn 0.3s ease-out forwards'; // Ensure animation works if class not present
+  toast.className = 'fixed top-4 left-1/2 -translate-x-1/2 sm:left-auto sm:right-4 sm:translate-x-0 bg-primary text-white px-4 py-3 sm:px-6 sm:py-4 rounded-xl sm:rounded-2xl shadow-xl z-50 animate-slide-in flex items-center gap-2 font-bold text-sm sm:text-base max-w-[90vw] sm:max-w-none';
+  toast.innerHTML = '<span class="material-symbols-outlined text-lg sm:text-xl">volume_up</span> <span>Đang đọc mẫu...</span>';
+  toast.style.animation = 'slideIn 0.3s ease-out forwards';
   document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 2000);
+  setTimeout(() => {
+    toast.style.animation = 'slideOut 0.3s ease-in forwards';
+    setTimeout(() => toast.remove(), 300);
+  }, 2000);
   
   // Use the global speakText function (respects audio enabled setting)
   speakText('你好，歡迎學習中文！', 0.9, () => {

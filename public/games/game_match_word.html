@@ -579,16 +579,19 @@ function showResult() {
     const main = document.querySelector('main');
     
     // Calculate accurate statistics based on all attempts
-    const totalAttempts = answers.length; // Total tries (correct + wrong)
-    const correctAttempts = answers.filter(a => a.correct).length; // Successful matches
-    const wrongAttempts = answers.filter(a => !a.correct).length; // Failed attempts
-    const correctPairs = matchedPairs; // Final pairs matched
+    const totalAttempts = answers.length;
+    const correctAttempts = answers.filter(a => a.correct).length;
+    const wrongAttempts = answers.filter(a => !a.correct).length;
+    const correctPairs = matchedPairs;
     const totalPoints = correctPairs * 10;
+    const duration = Math.floor((Date.now() - startTime) / 1000);
+    const minutes = Math.floor(duration / 60);
+    const seconds = duration % 60;
     
-    // Calculate accuracy: (correct attempts / total attempts) * 100
+    // Calculate accuracy
     const percentage = totalAttempts > 0 ? Math.round((correctAttempts / totalAttempts) * 100) : 100;
     
-    // Determine performance level based on accuracy
+    // Determine performance level
     let performanceEmoji = '🎉';
     let performanceText = 'Xuất sắc!';
     let performanceColor = 'from-green-500 to-emerald-500';
@@ -613,48 +616,62 @@ function showResult() {
     
     // Create result overlay
     const overlay = document.createElement('div');
-    overlay.className = 'fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn';
+    overlay.className = 'fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 px-4';
     overlay.innerHTML = `
-        <div class="bg-gradient-to-br from-white via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-3xl shadow-2xl p-8 max-w-lg w-[90vw] border-4 border-gradient-to-r from-cyan-200 via-blue-200 to-purple-200 dark:border-gray-700 transform animate-scaleIn">
+        <div id="confetti-container" class="fixed inset-0 pointer-events-none z-50"></div>
+        <div class="bg-gradient-to-br from-white via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-2xl md:rounded-3xl shadow-2xl p-5 sm:p-8 max-w-lg w-full border-4 border-gradient-to-r from-cyan-200 via-blue-200 to-purple-200 dark:border-gray-700 transform result-card">
             <div class="text-center">
-                <div class="text-8xl mb-4 animate-bounce">${performanceEmoji}</div>
-                <h2 class="text-4xl font-black bg-gradient-to-r ${performanceColor} bg-clip-text text-transparent mb-2">${performanceText}</h2>
-                <p class="text-xl text-gray-600 dark:text-gray-300 mb-6">Hoàn thành trò chơi ghép đôi!</p>
+                <!-- Emoji with animation -->
+                <div class="text-6xl sm:text-8xl mb-4 emoji-animation inline-block">${performanceEmoji}</div>
                 
-                <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg mb-6">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="text-center p-4 bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-xl">
-                            <div class="text-3xl font-black text-green-600 dark:text-green-400">${correctPairs}/${totalPairs}</div>
-                            <div class="text-sm text-green-700 dark:text-green-300 font-semibold">Cặp đúng</div>
+                <!-- Title -->
+                <h2 class="text-2xl sm:text-4xl font-black bg-gradient-to-r ${performanceColor} bg-clip-text text-transparent mb-2">${performanceText}</h2>
+                <p class="text-base sm:text-xl text-gray-600 dark:text-gray-300 mb-4 sm:mb-6">Hoàn thành trò chơi ghép đôi!</p>
+                
+                <!-- Time Badge -->
+                <div class="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 px-4 py-2 rounded-full mb-4">
+                    <span class="material-symbols-outlined text-indigo-600 dark:text-indigo-400 text-lg">schedule</span>
+                    <span class="text-sm font-bold text-indigo-700 dark:text-indigo-300">${minutes}:${seconds.toString().padStart(2, '0')}</span>
+                </div>
+                
+                <!-- Stats Grid -->
+                <div class="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-lg mb-4 sm:mb-6">
+                    <div class="grid grid-cols-2 gap-2 sm:gap-4">
+                        <div class="stat-card text-center p-3 sm:p-4 bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-xl transform hover:scale-105 transition-transform duration-200">
+                            <div class="text-2xl sm:text-3xl font-black text-green-600 dark:text-green-400" data-value="${correctPairs}/${totalPairs}">0/${totalPairs}</div>
+                            <div class="text-xs sm:text-sm text-green-700 dark:text-green-300 font-semibold">Cặp đúng</div>
                         </div>
-                        <div class="text-center p-4 bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/30 dark:to-cyan-900/30 rounded-xl">
-                            <div class="text-3xl font-black text-blue-600 dark:text-blue-400">${percentage}%</div>
-                            <div class="text-sm text-blue-700 dark:text-blue-300 font-semibold">Chính xác</div>
+                        <div class="stat-card text-center p-3 sm:p-4 bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/30 dark:to-cyan-900/30 rounded-xl transform hover:scale-105 transition-transform duration-200">
+                            <div class="text-2xl sm:text-3xl font-black text-blue-600 dark:text-blue-400" data-value="${percentage}">0%</div>
+                            <div class="text-xs sm:text-sm text-blue-700 dark:text-blue-300 font-semibold">Chính xác</div>
                         </div>
-                        <div class="text-center p-4 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-xl">
-                            <div class="text-3xl font-black text-purple-600 dark:text-purple-400">${totalPoints}</div>
-                            <div class="text-sm text-purple-700 dark:text-purple-300 font-semibold">Điểm</div>
+                        <div class="stat-card text-center p-3 sm:p-4 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-xl transform hover:scale-105 transition-transform duration-200">
+                            <div class="text-2xl sm:text-3xl font-black text-purple-600 dark:text-purple-400" data-value="${totalPoints}">0</div>
+                            <div class="text-xs sm:text-sm text-purple-700 dark:text-purple-300 font-semibold">Điểm</div>
                         </div>
-                        <div class="text-center p-4 bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30 rounded-xl">
-                            <div class="text-3xl font-black text-amber-600 dark:text-amber-400">${wrongAttempts}</div>
-                            <div class="text-sm text-amber-700 dark:text-amber-300 font-semibold">Lần sai</div>
+                        <div class="stat-card text-center p-3 sm:p-4 bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30 rounded-xl transform hover:scale-105 transition-transform duration-200">
+                            <div class="text-2xl sm:text-3xl font-black text-amber-600 dark:text-amber-400" data-value="${wrongAttempts}">0</div>
+                            <div class="text-xs sm:text-sm text-amber-700 dark:text-amber-300 font-semibold">Lần sai</div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="flex gap-3">
-                    <button onclick="location.reload()" class="flex-1 bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-6 py-3 rounded-full font-bold hover:scale-105 transition-transform shadow-lg">
-                        🔄 Chơi lại
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button onclick="location.reload()" class="group flex-1 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white px-6 py-3 rounded-full font-bold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
+                        <span class="transform group-hover:rotate-180 transition-transform duration-500">🔄</span>
+                        <span>Chơi lại</span>
                     </button>
-                    <button onclick="window.location.href='../user/games_home.html'" class="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-full font-bold hover:scale-105 transition-transform shadow-lg">
-                        🏠 Về trang chủ
+                    <button onclick="window.location.href='../user/games_home.html'" class="group flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-6 py-3 rounded-full font-bold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
+                        <span class="transform group-hover:scale-110 transition-transform duration-200">🏠</span>
+                        <span>Về trang chủ</span>
                     </button>
                 </div>
             </div>
         </div>
     `;
     
-    // Add animation styles
+    // Add enhanced animation styles
     const style = document.createElement('style');
     style.textContent = `
         @keyframes fadeIn {
@@ -662,15 +679,116 @@ function showResult() {
             to { opacity: 1; }
         }
         @keyframes scaleIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+            from { transform: scale(0.8) translateY(20px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
         }
-        .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
-        .animate-scaleIn { animation: scaleIn 0.4s ease-out; }
+        @keyframes statPop {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes emojiFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-10px) rotate(-5deg); }
+            75% { transform: translateY(-5px) rotate(5deg); }
+        }
+        @keyframes confettifall {
+            to { transform: translateY(100vh) rotate(360deg); }
+        }
+        .result-card { animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .stat-card { animation: statPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .stat-card:nth-child(1) { animation-delay: 0.1s; opacity: 0; animation-fill-mode: forwards; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; opacity: 0; animation-fill-mode: forwards; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; opacity: 0; animation-fill-mode: forwards; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; opacity: 0; animation-fill-mode: forwards; }
+        .emoji-animation { animation: emojiFloat 2s ease-in-out infinite; }
+        .confetti { position: absolute; width: 10px; height: 10px; animation: confettifall 3s linear forwards; }
     `;
     document.head.appendChild(style);
     
     document.body.appendChild(overlay);
+    
+    // Animate stats with count-up effect
+    setTimeout(() => {
+        const statCards = overlay.querySelectorAll('.stat-card > div[data-value]');
+        statCards.forEach((stat, index) => {
+            const targetValue = stat.getAttribute('data-value');
+            animateValue(stat, targetValue, 1000 + (index * 100));
+        });
+    }, 500);
+    
+    // Create confetti for high scores
+    if (percentage >= 70) {
+        setTimeout(() => createConfetti(), 800);
+    }
+}
+
+// ========== Animate Value Count-up ==========
+function animateValue(element, target, duration) {
+    const isPercentage = target.includes('%');
+    const isFraction = target.includes('/');
+    
+    if (isFraction) {
+        const [numerator, denominator] = target.split('/').map(Number);
+        let current = 0;
+        const increment = numerator / (duration / 16);
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= numerator) {
+                element.textContent = target;
+                clearInterval(timer);
+            } else {
+                element.textContent = `${Math.floor(current)}/${denominator}`;
+            }
+        }, 16);
+    } else if (isPercentage) {
+        const targetNum = parseInt(target);
+        let current = 0;
+        const increment = targetNum / (duration / 16);
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= targetNum) {
+                element.textContent = target;
+                clearInterval(timer);
+            } else {
+                element.textContent = `${Math.floor(current)}%`;
+            }
+        }, 16);
+    } else {
+        const targetNum = parseInt(target);
+        let current = 0;
+        const increment = targetNum / (duration / 16);
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= targetNum) {
+                element.textContent = target;
+                clearInterval(timer);
+            } else {
+                element.textContent = Math.floor(current);
+            }
+        }, 16);
+    }
+}
+
+// ========== Create Confetti Effect ==========
+function createConfetti() {
+    const container = document.getElementById('confetti-container');
+    if (!container) return;
+    
+    const colors = ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899'];
+    const confettiCount = 50;
+    
+    for (let i = 0; i < confettiCount; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + '%';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.animationDelay = Math.random() * 0.5 + 's';
+        confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+        container.appendChild(confetti);
+        
+        setTimeout(() => confetti.remove(), 5000);
+    }
 }
 
 // ========== Start Game ==========

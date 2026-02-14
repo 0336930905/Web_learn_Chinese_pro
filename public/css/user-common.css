@@ -447,6 +447,153 @@ textarea:focus-visible {
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+/* ======================================
+   MOBILE RESPONSIVENESS
+   ====================================== */
+
+/* Mobile Menu Styles */
+@media (max-width: 767px) {
+    /* Ensure mobile menu button is above everything */
+    #mobile-menu-toggle {
+        z-index: 60;
+    }
+    
+    /* Sidebar positioning on mobile */
+    #sidebar {
+        box-shadow: 2px 0 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Prevent body scroll when sidebar is open */
+    body.sidebar-open {
+        overflow: hidden;
+        height: 100vh;
+    }
+    
+    /* Make chatbot fullscreen-ish on mobile */
+    #chatbot-container {
+        left: 0.5rem;
+        right: 0.5rem;
+        width: calc(100% - 1rem);
+        max-width: none;
+    }
+    
+    /* Adjust main content padding for mobile */
+    main {
+        padding-top: 1rem;
+    }
+    
+    /* Smaller cards on mobile */
+    .folder-card,
+    .category-card {
+        padding: 1rem;
+    }
+}
+
+/* Tablet adjustments */
+@media (min-width: 768px) and (max-width: 1023px) {
+    #sidebar {
+        width: 16rem; /* Slightly narrower on tablets */
+    }
+    
+    main {
+        margin-left: 16rem;
+    }
+}
+
+/* Smooth transitions for sidebar */
+#sidebar {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#sidebar-overlay {
+    transition: opacity 0.3s ease;
+}
+
+/* Mobile-first button sizing */
+@media (max-width: 640px) {
+    button {
+        min-height: 44px; /* iOS tap target size */
+        min-width: 44px;
+    }
+    
+    /* Larger touch targets for mobile */
+    .touch-target {
+        padding: 0.75rem;
+    }
+    
+    /* Modal adjustments for mobile */
+    .modal-content {
+        max-height: 90vh;
+        overflow-y: auto;
+        margin: 0 1rem;
+    }
+    
+    /* Form inputs full width on mobile */
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    textarea,
+    select {
+        width: 100%;
+        font-size: 16px; /* Prevents iOS zoom */
+    }
+    
+    /* Grid adjustments */
+    .grid {
+        gap: 1rem;
+    }
+}
+
+/* Chatbot Styles */
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+/* Chatbot smooth scrolling */
+#chatbot-messages {
+    scroll-behavior: smooth;
+}
+
+/* Chatbot message animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Mobile chatbot optimizations */
+@media (max-width: 768px) {
+    /* Prevent scroll issues on iOS */
+    #chatbot-container {
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Smaller quick action buttons on mobile */
+    .chatbot-quick-btn {
+        font-size: 10px;
+        padding: 6px 10px;
+    }
+    
+    /* Adjust chatbot input for mobile */
+    #chatbot-input {
+        font-size: 14px; /* Prevents iOS zoom */
+    }
+}
+
 /* Responsive Typography */
 @media (max-width: 768px) {
     :root {

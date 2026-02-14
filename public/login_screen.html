@@ -28,13 +28,13 @@
                 extend: {
                     colors: {
                         "primary": "#4ce64c",
-                        "primary-dark": "#3ab03a",
-                        "background-light": "#f6f8f6",
+                        "primary-dark": "#3db83d",
+                        "background-light": "#f8fbf8",
                         "background-dark": "#112111",
                         "surface-light": "#ffffff",
                         "surface-dark": "#1a2e1a",
                         "text-main": "#0e1b0e",
-                        "text-subtle": "#509550",
+                        "text-muted": "#509550",
                     },
                     fontFamily: {
                         "display": ["Lexend", "sans-serif"]
@@ -56,7 +56,7 @@
     <div class="relative flex min-h-screen w-full flex-row overflow-hidden pt-24">
         <!-- Left Side: Mascot Illustration (Visible on Desktop) -->
         <div
-            class="hidden lg:flex lg:w-1/2 relative flex-col items-center justify-center p-12 bg-[#e8f3e8] dark:bg-[#1a2e1a]">
+            class="hidden lg:flex lg:w-1/2 relative flex-col items-center justify-center p-12 bg-background-light dark:bg-background-dark">
             <div class="absolute inset-0 overflow-hidden">
                 <!-- Decorative Blobs -->
                 <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/20 rounded-full blur-3xl">
@@ -78,7 +78,7 @@
                         <span data-i18n="login.heroTitle">Learning is an</span><br /> 
                         <span class="text-primary-dark dark:text-primary" data-i18n="login.heroSubtitle">Adventure!</span>
                     </h2>
-                    <p class="text-lg font-medium text-text-subtle dark:text-gray-300" data-i18n="login.heroDescription">
+                    <p class="text-lg font-medium text-text-muted dark:text-gray-300" data-i18n="login.heroDescription">
                         Join 10,000+ kids mastering new words every day.
                     </p>
                 </div>
@@ -99,7 +99,7 @@
                     <h1 class="text-4xl font-black text-[#0e1b0e] dark:text-white tracking-tight" data-i18n="login.title">
                         Welcome Back!
                     </h1>
-                    <p class="text-text-subtle dark:text-gray-400 text-lg" data-i18n="login.subtitle">
+                    <p class="text-text-muted dark:text-gray-400 text-lg" data-i18n="login.subtitle">
                         Let's jump back into the story.
                     </p>
                 </div>
@@ -114,7 +114,7 @@
                         </label>
                         <div class="relative transition-all duration-300 transform group-focus-within:scale-[1.02]">
                             <input
-                                class="w-full h-14 pl-5 pr-4 rounded-full bg-background-light dark:bg-background-dark border-2 border-transparent focus:border-primary focus:ring-4 focus:ring-primary/20 text-lg text-text-main dark:text-white placeholder:text-text-subtle/70 outline-none transition-all"
+                                class="w-full h-14 pl-5 pr-4 rounded-full bg-background-light dark:bg-background-dark border-2 border-transparent focus:border-primary focus:ring-4 focus:ring-primary/20 text-lg text-text-main dark:text-white placeholder:text-text-muted/70 outline-none transition-all"
                                 id="email" 
                                 data-i18n-placeholder="login.emailPlaceholder"
                                 placeholder="Enter your email" 
@@ -133,14 +133,14 @@
                         </label>
                         <div class="relative transition-all duration-300 transform group-focus-within:scale-[1.02]">
                             <input
-                                class="w-full h-14 pl-5 pr-12 rounded-full bg-background-light dark:bg-background-dark border-2 border-transparent focus:border-primary focus:ring-4 focus:ring-primary/20 text-lg text-text-main dark:text-white placeholder:text-text-subtle/70 outline-none transition-all"
+                                class="w-full h-14 pl-5 pr-12 rounded-full bg-background-light dark:bg-background-dark border-2 border-transparent focus:border-primary focus:ring-4 focus:ring-primary/20 text-lg text-text-main dark:text-white placeholder:text-text-muted/70 outline-none transition-all"
                                 id="password" 
                                 data-i18n-placeholder="login.passwordPlaceholder"
                                 placeholder="Enter your secret code" 
                                 type="password"
                                 required />
                             <button
-                                class="absolute right-4 top-1/2 -translate-y-1/2 text-text-subtle hover:text-primary transition-colors p-1"
+                                class="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted hover:text-primary transition-colors p-1"
                                 type="button"
                                 id="togglePassword">
                                 <span class="material-symbols-outlined" style="font-size: 24px;">visibility</span>
@@ -148,7 +148,7 @@
                         </div>
                         <p class="text-red-500 text-sm ml-2 hidden" id="passwordError"></p>
                         <div class="flex justify-end pt-1">
-                            <a class="text-sm font-semibold text-text-subtle hover:text-primary transition-colors flex items-center gap-1"
+                            <a class="text-sm font-semibold text-text-muted hover:text-primary transition-colors flex items-center gap-1"
                                 href="#" data-i18n="login.forgotPassword">
                                 Forgot Password?
                             </a>
@@ -187,7 +187,7 @@
                     </div>
                 </form>
                 <div class="mt-8 text-center">
-                    <p class="text-sm text-text-subtle dark:text-gray-500">
+                    <p class="text-sm text-text-muted dark:text-gray-500">
                         <span data-i18n="login.helpText">Need help logging in?</span>
                         <a class="font-bold text-primary hover:underline" href="#" data-i18n="login.helpLink">Ask a grown-up!</a>
                     </p>

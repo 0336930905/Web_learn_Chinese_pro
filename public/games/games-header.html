@@ -1,22 +1,22 @@
 ﻿<!-- Common Game Header -->
-<header class="flex items-center justify-between whitespace-nowrap px-6 py-4 lg:px-12 lg:py-6">
-    <div class="flex items-center gap-4">
+<header class="flex items-center justify-between whitespace-nowrap px-3 py-3 sm:px-6 sm:py-4 lg:px-12 lg:py-6">
+    <div class="flex items-center gap-2 sm:gap-4">
         <a href="../user/games_home.html"
         id="background-color-icon"
-            class="group flex items-center justify-center size-12 rounded-full bg-white dark:bg-[#1e2a36] shadow-sm hover:shadow-md transition-all duration-200 text-slate-500 dark:text-slate-300 hover:text-primary dark:hover:text-primary">
-            <span class="material-symbols-outlined" style="font-size: 28px;">arrow_back</span>
+            class="group flex items-center justify-center size-10 sm:size-12 rounded-full bg-white dark:bg-[#1e2a36] shadow-sm hover:shadow-md transition-all duration-200 text-slate-500 dark:text-slate-300 hover:text-primary dark:hover:text-primary active:scale-95">
+            <span class="material-symbols-outlined text-xl sm:text-2xl">arrow_back</span>
         </a>
         
         
        
     </div>
     <!-- Progress Bar (Segmented) -->
-    <div class="flex flex-1 max-w-md mx-8 flex-col gap-2">
-        <div class="flex justify-between items-center px-1">
-            <span class="game-header-progress-label text-xs font-bold uppercase tracking-wider text-slate-400 ">Level 1</span>
-            <span class="game-header-progress-value text-xs font-bold text-primary">1/10</span>
+    <div class="flex flex-1 max-w-md mx-2 sm:mx-4 md:mx-8 flex-col gap-1.5 sm:gap-2">
+        <div class="flex justify-between items-center px-0.5 sm:px-1">
+            <span class="game-header-progress-label text-[10px] sm:text-xs font-bold uppercase tracking-wide sm:tracking-wider text-slate-400">Level 1</span>
+            <span class="game-header-progress-value text-[10px] sm:text-xs font-bold text-primary">1/10</span>
         </div>
-        <div class="flex gap-1.5 h-3 w-full">
+        <div class="flex gap-1 sm:gap-1.5 h-2.5 sm:h-3 w-full">
             <div class="h-full w-full rounded-full bg-primary shadow-sm shadow-primary/30"></div>
             <div class="h-full w-full rounded-full bg-primary shadow-sm shadow-primary/30"></div>
             <div class="h-full w-full rounded-full bg-primary shadow-sm shadow-primary/30"></div>
@@ -25,11 +25,11 @@
         </div>
     </div>
     <!-- Score Counter -->
-    <div id="background-color-icon" class="flex items-center gap-2 bg-white dark:bg-[#1e2a36] pl-2 pr-4 py-2 rounded-full shadow-sm">
-        <div class="flex items-center justify-center size-8 bg-amber-100 dark:bg-amber-900/30 rounded-full text-amber-500">
-            <span class="material-symbols-outlined fill-current" style="font-variation-settings: 'FILL' 1;">star</span>
+    <div id="background-color-icon" class="flex items-center gap-1.5 sm:gap-2 bg-white dark:bg-[#1e2a36] pl-1.5 pr-2.5 sm:pl-2 sm:pr-4 py-1.5 sm:py-2 rounded-full shadow-sm">
+        <div class="flex items-center justify-center size-7 sm:size-8 bg-amber-100 dark:bg-amber-900/30 rounded-full text-amber-500">
+            <span class="material-symbols-outlined fill-current text-base sm:text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
         </div>
-        <span class="game-header-score text-lg font-bold text-slate-700 ">0</span>
+        <span class="game-header-score text-base sm:text-lg font-bold text-slate-700 dark:text-slate-300">0</span>
     </div>
 </header>
 <!-- End Common Game Header -->

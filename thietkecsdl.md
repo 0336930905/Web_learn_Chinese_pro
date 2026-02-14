@@ -80,8 +80,8 @@ sai → quay lại level 1
 quản trị viên 
 - quản lý tài khoản 
 - quản lý danh mục cá nhân của admin 
-- quản lý từ vựng  cá nhân của admin
-- xem hoạt động 
+- quản lý từ vựng cá nhân của admin
+- quản lý dữ liệu + backup + sao lưu 
 
 
 
@@ -91,3 +91,7 @@ dựa vào tất cả các game trong thư mục games tạo 1 game_test.html t�
 tôi sẽ mô tả chi tiết logic của game đầu tiên sẽ mở b1 game_test b2 hiển thị modal lựa chọn độ khó 
  theo users.stats.level nếu level thấp hơn 3 thì chỉ được chọn các bộ từ cơ bản lớn hơn hoặc bằng 3 thì trung bình level lớn hơn 5 thì được chọn cả 3 là cơ bản - trung bình - khó và các categories này chỉ lấy ra với các tài khoản thuộc role là admin 
 b3 
+
+
+
+

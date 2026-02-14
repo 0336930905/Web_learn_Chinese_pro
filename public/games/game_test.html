@@ -231,47 +231,47 @@
 
     <!-- Difficulty & Category Selection Modal -->
     <div id="difficultyModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 w-full max-w-2xl animate-slide-in-up">
-            <div class="text-center mb-8">
-                <div class="text-6xl mb-4">🎯</div>
-                <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Chọn Mức Độ Kiểm Tra</h2>
-                <p class="text-gray-600 dark:text-gray-400">Chọn độ khó phù hợp với trình độ của bạn.<br/>Từ vựng sẽ được lấy ngẫu nhiên từ tất cả bộ đề cùng mức độ.</p>
+        <div class="bg-white dark:bg-gray-800 rounded-2xl sm:rounded-3xl shadow-2xl p-5 sm:p-6 md:p-8 w-full max-w-2xl animate-slide-in-up">
+            <div class="text-center mb-6 sm:mb-8">
+                <div class="text-5xl sm:text-6xl mb-3 sm:mb-4">🎯</div>
+                <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">Chọn Mức Độ Kiểm Tra</h2>
+                <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400">Chọn độ khó phù hợp với trình độ của bạn.<br/>Từ vựng sẽ được lấy ngẫu nhiên từ tất cả bộ đề cùng mức độ.</p>
             </div>
             
             <!-- Difficulty Selection -->
-            <div class="mb-6">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+            <div class="mb-5 sm:mb-6">
+                <h3 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4 flex items-center gap-2">
                     <span class="material-symbols-outlined">tune</span>
                     Chọn Mức Độ
                 </h3>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
                     <button onclick="selectDifficulty('beginner')" 
-                        class="difficulty-btn p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-green-500 dark:hover:border-green-500 transition-all flex flex-col items-center gap-2 group"
+                        class="difficulty-btn p-3 sm:p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-green-500 dark:hover:border-green-500 transition-all flex flex-col items-center gap-1.5 sm:gap-2 group active:scale-95"
                         data-difficulty="beginner">
-                        <span class="text-3xl">🌱</span>
-                        <span class="text-sm font-semibold text-gray-900 dark:text-white">Beginner</span>
-                        <span class="text-xs text-gray-500 dark:text-gray-400">Cơ bản</span>
+                        <span class="text-2xl sm:text-3xl">🌱</span>
+                        <span class="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white">Beginner</span>
+                        <span class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">Cơ bản</span>
                     </button>
                     <button onclick="selectDifficulty('intermediate')" 
-                        class="difficulty-btn p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-all flex flex-col items-center gap-2 group"
+                        class="difficulty-btn p-3 sm:p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-all flex flex-col items-center gap-1.5 sm:gap-2 group active:scale-95"
                         data-difficulty="intermediate">
-                        <span class="text-3xl">🌿</span>
-                        <span class="text-sm font-semibold text-gray-900 dark:text-white">Intermediate</span>
-                        <span class="text-xs text-gray-500 dark:text-gray-400">Trung cấp</span>
+                        <span class="text-2xl sm:text-3xl">🌿</span>
+                        <span class="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white">Intermediate</span>
+                        <span class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">Trung cấp</span>
                     </button>
                     <button onclick="selectDifficulty('advanced')" 
-                        class="difficulty-btn p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-purple-500 dark:hover:border-purple-500 transition-all flex flex-col items-center gap-2 group"
+                        class="difficulty-btn p-3 sm:p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-purple-500 dark:hover:border-purple-500 transition-all flex flex-col items-center gap-1.5 sm:gap-2 group active:scale-95"
                         data-difficulty="advanced">
-                        <span class="text-3xl">🌳</span>
-                        <span class="text-sm font-semibold text-gray-900 dark:text-white">Advanced</span>
-                        <span class="text-xs text-gray-500 dark:text-gray-400">Nâng cao</span>
+                        <span class="text-2xl sm:text-3xl">🌳</span>
+                        <span class="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white">Advanced</span>
+                        <span class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">Nâng cao</span>
                     </button>
                     <button onclick="selectDifficulty('native')" 
-                        class="difficulty-btn p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-red-500 dark:hover:border-red-500 transition-all flex flex-col items-center gap-2 group"
+                        class="difficulty-btn p-3 sm:p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-red-500 dark:hover:border-red-500 transition-all flex flex-col items-center gap-1.5 sm:gap-2 group active:scale-95"
                         data-difficulty="native">
-                        <span class="text-3xl">🏆</span>
-                        <span class="text-sm font-semibold text-gray-900 dark:text-white">Native</span>
-                        <span class="text-xs text-gray-500 dark:text-gray-400">Bản ngữ</span>
+                        <span class="text-2xl sm:text-3xl">🏆</span>
+                        <span class="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white">Native</span>
+                        <span class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">Bản ngữ</span>
                     </button>
                 </div>
             </div>
@@ -279,8 +279,8 @@
             <!-- Start Button -->
             <div id="startTestSection" class="hidden">
                 <button onclick="startTest()" 
-                    class="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold text-lg rounded-xl shadow-lg transition-all flex items-center justify-center gap-3">
-                    <span class="material-symbols-outlined text-2xl">play_arrow</span>
+                    class="w-full py-3 sm:py-4 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold text-base sm:text-lg rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 sm:gap-3 active:scale-95">
+                    <span class="material-symbols-outlined text-xl sm:text-2xl">play_arrow</span>
                     <span>Bắt Đầu Kiểm Tra</span>
                 </button>
             </div>
@@ -288,11 +288,11 @@
     </div>
 
     <!-- Main Content Area -->
-    <main class="flex-1 flex flex-col items-center justify-center   w-full max-w-6xl mx-auto relative z-10">
+    <main class="flex-1 flex flex-col items-center justify-center px-3 sm:px-4 md:px-6 w-full max-w-6xl mx-auto relative z-10">
         
         <!-- Real-time Test Stats -->
-        <div style="display: none;" id="testStatsDisplay" class="mb-4 text-center bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-6 py-3 rounded-full shadow-md border border-slate-200 dark:border-slate-700">
-            <p class="text-base font-bold text-slate-700 dark:text-slate-300">
+        <div style="display: none;" id="testStatsDisplay" class="mb-3 sm:mb-4 text-center bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-3 rounded-full shadow-md border border-slate-200 dark:border-slate-700">
+            <p class="text-sm sm:text-base font-bold text-slate-700 dark:text-slate-300">
                 📊 <span id="test-stats-correct">0</span>/<span id="test-stats-total">22</span> đúng · <span id="test-stats-percentage">0</span>%
             </p>
         </div>
@@ -300,45 +300,45 @@
         <!-- Round 1: Listening Game -->
         <div id="round1" class="game-round hidden w-full">
             <div class="text-center ">
-                <div class="inline-block px-6 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full font-bold text-sm mb-4">
+                <div class="inline-block px-4 sm:px-6 py-1.5 sm:py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full font-bold text-xs sm:text-sm mb-3 sm:mb-4">
                     🎧 ROUND 1: LISTENING | Nghe và chọn nghĩa đúng
                 </div>
             </div>
             
-            <div class="max-w-4xl w-full mx-auto flex flex-col gap-8 md:gap-12">
+            <div class="max-w-4xl w-full mx-auto flex flex-col gap-6 sm:gap-8 md:gap-12">
                  <!-- Interaction Zone: Speaker -->
                  <section id="round1-speaker-section"
-                    class="flex flex-col items-center text-center gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                    <h2 class="text-slate-800 dark:text-slate-200 text-lg md:text-xl font-medium">Nghe và chọn nghĩa đúng!</h2>
+                    class="flex flex-col items-center text-center gap-3 sm:gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    <h2 class="text-slate-800 dark:text-slate-200 text-base sm:text-lg md:text-xl font-medium">Nghe và chọn nghĩa đúng!</h2>
                     <div class="relative group">
                         <!-- Ripple Effect Layers -->
                         <div class="absolute inset-0 rounded-full bg-primary/20 animate-ping opacity-75"></div>
                         <div class="absolute -inset-2 rounded-full bg-primary/10 animate-pulse"></div>
                         <button id="round1-playBtn"
-                            class="relative z-10 flex items-center justify-center w-24 h-24 md:w-22 md:h-22 rounded-full bg-primary text-white shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 group-hover:shadow-primary/50">
-                            <span class="material-symbols-outlined text-[48px] md:text-[64px]">volume_up</span>
+                            class="relative z-10 flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full bg-primary text-white shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 group-hover:shadow-primary/50">
+                            <span class="material-symbols-outlined text-[40px] sm:text-[48px] md:text-[56px]">volume_up</span>
                         </button>
                     </div>
                     <button id="round1-replayBtn"
-                        class="text-primary hover:text-blue-600 dark:hover:text-blue-400 text-sm font-semibold flex items-center gap-1 transition-colors">
-                        <span class="material-symbols-outlined text-[18px]">replay</span>
+                        class="text-primary hover:text-blue-600 dark:hover:text-blue-400 text-xs sm:text-sm font-semibold flex items-center gap-1 transition-colors active:scale-95">
+                        <span class="material-symbols-outlined text-base sm:text-lg">replay</span>
                         Nhấp để nghe lại
                     </button>
                     <!-- Display Chinese word (hidden initially, shown after first play) -->
-                    <div id="round1-wordDisplay" class="hidden mt-4 text-center">
-                        <div class="text-4xl md:text-4xl font-bold text-primary mb-2" id="round1-chineseWord"></div>
-                        <div class="text-lg md:text-xl text-blue-600 dark:text-blue-400" id="round1-pinyinWord"></div>
+                    <div id="round1-wordDisplay" class="hidden mt-3 sm:mt-4 text-center">
+                        <div class="text-3xl sm:text-4xl md:text-5xl font-bold text-primary mb-2" id="round1-chineseWord"></div>
+                        <div class="text-base sm:text-lg md:text-xl text-blue-600 dark:text-blue-400" id="round1-pinyinWord"></div>
                     </div>
                 </section>
 
                 <!-- Answer Grid -->
-                <section id="round1-optionsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 w-full">
+                <section id="round1-optionsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-6 w-full">
                     <!-- Options will be dynamically inserted here -->
                 </section>
 
                 <!-- Next Button -->
                 <div class="flex justify-center ">
-                    <button id="round1-nextBtn" disabled class="flex items-center justify-center gap-2 bg-slate-300 dark:bg-slate-700 text-slate-500 dark:text-slate-400 font-bold text-lg px-8 py-3 rounded-full shadow-lg transition-all min-w-[160px]">
+                    <button id="round1-nextBtn" disabled class="flex items-center justify-center gap-2 bg-slate-300 dark:bg-slate-700 text-slate-500 dark:text-slate-400 font-bold text-base sm:text-lg px-6 sm:px-8 py-2.5 sm:py-3 rounded-full shadow-lg transition-all min-w-[140px] sm:min-w-[160px] active:scale-95">
                         <span>Chọn đáp án</span>
                     </button>
                 </div>
@@ -348,31 +348,31 @@
         <!-- Round 2: Match Word Game -->
         <div id="round2" class="game-round hidden w-full">
             <div class="text-center ">
-                <div class="inline-block px-6 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full font-bold text-sm mb-4">
+                <div class="inline-block px-4 sm:px-6 py-1.5 sm:py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full font-bold text-xs sm:text-sm mb-3 sm:mb-4">
                     🔗 ROUND 2: MATCHING
                 </div>
             </div>
              <!-- Instructions -->
-            <div class="text-center  md:mb-12">
-                <h2 class="text-3xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white mb-2">
+            <div class="text-center mb-6 sm:mb-8 md:mb-12">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-2">
                     Ghép từ Trung với nghĩa!
                 </h2>
-                <p id="round2-instruction" class="text-slate-500 dark:text-slate-400 text-lg">
+                <p id="round2-instruction" class="text-slate-500 dark:text-slate-400 text-base sm:text-lg">
                     Nhấp vào từ tiếng Trung, sau đó nhấp vào nghĩa tiếng Việt để ghép chúng.
                 </p>
             </div>
             <!-- Game Board Container -->
-            <div class="relative flex-1 flex justify-between items-center gap-8 max-w-4xl mx-auto w-full min-h-[400px]">
+            <div class="relative flex-1 flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-6 md:gap-8 max-w-4xl mx-auto w-full min-h-[400px]">
                 <!-- SVG Layer for Connections -->
                 <svg id="round2-connections-svg" class="connector-svg hidden md:block"></svg>
                 
                 <!-- Left Column: Chinese Words -->
-                <div id="round2-wordsColumn" class="flex flex-col gap-6 w-full max-w-[280px] z-20">
+                <div id="round2-wordsColumn" class="flex flex-col gap-3 sm:gap-4 md:gap-6 w-full max-w-full md:max-w-[280px] z-20">
                     <!-- Cards will be dynamically inserted here -->
                 </div>
                 
                 <!-- Right Column: Vietnamese Meanings -->
-                <div id="round2-meaningsColumn" class="flex flex-col gap-6 w-full max-w-[280px] z-20">
+                <div id="round2-meaningsColumn" class="flex flex-col gap-3 sm:gap-4 md:gap-6 w-full max-w-full md:max-w-[280px] z-20">
                     <!-- Cards will be dynamically inserted here -->
                 </div>
             </div>
@@ -381,31 +381,31 @@
         <!-- Round 3: Reverse Quiz Game -->
         <div id="round3" class="game-round hidden w-full">
             <div class="text-center ">
-                 <div class="inline-block px-6  bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full font-bold text-sm mb-4">
+                 <div class="inline-block px-4 sm:px-6 py-1.5 sm:py-2 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full font-bold text-xs sm:text-sm mb-3 sm:mb-4">
                     🖼️ ROUND 3: PICTURE QUIZ
                 </div>
             </div>
             
-            <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 w-full items-center">
+            <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 w-full items-center">
                 <!-- Left Column: The Stage (Image & Prompt) -->
                 <div class="lg:col-span-7 flex flex-col w-full justify-center">
                     <!-- Question Prompt -->
-                    <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold text-center lg:text-left mb-2 text-gray-800 dark:text-gray-100 drop-shadow-sm leading-tight">
+                    <h1 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-center lg:text-left mb-3 sm:mb-4 text-gray-800 dark:text-gray-100 drop-shadow-sm leading-tight">
                         Nhìn ảnh và đoán nghĩa.<br />
                         <span class="text-primary">đây là gì?</span>
                     </h1>
                     <!-- Image Card -->
-                    <div class="relative w-full aspect-[4/3] rounded-xl overflow-hidden shadow-2xl bg-white dark:bg-slate-800 border-4 border-white dark:border-slate-800 ring-1 ring-black/5 group">
+                    <div class="relative w-full aspect-[4/3] rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl bg-white dark:bg-slate-800 border-2 sm:border-4 border-white dark:border-slate-800 ring-1 ring-black/5 group">
                         <!-- Countdown Timer Overlay (Top Right) -->
-                        <div class="absolute top-6 right-6 z-20">
-                            <div class="relative flex items-center justify-center size-20 rounded-full bg-white dark:bg-slate-800 shadow-lg">
-                                <svg class="transform -rotate-90 size-20" viewbox="0 0 100 100">
+                        <div class="absolute top-3 right-3 sm:top-6 sm:right-6 z-20">
+                            <div class="relative flex items-center justify-center size-16 sm:size-20 rounded-full bg-white dark:bg-slate-800 shadow-lg">
+                                <svg class="transform -rotate-90 size-16 sm:size-20" viewbox="0 0 100 100">
                                     <circle class="dark:stroke-gray-700" cx="50" cy="50" fill="none" r="45" stroke="#e5e7eb" stroke-width="8"></circle>
                                     <circle id="round3-timer-circle" class="text-primary transition-all duration-1000 ease-linear" cx="50" cy="50" fill="none" r="45" stroke="currentColor" stroke-dasharray="283" stroke-dashoffset="0" stroke-linecap="round" stroke-width="8"></circle>
                                 </svg>
                                 <div class="absolute flex flex-col items-center">
-                                    <span id="round3-timer-text" class="text-xl font-bold text-gray-800 dark:text-white leading-none">15</span>
-                                    <span class="text-[10px] uppercase font-bold text-slate-400 mt-0.5">Sec</span>
+                                    <span id="round3-timer-text" class="text-base sm:text-xl font-bold text-gray-800 dark:text-white leading-none">15</span>
+                                    <span class="text-[8px] sm:text-[10px] uppercase font-bold text-slate-400 mt-0.5">Sec</span>
                                 </div>
                             </div>
                         </div>
@@ -413,10 +413,10 @@
                         <div id="round3-image"  class=" w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style="background-image: url('');">
                         </div>
                         <!-- Label Overlay (Hint) -->
-                        <div class="absolute bottom-6 left-6 z-20">
-                            <div class="px-4 py-2 bg-white/90 dark:bg-black/60 backdrop-blur-sm rounded-lg shadow-sm">
-                                <p id="round3-hint" class="text-sm font-medium text-gray-600 dark:text-gray-300 flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-primary text-lg">lightbulb</span>
+                        <div class="absolute bottom-3 left-3 sm:bottom-6 sm:left-6 z-20">
+                            <div class="px-3 py-1.5 sm:px-4 sm:py-2 bg-white/90 dark:bg-black/60 backdrop-blur-sm rounded-lg shadow-sm">
+                                <p id="round3-hint" class="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300 flex items-center gap-1.5 sm:gap-2">
+                                    <span class="material-symbols-outlined text-primary text-base sm:text-lg">lightbulb</span>
                                     Hint: ...
                                 </p>
                             </div>
@@ -424,13 +424,13 @@
                     </div>
                 </div>
                 <!-- Right Column: Answer Grid -->
-                <div class="lg:col-span-5 w-full flex flex-col justify-center gap-4 lg:pl-8">
-                    <div id="round3-optionsGrid" class="grid grid-cols-2 gap-4 w-full">
+                <div class="lg:col-span-5 w-full flex flex-col justify-center gap-3 sm:gap-4 lg:pl-8">
+                    <div id="round3-optionsGrid" class="grid grid-cols-2 gap-3 sm:gap-4 w-full">
                         <!-- Options will be dynamically inserted here -->
                     </div>
-                    <div class="mt-6 flex justify-center lg:justify-start">
-                        <button id="round3-listenBtn" class="flex items-center gap-2 px-6 py-3 rounded-full bg-gray-100 dark:bg-slate-700 text-slate-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm font-bold">
-                            <span class="material-symbols-outlined text-[20px]">volume_up</span>
+                    <div class="mt-4 sm:mt-6 flex justify-center lg:justify-start">
+                        <button id="round3-listenBtn" class="flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-gray-100 dark:bg-slate-700 text-slate-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-xs sm:text-sm font-bold active:scale-95">
+                            <span class="material-symbols-outlined text-base sm:text-lg">volume_up</span>
                             Nghe câu hỏi
                         </button>
                     </div>
@@ -441,7 +441,7 @@
         <!-- Round 4: Kids Vocabulary Game -->
         <div id="round4" class="game-round hidden w-full ">
             <div class="text-center ">
-                <div class="inline-block px-6 py-2 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-full font-bold text-sm mb-4">
+                <div class="inline-block px-4 sm:px-6 py-1.5 sm:py-2 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-full font-bold text-xs sm:text-sm mb-3 sm:mb-4">
                     🎤 ROUND 4: PRONUNCIATION PRACTICE
                 </div>
             </div>
@@ -454,75 +454,75 @@
                 <div class="relative group z-10">
                     <!-- Top Badge -->
                     <div class="absolute -top-5 left-1/2 transform -translate-x-1/2 z-20 w-full flex justify-center">
-                        <div id="round4-topBadge" onclick="speakRound4Word()" class="flex items-center gap-2 px-6 py-2 bg-white dark:bg-slate-700 rounded-full shadow-lg border border-slate-100 dark:border-slate-600 transition-all duration-300 whitespace-nowrap cursor-pointer hover:border-primary hover:shadow-xl active:scale-95">
-                            <span class="material-symbols-outlined text-blue-500">headphones</span>
-                            <span class="font-bold text-slate-700 dark:text-slate-200 text-sm">Listen carefully</span>
+                        <div id="round4-topBadge" onclick="speakRound4Word()" class="flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-1.5 sm:py-2 bg-white dark:bg-slate-700 rounded-full shadow-lg border border-slate-100 dark:border-slate-600 transition-all duration-300 whitespace-nowrap cursor-pointer hover:border-primary hover:shadow-xl active:scale-95">
+                            <span class="material-symbols-outlined text-blue-500 text-base sm:text-lg">headphones</span>
+                            <span class="font-bold text-slate-700 dark:text-slate-200 text-xs sm:text-sm">Listen carefully</span>
                         </div>
                     </div>
                     
                     <!-- Main Card -->
-                    <div id="round4-cardContainer" class="h-38rem bg-white dark:bg-slate-800 rounded-3xl shadow-xl border-2 border-slate-200 dark:border-slate-700 p-8 pb-16 w-[90vw] max-w-lg md:max-w-xl lg:max-w-2xl relative flex flex-col items-center justify-between min-h-[480px] transition-all duration-300 hover:shadow-2xl">
+                    <div id="round4-cardContainer" class="h-38rem bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl shadow-xl border-2 border-slate-200 dark:border-slate-700 p-5 sm:p-6 md:p-8 pb-12 sm:pb-14 md:pb-16 w-[90vw] max-w-lg md:max-w-xl lg:max-w-2xl relative flex flex-col items-center justify-between min-h-[420px] sm:min-h-[460px] md:min-h-[480px] transition-all duration-300 hover:shadow-2xl">
                         <!-- Top Left: Letter -->
-                        <div class="absolute top-6 left-6">
-                            <span id="round4-letterDisplay" class="w-12 h-12 flex items-center justify-center bg-slate-100 dark:bg-slate-700 rounded-xl text-xl font-black text-slate-400 dark:text-slate-500">A</span>
+                        <div class="absolute top-4 left-4 sm:top-6 sm:left-6">
+                            <span id="round4-letterDisplay" class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-slate-100 dark:bg-slate-700 rounded-xl text-lg sm:text-xl font-black text-slate-400 dark:text-slate-500">A</span>
                         </div>
                         
                         <!-- Top Right: Difficulty -->
-                        <div class="absolute top-6 right-6 flex gap-2">
-                             <span id="round4-difficultyText" class="px-3 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 text-xs font-bold rounded-full border border-yellow-200 dark:border-yellow-800/50">Beginner</span>
+                        <div class="absolute top-4 right-4 sm:top-6 sm:right-6 flex gap-2">
+                             <span id="round4-difficultyText" class="px-2 py-0.5 sm:px-3 sm:py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 text-[10px] sm:text-xs font-bold rounded-full border border-yellow-200 dark:border-yellow-800/50">Beginner</span>
                         </div>
                         
                         <!-- Content -->
-                        <div class="flex flex-row items-center justify-center w-full gap-8 mt-8 md:mt-12">
+                        <div class="flex flex-row items-center justify-center w-full gap-4 sm:gap-6 md:gap-8 mt-6 sm:mt-8 md:mt-12">
                             <!-- Emoji/Image -->
-                            <div id="round4-imageContainer" class="text-7xl md:text-8xl animate-bounce duration-[2000ms]">
+                            <div id="round4-imageContainer" class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl animate-bounce duration-[2000ms]">
                                 🍎
                             </div>
                             
                             <!-- Words -->
-                            <div class="flex flex-col items-start gap-1">
-                                <span class="text-sm font-bold text-slate-400 uppercase tracking-wider">Traditional</span>
-                                <div id="round4-traditionalText" class="text-5xl md:text-7xl font-black text-primary dark:text-blue-400 leading-tight">苹果</div>
-                                <div id="round4-pinyinText" class="text-2xl text-slate-500 dark:text-slate-400 font-serif italic">píng guǒ</div>
+                            <div class="flex flex-col items-start gap-0.5 sm:gap-1">
+                                <span class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider">Traditional</span>
+                                <div id="round4-traditionalText" class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-primary dark:text-blue-400 leading-tight">苹果</div>
+                                <div id="round4-pinyinText" class="text-lg sm:text-xl md:text-2xl text-slate-500 dark:text-slate-400 font-serif italic">píng guǒ</div>
                             </div>
                         </div>
                         
                         <!-- Meaning -->
-                        <div class="text-center w-full mb-4">
-                            <div class="h-px w-2/3 mx-auto bg-slate-100 dark:bg-slate-700 mb-6"></div>
-                            <div id="round4-meaningText" class="text-2xl md:text-3xl font-bold text-slate-700 dark:text-slate-200">Apple</div>
+                        <div class="text-center w-full mb-3 sm:mb-4">
+                            <div class="h-px w-2/3 mx-auto bg-slate-100 dark:bg-slate-700 mb-4 sm:mb-6"></div>
+                            <div id="round4-meaningText" class="text-xl sm:text-2xl md:text-3xl font-bold text-slate-700 dark:text-slate-200">Apple</div>
                               <!-- SKIP BUTTON -->
-                            <button onclick="skipRound4Word()" style="margin: 0 auto; padding-top: 5px;" class="mt-1 px-4 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-300 text-xs font-bold flex items-center gap-1 transition-all border border-slate-200 dark:border-slate-700">
+                            <button onclick="skipRound4Word()" style="margin: 0 auto; padding-top: 5px;" class="mt-1 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-300 text-[10px] sm:text-xs font-bold flex items-center gap-1 transition-all border border-slate-200 dark:border-slate-700 active:scale-95">
                                 <span>Bỏ qua câu này</span> 
-                                <span class="material-symbols-outlined text-[14px]">skip_next</span>
+                                <span class="material-symbols-outlined text-xs sm:text-sm">skip_next</span>
                             </button>
                         </div>
                         
                         <!-- Progress -->
-                        <div class="absolute bottom-6 right-6">
-                            <span id="round4-progressText" class="text-xs font-bold text-slate-300 dark:text-slate-600">1/10</span>
+                        <div class="absolute bottom-4 right-4 sm:bottom-6 sm:right-6">
+                            <span id="round4-progressText" class="text-[10px] sm:text-xs font-bold text-slate-300 dark:text-slate-600">1/10</span>
                         </div>
                     </div>
                     
                     <!-- Bottom Action Button (Mic) -->
-                    <div style="top: 415px !important;" class="absolute -bottom-24 left-1/2 transform -translate-x-1/2 flex flex-col items-center w-full z-30">
+                    <div style="top: 415px !important;" class="absolute -bottom-20 sm:-bottom-24 left-1/2 transform -translate-x-1/2 flex flex-col items-center w-full z-30">
                         <div class="relative cursor-pointer transition-transform active:scale-95" onclick="recordRound4UserSpeech()">
                             <div id="round4-recordPingEffect" class="absolute inset-0 bg-red-400 rounded-full animate-ping opacity-0"></div>
-                            <button id="round4-recordBtn" class="relative z-10 w-20 h-20 bg-white dark:bg-slate-700 rounded-full shadow-lg border-4 border-slate-100 dark:border-slate-600 flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary transition-all duration-300 group-hover:shadow-xl">
-                                <span class="material-symbols-outlined text-4xl">mic</span>
+                            <button id="round4-recordBtn" class="relative z-10 w-16 h-16 sm:w-20 sm:h-20 bg-white dark:bg-slate-700 rounded-full shadow-lg border-4 border-slate-100 dark:border-slate-600 flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary transition-all duration-300 group-hover:shadow-xl">
+                                <span class="material-symbols-outlined text-3xl sm:text-4xl">mic</span>
                             </button>
                         </div>
                         
                         <!-- Status Text / Visualizer -->
                         <div class="mt-2 flex flex-col items-center justify-start">
-                             <div id="round4-visualizer" class="flex items-end justify-center h-4 space-x-1 hidden mb-1">
-                                <div class="w-1 bg-primary rounded-full h-2 animate-pulse"></div>
-                                <div class="w-1 bg-primary rounded-full h-4 animate-pulse delay-75"></div>
-                                <div class="w-1 bg-primary rounded-full h-3 animate-pulse delay-150"></div>
-                                <div class="w-1 bg-primary rounded-full h-4 animate-pulse delay-75"></div>
-                                <div class="w-1 bg-primary rounded-full h-2 animate-pulse"></div>
+                             <div id="round4-visualizer" class="flex items-end justify-center h-3 sm:h-4 space-x-1 hidden mb-1">
+                                <div class="w-1 bg-primary rounded-full h-1.5 sm:h-2 animate-pulse"></div>
+                                <div class="w-1 bg-primary rounded-full h-3 sm:h-4 animate-pulse delay-75"></div>
+                                <div class="w-1 bg-primary rounded-full h-2 sm:h-3 animate-pulse delay-150"></div>
+                                <div class="w-1 bg-primary rounded-full h-3 sm:h-4 animate-pulse delay-75"></div>
+                                <div class="w-1 bg-primary rounded-full h-1.5 sm:h-2 animate-pulse"></div>
                             </div>
-                            <span id="round4-statusText" class="text-sm font-bold text-slate-400 dark:text-slate-500 mb-2">Tap to speak</span>
+                            <span id="round4-statusText" class="text-xs sm:text-sm font-bold text-slate-400 dark:text-slate-500 mb-2">Tap to speak</span>
                             
                           
                         </div>
@@ -534,20 +534,20 @@
         <!-- Round 5: Fill in the Blanks Game -->
         <div id="round5" class="game-round hidden w-full">
             <div class="text-center ">
-                <div class="inline-block px-6 py-2 bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 rounded-full font-bold text-sm mb-4">
+                <div class="inline-block px-4 sm:px-6 py-1.5 sm:py-2 bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 rounded-full font-bold text-xs sm:text-sm mb-3 sm:mb-4">
                     ✏️ ROUND 5: FILL THE BLANKS
                 </div>
             </div>
-            <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 w-full max-w-3xl mx-auto">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl sm:rounded-3xl shadow-2xl p-5 sm:p-6 md:p-8 w-full max-w-3xl mx-auto">
                 <!-- Question Display -->
-                <div id="round5-questionDisplay" class="text-center mb-8"></div>
+                <div id="round5-questionDisplay" class="text-center mb-6 sm:mb-8"></div>
                 
                 <!-- Options Container -->
-                <div id="round5-optionsContainer" class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8"></div>
+                <div id="round5-optionsContainer" class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8"></div>
                 
                 <!-- Check Button -->
                 <div class="flex justify-center">
-                    <button id="round5-checkButton" disabled class="flex items-center justify-center gap-2 bg-slate-300 dark:bg-slate-700 text-slate-500 dark:text-slate-400 font-bold text-lg px-10 py-4 rounded-full shadow-lg transition-all disabled:cursor-not-allowed hover:bg-primary hover:text-white disabled:hover:bg-slate-300 disabled:hover:text-slate-500 min-w-[200px]">
+                    <button id="round5-checkButton" disabled class="flex items-center justify-center gap-2 bg-slate-300 dark:bg-slate-700 text-slate-500 dark:text-slate-400 font-bold text-base sm:text-lg px-8 sm:px-10 py-3 sm:py-4 rounded-full shadow-lg transition-all disabled:cursor-not-allowed hover:bg-primary hover:text-white disabled:hover:bg-slate-300 disabled:hover:text-slate-500 min-w-[180px] sm:min-w-[200px] active:scale-95">
                         <span id="round5-checkButtonText">Chọn đáp án</span>
                     </button>
                 </div>
@@ -556,7 +556,8 @@
 
         <!-- Final Result Screen -->
         <div id="finalResult" class="game-round hidden w-full flex items-center justify-center py-2 h-full">
-            <div class="bg-gradient-to-br from-white via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-2xl shadow-2xl p-4 max-w-lg w-full mx-auto border-4 border-gradient-to-r from-cyan-200 via-blue-200 to-purple-200 dark:border-gray-700 transform animate-slide-in-up max-h-[85vh] overflow-y-auto scrollbar-thin">
+            <div id="confetti-container-test" class="fixed inset-0 pointer-events-none z-50"></div>
+            <div class="bg-gradient-to-br from-white via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-2xl md:rounded-3xl shadow-2xl p-5 sm:p-8 max-w-lg w-full mx-auto border-4 border-gradient-to-r from-cyan-200 via-blue-200 to-purple-200 dark:border-gray-700 transform result-card-test max-h-[85vh] overflow-y-auto scrollbar-thin">
                 <div class="text-center">
                     <div class="text-4xl mb-1 animate-bounce" id="finalEmoji">🎉</div>
                     <h2 class="text-3xl font-black bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent mb-1" id="finalTitle">Xuất sắc!</h2>
@@ -633,6 +634,7 @@
 
     <script>
         // ========== Global State ==========
+        let testStartTime = null;
         let currentRound = 0;
         let roundData = {
             round1: { questions: [], currentIndex: 0, score: 0, total: 5, answers: [] },
@@ -807,6 +809,9 @@
             document.getElementById('finalResult').classList.remove('hidden');
             
             const percentage = Math.round((totalScore / totalQuestions) * 100);
+            const duration = testStartTime ? Math.floor((Date.now() - testStartTime) / 1000) : 0;
+            const minutes = Math.floor(duration / 60);
+            const seconds = duration % 60;
             
             // Set emoji, title and color based on performance
             let emoji = '🎉';
@@ -831,13 +836,51 @@
                 colorClass = 'from-orange-500 to-red-500';
             }
             
-            document.getElementById('finalEmoji').textContent = emoji;
+            const emojiEl = document.getElementById('finalEmoji');
+            if (emojiEl) {
+                emojiEl.textContent = emoji;
+                emojiEl.className = 'text-6xl sm:text-8xl mb-4 emoji-animation inline-block';
+            }
             const titleEl = document.getElementById('finalTitle');
-            titleEl.textContent = title;
-            titleEl.className = `text-4xl font-black bg-gradient-to-r ${colorClass} bg-clip-text text-transparent mb-2`;
+            if (titleEl) {
+                titleEl.textContent = title;
+                titleEl.className = `text-2xl sm:text-4xl font-black bg-gradient-to-r ${colorClass} bg-clip-text text-transparent mb-2`;
+            }
             
-            document.getElementById('finalScore').textContent = `${totalScore}/${totalQuestions}`;
-            document.getElementById('finalPercentage').textContent = `${percentage}%`;
+            // Add time badge before stats
+            const subtitleEl = document.querySelector('#finalResult .text-xl.text-gray-600');
+            if (subtitleEl && duration > 0) {
+                const timeBadge = document.createElement('div');
+                timeBadge.className = 'inline-flex items-center gap-2 bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 px-4 py-2 rounded-full mb-4';
+                timeBadge.innerHTML = `
+                    <span class="material-symbols-outlined text-indigo-600 dark:text-indigo-400 text-lg">schedule</span>
+                    <span class="text-sm font-bold text-indigo-700 dark:text-indigo-300">${minutes}:${seconds.toString().padStart(2, '0')}</span>
+                `;
+                subtitleEl.parentNode.insertBefore(timeBadge, subtitleEl.nextSibling);
+            }
+            
+            const finalScoreEl = document.getElementById('finalScore');
+            const finalPercentageEl = document.getElementById('finalPercentage');
+            
+            if (finalScoreEl) {
+                finalScoreEl.setAttribute('data-value', `${totalScore}/${totalQuestions}`);
+                finalScoreEl.textContent = `0/${totalQuestions}`;
+            }
+            if (finalPercentageEl) {
+                finalPercentageEl.setAttribute('data-value', `${percentage}`);
+                finalPercentageEl.textContent = '0%';
+            }
+            
+            // Animate stats after a delay
+            setTimeout(() => {
+                if (finalScoreEl) animateTestValue(finalScoreEl, `${totalScore}/${totalQuestions}`, 1000);
+                if (finalPercentageEl) animateTestValue(finalPercentageEl, `${percentage}`, 1200);
+            }, 500);
+            
+            // Create confetti for high scores
+            if (percentage >= 70) {
+                setTimeout(() => createTestConfetti(), 800);
+            }
             
             // Round breakdown
             const breakdown = document.getElementById('roundBreakdown');
@@ -869,7 +912,6 @@
         }
         
         // ========== Submit Test Result ==========
-        let testStartTime = null; // Track when test started
         
         async function submitTestResult() {
             try {
@@ -1103,12 +1145,12 @@
             
             q.options.forEach((opt, idx) => {
                 const btn = document.createElement('button');
-                btn.className = '    border-radius-40px card-hover group relative flex flex-col gap-4 p-4 rounded-xl bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 hover:border-primary/50 dark:hover:border-primary/50 shadow-sm text-left transition-all';
+                btn.className = '    border-radius-40px card-hover group relative flex flex-col gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 hover:border-primary/50 dark:hover:border-primary/50 shadow-sm text-left transition-all active:scale-95';
                 btn.innerHTML = `
                     <div class="flex items-center justify-between w-full">
-                        <span class="text-slate-800 dark:text-slate-100 font-bold text-xl">${opt.text}</span>
-                        <div class="w-6 h-6 rounded-full border-2 border-slate-200 dark:border-slate-600 group-hover:border-primary group-hover:bg-primary/10 flex items-center justify-center transition-colors">
-                            <div class="w-2.5 h-2.5 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <span class="text-slate-800 dark:text-slate-100 font-bold text-base sm:text-lg md:text-xl">${opt.text}</span>
+                        <div class="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-slate-200 dark:border-slate-600 group-hover:border-primary group-hover:bg-primary/10 flex items-center justify-center transition-colors">
+                            <div class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
                         </div>
                     </div>
                 `;
@@ -1143,7 +1185,7 @@
             // Enable check button
             const nextBtn = document.getElementById('round1-nextBtn');
             nextBtn.disabled = false;
-            nextBtn.className = 'flex items-center justify-center gap-2 bg-primary hover:bg-blue-600 text-white font-bold text-lg px-8 py-3 rounded-full shadow-lg shadow-primary/30 transition-all hover:translate-y-[-2px] active:translate-y-[0px] min-w-[160px]';
+            nextBtn.className = 'flex items-center justify-center gap-2 bg-primary hover:bg-blue-600 text-white font-bold text-base sm:text-lg px-6 sm:px-8 py-2.5 sm:py-3 rounded-full shadow-lg shadow-primary/30 transition-all hover:translate-y-[-2px] active:translate-y-[0px] min-w-[140px] sm:min-w-[160px] active:scale-95';
             nextBtn.innerHTML = '<span>Kiểm tra</span><span class="material-symbols-outlined">check_circle</span>';
             nextBtn.onclick = checkRound1Answer;
         }
@@ -1200,7 +1242,7 @@
             // Update next button
             const nextBtn = document.getElementById('round1-nextBtn');
             nextBtn.innerHTML = `<span>${isCorrect ? 'Đúng! Tiếp tục' : 'Sai! Tiếp tục'}</span><span class="material-symbols-outlined">arrow_forward</span>`;
-            nextBtn.className = `flex items-center justify-center gap-2 ${isCorrect ? 'bg-green-500 hover:bg-green-600' : 'bg-orange-500 hover:bg-orange-600'} text-white font-bold text-lg px-8 py-3 rounded-full shadow-lg transition-all hover:translate-y-[-2px] active:translate-y-[0px] min-w-[160px]`;
+            nextBtn.className = `flex items-center justify-center gap-2 ${isCorrect ? 'bg-green-500 hover:bg-green-600' : 'bg-orange-500 hover:bg-orange-600'} text-white font-bold text-base sm:text-lg px-6 sm:px-8 py-2.5 sm:py-3 rounded-full shadow-lg transition-all hover:translate-y-[-2px] active:translate-y-[0px] min-w-[140px] sm:min-w-[160px] active:scale-95`;
             nextBtn.onclick = () => {
                 data.currentIndex++;
                 renderRound1Question();
@@ -1282,14 +1324,14 @@
 
         function createRound2WordCard(card) {
             const div = document.createElement('div');
-            div.className = 'game-card group relative bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-primary/50 shadow-md rounded-full h-20 flex items-center justify-center cursor-pointer select-none transition-all';
+            div.className = 'game-card group relative bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-primary/50 shadow-md rounded-full h-16 sm:h-18 md:h-20 flex items-center justify-center cursor-pointer select-none transition-all active:scale-95';
             div.dataset.cardId = card.id;
             div.dataset.pairId = card.pairId;
             div.dataset.type = card.type;
             
             div.innerHTML = `
-                <span class="chinese-word-speaker text-xl md:text-2xl font-bold text-slate-700 dark:text-slate-200" data-word="${card.content}">${card.content}</span>
-                <div class="anchor-point absolute -right-3 top-1/2 -translate-y-1/2 size-6 bg-slate-300 dark:bg-slate-600 group-hover:bg-primary border-4 border-white dark:border-slate-800 rounded-full shadow-sm z-30 transition-colors"></div>
+                <span class="chinese-word-speaker text-lg sm:text-xl md:text-2xl font-bold text-slate-700 dark:text-slate-200" data-word="${card.content}">${card.content}</span>
+                <div class="anchor-point absolute -right-2 sm:-right-3 top-1/2 -translate-y-1/2 size-5 sm:size-6 bg-slate-300 dark:bg-slate-600 group-hover:bg-primary border-2 sm:border-4 border-white dark:border-slate-800 rounded-full shadow-sm z-30 transition-colors"></div>
             `;
             
             div.onclick = (e) => {
@@ -1305,7 +1347,7 @@
 
         function createRound2MeaningCard(card) {
             const div = document.createElement('div');
-            div.className = 'game-card group relative bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-primary/50 shadow-md rounded-full h-20 flex items-center px-2 cursor-pointer select-none transition-all';
+            div.className = 'game-card group relative bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-primary/50 shadow-md rounded-full h-16 sm:h-18 md:h-20 flex items-center px-2 sm:px-3 cursor-pointer select-none transition-all active:scale-95';
             div.dataset.cardId = card.id;
             div.dataset.pairId = card.pairId;
             div.dataset.type = card.type;
@@ -1313,12 +1355,12 @@
             const icon = getRound2MeaningIcon(card.content);
             
             div.innerHTML = `
-                <div class="anchor-point absolute -left-3 top-1/2 -translate-y-1/2 size-6 bg-slate-300 dark:bg-slate-600 group-hover:bg-primary border-4 border-white dark:border-slate-800 rounded-full shadow-sm z-30 transition-colors"></div>
-                <div class="flex items-center gap-4 pl-2 w-full">
-                    <div class="size-14 rounded-full ${icon.bgColor} flex items-center justify-center shrink-0">
-                        <span class="material-symbols-outlined ${icon.textColor} text-3xl">${icon.name}</span>
+                <div class="anchor-point absolute -left-2 sm:-left-3 top-1/2 -translate-y-1/2 size-5 sm:size-6 bg-slate-300 dark:bg-slate-600 group-hover:bg-primary border-2 sm:border-4 border-white dark:border-slate-800 rounded-full shadow-sm z-30 transition-colors"></div>
+                <div class="flex items-center gap-2 sm:gap-3 md:gap-4 pl-1 sm:pl-2 w-full">
+                    <div class="size-10 sm:size-12 md:size-14 rounded-full ${icon.bgColor} flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined ${icon.textColor} text-2xl sm:text-2xl md:text-3xl">${icon.name}</span>
                     </div>
-                    <span class="text-xl font-medium text-slate-700 dark:text-slate-200">${card.content}</span>
+                    <span class="text-sm sm:text-base md:text-lg lg:text-xl font-medium text-slate-700 dark:text-slate-200">${card.content}</span>
                 </div>
             `;
             
@@ -1587,7 +1629,7 @@
             
             q.options.forEach((opt, idx) => {
                 const btn = document.createElement('button');
-                btn.className = 'group relative flex flex-col items-center justify-center p-6 lg:p-8 h-32 lg:h-40 rounded-xl bg-white dark:bg-slate-800 border-b-4 border-gray-200 dark:border-gray-700 hover:border-primary active:border-primary active:translate-y-1 transition-all duration-200 shadow-sm hover:shadow-xl hover:shadow-primary/10';
+                btn.className = 'group relative flex flex-col items-center justify-center p-4 sm:p-5 md:p-6 lg:p-8 h-28 sm:h-32 md:h-36 lg:h-40 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-800 border-b-4 border-gray-200 dark:border-gray-700 hover:border-primary active:border-primary active:translate-y-1 transition-all duration-200 shadow-sm hover:shadow-xl hover:shadow-primary/10 active:scale-95';
                 
                 // Parse option text: "traditional (pinyin)" format
                 const text = opt.text || '';
@@ -1605,12 +1647,12 @@
                 ][idx % 4];
                 
                 btn.innerHTML = `
-                    <div class="size-10 mb-2 rounded-full ${colorClasses} flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <span class="material-symbols-outlined">${iconName}</span>
+                    <div class="size-8 sm:size-9 md:size-10 mb-1.5 sm:mb-2 rounded-full ${colorClasses} flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <span class="material-symbols-outlined text-base sm:text-lg md:text-xl">${iconName}</span>
                     </div>
-                    <span class="text-xl lg:text-2xl font-bold text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors text-center">${chineseWord}</span>
-                    <span class="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">${pinyinText}</span>
-                    <div class="absolute inset-0 border-2 border-transparent group-hover:border-primary rounded-xl pointer-events-none transition-colors"></div>
+                    <span class="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors text-center">${chineseWord}</span>
+                    <span class="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 mt-0.5 sm:mt-1">${pinyinText}</span>
+                    <div class="absolute inset-0 border-2 border-transparent group-hover:border-primary rounded-xl sm:rounded-2xl pointer-events-none transition-colors"></div>
                 `;
                 btn.onclick = () => selectRound3Answer(idx);
                 grid.appendChild(btn);
@@ -2318,11 +2360,11 @@
             
             // Blank word display with integrated speaker button
             const blankContainer = document.createElement('div');
-            blankContainer.className = 'flex items-center justify-center gap-3 mb-4';
+            blankContainer.className = 'flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4';
             
             const speakerBtn = document.createElement('button');
-            speakerBtn.className = 'inline-flex items-center justify-center w-10 h-10 rounded-full bg-primary hover:bg-blue-600 text-white shadow-md hover:scale-110 transition-all';
-            speakerBtn.innerHTML = '<span class="material-symbols-outlined text-lg">volume_up</span>';
+            speakerBtn.className = 'inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary hover:bg-blue-600 text-white shadow-md hover:scale-110 active:scale-95 transition-all';
+            speakerBtn.innerHTML = '<span class="material-symbols-outlined text-base sm:text-lg">volume_up</span>';
             speakerBtn.onclick = () => {
                 if (window.speakText) {
                     window.speakText(q.word.simplified || q.word.traditional);
@@ -2331,7 +2373,7 @@
             
             const blankWord = document.createElement('span');
             blankWord.textContent = q.question.displayWord;
-            blankWord.className = 'text-4xl md:text-5xl font-bold text-gray-700 dark:text-gray-300';
+            blankWord.className = 'text-3xl sm:text-4xl md:text-5xl font-bold text-gray-700 dark:text-gray-300';
             
             blankContainer.appendChild(speakerBtn);
             blankContainer.appendChild(blankWord);
@@ -2339,14 +2381,14 @@
             
             // Meaning and Pinyin
             const infoContainer = document.createElement('div');
-            infoContainer.className = 'flex flex-wrap justify-center gap-3 text-lg';
+            infoContainer.className = 'flex flex-wrap justify-center gap-2 sm:gap-3 text-base sm:text-lg';
             
             const meaningBadge = document.createElement('span');
-            meaningBadge.className = 'px-4 py-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full border border-green-200 dark:border-green-800 font-semibold';
+            meaningBadge.className = 'px-3 py-1.5 sm:px-4 sm:py-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full border border-green-200 dark:border-green-800 text-sm sm:text-base font-semibold';
             meaningBadge.textContent = q.word.meaning;
             
             const pinyinBadge = document.createElement('span');
-            pinyinBadge.className = 'px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full border border-blue-200 dark:border-blue-800 font-semibold';
+            pinyinBadge.className = 'px-3 py-1.5 sm:px-4 sm:py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full border border-blue-200 dark:border-blue-800 text-sm sm:text-base font-semibold';
             pinyinBadge.textContent = q.word.pinyin;
             
             infoContainer.appendChild(meaningBadge);
@@ -2358,7 +2400,7 @@
             optionsDiv.innerHTML = '';
             q.options.forEach((opt, idx) => {
                 const btn = document.createElement('button');
-                btn.className = 'game-card bg-white dark:bg-gray-800 border-2 border-slate-200 dark:border-slate-700 hover:border-primary/50 px-6 py-4 rounded-2xl text-2xl font-black text-primary dark:text-blue-400 transition-all';
+                btn.className = 'game-card bg-white dark:bg-gray-800 border-2 border-slate-200 dark:border-slate-700 hover:border-primary/50 px-4 sm:px-5 md:px-6 py-3 sm:py-3.5 md:py-4 rounded-xl sm:rounded-2xl text-xl sm:text-2xl font-black text-primary dark:text-blue-400 transition-all hover:scale-105 active:scale-95';
                 btn.textContent = opt.char; // Backend returns 'char' not 'text'
                 btn.onclick = () => selectRound5Answer(idx);
                 optionsDiv.appendChild(btn);
@@ -2368,6 +2410,7 @@
             const checkBtn = document.getElementById('round5-checkButton');
             const checkBtnText = document.getElementById('round5-checkButtonText');
             checkBtn.disabled = true;
+            checkBtn.className = 'flex items-center justify-center gap-2 bg-slate-300 dark:bg-slate-700 text-slate-500 dark:text-slate-400 font-bold text-base sm:text-lg px-8 sm:px-10 py-3 sm:py-4 rounded-full shadow-lg transition-all disabled:cursor-not-allowed hover:bg-primary hover:text-white disabled:hover:bg-slate-300 disabled:hover:text-slate-500 min-w-[180px] sm:min-w-[200px] active:scale-95';
             checkBtnText.textContent = 'Chọn đáp án';
             checkBtn.onclick = null;
             
@@ -2393,7 +2436,7 @@
             const checkBtn = document.getElementById('round5-checkButton');
             const checkBtnText = document.getElementById('round5-checkButtonText');
             checkBtn.disabled = false;
-            checkBtn.className = 'flex items-center justify-center gap-2 bg-primary hover:bg-blue-600 text-white font-bold text-lg px-10 py-4 rounded-full shadow-lg transition-all min-w-[200px]';
+            checkBtn.className = 'flex items-center justify-center gap-2 bg-primary hover:bg-blue-600 text-white font-bold text-base sm:text-lg px-8 sm:px-10 py-3 sm:py-4 rounded-full shadow-lg transition-all min-w-[180px] sm:min-w-[200px] active:scale-95';
             checkBtnText.textContent = 'Kiểm tra đáp án';
             checkBtn.onclick = () => checkRound5Answer(idx);
         }
@@ -2440,10 +2483,10 @@
             checkBtn.disabled = true;
             
             if (isCorrect) {
-                checkBtn.className = 'flex items-center justify-center gap-2 bg-green-500 text-white font-bold text-lg px-10 py-4 rounded-full shadow-lg transition-all min-w-[200px]';
+                checkBtn.className = 'flex items-center justify-center gap-2 bg-green-500 text-white font-bold text-base sm:text-lg px-8 sm:px-10 py-3 sm:py-4 rounded-full shadow-lg transition-all min-w-[180px] sm:min-w-[200px]';
                 checkBtnText.textContent = '✓ Chính xác!';
             } else {
-                checkBtn.className = 'flex items-center justify-center gap-2 bg-red-500 text-white font-bold text-lg px-10 py-4 rounded-full shadow-lg transition-all min-w-[200px]';
+                checkBtn.className = 'flex items-center justify-center gap-2 bg-red-500 text-white font-bold text-base sm:text-lg px-8 sm:px-10 py-3 sm:py-4 rounded-full shadow-lg transition-all min-w-[180px] sm:min-w-[200px]';
                 checkBtnText.textContent = '✗ Sai rồi!';
             }
             
@@ -2453,10 +2496,89 @@
             }, 1500);
         }
 
+        // ========== Animate Test Value Count-up ==========
+        function animateTestValue(element, target, duration) {
+            const isPercentage = target.includes('%');
+            const isFraction = target.includes('/');
+            
+            if (isFraction) {
+                const [numerator, denominator] = target.split('/').map(Number);
+                let current = 0;
+                const increment = numerator / (duration / 16);
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= numerator) {
+                        element.textContent = target;
+                        clearInterval(timer);
+                    } else {
+                        element.textContent = `${Math.floor(current)}/${denominator}`;
+                    }
+                }, 16);
+            } else if (isPercentage) {
+                const targetNum = parseInt(target);
+                let current = 0;
+                const increment = targetNum / (duration / 16);
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= targetNum) {
+                        element.textContent = target + '%';
+                        clearInterval(timer);
+                    } else {
+                        element.textContent = `${Math.floor(current)}%`;
+                    }
+                }, 16);
+            }
+        }
+        
+        // ========== Create Test Confetti Effect ==========
+        function createTestConfetti() {
+            const container = document.getElementById('confetti-container-test');
+            if (!container) return;
+            
+            const colors = ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899'];
+            const confettiCount = 50;
+            
+            for (let i = 0; i < confettiCount; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti-test';
+                confetti.style.position = 'absolute';
+                confetti.style.width = '10px';
+                confetti.style.height = '10px';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animation = `confettifall-test ${Math.random() * 2 + 2}s linear forwards`;
+                confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                container.appendChild(confetti);
+                
+                setTimeout(() => confetti.remove(), 5000);
+            }
+        }
+        
+        // Add test-specific animation styles
+        const testStyle = document.createElement('style');
+        testStyle.textContent = `
+            @keyframes confettifall-test {
+                to { transform: translateY(100vh) rotate(360deg); }
+            }
+            @keyframes emojiFloat {
+                0%, 100% { transform: translateY(0) rotate(0deg); }
+                25% { transform: translateY(-10px) rotate(-5deg); }
+                75% { transform: translateY(-5px) rotate(5deg); }
+            }
+            .emoji-animation { animation: emojiFloat 2s ease-in-out infinite; }
+            .result-card-test { animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+            @keyframes scaleIn {
+                from { transform: scale(0.8) translateY(20px); opacity: 0; }
+                to { transform: scale(1) translateY(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(testStyle);
+
         // ========================================
         // INITIALIZE GAME
         // ========================================
         async function initializeGame() {
+            testStartTime = Date.now(); // Start tracking time
             // Check if difficulty is selected (required for test mode)
             if (!selectedDifficulty) {
                 console.log('⚠️ No difficulty selected, cannot start game');

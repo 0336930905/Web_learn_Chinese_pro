@@ -70,10 +70,33 @@
                             </div>
                         </div>
                         
-                        <!-- Login/Signup Buttons -->
+                        <!-- Mobile Auth Menu -->
+                        <div class="relative sm:hidden" id="mobileAuthMenu">
+                            <button class="lang-toggle-btn text-text-main dark:text-white" 
+                                    id="mobileAuthToggleBtn" 
+                                    aria-label="Login or Sign Up">
+                                <span class="material-symbols-outlined text-2xl">account_circle</span>
+                            </button>
+                            <div class="lang-dropdown" id="mobileAuthDropdown">
+                                ${currentPage !== 'login' ? `
+                                    <button class="mobile-auth-option" id="mobileLoginBtn" data-i18n="landing.navLogin">
+                                        <span class="material-symbols-outlined">login</span>
+                                        <span>Đăng nhập</span>
+                                    </button>
+                                ` : ''}
+                                ${currentPage !== 'signup' ? `
+                                    <button class="mobile-auth-option" id="mobileSignupBtn" data-i18n="landing.navSignup">
+                                        <span class="material-symbols-outlined">person_add</span>
+                                        <span>Đăng ký</span>
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                        
+                        <!-- Desktop Login/Signup Buttons -->
                         ${currentPage === 'login' ? `
                             <a href="/sign_up_screen.html" 
-                               class="btn-secondary bg-primary text-text-main dark:text-text-main shadow-lg shadow-primary/20" 
+                               class="hidden sm:flex btn-secondary bg-primary text-text-main dark:text-text-main shadow-lg shadow-primary/20" 
                                data-i18n="landing.navSignup">
                                 Sign Up
                             </a>
@@ -89,7 +112,7 @@
                                     data-i18n="landing.navLogin">
                                 Login
                             </button>
-                            <button class="btn-secondary bg-primary text-text-main dark:text-text-main shadow-lg shadow-primary/20" 
+                            <button class="hidden sm:flex btn-secondary bg-primary text-text-main dark:text-text-main shadow-lg shadow-primary/20" 
                                     id="navSignupBtn" 
                                     data-i18n="landing.navSignup">
                                 Sign Up
@@ -120,6 +143,7 @@
         // Initialize language dropdown after DOM update
         setTimeout(() => {
             initLanguageDropdown();
+            initMobileAuthMenu();
             initNavigationButtons();
         }, 0);
     }
@@ -165,6 +189,51 @@
                 langDropdown.classList.remove('show');
             });
         });
+    }
+
+    /**
+     * Initialize mobile auth menu
+     */
+    function initMobileAuthMenu() {
+        const mobileAuthToggleBtn = document.getElementById('mobileAuthToggleBtn');
+        const mobileAuthDropdown = document.getElementById('mobileAuthDropdown');
+        
+        if (!mobileAuthToggleBtn || !mobileAuthDropdown) return;
+
+        // Toggle dropdown on button click
+        mobileAuthToggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            mobileAuthDropdown.classList.toggle('show');
+            // Close language dropdown if open
+            const langDropdown = document.getElementById('langDropdown');
+            if (langDropdown) {
+                langDropdown.classList.remove('show');
+            }
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const mobileAuthMenu = document.getElementById('mobileAuthMenu');
+            if (mobileAuthMenu && !mobileAuthMenu.contains(e.target)) {
+                mobileAuthDropdown.classList.remove('show');
+            }
+        });
+
+        // Mobile login button
+        const mobileLoginBtn = document.getElementById('mobileLoginBtn');
+        if (mobileLoginBtn) {
+            mobileLoginBtn.addEventListener('click', () => {
+                window.location.href = '/login_screen.html';
+            });
+        }
+
+        // Mobile signup button
+        const mobileSignupBtn = document.getElementById('mobileSignupBtn');
+        if (mobileSignupBtn) {
+            mobileSignupBtn.addEventListener('click', () => {
+                window.location.href = '/sign_up_screen.html';
+            });
+        }
     }
 
     /**

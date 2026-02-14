@@ -217,6 +217,35 @@
     background: rgba(255, 255, 255, 0.1);
 }
 
+/* Mobile Auth Menu Styles */
+.mobile-auth-option {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    border: none;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.mobile-auth-option:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.dark .mobile-auth-option:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.mobile-auth-option .material-symbols-outlined {
+    font-size: 1.25rem;
+}
+
 /* ============================================
    FORM STYLES
    ============================================ */

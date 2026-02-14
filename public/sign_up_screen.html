@@ -26,12 +26,14 @@
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#197fe6",
-                        "primary-dark": "#0056b3",
-                        "background-light": "#f6f7f8",
-                        "background-dark": "#111921",
-                        "soft-blue": "#e0f0ff",
-                        "soft-blue-dark": "#0a1f33"
+                        "primary": "#4ce64c",
+                        "primary-dark": "#3db83d",
+                        "background-light": "#f8fbf8",
+                        "background-dark": "#112111",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1a2e1a",
+                        "text-main": "#0e1b0e",
+                        "text-muted": "#509550"
                     },
                     fontFamily: {
                         "display": ["Lexend", "sans-serif"]
@@ -49,17 +51,17 @@
     <style>
         /* Page-specific floating icon colors for signup */
         .floating-icon {
-            color: #197fe6;
+            color: #4ce64c;
         }
 
         .dark .floating-icon {
-            color: #4da3ff;
+            color: #6ef06e;
         }
     </style>
 </head>
 
 <body
-    class="bg-soft-blue dark:bg-soft-blue-dark min-h-screen flex flex-col font-display overflow-x-hidden relative transition-colors duration-300">
+    class="bg-background-light dark:bg-background-dark min-h-screen flex flex-col font-display overflow-x-hidden relative transition-colors duration-300">
     <!-- Header Navigation -->
     <div id="landing-header-placeholder" style="position: fixed; top: 1rem; z-index: 50; left: 0; right: 0; margin: 0 auto; max-width: 1400px; padding: 0 1rem;"></div>
     <!-- Floating Background Icons -->

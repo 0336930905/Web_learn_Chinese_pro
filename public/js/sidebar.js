@@ -16,12 +16,25 @@ function renderSidebar(activePage = 'home', profileData = null) {
     const levelProgress = profileData?.levelInfo?.levelProgress || 0;
     
     const sidebarHTML = `
-        <aside class="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col fixed h-full z-20">
+        <!-- Mobile Menu Button -->
+        <button id="mobile-menu-toggle" class="md:hidden fixed top-4 left-4 z-50 size-12 bg-primary text-white rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-all">
+            <span class="material-symbols-outlined">menu</span>
+        </button>
+        
+        <!-- Mobile Overlay -->
+        <div id="sidebar-overlay" class="md:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-30 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+        
+        <!-- Sidebar -->
+        <aside id="sidebar" class="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col fixed h-full z-40 transition-transform duration-300 -translate-x-full md:translate-x-0">
             <div class="p-6 flex items-center gap-3">
                 <div class="bg-primary p-2 rounded-lg">
                     <span class="material-symbols-outlined text-white">menu_book</span>
                 </div>
                 <h1 class="font-bold text-xl tracking-tight text-slate-900 dark:text-white">${t('sidebar.appName', 'VocabHero')}</h1>
+                <!-- Mobile Close Button -->
+                <button id="mobile-menu-close" class="md:hidden ml-auto size-8 flex items-center justify-center text-slate-500 hover:text-primary transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
             </div>
             <nav class="flex-1 px-4 space-y-2 mt-4">
                 <a class="flex items-center gap-3 px-4 py-3 rounded-full ${activePage === 'home' ? 'bg-primary/20 text-slate-900 dark:text-white active-fill' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors'}"
@@ -83,6 +96,43 @@ function renderSidebar(activePage = 'home', profileData = null) {
     return sidebarHTML;
 }
 
+// Mobile Menu Toggle
+function initMobileMenu() {
+    const toggleBtn = document.getElementById('mobile-menu-toggle');
+    const closeBtn = document.getElementById('mobile-menu-close');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    
+    if (!toggleBtn || !sidebar || !overlay) return;
+    
+    function openSidebar() {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('opacity-0', 'pointer-events-none');
+        overlay.classList.add('opacity-100');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeSidebar() {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('opacity-0', 'pointer-events-none');
+        overlay.classList.remove('opacity-100');
+        document.body.style.overflow = '';
+    }
+    
+    toggleBtn.addEventListener('click', openSidebar);
+    if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
+    overlay.addEventListener('click', closeSidebar);
+    
+    // Close sidebar when clicking nav links on mobile
+    document.querySelectorAll('#sidebar a').forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth < 768) {
+                closeSidebar();
+            }
+        });
+    });
+}
+
 // Handle logout
 function handleLogout() {
     const confirmMsg = typeof i18n !== 'undefined' 
@@ -110,79 +160,79 @@ function initializeChatbot() {
     const chatbotHTML = `
         <!-- Chatbot Button -->
         <button id="chatbot-toggle" 
-            class="fixed bottom-6 right-6 size-14 bg-primary hover:bg-primary-dark text-white rounded-full shadow-lg hover:scale-110 transition-all z-50 flex items-center justify-center">
-            <span class="material-symbols-outlined">chat</span>
+            class="fixed bottom-6 right-4 md:right-6 size-12 md:size-14 bg-primary hover:bg-primary-dark text-white rounded-full shadow-lg hover:scale-110 transition-all z-50 flex items-center justify-center">
+            <span class="material-symbols-outlined text-xl md:text-2xl">chat</span>
         </button>
 
         <!-- Chatbot Container -->
         <div id="chatbot-container" 
-            class="fixed bottom-24 right-6 w-96 h-[500px] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden z-50 transition-all duration-300 opacity-0 pointer-events-none scale-95">
+            class="fixed bottom-20 md:bottom-24 right-2 md:right-6 w-[calc(100vw-1rem)] sm:w-[400px] md:w-96 max-h-[calc(100vh-8rem)] md:h-[500px] max-w-md bg-white dark:bg-slate-900 rounded-xl md:rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden z-50 transition-all duration-300 opacity-0 pointer-events-none scale-95">
             
             <!-- Header -->
-            <div class="bg-primary text-white p-4 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="size-10 bg-white/20 rounded-full flex items-center justify-center">
-                        <span class="material-symbols-outlined">smart_toy</span>
+            <div class="bg-primary text-white p-3 md:p-4 flex items-center justify-between flex-shrink-0">
+                <div class="flex items-center gap-2 md:gap-3 min-w-0">
+                    <div class="size-8 md:size-10 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-outlined text-lg md:text-xl">smart_toy</span>
                     </div>
-                    <div>
-                        <h3 class="font-bold">${t('chatbot.title', 'Trợ lý học tập')}</h3>
-                        <p class="text-xs opacity-90">${t('chatbot.online', 'Đang trực tuyến')}</p>
+                    <div class="min-w-0">
+                        <h3 class="font-bold text-sm md:text-base truncate">${t('chatbot.title', 'Trợ lý học tập')}</h3>
+                        <p class="text-[10px] md:text-xs opacity-90">${t('chatbot.online', 'Đang trực tuyến')}</p>
                     </div>
                 </div>
-                <button id="chatbot-close" class="hover:bg-white/20 p-1 rounded-lg transition-colors">
-                    <span class="material-symbols-outlined">close</span>
+                <button id="chatbot-close" class="hover:bg-white/20 p-1 rounded-lg transition-colors flex-shrink-0">
+                    <span class="material-symbols-outlined text-xl">close</span>
                 </button>
             </div>
 
             <!-- Messages -->
-            <div id="chatbot-messages" class="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50 dark:bg-slate-950">
+            <div id="chatbot-messages" class="flex-1 overflow-y-auto p-3 md:p-4 space-y-2 md:space-y-3 bg-slate-50 dark:bg-slate-950 min-h-0">
                 <div class="flex gap-2">
-                    <div class="size-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
-                        <span class="material-symbols-outlined text-white text-sm">smart_toy</span>
+                    <div class="size-7 md:size-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-outlined text-white text-xs md:text-sm">smart_toy</span>
                     </div>
-                    <div class="bg-white dark:bg-slate-800 rounded-2xl rounded-tl-sm p-3 max-w-[80%] shadow-sm">
-                        <p class="text-sm text-slate-700 dark:text-slate-300">${t('chatbot.welcome', 'Xin chào! Tôi là trợ lý học tập của bạn. Tôi có thể giúp gì cho bạn?')}</p>
+                    <div class="bg-white dark:bg-slate-800 rounded-xl md:rounded-2xl rounded-tl-sm p-2.5 md:p-3 max-w-[80%] shadow-sm">
+                        <p class="text-xs md:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">${t('chatbot.welcome', 'Xin chào! Tôi là trợ lý học tập của bạn. Tôi có thể giúp gì cho bạn?')}</p>
                     </div>
                 </div>
             </div>
 
             <!-- Quick Actions -->
-            <div id="chatbot-quick-actions" class="px-4 py-2 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
-                <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                    <button class="chatbot-quick-btn px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-primary/10 text-xs rounded-full whitespace-nowrap transition-colors" 
+            <div id="chatbot-quick-actions" class="px-3 md:px-4 py-2 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex-shrink-0">
+                <div class="flex gap-1.5 md:gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1">
+                    <button class="chatbot-quick-btn px-2.5 md:px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-primary/10 text-[10px] md:text-xs rounded-full whitespace-nowrap transition-colors flex items-center gap-1 flex-shrink-0" 
                         data-message="Từ vựng gia đình">
-                        <span class="material-symbols-outlined text-sm align-middle mr-1">family_restroom</span>
-                        Từ vựng gia đình
+                        <span class="material-symbols-outlined text-xs md:text-sm">family_restroom</span>
+                        <span>Gia đình</span>
                     </button>
-                    <button class="chatbot-quick-btn px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-primary/10 text-xs rounded-full whitespace-nowrap transition-colors"
+                    <button class="chatbot-quick-btn px-2.5 md:px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-primary/10 text-[10px] md:text-xs rounded-full whitespace-nowrap transition-colors flex items-center gap-1 flex-shrink-0"
                         data-message="Từ vựng đồ ăn">
-                        <span class="material-symbols-outlined text-sm align-middle mr-1">restaurant</span>
-                        Từ vựng đồ ăn
+                        <span class="material-symbols-outlined text-xs md:text-sm">restaurant</span>
+                        <span>Đồ ăn</span>
                     </button>
-                    <button class="chatbot-quick-btn px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-primary/10 text-xs rounded-full whitespace-nowrap transition-colors"
+                    <button class="chatbot-quick-btn px-2.5 md:px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-primary/10 text-[10px] md:text-xs rounded-full whitespace-nowrap transition-colors flex items-center gap-1 flex-shrink-0"
                         data-message="Tips học tiếng Trung">
-                        <span class="material-symbols-outlined text-sm align-middle mr-1">tips_and_updates</span>
-                        Tips học tập
+                        <span class="material-symbols-outlined text-xs md:text-sm">tips_and_updates</span>
+                        <span>Tips học tập</span>
                     </button>
-                    <button class="chatbot-quick-btn px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-primary/10 text-xs rounded-full whitespace-nowrap transition-colors"
+                    <button class="chatbot-quick-btn px-2.5 md:px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-primary/10 text-[10px] md:text-xs rounded-full whitespace-nowrap transition-colors flex items-center gap-1 flex-shrink-0"
                         data-message="Giải thích từ 你好">
-                        <span class="material-symbols-outlined text-sm align-middle mr-1">translate</span>
-                        Giải thích từ
+                        <span class="material-symbols-outlined text-xs md:text-sm">translate</span>
+                        <span>Giải thích từ</span>
                     </button>
                 </div>
             </div>
 
             <!-- Input -->
-            <div class="p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
+            <div class="p-3 md:p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex-shrink-0">
                 <div class="flex gap-2">
                     <input id="chatbot-input" 
                         type="text" 
                         placeholder="${t('chatbot.placeholder', 'Nhập tin nhắn...')}"
-                        class="flex-1 px-4 py-2 bg-slate-100 dark:bg-slate-800 border-0 rounded-full focus:ring-2 focus:ring-primary outline-none text-sm"
+                        class="flex-1 px-3 md:px-4 py-2 bg-slate-100 dark:bg-slate-800 border-0 rounded-full focus:ring-2 focus:ring-primary outline-none text-xs md:text-sm"
                         autocomplete="off">
                     <button id="chatbot-send" 
-                        class="size-10 bg-primary hover:bg-primary-dark text-white rounded-full flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                        <span class="material-symbols-outlined">send</span>
+                        class="size-9 md:size-10 bg-primary hover:bg-primary-dark text-white rounded-full flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0">
+                        <span class="material-symbols-outlined text-lg md:text-xl">send</span>
                     </button>
                 </div>
             </div>
@@ -229,18 +279,18 @@ function initializeChatbot() {
         messageDiv.className = 'flex gap-2 animate-fadeIn ' + (isUser ? 'justify-end' : '');
         
         messageDiv.innerHTML = isUser ? `
-            <div class="bg-primary text-white rounded-2xl rounded-tr-sm p-3 max-w-[80%] shadow-sm">
-                <p class="text-sm">${escapeHtml(message)}</p>
+            <div class="bg-primary text-white rounded-xl md:rounded-2xl rounded-tr-sm p-2.5 md:p-3 max-w-[80%] shadow-sm">
+                <p class="text-xs md:text-sm leading-relaxed">${escapeHtml(message)}</p>
             </div>
-            <div class="size-8 bg-slate-300 dark:bg-slate-700 rounded-full flex items-center justify-center flex-shrink-0">
-                <span class="material-symbols-outlined text-white text-sm">person</span>
+            <div class="size-7 md:size-8 bg-slate-300 dark:bg-slate-700 rounded-full flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-white text-xs md:text-sm">person</span>
             </div>
         ` : `
-            <div class="size-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
-                <span class="material-symbols-outlined text-white text-sm">smart_toy</span>
+            <div class="size-7 md:size-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-white text-xs md:text-sm">smart_toy</span>
             </div>
-            <div class="bg-white dark:bg-slate-800 rounded-2xl rounded-tl-sm p-3 max-w-[80%] shadow-sm">
-                <div class="text-sm text-slate-700 dark:text-slate-300 chatbot-message">${message}</div>
+            <div class="bg-white dark:bg-slate-800 rounded-xl md:rounded-2xl rounded-tl-sm p-2.5 md:p-3 max-w-[80%] shadow-sm">
+                <div class="text-xs md:text-sm text-slate-700 dark:text-slate-300 chatbot-message leading-relaxed">${message}</div>
             </div>
         `;
         
@@ -261,14 +311,14 @@ function initializeChatbot() {
         typingDiv.id = 'typing-indicator';
         typingDiv.className = 'flex gap-2';
         typingDiv.innerHTML = `
-            <div class="size-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
-                <span class="material-symbols-outlined text-white text-sm">smart_toy</span>
+            <div class="size-7 md:size-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-white text-xs md:text-sm">smart_toy</span>
             </div>
-            <div class="bg-white dark:bg-slate-800 rounded-2xl rounded-tl-sm p-3 shadow-sm">
+            <div class="bg-white dark:bg-slate-800 rounded-xl md:rounded-2xl rounded-tl-sm p-2.5 md:p-3 shadow-sm">
                 <div class="flex gap-1">
-                    <div class="size-2 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
-                    <div class="size-2 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
-                    <div class="size-2 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
+                    <div class="size-1.5 md:size-2 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
+                    <div class="size-1.5 md:size-2 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
+                    <div class="size-1.5 md:size-2 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
                 </div>
             </div>
         `;
@@ -471,8 +521,13 @@ document.addEventListener('DOMContentLoaded', async function() {
                 // Get current profile data from sidebar
                 const currentProfileData = window.sidebarProfileData || null;
                 sidebarContainer.innerHTML = renderSidebar(activePage, currentProfileData);
+                // Re-initialize mobile menu after re-render
+                initMobileMenu();
             });
         }
+        
+        // Initialize mobile menu
+        initMobileMenu();
         
         // Fetch and update profile data
         try {
@@ -495,6 +550,8 @@ document.addEventListener('DOMContentLoaded', async function() {
                         window.sidebarProfileData = result.data;
                         // Re-render sidebar with profile data
                         sidebarContainer.innerHTML = renderSidebar(activePage, result.data);
+                        // Re-initialize mobile menu after re-render
+                        initMobileMenu();
                     }
                 } else if (response.status === 401) {
                     // Token expired or invalid, redirect to login
