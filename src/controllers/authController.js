@@ -8,6 +8,12 @@ const { authValidators } = require('../validators');
 const { asyncHandler } = require('../middleware');
 const { successResponse, createdResponse } = require('../utils/response');
 const { SUCCESS_MESSAGES, HTTP_STATUS } = require('../constants');
+const jwt = require('jsonwebtoken');
+const { config: appConfig } = require('../config');
+const { client: googleClient, verifyGoogleToken } = require('../utils/googleAuth');
+const jwt = require('jsonwebtoken');
+const { config: appConfig } = require('../config');
+const { client: googleClient, verifyGoogleToken } = require('../utils/googleAuth');
 
 /**
  * Register new user
@@ -138,12 +144,6 @@ const updateProfile = asyncHandler(async (req, res) => {
   return successResponse(res, updatedProfile, SUCCESS_MESSAGES.PROFILE_UPDATED);
 });
 
-
-// Google OAuth2
-const { client: googleClient, verifyGoogleToken } = require('../utils/googleAuth');
-const { config: appConfig } = require('../config');
-const jwt = require('jsonwebtoken');
-
 /**
  * Google OAuth - Step 1: Redirect to Google
  * GET /api/auth/google
@@ -166,6 +166,8 @@ const googleCallback = asyncHandler(async (req, res) => {
   try {
     const { code, error, error_description } = req.query;
 
+    console.log('Google OAuth callback started:', { code: code ? 'received' : 'missing', error });
+
     // Handle OAuth errors
     if (error) {
       console.error('Google OAuth error:', error, error_description);
@@ -173,23 +175,31 @@ const googleCallback = asyncHandler(async (req, res) => {
     }
 
     if (!code) {
+      console.error('Missing authorization code from Google');
       return res.redirect('/login_screen.html?error=' + encodeURIComponent('Thiếu mã xác thực từ Google'));
     }
 
     // Exchange code for tokens
+    console.log('Exchanging code for tokens...');
     const { tokens } = await googleClient.getToken(code);
+    
     if (!tokens.id_token) {
+      console.error('No id_token received from Google');
       return res.redirect('/login_screen.html?error=' + encodeURIComponent('Không nhận được token từ Google'));
     }
 
     // Verify token and get user info
+    console.log('Verifying Google token...');
     const payload = await verifyGoogleToken(tokens.id_token);
+    console.log('Google user info:', { email: payload.email, name: payload.name });
 
     // Find or create user in database
     const userService = new UserService(req.db);
+    console.log('Searching for user:', payload.email);
     let user = await userService.collection.findOne({ email: payload.email });
 
     if (!user) {
+      console.log('Creating new user...');
       const newUser = {
         email: payload.email,
         fullName: payload.name || '',
@@ -208,9 +218,13 @@ const googleCallback = asyncHandler(async (req, res) => {
       };
       const result = await userService.collection.insertOne(newUser);
       user = { ...newUser, _id: result.insertedId };
+      console.log('New user created:', user._id.toString());
+    } else {
+      console.log('Existing user found:', user._id.toString());
     }
 
     // Generate JWT token
+    console.log('Generating JWT token...');
     const token = jwt.sign(
       { userId: user._id.toString(), email: user.email, role: user.role },
       appConfig.jwt.secret,
@@ -225,12 +239,14 @@ const googleCallback = asyncHandler(async (req, res) => {
       fullName: user.fullName,
       avatar: user.avatar,
       role: user.role,
-      stats: user.stats,
-      streak: user.streak,
-      settings: user.settings,
+      stats: user.stats || { totalWords: 0, experience: 0, level: 1, accuracy: 0 },
+      streak: user.streak || { current: 0, longest: 0, lastStudyDate: null },
+      settings: user.settings || { theme: 'light', language: 'vi', sound: { bgMusic: 75, gameSFX: 90 } },
     };
 
     const redirectUrl = user.role === 'admin' ? '/admin/home_ad.html' : '/user/home.html';
+    console.log('Redirecting to:', redirectUrl);
+    
     const userAgent = req.headers['user-agent'] || '';
     const isMobile = /Mobile|Android|iPhone|iPad|Zalo/i.test(userAgent);
 
@@ -241,9 +257,11 @@ const googleCallback = asyncHandler(async (req, res) => {
     }
 
     // Desktop: store in localStorage via script
-    const userDataJson = JSON.stringify(userData).replace(/'/g, "\\'").replace(/"/g, '\\"');
+    const userDataJson = JSON.stringify(userData);
+    const userDataEscaped = userDataJson.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.end(`<!DOCTYPE html>
+    res.send(`<!DOCTYPE html>
 <html><head><meta charset="UTF-8"><title>Đăng nhập thành công</title>
 <style>
   body { font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
@@ -253,16 +271,24 @@ const googleCallback = asyncHandler(async (req, res) => {
 </style></head>
 <body><div class="container"><div class="spinner"></div><h2>Đăng nhập Google thành công!</h2><p>Đang chuyển hướng...</p></div>
 <script>
+  console.log('Storing auth data and redirecting...');
   try {
     localStorage.setItem('authToken', '${token}');
-    localStorage.setItem('user', '${userDataJson}');
-    setTimeout(function() { location.href = '${redirectUrl}'; }, 500);
+    localStorage.setItem('user', '${userDataEscaped}');
+    console.log('Auth data stored successfully');
+    setTimeout(function() { 
+      console.log('Redirecting to ${redirectUrl}');
+      window.location.href = '${redirectUrl}'; 
+    }, 800);
   } catch (e) {
-    location.href = '${redirectUrl}?auth=success&token=${token}&user=' + encodeURIComponent('${userDataJson}');
+    console.error('LocalStorage error:', e);
+    alert('Lỗi lưu thông tin đăng nhập. Đang thử phương án khác...');
+    window.location.href = '${redirectUrl}?auth=success&token=${token}';
   }
 </script></body></html>`);
   } catch (error) {
-    console.error('Google callback error:', error.message);
+    console.error('Google callback error:', error);
+    console.error('Error stack:', error.stack);
     return res.redirect('/login_screen.html?error=' + encodeURIComponent('Lỗi xác thực: ' + error.message));
   }
 });
