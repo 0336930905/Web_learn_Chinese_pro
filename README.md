@@ -128,7 +128,172 @@ npm run db:reset    # Reset database (xóa tất cả)
 npm run db:test     # Test kết nối database
 npm start           # Chạy ứng dụng
 npm run dev         # Chạy ứng dụng (development mode)
+npm run deploy      # Deploy lên Vercel production
 ```
+
+## 🚀 Deployment lên Vercel
+
+### Bước 1: Cài đặt Vercel CLI
+
+```bash
+npm install -g vercel
+```
+
+### Bước 2: Login vào Vercel
+
+```bash
+vercel login
+```
+
+Chọn phương thức đăng nhập (GitHub, GitLab, Email, etc.)
+
+### Bước 3: Deploy lần đầu
+
+```bash
+vercel
+```
+
+Trả lời các câu hỏi:
+- **Set up and deploy?** → `Y` (Yes)
+- **Which scope?** → Chọn account/team của bạn
+- **Link to existing project?** → `N` (No - tạo project mới)
+- **Project name?** → `web-learn-chinese-pro` (hoặc tên khác)
+- **In which directory?** → `./` (Enter)
+- **Override settings?** → `N` (No)
+
+### Bước 4: Cấu hình Environment Variables
+
+Vào Vercel Dashboard → Project Settings → Environment Variables, thêm:
+
+**Required Variables:**
+```
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/database
+JWT_SECRET=your-super-secret-jwt-key-min-32-characters
+NODE_ENV=production
+```
+
+**Optional Variables (nếu dùng Google OAuth):**
+```
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+GOOGLE_CALLBACK_URL=https://your-domain.vercel.app/api/auth/google/callback
+```
+
+**Optional Variables (nếu dùng AI Chatbot):**
+```
+GEMINI_API_KEY=your-gemini-api-key
+```
+
+### Bước 5: Deploy Production
+
+```bash
+vercel --prod
+```
+
+hoặc sử dụng script:
+
+```bash
+npm run deploy
+```
+
+### Bước 6: Setup Database trên Production
+
+Sau khi deploy xong, chạy setup database:
+
+1. Vào MongoDB Atlas → Network Access → Add IP Address → Allow Access from Anywhere (0.0.0.0/0)
+2. Tạo database user với quyền readWrite
+3. Chạy script setup qua Vercel CLI:
+
+```bash
+vercel env pull .env.production.local
+node src/database/setup.js
+```
+
+### 🔄 Deploy Updates
+
+Mỗi khi có code mới:
+
+```bash
+git add .
+git commit -m "Your commit message"
+git push origin master
+vercel --prod
+```
+
+### 🌐 Custom Domain (Optional)
+
+1. Vào Vercel Dashboard → Project → Settings → Domains
+2. Add domain của bạn (ví dụ: `learntaiwanese.com`)
+3. Cấu hình DNS theo hướng dẫn của Vercel
+4. Đợi SSL certificate được cấp tự động
+
+### ⚙️ File cấu hình Vercel (vercel.json)
+
+File `vercel.json` đã được cấu hình sẵn:
+
+```json
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "src/app.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "src/app.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "public/$1"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "regions": ["sin1"]
+}
+```
+
+**Giải thích:**
+- `builds`: Build backend từ `src/app.js` với Node.js runtime
+- `routes`: 
+  - API requests → `src/app.js`
+  - Static files → `public/` directory
+- `regions`: Deploy ở Singapore (sin1) - gần Việt Nam nhất
+
+### 🐛 Troubleshooting
+
+**Lỗi: "Module not found"**
+```bash
+# Xóa node_modules và reinstall
+rm -rf node_modules package-lock.json
+npm install
+vercel --prod
+```
+
+**Lỗi: "Database connection failed"**
+- Kiểm tra `MONGODB_URI` trong Environment Variables
+- Đảm bảo MongoDB Atlas cho phép kết nối từ 0.0.0.0/0
+- Kiểm tra database user có quyền readWrite
+
+**Lỗi: "Function execution timed out"**
+- Vercel Serverless Functions có timeout 10s (Hobby plan) / 60s (Pro plan)
+- Tối ưu database queries với indexes
+- Cache kết quả nếu có thể
+
+**Xem logs:**
+```bash
+vercel logs [deployment-url]
+```
+
+### 📊 Monitoring
+
+- **Logs**: `vercel logs` hoặc xem trên Dashboard
+- **Analytics**: Vercel Dashboard → Analytics
+- **Performance**: Vercel Dashboard → Speed Insights
 
 ## 🔑 Sample Accounts
 
