@@ -146,11 +146,29 @@ const updateProfile = asyncHandler(async (req, res) => {
  * GET /api/auth/google
  */
 const googleAuth = asyncHandler(async (req, res) => {
-  const redirectUrl = googleClient.generateAuthUrl({
+  // Get dynamic callback URL based on current request origin
+  const protocol = req.headers['x-forwarded-proto'] || (req.connection.encrypted ? 'https' : 'http');
+  const host = req.headers['x-forwarded-host'] || req.headers['host'] || 'localhost:3000';
+  const callbackUrl = `${protocol}://${host}/api/auth/google/callback`;
+  
+  console.log('Google OAuth initiated from:', host);
+  console.log('Callback URL:', callbackUrl);
+  
+  // Create a new OAuth2Client with dynamic callback URL
+  const { OAuth2Client } = require('google-auth-library');
+  const googleConfig = require('../config/google');
+  const dynamicClient = new OAuth2Client(
+    googleConfig.clientID,
+    googleConfig.clientSecret,
+    callbackUrl
+  );
+  
+  const redirectUrl = dynamicClient.generateAuthUrl({
     access_type: 'offline',
     prompt: 'consent',
     scope: ['profile', 'email'],
   });
+  
   res.writeHead(302, { Location: redirectUrl });
   res.end();
 });
@@ -176,9 +194,24 @@ const googleCallback = asyncHandler(async (req, res) => {
       return res.redirect('/login_screen.html?error=' + encodeURIComponent('Thiếu mã xác thực từ Google'));
     }
 
+    // Create dynamic OAuth2Client with correct callback URL
+    const protocol = req.headers['x-forwarded-proto'] || (req.connection.encrypted ? 'https' : 'http');
+    const host = req.headers['x-forwarded-host'] || req.headers['host'] || 'localhost:3000';
+    const callbackUrl = `${protocol}://${host}/api/auth/google/callback`;
+    
+    const { OAuth2Client } = require('google-auth-library');
+    const googleConfig = require('../config/google');
+    const dynamicClient = new OAuth2Client(
+      googleConfig.clientID,
+      googleConfig.clientSecret,
+      callbackUrl
+    );
+    
+    console.log('Using callback URL:', callbackUrl);
+
     // Exchange code for tokens
     console.log('Exchanging code for tokens...');
-    const { tokens } = await googleClient.getToken(code);
+    const { tokens } = await dynamicClient.getToken(code);
     
     if (!tokens.id_token) {
       console.error('No id_token received from Google');
@@ -187,7 +220,11 @@ const googleCallback = asyncHandler(async (req, res) => {
 
     // Verify token and get user info
     console.log('Verifying Google token...');
-    const payload = await verifyGoogleToken(tokens.id_token);
+    const ticket = await dynamicClient.verifyIdToken({
+      idToken: tokens.id_token,
+      audience: googleConfig.clientID,
+    });
+    const payload = ticket.getPayload();
     console.log('Google user info:', { email: payload.email, name: payload.name });
 
     // Find or create user in database
@@ -241,9 +278,7 @@ const googleCallback = asyncHandler(async (req, res) => {
       settings: user.settings || { theme: 'light', language: 'vi', sound: { bgMusic: 75, gameSFX: 90 } },
     };
 
-    // Get origin from request for proper redirect
-    const protocol = req.headers['x-forwarded-proto'] || (req.connection.encrypted ? 'https' : 'http');
-    const host = req.headers['x-forwarded-host'] || req.headers['host'] || 'localhost:3000';
+    // Use the same protocol and host from earlier in the function
     const origin = `${protocol}://${host}`;
     
     const redirectPath = user.role === 'admin' ? '/admin/home_ad.html' : '/user/home.html';
@@ -290,13 +325,13 @@ const googleCallback = asyncHandler(async (req, res) => {
     localStorage.setItem('user', '${userDataEscaped}');
     console.log('Auth data stored successfully');
     setTimeout(function() { 
-      console.log('Redirecting to ${redirectUrl}');
-      window.location.href = '${redirectUrl}'; 
+      console.log('Redirecting to ${fullRedirectUrl}');
+      window.location.href = '${fullRedirectUrl}'; 
     }, 800);
   } catch (e) {
     console.error('LocalStorage error:', e);
     alert('Lỗi lưu thông tin đăng nhập. Đang thử phương án khác...');
-    window.location.href = '${redirectUrl}?auth=success&token=${token}';
+    window.location.href = '${fullRedirectUrl}?auth=success&token=${token}';
   }
 </script></body></html>`);
   } catch (error) {
