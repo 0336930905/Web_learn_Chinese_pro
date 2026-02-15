@@ -240,7 +240,11 @@ function speakText(text, rate = 0.9, onEndCallback = null) {
   }
   
   // Cancel any ongoing speech
-  window.speechSynthesis.cancel();
+  try {
+    window.speechSynthesis.cancel();
+  } catch (e) {
+    console.warn('⚠️ Error canceling speech:', e.message);
+  }
   
   const utterance = new SpeechSynthesisUtterance(text);
   
@@ -260,28 +264,59 @@ function speakText(text, rate = 0.9, onEndCallback = null) {
   
   // Ensure voices are loaded (force reload if empty)
   if (voices.length === 0) {
-    console.log('⚠️ Voices not loaded yet, using default voice');
+    console.warn('⚠️ Voices not loaded yet, using default voice for lang:', savedLang);
     utterance.lang = savedLang;
   } else {
+    console.log(`🔍 Looking for voice: "${savedVoiceName}" in ${voices.length} available voices`);
+    
     // First try: Match by exact voice name (most accurate)
-    if (savedVoiceName) {
+    if (savedVoiceName && savedVoiceName !== 'zh-TW' && savedVoiceName !== 'zh-CN' && savedVoiceName !== 'zh-HK' && savedVoiceName !== 'default') {
       selectedVoice = voices.find(voice => voice.name === savedVoiceName);
       if (selectedVoice) {
         utterance.voice = selectedVoice;
-        console.log('🔊 Using saved voice:', selectedVoice.name, '(' + selectedVoice.lang + ')');
+        utterance.lang = selectedVoice.lang; // Use voice's language
+        console.log(`✅ Using saved voice: "${selectedVoice.name}" [${selectedVoice.lang}] ${selectedVoice.localService ? '(Local)' : '(Remote)'}`);
+      } else {
+        console.warn(`⚠️ Saved voice "${savedVoiceName}" not found`);
       }
     }
     
     // Second try: Match by language code (fallback)
     if (!selectedVoice) {
-      selectedVoice = voices.find(voice => 
-        voice.lang.startsWith(savedLang.substring(0, 5))
-      );
+      console.log(`🔍 Searching for voice with language: ${savedLang}`);
+      
+      // Try exact language match first
+      selectedVoice = voices.find(voice => voice.lang === savedLang);
+      
+      // Then try prefix match (e.g., zh-TW matches zh-TW-x-something)
+      if (!selectedVoice) {
+        selectedVoice = voices.find(voice => 
+          voice.lang && voice.lang.startsWith(savedLang.substring(0, 5))
+        );
+      }
+      
+      // Finally, try any Chinese voice (prefer local/iOS voices)
+      if (!selectedVoice) {
+        // Prefer local voices on mobile
+        if (voiceSelectorState.isMobile) {
+          selectedVoice = voices.find(voice => 
+            voice.lang && voice.lang.startsWith('zh') && voice.localService
+          );
+        }
+        // Any Chinese voice as last resort
+        if (!selectedVoice) {
+          selectedVoice = voices.find(voice => 
+            voice.lang && voice.lang.startsWith('zh')
+          );
+        }
+      }
+      
       if (selectedVoice) {
         utterance.voice = selectedVoice;
-        console.log('🔊 Using fallback voice:', selectedVoice.name, '(' + selectedVoice.lang + ')');
+        utterance.lang = selectedVoice.lang;
+        console.log(`✅ Using fallback voice: "${selectedVoice.name}" [${selectedVoice.lang}] ${selectedVoice.localService ? '(Local)' : '(Remote)'}`);
       } else {
-        console.log('🔊 Using browser default voice for:', savedLang);
+        console.warn(`⚠️ No Chinese voice found, using browser default for: ${savedLang}`);
       }
     }
   }
@@ -290,7 +325,7 @@ function speakText(text, rate = 0.9, onEndCallback = null) {
   utterance.onerror = (event) => {
     // Only log non-trivial errors
     if (event.error !== 'canceled' && event.error !== 'interrupted') {
-      console.warn('Speech synthesis error:', event.error);
+      console.warn('❌ Speech synthesis error:', event.error);
     }
     if (onEndCallback) onEndCallback();
   };
@@ -299,10 +334,36 @@ function speakText(text, rate = 0.9, onEndCallback = null) {
     if (onEndCallback) onEndCallback();
   };
   
+  // Mobile-specific: Add safety timeout (some mobile browsers don't fire onend)
+  let timeoutId = null;
+  if (voiceSelectorState.isMobile) {
+    // Estimate speech duration (rough calculation: ~150ms per character for Chinese)
+    const estimatedDuration = Math.max(text.length * 150 / rate, 1000);
+    timeoutId = setTimeout(() => {
+      console.log('⏰ Speech timeout triggered (safety for mobile)');
+      try {
+        window.speechSynthesis.cancel();
+      } catch (e) {}
+      if (onEndCallback) onEndCallback();
+    }, estimatedDuration + 2000); // Add 2s buffer
+    
+    utterance.onend = () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      if (onEndCallback) onEndCallback();
+    };
+  }
+  
   // Ensure text is not empty before speaking
   if (text && text.trim().length > 0) {
-    window.speechSynthesis.speak(utterance);
+    try {
+      window.speechSynthesis.speak(utterance);
+    } catch (e) {
+      console.error('❌ Error speaking text:', e.message);
+      if (timeoutId) clearTimeout(timeoutId);
+      if (onEndCallback) onEndCallback();
+    }
   } else {
+    if (timeoutId) clearTimeout(timeoutId);
     if (onEndCallback) onEndCallback();
   }
 }
@@ -596,22 +657,55 @@ function testVoice(voiceName, testText = '你好，歡迎學習中文！') {
  * Initialize and manage voice selector dropdown in header
  */
 
+// Detect mobile browser
+function isMobileBrowser() {
+  const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+  return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+}
+
+// Detect iOS specifically
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+
 // Voice selector state
 let voiceSelectorState = {
   voicesLoaded: false,
   retryCount: 0,
-  maxRetries: 60,
-  pollTimer: null
+  maxRetries: isMobileBrowser() ? 100 : 60, // More retries for mobile
+  pollTimer: null,
+  isMobile: isMobileBrowser(),
+  isIOS: isIOS()
 };
 
 // Voice matching patterns (priority order)
 const VOICE_PATTERNS = [
-  { keywords: ['hanhan'], label: 'HanHan (F)', priority: 1 },
-  { keywords: ['yating'], label: 'Yating (F)', priority: 2 },
-  { keywords: ['zhiwei', 'online', 'natural'], label: 'Zhiwei (M)', priority: 3 },
-  { keywords: ['google', '國語', '臺灣', 'taiwan'], label: 'Google TW', priority: 4 },
-  { keywords: ['huihui'], label: 'Huihui (F)', priority: 5 }
+  // iOS voices (Siri voices)
+  { keywords: ['meijia'], label: 'Meijia 🇹🇼 (F)', priority: 1, isIOS: true },
+  { keywords: ['tingting'], label: 'Tingting 🇨🇳 (F)', priority: 2, isIOS: true },
+  { keywords: ['shelley'], label: 'Shelley 🇹🇼 (F)', priority: 3, isIOS: true },
+  { keywords: ['sinji'], label: 'Sinji 🇭🇰 (F)', priority: 4, isIOS: true },
+  { keywords: ['grandma'], label: 'Grandma 🇹🇼 (F)', priority: 5, isIOS: true },
+  { keywords: ['sandy'], label: 'Sandy 🇨🇳 (F)', priority: 6, isIOS: true },
+  { keywords: ['flo'], label: 'Flo 🇭🇰 (F)', priority: 7, isIOS: true },
+  { keywords: ['eddy'], label: 'Eddy 🇨🇳 (M)', priority: 8, isIOS: true },
+  { keywords: ['grandpa'], label: 'Grandpa 🇹🇼 (M)', priority: 9, isIOS: true },
+  { keywords: ['reed'], label: 'Reed 🇭🇰 (M)', priority: 10, isIOS: true },
+  { keywords: ['rocko'], label: 'Rocko 🇨🇳 (M)', priority: 11, isIOS: true },
+  
+  // Windows/Desktop voices
+  { keywords: ['hanhan'], label: 'HanHan (F)', priority: 12 },
+  { keywords: ['yating'], label: 'Yating (F)', priority: 13 },
+  { keywords: ['zhiwei', 'online', 'natural'], label: 'Zhiwei (M)', priority: 14 },
+  { keywords: ['huihui'], label: 'Huihui (F)', priority: 15 },
+  
+  // Google voices
+  { keywords: ['google', '國語', '臺灣', 'taiwan'], label: 'Google TW', priority: 16 },
+  { keywords: ['普通话', '中国大陆', 'china'], label: 'Google CN', priority: 17 },
+  { keywords: ['粤語', '香港', 'hong kong', 'cantonese'], label: 'Google HK', priority: 18 }
 ];
+
+console.log(`📱 Device detected: ${voiceSelectorState.isMobile ? 'Mobile' : 'Desktop'} ${voiceSelectorState.isIOS ? '(iOS)' : ''}`);
 
 /**
  * Initialize voice selector when DOM is ready
@@ -624,52 +718,85 @@ function initializeVoiceSelector() {
   }
   
   console.log('🎤 Initializing voice selector...');
+  console.log(`📱 Mobile: ${voiceSelectorState.isMobile}, iOS: ${voiceSelectorState.isIOS}`);
   
-  // Kick-start voice loading
-  for (let i = 0; i < 5; i++) {
+  // Setup change listener first
+  voiceSelect.addEventListener('change', onVoiceSelectionChanged);
+  
+  // Create initial fallback options immediately (they will be replaced if voices load)
+  createVoiceSelectorFallback();
+  
+  // Kick-start voice loading (more aggressive for mobile)
+  const kickstartAttempts = voiceSelectorState.isMobile ? 10 : 5;
+  for (let i = 0; i < kickstartAttempts; i++) {
     window.speechSynthesis.getVoices();
   }
   
-  // Dummy utterance to trigger voice loading
+  // Dummy utterance to trigger voice loading (critical for iOS)
   try {
-    const utterance = new SpeechSynthesisUtterance('');
+    const utterance = new SpeechSynthesisUtterance(' ');
     utterance.volume = 0;
+    utterance.rate = 1;
+    utterance.pitch = 1;
+    utterance.lang = 'zh-TW';
     window.speechSynthesis.speak(utterance);
-    window.speechSynthesis.cancel();
+    setTimeout(() => window.speechSynthesis.cancel(), 50);
     console.log('✅ Dummy utterance triggered');
   } catch (e) {
     console.warn('⚠️ Dummy utterance failed:', e.message);
   }
-  
-  // Start populating voices
-  setTimeout(populateVoiceSelector, 100);
   
   // Listen for voiceschanged event
   if (window.speechSynthesis.onvoiceschanged !== undefined) {
     window.speechSynthesis.onvoiceschanged = function() {
       console.log('🔔 voiceschanged event fired');
       if (!voiceSelectorState.voicesLoaded) {
+        // Reset retry count and try to populate
+        voiceSelectorState.retryCount = 0;
         populateVoiceSelector();
       }
     };
   }
   
-  // Backup retries
-  setTimeout(() => { if (!voiceSelectorState.voicesLoaded) populateVoiceSelector(); }, 500);
-  setTimeout(() => { if (!voiceSelectorState.voicesLoaded) populateVoiceSelector(); }, 1000);
-  setTimeout(() => { if (!voiceSelectorState.voicesLoaded) createVoiceSelectorFallback(); }, 3000);
+  // Start populating voices with different timing for mobile
+  if (voiceSelectorState.isMobile) {
+    // Mobile: more frequent checks, longer timeout
+    setTimeout(populateVoiceSelector, 200);
+    setTimeout(() => { if (!voiceSelectorState.voicesLoaded) populateVoiceSelector(); }, 500);
+    setTimeout(() => { if (!voiceSelectorState.voicesLoaded) populateVoiceSelector(); }, 1000);
+    setTimeout(() => { if (!voiceSelectorState.voicesLoaded) populateVoiceSelector(); }, 2000);
+  } else {
+    // Desktop: normal timing
+    setTimeout(populateVoiceSelector, 100);
+    setTimeout(() => { if (!voiceSelectorState.voicesLoaded) populateVoiceSelector(); }, 500);
+    setTimeout(() => { if (!voiceSelectorState.voicesLoaded) populateVoiceSelector(); }, 1000);
+  }
   
-  // User gesture trigger (many browsers need user interaction)
-  window.addEventListener('pointerdown', function handleFirstGesture() {
+  // User gesture triggers (critical for iOS and many mobile browsers)
+  const gestureEvents = ['touchstart', 'pointerdown', 'click'];
+  const handleFirstGesture = function() {
     if (!voiceSelectorState.voicesLoaded) {
       console.log('👆 User gesture detected, loading voices...');
+      voiceSelectorState.retryCount = 0;
       populateVoiceSelector();
     }
-    window.removeEventListener('pointerdown', handleFirstGesture);
-  }, { passive: true, once: true });
+    gestureEvents.forEach(evt => {
+      window.removeEventListener(evt, handleFirstGesture);
+    });
+  };
   
-  // Setup change listener
-  voiceSelect.addEventListener('change', onVoiceSelectionChanged);
+  gestureEvents.forEach(evt => {
+    window.addEventListener(evt, handleFirstGesture, { passive: true, once: true });
+  });
+  
+  // Page visibility change (helps with iOS backgrounding)
+  document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'visible' && !voiceSelectorState.voicesLoaded) {
+      console.log('👁️ Page visible, retrying voice load...');
+      voiceSelectorState.retryCount = 0;
+      setTimeout(populateVoiceSelector, 100);
+    }
+  });
 }
 
 /**
@@ -677,7 +804,7 @@ function initializeVoiceSelector() {
  */
 function populateVoiceSelector() {
   if (voiceSelectorState.voicesLoaded) {
-    console.log('✅ Voices already loaded');
+    console.log('✅ Voices already loaded, skipping...');
     return;
   }
   
@@ -690,43 +817,48 @@ function populateVoiceSelector() {
     voiceSelectorState.retryCount++;
     if (voiceSelectorState.retryCount < voiceSelectorState.maxRetries) {
       console.log(`⏳ Retry ${voiceSelectorState.retryCount}/${voiceSelectorState.maxRetries}...`);
-      setTimeout(populateVoiceSelector, 100);
+      const retryDelay = voiceSelectorState.isMobile ? 150 : 100;
+      setTimeout(populateVoiceSelector, retryDelay);
       return;
     } else {
-      console.warn('⚠️ No voices after max retries');
-      createVoiceSelectorFallback();
+      console.warn('⚠️ No voices after max retries, keeping fallback');
+      // Keep fallback options, don't reset
       return;
     }
+  }
+  
+  console.log(`🔍 Found ${voices.length} total voices`);
+  
+  // Filter Chinese voices (any Chinese dialect)
+  let chineseVoices = voices.filter(v => v.lang && v.lang.startsWith('zh'));
+  
+  if (chineseVoices.length === 0) {
+    console.warn('⚠️ No Chinese voices found, keeping fallback');
+    // Keep fallback options if no Chinese voices
+    return;
   }
   
   voiceSelectorState.voicesLoaded = true;
   voiceSelectorState.retryCount = 0;
-  console.log(`✅ Loaded ${voices.length} voices`);
+  console.log(`✅ Found ${chineseVoices.length} Chinese voices`);
   
-  // Filter Taiwan voices
-  let taiwanVoices = voices.filter(v => v.lang === 'zh-TW' || v.lang.startsWith('zh-TW-'));
-  
-  // Fallback to other Chinese if Taiwan voices are scarce
-  if (taiwanVoices.length < 3) {
-    const otherChinese = voices.filter(v => v.lang.startsWith('zh') && !v.lang.startsWith('zh-TW'));
-    if (otherChinese.length > 0) {
-      taiwanVoices = taiwanVoices.concat(otherChinese);
-    }
+  // Log all voices for debugging (especially useful for mobile)
+  if (voiceSelectorState.isMobile) {
+    console.log('📝 Voice details:');
+    chineseVoices.forEach((v, i) => {
+      console.log(`  ${i + 1}. "${v.name}" [${v.lang}] ${v.localService ? 'Local' : 'Remote'}`);
+    });
   }
   
-  if (taiwanVoices.length === 0) {
-    console.warn('⚠️ No Chinese voices found');
-    createVoiceSelectorFallback();
-    return;
-  }
+  // Clear and rebuild dropdown
+  voiceSelect.innerHTML = '';
   
   // Match and organize voices
-  voiceSelect.innerHTML = '';
   const matchedVoices = [];
-  const addedNames = {};
+  const addedNames = new Set();
   
-  taiwanVoices.forEach(voice => {
-    if (addedNames[voice.name]) return;
+  chineseVoices.forEach(voice => {
+    if (addedNames.has(voice.name)) return;
     
     const nameLower = voice.name.toLowerCase();
     let matched = null;
@@ -739,6 +871,7 @@ function populateVoiceSelector() {
       
       if (matchCount > 0) {
         matched = pattern;
+        console.log(`✓ Matched voice "${voice.name}" with pattern "${pattern.label}"`);
         break;
       }
     }
@@ -746,58 +879,113 @@ function populateVoiceSelector() {
     if (matched) {
       matchedVoices.push({ voice, config: matched });
     } else {
-      // Add unmatched voices with generic label
-      const displayLabel = voice.name
-        .replace('Microsoft ', '')
-        .replace('Google ', '')
-        .replace(' Online', '')
-        .replace(' Desktop', '');
+      // Add unmatched voices with cleaned-up label
+      let displayLabel = voice.name
+        .replace(/^Microsoft\s*/i, '')
+        .replace(/^Google\s*/i, '')
+        .replace(/^Apple\s*/i, '')
+        .replace(/\s*Online$/i, '')
+        .replace(/\s*Desktop$/i, '')
+        .replace(/\s*Natural$/i, '')
+        .replace(/\s*\(Enhanced\)$/i, '')
+        .trim();
       
+      // Don't truncate iOS/Apple voices (they have short names)
+      const isAppleVoice = voice.name.includes('(Siri)') || voice.localService;
+      if (!isAppleVoice && displayLabel.length > 25) {
+        displayLabel = displayLabel.substring(0, 22) + '...';
+      }
+      
+      // Add region indicator
       let regionLabel = '';
-      if (voice.lang.startsWith('zh-CN')) regionLabel = ' [CN]';
-      else if (voice.lang.startsWith('zh-HK')) regionLabel = ' [HK]';
+      if (voice.lang.startsWith('zh-CN')) regionLabel = ' 🇨🇳';
+      else if (voice.lang.startsWith('zh-HK')) regionLabel = ' 🇭🇰';
+      else if (voice.lang.startsWith('zh-TW')) regionLabel = ' 🇹🇼';
       
       matchedVoices.push({ 
         voice, 
         config: { label: displayLabel + regionLabel, priority: 99 } 
       });
+      
+      console.log(`ℹ️ Unmatched voice "${voice.name}" → "${displayLabel}${regionLabel}"`);
     }
     
-    addedNames[voice.name] = true;
+    addedNames.add(voice.name);
   });
   
-  // Sort by priority and limit
+  // Sort by priority
   matchedVoices.sort((a, b) => (a.config.priority || 99) - (b.config.priority || 99));
-  const limitedVoices = matchedVoices.slice(0, 15);
   
-  // Group by Taiwan and Others
-  const twVoices = limitedVoices.filter(v => v.voice.lang.startsWith('zh-TW'));
-  const otherVoices = limitedVoices.filter(v => !v.voice.lang.startsWith('zh-TW'));
+  // Limit voices (fewer on mobile to reduce clutter)
+  const maxVoices = voiceSelectorState.isMobile ? 12 : 15;
+  const limitedVoices = matchedVoices.slice(0, maxVoices);
   
-  // Add Taiwan voices group
-  if (twVoices.length > 0) {
-    const twGroup = document.createElement('optgroup');
-    twGroup.label = `🇹🇼 Taiwan (${twVoices.length})`;
-    twVoices.forEach(item => {
+  // Group voices by platform and region
+  const iosVoices = limitedVoices.filter(v => v.voice.localService || v.config.isIOS);
+  const googleVoices = limitedVoices.filter(v => !v.voice.localService && !v.config.isIOS && v.voice.name.includes('Google'));
+  const microsoftVoices = limitedVoices.filter(v => !v.voice.localService && !v.config.isIOS && v.voice.name.includes('Microsoft'));
+  const otherVoices = limitedVoices.filter(v => 
+    !iosVoices.includes(v) && !googleVoices.includes(v) && !microsoftVoices.includes(v)
+  );
+  
+  // Add iOS/Apple voices group (priority for mobile)
+  if (iosVoices.length > 0) {
+    const iosGroup = document.createElement('optgroup');
+    iosGroup.label = `🍎 iOS/Apple (${iosVoices.length})`;
+    iosVoices.forEach(item => {
       const option = document.createElement('option');
       option.value = item.voice.name;
       option.textContent = item.config.label;
       option.setAttribute('data-lang', item.voice.lang);
-      twGroup.appendChild(option);
+      option.setAttribute('data-platform', 'ios');
+      iosGroup.appendChild(option);
     });
-    voiceSelect.appendChild(twGroup);
-    console.log(`✅ Added ${twVoices.length} Taiwan voices`);
+    voiceSelect.appendChild(iosGroup);
+    console.log(`✅ Added ${iosVoices.length} iOS voices`);
   }
   
-  // Add Other voices group
+  // Add Google voices group
+  if (googleVoices.length > 0) {
+    const googleGroup = document.createElement('optgroup');
+    googleGroup.label = `🌐 Google (${googleVoices.length})`;
+    googleVoices.forEach(item => {
+      const option = document.createElement('option');
+      option.value = item.voice.name;
+      option.textContent = item.config.label;
+      option.setAttribute('data-lang', item.voice.lang);
+      option.setAttribute('data-platform', 'google');
+      googleGroup.appendChild(option);
+    });
+    voiceSelect.appendChild(googleGroup);
+    console.log(`✅ Added ${googleVoices.length} Google voices`);
+  }
+  
+  // Add Microsoft voices group
+  if (microsoftVoices.length > 0) {
+    const msGroup = document.createElement('optgroup');
+    msGroup.label = `🪟 Microsoft (${microsoftVoices.length})`;
+    microsoftVoices.forEach(item => {
+      const option = document.createElement('option');
+      option.value = item.voice.name;
+      option.textContent = item.config.label;
+      option.setAttribute('data-lang', item.voice.lang);
+      option.setAttribute('data-platform', 'microsoft');
+      msGroup.appendChild(option);
+    });
+    voiceSelect.appendChild(msGroup);
+    console.log(`✅ Added ${microsoftVoices.length} Microsoft voices`);
+  }
+  
+  // Add other voices if any
   if (otherVoices.length > 0) {
     const otherGroup = document.createElement('optgroup');
-    otherGroup.label = `Other (${otherVoices.length})`;
+    otherGroup.label = `🔧 Other (${otherVoices.length})`;
     otherVoices.forEach(item => {
       const option = document.createElement('option');
       option.value = item.voice.name;
       option.textContent = item.config.label;
       option.setAttribute('data-lang', item.voice.lang);
+      option.setAttribute('data-platform', 'other');
       otherGroup.appendChild(option);
     });
     voiceSelect.appendChild(otherGroup);
@@ -811,11 +999,15 @@ function populateVoiceSelector() {
   fallbackOpt.setAttribute('data-lang', 'zh-TW');
   voiceSelect.appendChild(fallbackOpt);
   
-  voiceSelect.selectedIndex = 0;
   console.log(`✅ Voice selector populated with ${voiceSelect.options.length} options`);
   
   // Load saved selection
   loadSavedVoiceSelection();
+  
+  // Dispatch ready event
+  window.dispatchEvent(new CustomEvent('voicesReady', {
+    detail: { count: chineseVoices.length, mobile: voiceSelectorState.isMobile }
+  }));
 }
 
 /**
@@ -825,34 +1017,59 @@ function createVoiceSelectorFallback() {
   const voiceSelect = document.getElementById('voiceSelect');
   if (!voiceSelect) return;
   
-  // Check if already has valid options
+  // Check if already has valid options (don't overwrite if voices were loaded)
   if (voiceSelect.options.length > 1 && 
       voiceSelect.options[0].value !== '' && 
       !voiceSelect.options[0].disabled) {
-    console.log('✅ Dropdown already has valid options');
+    console.log('✅ Dropdown already has valid options, skipping fallback');
     return;
   }
   
-  console.warn('⚠️ Creating fallback options');
+  console.warn('⚠️ Creating fallback options (voices not available)');
   voiceSelect.innerHTML = '';
   
+  // Create comprehensive fallback options
   const fallbacks = [
-    { value: 'zh-TW', label: '🇹🇼 Taiwan (System)' },
-    { value: 'zh-CN', label: '🇨🇳 China (System)' },
-    { value: 'zh-HK', label: '🇭🇰 Hong Kong (System)' }
+    { value: 'zh-TW', label: '🇹🇼 繁體中文 (Taiwan)', lang: 'zh-TW' },
+    { value: 'zh-CN', label: '🇨🇳 简体中文 (China)', lang: 'zh-CN' },
+    { value: 'zh-HK', label: '🇭🇰 廣東話 (Hong Kong)', lang: 'zh-HK' },
+    { value: 'default', label: '🌐 System Default', lang: 'zh-TW' }
   ];
   
   fallbacks.forEach(opt => {
     const option = document.createElement('option');
     option.value = opt.value;
     option.textContent = opt.label;
-    option.setAttribute('data-lang', opt.value);
+    option.setAttribute('data-lang', opt.lang);
     voiceSelect.appendChild(option);
   });
   
-  voiceSelectorState.voicesLoaded = true;
   voiceSelect.selectedIndex = 0;
+  console.log(`✅ Created ${fallbacks.length} fallback options`);
+  
+  // Try to load saved selection
   loadSavedVoiceSelection();
+  
+  // Mark as partially loaded (so we don't keep creating fallback)
+  // but keep trying to load real voices in background
+  if (!voiceSelectorState.voicesLoaded) {
+    console.log('🔄 Fallback created, but will keep trying to load real voices...');
+    
+    // Continue trying to load voices at longer intervals
+    setTimeout(() => {
+      if (!voiceSelectorState.voicesLoaded) {
+        voiceSelectorState.retryCount = 0;
+        populateVoiceSelector();
+      }
+    }, 3000);
+    
+    setTimeout(() => {
+      if (!voiceSelectorState.voicesLoaded) {
+        voiceSelectorState.retryCount = 0;
+        populateVoiceSelector();
+      }
+    }, 6000);
+  }
 }
 
 /**

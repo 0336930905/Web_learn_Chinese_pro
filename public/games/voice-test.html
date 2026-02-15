@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Selector Test - Mobile Friendly</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        
+        .debug-info {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4ce64c"
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 p-4">
+    <div class="max-w-2xl mx-auto space-y-4">
+        <!-- Header -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+            <h1 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">
+                🎤 Voice Selector Test
+            </h1>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+                Test page for mobile voice loading
+            </p>
+        </div>
+
+        <!-- Device Info -->
+        <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 border-2 border-blue-200 dark:border-blue-800">
+            <h2 class="font-bold text-blue-800 dark:text-blue-300 mb-2">📱 Device Info</h2>
+            <div class="text-sm space-y-1 text-blue-700 dark:text-blue-400" id="deviceInfo">
+                <div>Loading...</div>
+            </div>
+        </div>
+
+        <!-- Voice Selector -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+            <h2 class="font-bold text-gray-800 dark:text-white mb-4">🔊 Voice Selector</h2>
+            
+            <div class="flex flex-col sm:flex-row gap-3 mb-4">
+                <div class="flex-1 relative group">
+                    <select id="voiceSelect"
+                        class="w-full pl-10 pr-8 py-3 text-sm bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 hover:border-primary/50 focus:border-primary rounded-xl appearance-none outline-none transition-all font-medium text-gray-800 dark:text-gray-200 cursor-pointer">
+                        <option value="" disabled selected>⏳ Đang tải giọng...</option>
+                    </select>
+                    <div class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-hover:text-primary transition-colors pointer-events-none">
+                        <span class="material-symbols-outlined text-lg">record_voice_over</span>
+                    </div>
+                    <div class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                        <span class="material-symbols-outlined text-lg">expand_more</span>
+                    </div>
+                </div>
+
+                <button onclick="testCurrentVoice()"
+                    class="px-6 py-3 bg-primary hover:bg-primary/90 text-gray-900 text-sm font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center gap-2 whitespace-nowrap">
+                    <span class="material-symbols-outlined text-lg">volume_up</span>
+                    <span>Test Voice</span>
+                </button>
+            </div>
+
+            <!-- Test Buttons -->
+            <div class="grid grid-cols-2 gap-2">
+                <button onclick="speakTest('你好')"
+                    class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition-colors">
+                    Say "你好"
+                </button>
+                <button onclick="speakTest('歡迎')"
+                    class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white text-sm font-medium rounded-lg transition-colors">
+                    Say "歡迎"
+                </button>
+                <button onclick="speakTest('學習中文')"
+                    class="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white text-sm font-medium rounded-lg transition-colors">
+                    Say "學習中文"
+                </button>
+                <button onclick="window.speechSynthesis.cancel()"
+                    class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors">
+                    Stop
+                </button>
+            </div>
+        </div>
+
+        <!-- Voice Info -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+            <h2 class="font-bold text-gray-800 dark:text-white mb-3">ℹ️ Voice Info</h2>
+            <div class="text-sm space-y-2" id="voiceInfo">
+                <div class="text-gray-600 dark:text-gray-400">Loading voices...</div>
+            </div>
+            
+            <!-- Current Selection -->
+            <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <h3 class="font-bold text-gray-700 dark:text-gray-300 mb-2">🎯 Current Selection</h3>
+                <div class="text-xs space-y-1 bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg" id="currentSelection">
+                    <div class="text-gray-600 dark:text-gray-400">No voice selected</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Debug Console -->
+        <div class="bg-gray-800 dark:bg-black rounded-2xl p-4 shadow-lg">
+            <div class="flex items-center justify-between mb-3">
+                <h2 class="font-bold text-green-400">🐛 Debug Console</h2>
+                <button onclick="clearDebug()"
+                    class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded transition-colors">
+                    Clear
+                </button>
+            </div>
+            <div class="debug-info text-green-300 space-y-1 bg-gray-900/50 rounded p-3 min-h-[150px]" id="debugConsole">
+                <div class="text-gray-500">Console initialized...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load games-header.js which contains all voice functionality -->
+    <script src="games-header.js"></script>
+
+    <script>
+        // Custom logging to display in debug console
+        const originalLog = console.log;
+        const originalWarn = console.warn;
+        const originalError = console.error;
+        
+        function addDebugLog(message, type = 'log') {
+            const debugConsole = document.getElementById('debugConsole');
+            const time = new Date().toLocaleTimeString();
+            let color = 'text-green-300';
+            let icon = 'ℹ️';
+            
+            if (type === 'warn') {
+                color = 'text-yellow-300';
+                icon = '⚠️';
+            } else if (type === 'error') {
+                color = 'text-red-300';
+                icon = '❌';
+            }
+            
+            const div = document.createElement('div');
+            div.className = color;
+            div.innerHTML = `<span class="text-gray-500">[${time}]</span> ${icon} ${message}`;
+            debugConsole.appendChild(div);
+            debugConsole.scrollTop = debugConsole.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addDebugLog(args.join(' '), 'log');
+        };
+        
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            addDebugLog(args.join(' '), 'warn');
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addDebugLog(args.join(' '), 'error');
+        };
+        
+        function clearDebug() {
+            document.getElementById('debugConsole').innerHTML = '<div class="text-gray-500">Console cleared...</div>';
+        }
+        
+        // Update device info
+        function updateDeviceInfo() {
+            const info = document.getElementById('deviceInfo');
+            const ua = navigator.userAgent;
+            const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(ua);
+            const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+            
+            info.innerHTML = `
+                <div><strong>Mobile:</strong> ${isMobile ? 'Yes' : 'No'}</div>
+                <div><strong>iOS:</strong> ${isIOS ? 'Yes' : 'No'}</div>
+                <div><strong>Browser:</strong> ${getBrowserName()}</div>
+                <div><strong>Speech API:</strong> ${window.speechSynthesis ? 'Available' : 'Not Available'}</div>
+                <div><strong>Screen:</strong> ${window.innerWidth} × ${window.innerHeight}</div>
+            `;
+        }
+        
+        function getBrowserName() {
+            const ua = navigator.userAgent;
+            if (ua.includes('Firefox')) return 'Firefox';
+            if (ua.includes('Safari') && !ua.includes('Chrome')) return 'Safari';
+            if (ua.includes('Chrome')) return 'Chrome';
+            if (ua.includes('Edge')) return 'Edge';
+            return 'Unknown';
+        }
+        
+        // Update voice info
+        function updateVoiceInfo() {
+            const info = document.getElementById('voiceInfo');
+            const voices = window.speechSynthesis.getVoices();
+            const chineseVoices = voices.filter(v => v.lang && v.lang.startsWith('zh'));
+            const selectedVoiceName = localStorage.getItem('selectedVoiceName') || 'None';
+            const audioEnabled = localStorage.getItem('audioEnabled') !== 'false';
+            
+            info.innerHTML = `
+                <div class="flex justify-between border-b border-gray-200 dark:border-gray-700 pb-2">
+                    <span class="text-gray-600 dark:text-gray-400">Total Voices:</span>
+                    <span class="font-bold text-gray-800 dark:text-white">${voices.length}</span>
+                </div>
+                <div class="flex justify-between border-b border-gray-200 dark:border-gray-700 pb-2">
+                    <span class="text-gray-600 dark:text-gray-400">Chinese Voices:</span>
+                    <span class="font-bold text-gray-800 dark:text-white">${chineseVoices.length}</span>
+                </div>
+                <div class="flex justify-between border-b border-gray-200 dark:border-gray-700 pb-2">
+                    <span class="text-gray-600 dark:text-gray-400">Selected Voice:</span>
+                    <span class="font-medium text-gray-800 dark:text-white text-xs">${selectedVoiceName}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600 dark:text-gray-400">Audio Enabled:</span>
+                    <span class="font-bold ${audioEnabled ? 'text-green-500' : 'text-red-500'}">${audioEnabled ? 'Yes' : 'No'}</span>
+                </div>
+            `;
+            
+            // Update current selection details
+            updateCurrentSelection();
+        }
+        
+        // Update current selection details
+        function updateCurrentSelection() {
+            const selectionDiv = document.getElementById('currentSelection');
+            const savedVoiceName = localStorage.getItem('selectedVoiceName') || 'None';
+            const savedLang = localStorage.getItem('selectedVoice') || 'zh-TW';
+            const voices = window.speechSynthesis.getVoices();
+            
+            if (savedVoiceName === 'None' || !savedVoiceName) {
+                selectionDiv.innerHTML = '<div class="text-gray-500">No voice selected yet</div>';
+                return;
+            }
+            
+            // Try to find the voice
+            const voice = voices.find(v => v.name === savedVoiceName);
+            
+            if (voice) {
+                selectionDiv.innerHTML = `
+                    <div class="text-gray-700 dark:text-gray-300">
+                        <div class="font-bold text-blue-600 dark:text-blue-400 mb-1">${voice.name}</div>
+                        <div><span class="font-medium">Language:</span> ${voice.lang}</div>
+                        <div><span class="font-medium">Type:</span> ${voice.localService ? '📱 Local/Device' : '☁️ Remote/Network'}</div>
+                        <div><span class="font-medium">Default:</span> ${voice.default ? '✅ Yes' : '❌ No'}</div>
+                    </div>
+                `;
+            } else {
+                selectionDiv.innerHTML = `
+                    <div class="text-yellow-600 dark:text-yellow-400">
+                        <div class="font-bold mb-1">⚠️ Voice not found</div>
+                        <div class="text-xs">Saved: "${savedVoiceName}"</div>
+                        <div class="text-xs">Language: ${savedLang}</div>
+                        <div class="text-xs mt-1">Voice may not be available on this device</div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Test speech function
+        function speakTest(text) {
+            console.log(`Testing speech with: "${text}"`);
+            speakText(text, 0.9, () => {
+                console.log('Speech completed');
+            });
+        }
+        
+        // Initialize
+        updateDeviceInfo();
+        
+        // Update voice info periodically
+        setInterval(updateVoiceInfo, 1000);
+        
+        // Listen for voices ready event
+        window.addEventListener('voicesReady', function(e) {
+            console.log(`✅ Voices ready event received: ${e.detail.count} voices, mobile: ${e.detail.mobile}`);
+            updateVoiceInfo();
+        });
+        
+        // Listen for voice selection changes
+        window.addEventListener('voiceChanged', function(e) {
+            console.log(`🔄 Voice changed to: ${e.detail.name} [${e.detail.lang}]`);
+            updateVoiceInfo();
+        });
+        
+        // Listen for voice selector populate
+        const voiceSelect = document.getElementById('voiceSelect');
+        if (voiceSelect) {
+            voiceSelect.addEventListener('change', function() {
+                setTimeout(updateVoiceInfo, 100);
+            });
+        }
+        
+        // Log page load
+        console.log('📄 Voice test page loaded');
+        console.log(`📱 Mobile: ${/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent)}`);
+    </script>
+</body>
+</html>
