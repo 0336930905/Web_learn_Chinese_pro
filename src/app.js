@@ -14,6 +14,20 @@ const { config } = require('./config');
  */
 module.exports = async (req, res) => {
   try {
+    // Patch response object for compatibility
+    if (!res.status) {
+      res.status = function (code) {
+        res.statusCode = code;
+        return res;
+      };
+    }
+    if (!res.json) {
+      res.json = function (data) {
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(data));
+      };
+    }
+
     // Apply CORS
     corsMiddleware(req, res, () => {});
 

@@ -1,7 +1,7 @@
 {
   "name": "learn-taiwanese-pro",
   "version": "2.0.0",
-  "description": "Ứng dụng học tiếng Đài Loan (Taiwanese) - API Backend (Clean Architecture)",
+  "description": "Nền tảng học tiếng Đài Loan/Trung Quốc trực tuyến với hệ thống gamification, spaced repetition và 5+ mini-games tương tác. Backend API xây dựng theo Clean Architecture với MongoDB và Node.js.",
   "main": "api/index.js",
   "scripts": {
     "start": "node src/app.js",

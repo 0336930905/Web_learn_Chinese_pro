@@ -1,6 +1,24 @@
 # Learn Taiwanese Pro 🇹🇼
 
-Ứng dụng học tiếng Đài Loan (Taiwanese/Chinese) với các tính năng gamification và spaced repetition.
+## 📖 Giới thiệu
+
+**Learn Taiwanese Pro** là nền tảng học tiếng Đài Loan (Taiwanese/Chinese) hiện đại, kết hợp công nghệ giáo dục với trải nghiệm game hóa (gamification) để tạo động lực học tập bền vững.
+
+### 🎯 Mục tiêu
+
+Giúp người học tiếng Đài Loan/Trung Quốc:
+- **Ghi nhớ từ vựng hiệu quả** với thuật toán Spaced Repetition (lặp lại ngắt quãng)
+- **Học một cách thú vị** qua 5+ mini-games tương tác
+- **Theo dõi tiến độ rõ ràng** với hệ thống streak và achievements
+- **Tự chủ học tập** với danh mục cá nhân và lịch trình ôn tập thông minh
+
+### 🏗️ Kiến trúc
+
+- **Backend**: Node.js + Express với Clean Architecture pattern
+- **Database**: MongoDB Atlas (NoSQL) với 7 collections được tối ưu
+- **Frontend**: HTML5 + CSS3 + Vanilla JavaScript (Progressive Enhancement)
+- **Authentication**: JWT tokens + Google OAuth
+- **API Design**: RESTful API với error handling và validation middleware
 
 ## ✨ Tính năng chính
 
