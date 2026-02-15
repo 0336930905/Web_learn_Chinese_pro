@@ -27,24 +27,22 @@ module.exports = async (req, res) => {
 
     // Parse request path
     const url = new URL(req.url, `http://${req.headers.host}`);
-    // Normalize path: always strip /api/index.js if present (Vercel artifact)
-    let path = url.pathname.replace(/^\/api\/index\.js/, '');
-    // Strip /api prefix if present (to standardize routing)
-    if (path.startsWith('/api')) {
-      path = path.substring(4);
-    }
-    // Ensure path has leading slash
-    if (!path.startsWith('/')) {
-      path = '/' + path;
-    }
-    req.path = path;
+    let rawPath = url.pathname;
     req.query = Object.fromEntries(url.searchParams);
 
-    // DEBUG: Log raw request details
-    console.log('🔍 RAW REQUEST:', {
+    // Normalize: strip /api prefix for internal routing
+    // Both localhost (server.js sends /api/auth/google) and Vercel (sends /api/auth/google)
+    // will have /api prefix. We strip it so routes match /auth, /categories, etc.
+    if (rawPath.startsWith('/api')) {
+      rawPath = rawPath.substring(4) || '/';
+    }
+    req.path = rawPath;
+
+    // Log raw request details for debugging
+    console.log('🔍 REQUEST:', {
       'req.url': req.url,
-      'url.pathname': url.pathname,
-      'req.path': req.path,
+      'parsed.pathname': url.pathname,
+      'stripped.path': req.path,
       method: req.method,
       host: req.headers.host
     });
@@ -58,15 +56,10 @@ module.exports = async (req, res) => {
     const routes = setupRoutes(db);
 
     // Log the incoming request
-    console.log('📨 Incoming request:', {
+    console.log('📨 Routing request:', {
       method: req.method,
       path: req.path,
-      url: req.url,
-      query: req.query,
-      headers: {
-        host: req.headers.host,
-        'user-agent': req.headers['user-agent']?.substring(0, 50)
-      }
+      availableRoutes: Object.keys(routes)
     });
 
     // Find matching route prefix
@@ -82,8 +75,8 @@ module.exports = async (req, res) => {
       }
     }
 
-    // If no route matched, return API info
-    if (!handled && (req.path === '/' || req.path === '/api')) {
+    // If no route matched and it's a root request, return API info
+    if (!handled && req.path === '/') {
       return res.status(200).json({
         success: true,
         message: 'Learn Taiwanese Pro API',
@@ -151,18 +144,12 @@ module.exports = async (req, res) => {
     if (!handled) {
       console.error('❌ No route handler found:', {
         method: req.method,
-        originalPath: originalPath,
-        normalizedPath: normalizedPath,
-        finalPath: req.path,
-        url: req.url,
-        availableRoutes: Object.keys(routes),
-        timestamp: new Date().toISOString()
-      })path: req.path,
+        path: req.path,
         url: req.url,
         availableRoutes: Object.keys(routes),
         timestamp: new Date().toISOString()
       });
-      
+
       return res.status(404).json({
         success: false,
         error: {
@@ -171,7 +158,12 @@ module.exports = async (req, res) => {
           debug: {
             path: req.path,
             url: req.url
-    logger.error('Request handler error', { 
+          }
+        }
+      });
+    }
+  } catch (error) {
+    logger.error('Request handler error', {
       error: error.message,
       stack: error.stack,
       path: req.path,
