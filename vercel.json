@@ -1,76 +1,27 @@
 {
   "version": 2,
   "rewrites": [
-    {
-      "source": "/login_screen.html",
-      "destination": "/public/login_screen.html"
-    },
-    {
-      "source": "/sign_up_screen.html",
-      "destination": "/public/sign_up_screen.html"
-    },
-    {
-      "source": "/reset-password.html",
-      "destination": "/public/reset-password.html"
-    },
-    {
-      "source": "/(user|admin|games|js|css|i18n|img)/(.*)",
-      "destination": "/public/$1/$2"
-    },
-    {
-      "source": "/",
-      "destination": "/public/index.html"
-    },
-    {
-      "source": "/(.*\\.ico)",
-      "destination": "/public/$1"
-    }
+    { "source": "/api/:path*", "destination": "/api/index.js" },
+    { "source": "/login_screen.html", "destination": "/public/login_screen.html" },
+    { "source": "/sign_up_screen.html", "destination": "/public/sign_up_screen.html" },
+    { "source": "/reset-password.html", "destination": "/public/reset-password.html" },
+    { "source": "/user/:path*", "destination": "/public/user/:path*" },
+    { "source": "/admin/:path*", "destination": "/public/admin/:path*" },
+    { "source": "/games/:path*", "destination": "/public/games/:path*" },
+    { "source": "/js/:path*", "destination": "/public/js/:path*" },
+    { "source": "/css/:path*", "destination": "/public/css/:path*" },
+    { "source": "/i18n/:path*", "destination": "/public/i18n/:path*" },
+    { "source": "/img/:path*", "destination": "/public/img/:path*" },
+    { "source": "/", "destination": "/public/index.html" },
+    { "source": "/:path*.ico", "destination": "/public/:path*.ico" }
   ],
   "headers": [
     {
-      "source": "/api/(.*)",
+      "source": "/api/:path*",
       "headers": [
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        },
-        {
-          "key": "Access-Control-Allow-Methods",
-          "value": "GET, POST, PUT, DELETE, OPTIONS"
-        },
-        {
-          "key": "Access-Control-Allow-Headers",
-          "value": "Content-Type, Authorization"
-        },
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
-        }
-      ]
-    },
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "SAMEORIGIN"
-        },
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=3600"
-        }
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, POST, PUT, DELETE, PATCH, OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization" }
       ]
     }
   ],
