@@ -241,16 +241,32 @@ const googleCallback = asyncHandler(async (req, res) => {
       settings: user.settings || { theme: 'light', language: 'vi', sound: { bgMusic: 75, gameSFX: 90 } },
     };
 
-    const redirectUrl = user.role === 'admin' ? '/admin/home_ad.html' : '/user/home.html';
-    console.log('Redirecting to:', redirectUrl);
+    // Get origin from request for proper redirect
+    const protocol = req.headers['x-forwarded-proto'] || (req.connection.encrypted ? 'https' : 'http');
+    const host = req.headers['x-forwarded-host'] || req.headers['host'] || 'localhost:3000';
+    const origin = `${protocol}://${host}`;
+    
+    const redirectPath = user.role === 'admin' ? '/admin/home_ad.html' : '/user/home.html';
+    const fullRedirectUrl = `${origin}${redirectPath}`;
+    
+    console.log('Origin:', origin);
+    console.log('Redirecting to:', fullRedirectUrl);
     
     const userAgent = req.headers['user-agent'] || '';
     const isMobile = /Mobile|Android|iPhone|iPad|Zalo/i.test(userAgent);
+    console.log('Is mobile:', isMobile);
 
-    // Mobile: redirect with URL params
+    // Mobile: redirect with URL params (for devices that can't use localStorage easily)
     if (isMobile) {
-      const params = new URLSearchParams({ token, user: JSON.stringify(userData) });
-      return res.redirect(`${redirectUrl}?auth=success&${params.toString()}`);
+      const params = new URLSearchParams({ 
+        token, 
+        user: JSON.stringify(userData),
+        auth: 'success'
+      });
+      const mobileRedirectUrl = `${fullRedirectUrl}?${params.toString()}`;
+      console.log('Mobile redirect URL:', mobileRedirectUrl);
+      res.writeHead(302, { 'Location': mobileRedirectUrl });
+      return res.end();
     }
 
     // Desktop: store in localStorage via script
