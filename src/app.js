@@ -27,7 +27,17 @@ module.exports = async (req, res) => {
 
     // Parse request path
     const url = new URL(req.url, `http://${req.headers.host}`);
-    req.path = url.pathname;
+    // Normalize path: always strip /api/index.js if present (Vercel artifact)
+    let path = url.pathname.replace(/^\/api\/index\.js/, '');
+    // Strip /api prefix if present (to standardize routing)
+    if (path.startsWith('/api')) {
+      path = path.substring(4);
+    }
+    // Ensure path has leading slash
+    if (!path.startsWith('/')) {
+      path = '/' + path;
+    }
+    req.path = path;
     req.query = Object.fromEntries(url.searchParams);
 
     // DEBUG: Log raw request details

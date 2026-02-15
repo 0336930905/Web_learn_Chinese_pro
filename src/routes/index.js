@@ -244,18 +244,18 @@ function setupRoutes(db) {
   backupRoutes(backupRouter, db);
 
   return {
-    '/api/auth': authRouter,
-    '/api/admin': adminRouter,
-    '/api/categories': categoryRouter,
-    '/api/vocabulary': vocabularyRouter,
-    '/api/progress': progressRouter,
-    '/api/games': gameRouter,
-    '/api/dashboard': dashboardRouter,
-    '/api/settings': settingsRouter,
-    '/api/achievements': achievementsRouter,
-    '/api/activities': activityRouter,
-    '/api/chatbot': chatbotRouter,
-    '/api/backup': backupRouter,
+    '/auth': authRouter,
+    '/admin': adminRouter,
+    '/categories': categoryRouter,
+    '/vocabulary': vocabularyRouter,
+    '/progress': progressRouter,
+    '/games': gameRouter,
+    '/dashboard': dashboardRouter,
+    '/settings': settingsRouter,
+    '/achievements': achievementsRouter,
+    '/activities': activityRouter,
+    '/chatbot': chatbotRouter,
+    '/backup': backupRouter,
   };
 }
 

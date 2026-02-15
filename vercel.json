@@ -1,39 +1,33 @@
 {
   "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "api/index.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/index.js"
+      "source": "/api/(.*)",
+      "destination": "/api/index.js"
     },
     {
-      "src": "/login_screen.html",
-      "dest": "/public/login_screen.html"
+      "source": "/login_screen.html",
+      "destination": "/public/login_screen.html"
     },
     {
-      "src": "/sign_up_screen.html",
-      "dest": "/public/sign_up_screen.html"
+      "source": "/sign_up_screen.html",
+      "destination": "/public/sign_up_screen.html"
     },
     {
-      "src": "/reset-password.html",
-      "dest": "/public/reset-password.html"
+      "source": "/reset-password.html",
+      "destination": "/public/reset-password.html"
     },
     {
-      "src": "/(.*\\.(js|css|html|png|jpg|jpeg|gif|svg|ico|json|woff|woff2|ttf|eot))",
-      "dest": "/public/$1"
+      "source": "/(user|admin|games|js|css|i18n|img)/(.*)",
+      "destination": "/public/$1/$2"
     },
     {
-      "src": "/(user|admin|games|js|css|i18n|img)/(.*)",
-      "dest": "/public/$1/$2"
+      "source": "/",
+      "destination": "/public/index.html"
     },
     {
-      "src": "/",
-      "dest": "/public/index.html"
+      "source": "/(.*\\.ico)",
+      "destination": "/public/$1"
     }
   ],
   "headers": [
