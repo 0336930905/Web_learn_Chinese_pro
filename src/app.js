@@ -27,29 +27,34 @@ module.exports = async (req, res) => {
 
     // Parse request path
     const url = new URL(req.url, `http://${req.headers.host}`);
-    req.path = url.pathname;
+    const originalPath = url.pathname;
     req.query = Object.fromEntries(url.searchParams);
-
-    // Vercel strips /api prefix when rewriting to /api/index.js
-    // So we need to add it back if it's missing
-    if (!req.path.startsWith('/api')) {
-      req.path = '/api' + req.path;
-    }
 
     // Parse body for POST/PUT/PATCH
     if (['POST', 'PUT', 'PATCH'].includes(req.method) && !req.body) {
       req.body = await parseBody(req);
     }
 
+    // Normalize path for routing
+    // Vercel rewrites strip the /api prefix, so we need to add it back
+    let normalizedPath = originalPath;
+    if (!normalizedPath.startsWith('/api') && normalizedPath !== '/') {
+      // Path was stripped by Vercel rewrite, add /api back
+      normalizedPath = '/api' + normalizedPath;
+    }
+    req.path = normalizedPath;
+
     // Setup routes
     const routes = setupRoutes(db);
 
-    // Log the incoming request
+    // Log the incoming request with detailed info
     console.log('📨 Incoming request:', {
       method: req.method,
-      path: req.path,
+      originalPath: originalPath,
+      normalizedPath: normalizedPath,
+      finalPath: req.path,
       url: req.url,
-      originalUrl: req.url,
+      query: req.query,
       headers: {
         host: req.headers.host,
         'user-agent': req.headers['user-agent']?.substring(0, 50)
@@ -60,9 +65,9 @@ module.exports = async (req, res) => {
     let handled = false;
     for (const [prefix, router] of Object.entries(routes)) {
       if (req.path.startsWith(prefix)) {
-        const originalPath = req.path;
+        const routePath = req.path;
         req.path = req.path.substring(prefix.length) || '/';
-        console.log(`🔀 Routing: ${originalPath} → prefix: ${prefix}, new path: ${req.path}`);
+        console.log(`🔀 Routing: ${routePath} → prefix: ${prefix}, new path: ${req.path}`);
         await router.handle(req, res);
         handled = true;
         break;
@@ -76,6 +81,12 @@ module.exports = async (req, res) => {
         message: 'Learn Taiwanese Pro API',
         version: config.server.apiVersion,
         environment: config.server.env,
+        requestInfo: {
+          originalPath: originalPath,
+          normalizedPath: normalizedPath,
+          method: req.method,
+          timestamp: new Date().toISOString(),
+        },
         endpoints: {
           auth: {
             register: 'POST /api/auth/register',
@@ -138,7 +149,9 @@ module.exports = async (req, res) => {
     if (!handled) {
       console.error('❌ No route handler found:', {
         method: req.method,
-        path: req.path,
+        originalPath: originalPath,
+        normalizedPath: normalizedPath,
+        finalPath: req.path,
         url: req.url,
         availableRoutes: Object.keys(routes),
         timestamp: new Date().toISOString()
@@ -149,8 +162,12 @@ module.exports = async (req, res) => {
         error: {
           code: 'NOT_FOUND',
           message: `Route ${req.method} ${req.path} not found`,
-          availableRoutes: Object.keys(routes),
-          requestedPath: req.path,
+          debug: {
+            originalPath: originalPath,
+            normalizedPath: normalizedPath,
+            requestedPath: req.path,
+            availableRoutes: Object.keys(routes),
+          }
         },
       });
     }
