@@ -30,6 +30,15 @@ module.exports = async (req, res) => {
     req.path = url.pathname;
     req.query = Object.fromEntries(url.searchParams);
 
+    // DEBUG: Log raw request details
+    console.log('🔍 RAW REQUEST:', {
+      'req.url': req.url,
+      'url.pathname': url.pathname,
+      'req.path': req.path,
+      method: req.method,
+      host: req.headers.host
+    });
+
     // Parse body for POST/PUT/PATCH
     if (['POST', 'PUT', 'PATCH'].includes(req.method) && !req.body) {
       req.body = await parseBody(req);
