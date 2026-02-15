@@ -1,66 +1,63 @@
 {
   "version": 2,
-  "buildCommand": "npm install",
-  "rewrites": [
+  "builds": [
     {
-      "source": "/api/auth/google",
-      "destination": "/api/index.js"
+      "src": "api/index.js",
+      "use": "@vercel/node"
     },
     {
-      "source": "/api/auth/google/callback",
-      "destination": "/api/index.js"
+      "src": "public/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/index.js"
     },
     {
-      "source": "/api/:path*",
-      "destination": "/api/index.js"
+      "src": "/user/(.*)",
+      "dest": "/public/user/$1"
     },
     {
-      "source": "/",
-      "destination": "/public/index.html"
+      "src": "/admin/(.*)",
+      "dest": "/public/admin/$1"
     },
     {
-      "source": "/login_screen.html",
-      "destination": "/public/login_screen.html"
+      "src": "/games/(.*)",
+      "dest": "/public/games/$1"
     },
     {
-      "source": "/sign_up_screen.html",
-      "destination": "/public/sign_up_screen.html"
+      "src": "/css/(.*)",
+      "dest": "/public/css/$1"
     },
     {
-      "source": "/reset-password.html",
-      "destination": "/public/reset-password.html"
+      "src": "/js/(.*)",
+      "dest": "/public/js/$1"
     },
     {
-      "source": "/user/:path*",
-      "destination": "/public/user/:path*"
+      "src": "/i18n/(.*)",
+      "dest": "/public/i18n/$1"
     },
     {
-      "source": "/admin/:path*",
-      "destination": "/public/admin/:path*"
+      "src": "/img/(.*)",
+      "dest": "/public/img/$1"
     },
     {
-      "source": "/games/:path*",
-      "destination": "/public/games/:path*"
+      "src": "/login_screen.html",
+      "dest": "/public/login_screen.html"
     },
     {
-      "source": "/css/:path*",
-      "destination": "/public/css/:path*"
+      "src": "/sign_up_screen.html",
+      "dest": "/public/sign_up_screen.html"
     },
     {
-      "source": "/js/:path*",
-      "destination": "/public/js/:path*"
+      "src": "/reset-password.html",
+      "dest": "/public/reset-password.html"
     },
     {
-      "source": "/i18n/:path*",
-      "destination": "/public/i18n/:path*"
-    },
-    {
-      "source": "/img/:path*",
-      "destination": "/public/img/:path*"
-    },
-    {
-      "source": "/:path*",
-      "destination": "/public/:path*"
+      "src": "/",
+      "dest": "/public/index.html"
     }
   ],
   "headers": [
@@ -111,12 +108,6 @@
       ]
     }
   ],
-  "functions": {
-    "api/index.js": {
-      "maxDuration": 30,
-      "memory": 1024
-    }
-  },
   "cleanUrls": true,
   "trailingSlash": false
 }
