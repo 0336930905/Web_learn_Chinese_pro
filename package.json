@@ -4,7 +4,7 @@
   "description": "Nền tảng học tiếng Đài Loan/Trung Quốc trực tuyến với hệ thống gamification, spaced repetition và 5+ mini-games tương tác. Backend API xây dựng theo Clean Architecture với MongoDB và Node.js.",
   "main": "api/index.js",
   "scripts": {
-    "start": "node src/app.js",
+    "start": "node server.js",
     "dev": "vercel dev",
     "deploy": "vercel --prod",
     "db:setup": "node src/database/setup.js",

@@ -11,9 +11,6 @@ const { SUCCESS_MESSAGES, HTTP_STATUS } = require('../constants');
 const jwt = require('jsonwebtoken');
 const { config: appConfig } = require('../config');
 const { client: googleClient, verifyGoogleToken } = require('../utils/googleAuth');
-const jwt = require('jsonwebtoken');
-const { config: appConfig } = require('../config');
-const { client: googleClient, verifyGoogleToken } = require('../utils/googleAuth');
 
 /**
  * Register new user
@@ -261,7 +258,7 @@ const googleCallback = asyncHandler(async (req, res) => {
     const userDataEscaped = userDataJson.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
     
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.send(`<!DOCTYPE html>
+    res.end(`<!DOCTYPE html>
 <html><head><meta charset="UTF-8"><title>Đăng nhập thành công</title>
 <style>
   body { font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
