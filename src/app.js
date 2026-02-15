@@ -30,6 +30,12 @@ module.exports = async (req, res) => {
     req.path = url.pathname;
     req.query = Object.fromEntries(url.searchParams);
 
+    // Vercel strips /api prefix when rewriting to /api/index.js
+    // So we need to add it back if it's missing
+    if (!req.path.startsWith('/api')) {
+      req.path = '/api' + req.path;
+    }
+
     // Parse body for POST/PUT/PATCH
     if (['POST', 'PUT', 'PATCH'].includes(req.method) && !req.body) {
       req.body = await parseBody(req);
@@ -38,11 +44,25 @@ module.exports = async (req, res) => {
     // Setup routes
     const routes = setupRoutes(db);
 
+    // Log the incoming request
+    console.log('📨 Incoming request:', {
+      method: req.method,
+      path: req.path,
+      url: req.url,
+      originalUrl: req.url,
+      headers: {
+        host: req.headers.host,
+        'user-agent': req.headers['user-agent']?.substring(0, 50)
+      }
+    });
+
     // Find matching route prefix
     let handled = false;
     for (const [prefix, router] of Object.entries(routes)) {
       if (req.path.startsWith(prefix)) {
+        const originalPath = req.path;
         req.path = req.path.substring(prefix.length) || '/';
+        console.log(`🔀 Routing: ${originalPath} → prefix: ${prefix}, new path: ${req.path}`);
         await router.handle(req, res);
         handled = true;
         break;
@@ -50,7 +70,7 @@ module.exports = async (req, res) => {
     }
 
     // If no route matched, return API info
-    if (!handled && req.path === '/' || req.path === '/api') {
+    if (!handled && (req.path === '/' || req.path === '/api')) {
       return res.status(200).json({
         success: true,
         message: 'Learn Taiwanese Pro API',
@@ -116,11 +136,21 @@ module.exports = async (req, res) => {
     }
 
     if (!handled) {
+      console.error('❌ No route handler found:', {
+        method: req.method,
+        path: req.path,
+        url: req.url,
+        availableRoutes: Object.keys(routes),
+        timestamp: new Date().toISOString()
+      });
+      
       return res.status(404).json({
         success: false,
         error: {
           code: 'NOT_FOUND',
           message: `Route ${req.method} ${req.path} not found`,
+          availableRoutes: Object.keys(routes),
+          requestedPath: req.path,
         },
       });
     }
