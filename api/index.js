@@ -1,6 +1,12 @@
 /**
  * Vercel Serverless Function Entry Point
- * This file re-exports the main app handler for Vercel's serverless platform
+ * This file exports the main app handler for Vercel's serverless platform
  */
 
-module.exports = require('../src/app');
+const app = require('../src/app');
+
+// Export as default handler for Vercel
+module.exports = app;
+
+// Also export as default for ES6 compatibility
+module.exports.default = app;

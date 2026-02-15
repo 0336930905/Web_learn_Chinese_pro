@@ -73,3 +73,4 @@ public/uploads/
 
 # PM2
 .pm2/
+.env*.local

@@ -27,7 +27,7 @@ module.exports = async (req, res) => {
 
     // Parse request path
     const url = new URL(req.url, `http://${req.headers.host}`);
-    const originalPath = url.pathname;
+    req.path = url.pathname;
     req.query = Object.fromEntries(url.searchParams);
 
     // Parse body for POST/PUT/PATCH
@@ -35,24 +35,13 @@ module.exports = async (req, res) => {
       req.body = await parseBody(req);
     }
 
-    // Normalize path for routing
-    // Vercel rewrites strip the /api prefix, so we need to add it back
-    let normalizedPath = originalPath;
-    if (!normalizedPath.startsWith('/api') && normalizedPath !== '/') {
-      // Path was stripped by Vercel rewrite, add /api back
-      normalizedPath = '/api' + normalizedPath;
-    }
-    req.path = normalizedPath;
-
     // Setup routes
     const routes = setupRoutes(db);
 
-    // Log the incoming request with detailed info
+    // Log the incoming request
     console.log('📨 Incoming request:', {
       method: req.method,
-      originalPath: originalPath,
-      normalizedPath: normalizedPath,
-      finalPath: req.path,
+      path: req.path,
       url: req.url,
       query: req.query,
       headers: {
@@ -81,12 +70,6 @@ module.exports = async (req, res) => {
         message: 'Learn Taiwanese Pro API',
         version: config.server.apiVersion,
         environment: config.server.env,
-        requestInfo: {
-          originalPath: originalPath,
-          normalizedPath: normalizedPath,
-          method: req.method,
-          timestamp: new Date().toISOString(),
-        },
         endpoints: {
           auth: {
             register: 'POST /api/auth/register',
@@ -155,6 +138,10 @@ module.exports = async (req, res) => {
         url: req.url,
         availableRoutes: Object.keys(routes),
         timestamp: new Date().toISOString()
+      })path: req.path,
+        url: req.url,
+        availableRoutes: Object.keys(routes),
+        timestamp: new Date().toISOString()
       });
       
       return res.status(404).json({
@@ -163,15 +150,8 @@ module.exports = async (req, res) => {
           code: 'NOT_FOUND',
           message: `Route ${req.method} ${req.path} not found`,
           debug: {
-            originalPath: originalPath,
-            normalizedPath: normalizedPath,
-            requestedPath: req.path,
-            availableRoutes: Object.keys(routes),
-          }
-        },
-      });
-    }
-  } catch (error) {
+            path: req.path,
+            url: req.url
     logger.error('Request handler error', { 
       error: error.message,
       stack: error.stack,
