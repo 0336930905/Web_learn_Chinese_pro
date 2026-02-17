@@ -564,7 +564,7 @@ textarea:focus-visible {
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(10px);
+        transform: translateY(8px);
     }
     to {
         opacity: 1;
@@ -573,26 +573,26 @@ textarea:focus-visible {
 }
 
 .animate-fadeIn {
-    animation: fadeIn 0.3s ease-out;
+    animation: fadeIn 0.25s ease-out;
 }
 
-/* Chatbot button pulse animation */
+/* Chatbot button subtle pulse */
 @keyframes pulse-shadow {
     0%, 100% {
-        box-shadow: 0 0 0 0 rgba(76, 230, 76, 0.7);
+        box-shadow: 0 4px 12px rgba(76, 230, 76, 0.3);
     }
     50% {
-        box-shadow: 0 0 0 10px rgba(76, 230, 76, 0);
+        box-shadow: 0 4px 20px rgba(76, 230, 76, 0.5);
     }
 }
 
 #chatbot-toggle:hover {
-    animation: pulse-shadow 1.5s infinite;
+    animation: pulse-shadow 2s infinite;
 }
 
-/* Smooth scrollbar for chatbot */
+/* Compact scrollbar for chatbot */
 #chatbot-messages::-webkit-scrollbar {
-    width: 6px;
+    width: 4px;
 }
 
 #chatbot-messages::-webkit-scrollbar-track {
@@ -600,16 +600,16 @@ textarea:focus-visible {
 }
 
 #chatbot-messages::-webkit-scrollbar-thumb {
-    background: rgba(148, 163, 184, 0.3);
-    border-radius: 3px;
+    background: rgba(148, 163, 184, 0.2);
+    border-radius: 2px;
 }
 
 #chatbot-messages::-webkit-scrollbar-thumb:hover {
-    background: rgba(148, 163, 184, 0.5);
+    background: rgba(148, 163, 184, 0.4);
 }
 
 /* Mobile chatbot optimizations */
-@media (max-width: 768px) {
+@media (max-width: 640px) {
     /* Prevent scroll issues on iOS */
     #chatbot-container {
         -webkit-overflow-scrolling: touch;
@@ -618,7 +618,7 @@ textarea:focus-visible {
     
     /* Better touch targets */
     .chatbot-quick-btn {
-        min-height: 44px;
+        min-height: 36px;
         touch-action: manipulation;
     }
     
@@ -626,7 +626,6 @@ textarea:focus-visible {
     #chatbot-input {
         font-size: 16px; /* Prevents iOS zoom */
         -webkit-appearance: none;
-        border-radius: 999px;
     }
     
     /* Better message spacing on mobile */

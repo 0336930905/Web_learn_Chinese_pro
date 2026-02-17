@@ -160,82 +160,82 @@ function initializeChatbot() {
     const chatbotHTML = `
         <!-- Chatbot Button -->
         <button id="chatbot-toggle" 
-            class="fixed bottom-4 right-4 md:bottom-6 md:right-6 size-14 md:size-16 bg-primary hover:bg-primary-dark text-white rounded-full shadow-xl hover:shadow-2xl hover:scale-110 active:scale-95 transition-all z-50 flex items-center justify-center">
-            <span class="material-symbols-outlined text-2xl md:text-3xl">chat</span>
+            class="fixed bottom-4 right-4 size-12 md:size-14 bg-primary hover:bg-primary-dark text-white rounded-full shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all z-50 flex items-center justify-center">
+            <span class="material-symbols-outlined text-xl md:text-2xl">chat</span>
         </button>
 
         <!-- Chatbot Container -->
         <div id="chatbot-container" 
-            class="fixed inset-x-2 bottom-20 sm:inset-x-auto sm:bottom-24 sm:right-4 md:right-6 sm:w-[380px] md:w-[420px] h-[calc(100vh-7rem)] sm:h-[580px] md:h-[600px] max-h-[calc(100vh-7rem)] bg-white dark:bg-slate-900 rounded-2xl md:rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden z-50 transition-all duration-300 opacity-0 pointer-events-none scale-95">
+            class="fixed inset-x-3 bottom-[4.5rem] sm:inset-x-auto sm:bottom-20 sm:right-4 sm:w-[340px] md:w-[360px] h-[calc(100vh-6rem)] sm:h-[480px] md:h-[500px] max-h-[calc(100vh-6rem)] bg-white dark:bg-slate-900 rounded-xl md:rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden z-50 transition-all duration-300 opacity-0 pointer-events-none scale-95">
             
             <!-- Header -->
-            <div class="bg-gradient-to-r from-primary to-emerald-400 text-white p-4 md:p-5 flex items-center justify-between flex-shrink-0 shadow-lg">
-                <div class="flex items-center gap-3 min-w-0">
-                    <div class="size-10 md:size-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center flex-shrink-0 shadow-inner">
-                        <span class="material-symbols-outlined text-xl md:text-2xl">smart_toy</span>
+            <div class="bg-gradient-to-r from-primary to-emerald-400 text-white p-3 flex items-center justify-between flex-shrink-0 shadow-md">
+                <div class="flex items-center gap-2 min-w-0">
+                    <div class="size-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-outlined text-lg">smart_toy</span>
                     </div>
                     <div class="min-w-0">
-                        <h3 class="font-bold text-base md:text-lg truncate">${t('chatbot.title', 'Trợ lý học tập')}</h3>
-                        <p class="text-xs md:text-sm opacity-90 flex items-center gap-1">
-                            <span class="size-2 bg-white rounded-full animate-pulse"></span>
-                            ${t('chatbot.online', 'Đang trực tuyến')}
+                        <h3 class="font-bold text-sm truncate">${t('chatbot.title', 'Trợ lý học tập')}</h3>
+                        <p class="text-[10px] opacity-90 flex items-center gap-1">
+                            <span class="size-1.5 bg-white rounded-full animate-pulse"></span>
+                            ${t('chatbot.online', 'Trực tuyến')}
                         </p>
                     </div>
                 </div>
-                <button id="chatbot-close" class="hover:bg-white/20 p-2 rounded-lg transition-colors flex-shrink-0 active:scale-95">
-                    <span class="material-symbols-outlined text-xl md:text-2xl">close</span>
+                <button id="chatbot-close" class="hover:bg-white/20 p-1.5 rounded-lg transition-colors flex-shrink-0 active:scale-95">
+                    <span class="material-symbols-outlined text-lg">close</span>
                 </button>
             </div>
 
             <!-- Messages -->
-            <div id="chatbot-messages" class="flex-1 overflow-y-auto p-4 md:p-5 space-y-3 md:space-y-4 bg-slate-50 dark:bg-slate-950 min-h-0 scroll-smooth">
-                <div class="flex gap-2 md:gap-3 animate-fadeIn">
-                    <div class="size-8 md:size-9 bg-primary rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
-                        <span class="material-symbols-outlined text-white text-sm md:text-base">smart_toy</span>
+            <div id="chatbot-messages" class="flex-1 overflow-y-auto p-3 space-y-2.5 bg-slate-50 dark:bg-slate-950 min-h-0 scroll-smooth">
+                <div class="flex gap-2 animate-fadeIn">
+                    <div class="size-7 bg-primary rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
+                        <span class="material-symbols-outlined text-white text-sm">smart_toy</span>
                     </div>
-                    <div class="bg-white dark:bg-slate-800 rounded-2xl md:rounded-3xl rounded-tl-sm p-3 md:p-4 max-w-[85%] shadow-md">
-                        <p class="text-sm md:text-base text-slate-700 dark:text-slate-300 leading-relaxed">${t('chatbot.welcome', 'Xin chào! Tôi là trợ lý học tập của bạn. Tôi có thể giúp gì cho bạn?')}</p>
+                    <div class="bg-white dark:bg-slate-800 rounded-xl rounded-tl-sm p-2.5 max-w-[85%] shadow-sm">
+                        <p class="text-xs leading-relaxed text-slate-700 dark:text-slate-300">${t('chatbot.welcome', 'Xin chào! Tôi là trợ lý học tập của bạn. Tôi có thể giúp gì cho bạn?')}</p>
                     </div>
                 </div>
             </div>
 
             <!-- Quick Actions -->
-            <div id="chatbot-quick-actions" class="px-4 md:px-5 py-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex-shrink-0">
-                <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-2 px-2 snap-x snap-mandatory">
-                    <button class="chatbot-quick-btn px-3 md:px-4 py-2 bg-gradient-to-r from-slate-100 to-slate-50 dark:from-slate-800 dark:to-slate-800/80 hover:from-primary/10 hover:to-primary/5 text-xs md:text-sm rounded-full whitespace-nowrap transition-all flex items-center gap-1.5 flex-shrink-0 snap-start shadow-sm hover:shadow-md active:scale-95" 
+            <div id="chatbot-quick-actions" class="px-3 py-2 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex-shrink-0">
+                <div class="flex gap-1.5 overflow-x-auto pb-1.5 scrollbar-hide -mx-1 px-1 snap-x snap-mandatory">
+                    <button class="chatbot-quick-btn px-2.5 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-primary/10 text-[11px] rounded-full whitespace-nowrap transition-all flex items-center gap-1 flex-shrink-0 snap-start active:scale-95" 
                         data-message="Từ vựng gia đình">
-                        <span class="material-symbols-outlined text-sm md:text-base">family_restroom</span>
-                        <span class="font-medium">Gia đình</span>
+                        <span class="material-symbols-outlined text-xs">family_restroom</span>
+                        <span>Gia đình</span>
                     </button>
-                    <button class="chatbot-quick-btn px-3 md:px-4 py-2 bg-gradient-to-r from-slate-100 to-slate-50 dark:from-slate-800 dark:to-slate-800/80 hover:from-primary/10 hover:to-primary/5 text-xs md:text-sm rounded-full whitespace-nowrap transition-all flex items-center gap-1.5 flex-shrink-0 snap-start shadow-sm hover:shadow-md active:scale-95"
+                    <button class="chatbot-quick-btn px-2.5 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-primary/10 text-[11px] rounded-full whitespace-nowrap transition-all flex items-center gap-1 flex-shrink-0 snap-start active:scale-95"
                         data-message="Từ vựng đồ ăn">
-                        <span class="material-symbols-outlined text-sm md:text-base">restaurant</span>
-                        <span class="font-medium">Đồ ăn</span>
+                        <span class="material-symbols-outlined text-xs">restaurant</span>
+                        <span>Đồ ăn</span>
                     </button>
-                    <button class="chatbot-quick-btn px-3 md:px-4 py-2 bg-gradient-to-r from-slate-100 to-slate-50 dark:from-slate-800 dark:to-slate-800/80 hover:from-primary/10 hover:to-primary/5 text-xs md:text-sm rounded-full whitespace-nowrap transition-all flex items-center gap-1.5 flex-shrink-0 snap-start shadow-sm hover:shadow-md active:scale-95"
+                    <button class="chatbot-quick-btn px-2.5 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-primary/10 text-[11px] rounded-full whitespace-nowrap transition-all flex items-center gap-1 flex-shrink-0 snap-start active:scale-95"
                         data-message="Tips học tiếng Trung">
-                        <span class="material-symbols-outlined text-sm md:text-base">tips_and_updates</span>
-                        <span class="font-medium">Tips học tập</span>
+                        <span class="material-symbols-outlined text-xs">tips_and_updates</span>
+                        <span>Tips</span>
                     </button>
-                    <button class="chatbot-quick-btn px-3 md:px-4 py-2 bg-gradient-to-r from-slate-100 to-slate-50 dark:from-slate-800 dark:to-slate-800/80 hover:from-primary/10 hover:to-primary/5 text-xs md:text-sm rounded-full whitespace-nowrap transition-all flex items-center gap-1.5 flex-shrink-0 snap-start shadow-sm hover:shadow-md active:scale-95"
+                    <button class="chatbot-quick-btn px-2.5 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-primary/10 text-[11px] rounded-full whitespace-nowrap transition-all flex items-center gap-1 flex-shrink-0 snap-start active:scale-95"
                         data-message="Giải thích từ 你好">
-                        <span class="material-symbols-outlined text-sm md:text-base">translate</span>
-                        <span class="font-medium">Giải thích từ</span>
+                        <span class="material-symbols-outlined text-xs">translate</span>
+                        <span>Giải thích</span>
                     </button>
                 </div>
             </div>
 
             <!-- Input -->
-            <div class="p-4 md:p-5 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex-shrink-0">
-                <div class="flex gap-2 md:gap-3">
+            <div class="p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex-shrink-0">
+                <div class="flex gap-2">
                     <input id="chatbot-input" 
                         type="text" 
                         placeholder="${t('chatbot.placeholder', 'Nhập tin nhắn...')}"
-                        class="flex-1 px-4 md:px-5 py-2.5 md:py-3 bg-slate-100 dark:bg-slate-800 border-0 rounded-full focus:ring-2 focus:ring-primary outline-none text-sm md:text-base transition-all"
+                        class="flex-1 px-3 py-2 bg-slate-100 dark:bg-slate-800 border-0 rounded-full focus:ring-2 focus:ring-primary outline-none text-sm transition-all"
                         autocomplete="off">
                     <button id="chatbot-send" 
-                        class="size-10 md:size-12 bg-primary hover:bg-primary-dark text-white rounded-full flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 shadow-lg hover:shadow-xl active:scale-95">
-                        <span class="material-symbols-outlined text-xl md:text-2xl">send</span>
+                        class="size-9 bg-primary hover:bg-primary-dark text-white rounded-full flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 shadow-md hover:shadow-lg active:scale-95">
+                        <span class="material-symbols-outlined text-lg">send</span>
                     </button>
                 </div>
             </div>
@@ -267,10 +267,10 @@ function initializeChatbot() {
             container.classList.remove('opacity-0', 'pointer-events-none', 'scale-95');
             container.classList.add('opacity-100', 'scale-100');
             // Prevent body scroll on mobile
-            if (window.innerWidth < 768) {
+            if (window.innerWidth < 640) {
                 document.body.classList.add('chatbot-open');
             }
-            setTimeout(() => input.focus(), 300);
+            setTimeout(() => input.focus(), 250);
         } else {
             container.classList.add('opacity-0', 'pointer-events-none', 'scale-95');
             container.classList.remove('opacity-100', 'scale-100');
@@ -285,21 +285,21 @@ function initializeChatbot() {
     // Add message to chat
     function addMessage(message, isUser = false) {
         const messageDiv = document.createElement('div');
-        messageDiv.className = 'flex gap-2 md:gap-3 animate-fadeIn ' + (isUser ? 'justify-end' : '');
+        messageDiv.className = 'flex gap-2 animate-fadeIn ' + (isUser ? 'justify-end' : '');
         
         messageDiv.innerHTML = isUser ? `
-            <div class="bg-gradient-to-br from-primary to-emerald-500 text-white rounded-2xl md:rounded-3xl rounded-tr-sm p-3 md:p-4 max-w-[85%] shadow-md">
-                <p class="text-sm md:text-base leading-relaxed">${escapeHtml(message)}</p>
+            <div class="bg-gradient-to-br from-primary to-emerald-500 text-white rounded-xl rounded-tr-sm p-2.5 max-w-[85%] shadow-sm">
+                <p class="text-xs leading-relaxed">${escapeHtml(message)}</p>
             </div>
-            <div class="size-8 md:size-9 bg-gradient-to-br from-slate-300 to-slate-400 dark:from-slate-600 dark:to-slate-700 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
-                <span class="material-symbols-outlined text-white text-sm md:text-base">person</span>
+            <div class="size-7 bg-slate-300 dark:bg-slate-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
+                <span class="material-symbols-outlined text-white text-sm">person</span>
             </div>
         ` : `
-            <div class="size-8 md:size-9 bg-primary rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
-                <span class="material-symbols-outlined text-white text-sm md:text-base">smart_toy</span>
+            <div class="size-7 bg-primary rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
+                <span class="material-symbols-outlined text-white text-sm">smart_toy</span>
             </div>
-            <div class="bg-white dark:bg-slate-800 rounded-2xl md:rounded-3xl rounded-tl-sm p-3 md:p-4 max-w-[85%] shadow-md">
-                <div class="text-sm md:text-base text-slate-700 dark:text-slate-300 chatbot-message leading-relaxed">${message}</div>
+            <div class="bg-white dark:bg-slate-800 rounded-xl rounded-tl-sm p-2.5 max-w-[85%] shadow-sm">
+                <div class="text-xs text-slate-700 dark:text-slate-300 chatbot-message leading-relaxed">${message}</div>
             </div>
         `;
         
@@ -318,16 +318,16 @@ function initializeChatbot() {
     function showTypingIndicator() {
         const typingDiv = document.createElement('div');
         typingDiv.id = 'typing-indicator';
-        typingDiv.className = 'flex gap-2 md:gap-3 animate-fadeIn';
+        typingDiv.className = 'flex gap-2 animate-fadeIn';
         typingDiv.innerHTML = `
-            <div class="size-8 md:size-9 bg-primary rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
-                <span class="material-symbols-outlined text-white text-sm md:text-base">smart_toy</span>
+            <div class="size-7 bg-primary rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
+                <span class="material-symbols-outlined text-white text-sm">smart_toy</span>
             </div>
-            <div class="bg-white dark:bg-slate-800 rounded-2xl md:rounded-3xl rounded-tl-sm p-3 md:p-4 shadow-md">
-                <div class="flex gap-1.5 md:gap-2">
-                    <div class="size-2 md:size-2.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
-                    <div class="size-2 md:size-2.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
-                    <div class="size-2 md:size-2.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
+            <div class="bg-white dark:bg-slate-800 rounded-xl rounded-tl-sm p-2.5 shadow-sm">
+                <div class="flex gap-1">
+                    <div class="size-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
+                    <div class="size-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
+                    <div class="size-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
                 </div>
             </div>
         `;
