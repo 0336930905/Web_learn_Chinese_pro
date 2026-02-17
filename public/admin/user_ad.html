@@ -142,7 +142,7 @@
         <div id="admin-sidebar-container"></div>
         
         <!-- Mobile Menu Toggle -->
-        <button id="mobile-menu-toggle" class="fixed top-4 left-4 z-50 md:hidden bg-white dark:bg-sidebar-dark p-2 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
+        <button onclick="toggleMobileSidebar()" class="fixed top-4 left-4 z-50 md:hidden bg-white dark:bg-sidebar-dark p-2 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
             <span class="material-symbols-outlined text-gray-700 dark:text-gray-300">menu</span>
         </button>
         
@@ -334,31 +334,6 @@
             </form>
         </div>
     </div>
-
-    <script>
-        // Mobile menu toggle handler
-        document.addEventListener('DOMContentLoaded', function() {
-            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-            const sidebar = document.getElementById('admin-sidebar-container');
-            
-            if (mobileMenuToggle && sidebar) {
-                mobileMenuToggle.addEventListener('click', function() {
-                    sidebar.classList.toggle('hidden');
-                    sidebar.classList.toggle('fixed');
-                    sidebar.classList.toggle('inset-0');
-                    sidebar.classList.toggle('z-40');
-                    sidebar.classList.toggle('md:relative');
-                });
-                
-                // Close sidebar when clicking outside on mobile
-                sidebar.addEventListener('click', function(e) {
-                    if (e.target === sidebar && window.innerWidth < 768) {
-                        sidebar.classList.add('hidden');
-                    }
-                });
-            }
-        });
-    </script>
 
     <script src="/js/admin-users.js"></script>
 </body>

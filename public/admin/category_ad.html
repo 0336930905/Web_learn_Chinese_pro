@@ -159,7 +159,7 @@
         <div id="admin-sidebar-container"></div>
         
         <!-- Mobile Menu Toggle -->
-        <button id="mobile-menu-toggle" class="fixed top-4 left-4 z-50 md:hidden bg-white dark:bg-sidebar-dark p-2 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
+        <button onclick="toggleMobileSidebar()" class="fixed top-4 left-4 z-50 md:hidden bg-white dark:bg-sidebar-dark p-2 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
             <span class="material-symbols-outlined text-gray-700 dark:text-gray-300">menu</span>
         </button>
         
@@ -328,30 +328,11 @@
     </div>
 
     <script>
-        // Mobile menu and category sidebar toggle handlers
+        // Category sidebar toggle for mobile
         document.addEventListener('DOMContentLoaded', function() {
-            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
             const mobileCategoryToggle = document.getElementById('mobile-category-toggle');
-            const sidebar = document.getElementById('admin-sidebar-container');
             const categorySidebar = document.getElementById('category-sidebar');
             const closeCategoryBtn = document.getElementById('close-category-sidebar');
-            
-            // Main menu toggle
-            if (mobileMenuToggle && sidebar) {
-                mobileMenuToggle.addEventListener('click', function() {
-                    sidebar.classList.toggle('hidden');
-                    sidebar.classList.toggle('fixed');
-                    sidebar.classList.toggle('inset-0');
-                    sidebar.classList.toggle('z-40');
-                    sidebar.classList.toggle('md:relative');
-                });
-                
-                sidebar.addEventListener('click', function(e) {
-                    if (e.target === sidebar && window.innerWidth < 768) {
-                        sidebar.classList.add('hidden');
-                    }
-                });
-            }
             
             // Category sidebar toggle for mobile
             if (mobileCategoryToggle && categorySidebar) {

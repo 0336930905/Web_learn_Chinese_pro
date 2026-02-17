@@ -43,8 +43,17 @@ function renderAdminSidebar(activePage = 'dashboard') {
     }).join('');
 
     const sidebarHTML = `
-        <aside class="w-72 bg-white dark:bg-sidebar-dark border-r border-slate-200 dark:border-slate-700 flex flex-col h-full z-10 shadow-sm">
+        <!-- Mobile Overlay -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden opacity-0 transition-opacity duration-300" onclick="toggleMobileSidebar()"></div>
+        
+        <!-- Sidebar -->
+        <aside id="admin-sidebar" class="fixed md:relative w-72 bg-white dark:bg-sidebar-dark border-r border-slate-200 dark:border-slate-700 flex flex-col h-full z-40 shadow-xl md:shadow-sm -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
             <div class="p-6 flex flex-col gap-6 h-full">
+                <!-- Mobile Close Button -->
+                <button onclick="toggleMobileSidebar()" class="md:hidden absolute top-4 right-4 p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+                
                 <!-- Admin Profile -->
                 <div class="flex items-center gap-4 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
                     <div class="size-12 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 overflow-hidden text-primary">
@@ -90,6 +99,32 @@ function handleAdminLogout() {
         
         // Redirect to login
         window.location.href = '/login_screen.html';
+    }
+}
+
+// Toggle mobile sidebar
+function toggleMobileSidebar() {
+    const sidebar = document.getElementById('admin-sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    
+    if (!sidebar || !overlay) return;
+    
+    const isOpen = !sidebar.classList.contains('-translate-x-full');
+    
+    if (isOpen) {
+        // Close sidebar
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+        overlay.classList.remove('opacity-100');
+        overlay.classList.add('opacity-0');
+    } else {
+        // Open sidebar
+        overlay.classList.remove('hidden');
+        setTimeout(() => {
+            sidebar.classList.remove('-translate-x-full');
+            overlay.classList.remove('opacity-0');
+            overlay.classList.add('opacity-100');
+        }, 10);
     }
 }
 
