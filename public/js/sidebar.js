@@ -606,6 +606,15 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }
     
+    // Mobile compatibility: Wait for localStorage if data isn't ready yet
+    let userStr = localStorage.getItem('user');
+    if (!userStr && (tokenParam || authSuccess)) {
+        console.log('⏳ Waiting for localStorage to sync on mobile...');
+        await new Promise(resolve => setTimeout(resolve, 300));
+        userStr = localStorage.getItem('user');
+        console.log('✓ User data check after delay:', userStr ? 'found' : 'still missing');
+    }
+    
     const sidebarContainer = document.getElementById('sidebar-container');
     if (sidebarContainer) {
         const activePage = sidebarContainer.getAttribute('data-active-page') || 'home';

@@ -114,6 +114,7 @@
                         </label>
                         <div class="relative transition-all duration-300 transform group-focus-within:scale-[1.02]">
                             <input
+                                autocomplete="username"
                                 class="w-full h-14 pl-5 pr-4 rounded-full bg-background-light dark:bg-background-dark border-2 border-transparent focus:border-primary focus:ring-4 focus:ring-primary/20 text-lg text-text-main dark:text-white placeholder:text-text-muted/70 outline-none transition-all"
                                 id="email" 
                                 data-i18n-placeholder="login.emailPlaceholder"
@@ -133,6 +134,7 @@
                         </label>
                         <div class="relative transition-all duration-300 transform group-focus-within:scale-[1.02]">
                             <input
+                                autocomplete="current-password"
                                 class="w-full h-14 pl-5 pr-12 rounded-full bg-background-light dark:bg-background-dark border-2 border-transparent focus:border-primary focus:ring-4 focus:ring-primary/20 text-lg text-text-main dark:text-white placeholder:text-text-muted/70 outline-none transition-all"
                                 id="password" 
                                 data-i18n-placeholder="login.passwordPlaceholder"
@@ -311,32 +313,114 @@
                 try {
                     // Call login API
                     const response = await authAPI.login(email, password);
-                    console.log('✅ Login response:', response);
-                    console.log('✅ Response data:', response.data);
-                    console.log('✅ Token saved:', localStorage.getItem('authToken'));
-                    console.log('✅ User saved:', localStorage.getItem('user'));
+                    console.log('===== LOGIN DEBUG START =====');
+                    console.log('Full response:', JSON.stringify(response, null, 2));
+                    console.log('Response.data:', response.data);
+                    console.log('Response.success:', response.success);
+                    console.log('Response.message:', response.message);
 
-                    // Get user from response
-                    const user = response.data?.user || response.user;
-                    console.log('✅ User object:', user);
-                    console.log('✅ User role:', user?.role);
+                    // Get user from response with proper fallback
+                    const user = response.data?.user || response.user || null;
+                    const token = response.data?.token || response.token || null;
+                    
+                    console.log('Extracted user:', user);
+                    console.log('User role:', user?.role);
+                    console.log('Extracted token:', token ? token.substring(0, 20) + '...' : 'MISSING');
+
+                    // Validate we have both token and user
+                    if (!token) {
+                        console.error('❌ CRITICAL: No token found in response!');
+                        alert('Lỗi đăng nhập: Không nhận được token xác thực');
+                        loginButton.disabled = false;
+                        loginButton.innerHTML = originalText;
+                        return;
+                    }
+                    
+                    if (!user || !user.role) {
+                        console.error('❌ CRITICAL: No user or role found in response!');
+                        alert('Lỗi đăng nhập: Không nhận được thông tin người dùng');
+                        loginButton.disabled = false;
+                        loginButton.innerHTML = originalText;
+                        return;
+                    }
+
+                    // CRITICAL: Explicitly save to localStorage for mobile compatibility
+                    try {
+                        const userJson = JSON.stringify(user);
+                        console.log('User JSON length:', userJson.length);
+                        
+                        localStorage.setItem('authToken', token);
+                        localStorage.setItem('user', userJson);
+                        
+                        // Clean up old keys
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('jwtToken');
+                        
+                        // Verify storage
+                        const storedToken = localStorage.getItem('authToken');
+                        const storedUser = localStorage.getItem('user');
+                        console.log('Storage verification:');
+                        console.log('- Token stored:', storedToken ? storedToken.substring(0, 20) + '...' : 'FAILED');
+                        console.log('- User stored:', storedUser ? 'success (' + storedUser.length + ' chars)' : 'FAILED');
+                        
+                        if (!storedToken || !storedUser) {
+                            throw new Error('LocalStorage write verification failed');
+                        }
+                        
+                    } catch (storageError) {
+                        console.error('❌ localStorage error:', storageError);
+                        alert('Lỗi lưu thông tin đăng nhập: ' + storageError.message + '\n\nVui lòng thử lại hoặc sử dụng trình duyệt khác.');
+                        loginButton.disabled = false;
+                        loginButton.innerHTML = originalText;
+                        return;
+                    }
 
                     // Show success message
                     showNotification(i18n.t('success.loginSuccess'), 'success');
 
                     // Redirect based on user role
+                    // Use longer delay for mobile to ensure localStorage is written
+                    const isMobile = /Mobile|Android|iPhone|iPad|Zalo/i.test(navigator.userAgent);
+                    const redirectDelay = isMobile ? 2000 : 1000; // Even longer for mobile
+                    
+                    console.log('Device type:', isMobile ? 'MOBILE' : 'DESKTOP');
+                    console.log('Redirect delay:', redirectDelay + 'ms');
+                    console.log('===== LOGIN DEBUG END =====');
+                    
                     setTimeout(() => {
                         const role = user?.role || 'student';
-                        console.log('🔄 Redirecting user with role:', role);
+                        console.log('===== REDIRECT DEBUG START =====');
+                        console.log('Redirecting user with role:', role);
+                        console.log('Current URL:', window.location.href);
+                        console.log('Final localStorage check:');
+                        console.log('- Token:', localStorage.getItem('authToken') ? 'EXISTS' : 'MISSING');
+                        console.log('- User:', localStorage.getItem('user') ? 'EXISTS' : 'MISSING');
                         
+                        let redirectUrl;
                         if (role === 'admin') {
-                            console.log('➡️ Redirecting to admin dashboard');
-                            window.location.href = '/admin/home_ad.html';
+                            redirectUrl = '/admin/home_ad.html';
+                            console.log('Admin redirect to:', redirectUrl);
                         } else {
-                            console.log('➡️ Redirecting to user home');
-                            window.location.href = '/user/home.html';
+                            redirectUrl = '/user/home.html';
+                            console.log('User redirect to:', redirectUrl);
                         }
-                    }, 1000);
+                        
+                        // MOBILE ONLY: Add token to URL as absolute fallback
+                        // Do NOT include full user data (too large), just token
+                        if (isMobile) {
+                            const params = new URLSearchParams({
+                                token: token,
+                                role: role, // Only pass role, not full user object
+                                auth: 'success'
+                            });
+                            redirectUrl = `${redirectUrl}?${params.toString()}`;
+                            console.log('📱 Mobile: Added auth params to URL (token + role only)');
+                        }
+                        
+                        console.log('Final redirect URL:', redirectUrl);
+                        console.log('===== REDIRECT DEBUG END =====');
+                        window.location.href = redirectUrl;
+                    }, redirectDelay);
 
                 } catch (error) {
                     console.error('❌ Login error:', error);

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Debug Console</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 10px;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            font-size: 12px;
+        }
+        #console {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            padding: 10px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background: #252526;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .log { color: #d4d4d4; }
+        .info { color: #4fc1ff; }
+        .warn { color: #ffcc00; }
+        .error { color: #f48771; }
+        .success { color: #73c991; }
+        button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 14px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background: #0e639c;
+            color: white;
+            font-weight: bold;
+        }
+        button:active {
+            background: #1177bb;
+        }
+        .btn-danger {
+            background: #d13438;
+        }
+        .btn-danger:active {
+            background: #e81123;
+        }
+    </style>
+</head>
+<body>
+    <h3 style="margin: 10px 0;">📱 Mobile Debug Console</h3>
+    
+    <button onclick="checkAuth()">🔍 Check Auth Status</button>
+    <button onclick="testLogin()">🧪 Test Login (admin@test.com)</button>
+    <button onclick="testAdminPage()">👨‍💼 Test Admin Page Access</button>
+    <button onclick="clearStorage()" class="btn-danger">🗑️ Clear Storage</button>
+    <button onclick="clearConsole()">🧹 Clear Console</button>
+    
+    <div id="console"></div>
+
+    <script>
+        const consoleDiv = document.getElementById('console');
+        
+        // Override console methods
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        function addToConsole(message, type = 'log') {
+            const timestamp = new Date().toLocaleTimeString('vi-VN');
+            const line = document.createElement('div');
+            line.className = type;
+            line.textContent = `[${timestamp}] ${message}`;
+            consoleDiv.appendChild(line);
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+            
+            // Also call original console method
+            if (type === 'error') originalError(message);
+            else if (type === 'warn') originalWarn(message);
+            else originalLog(message);
+        }
+        
+        console.log = (...args) => addToConsole(args.join(' '), 'log');
+        console.error = (...args) => addToConsole(args.join(' '), 'error');
+        console.warn = (...args) => addToConsole(args.join(' '), 'warn');
+        console.info = (...args) => addToConsole(args.join(' '), 'info');
+        
+        // Catch all errors
+        window.onerror = function(msg, url, line, col, error) {
+            addToConsole(`ERROR: ${msg} at ${url}:${line}:${col}`, 'error');
+            return false;
+        };
+        
+        function checkAuth() {
+            console.log('===== AUTH STATUS CHECK =====');
+            const token = localStorage.getItem('authToken');
+            const userStr = localStorage.getItem('user');
+            
+            console.log('Token: ' + (token ? token.substring(0, 30) + '...' : 'NOT FOUND'));
+            console.log('User data: ' + (userStr ? 'EXISTS' : 'NOT FOUND'));
+            
+            if (userStr) {
+                try {
+                    const user = JSON.parse(userStr);
+                    console.log('User email: ' + (user.email || 'N/A'));
+                    console.log('User role: ' + (user.role || 'N/A'));
+                    console.log('User name: ' + (user.fullName || 'N/A'));
+                } catch (e) {
+                    console.error('Failed to parse user data: ' + e.message);
+                }
+            }
+            
+            console.log('User-Agent: ' + navigator.userAgent);
+            console.log('Current URL: ' + window.location.href);
+            console.log('===== END CHECK =====');
+        }
+        
+        async function testLogin() {
+            console.log('===== STARTING LOGIN TEST =====');
+            console.log('Sending login request...');
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: 'admin@test.com',
+                        password: '12345678'
+                    })
+                });
+                
+                console.log('Response status: ' + response.status);
+                const data = await response.json();
+                console.log('Response data: ' + JSON.stringify(data, null, 2));
+                
+                if (data.success && data.data) {
+                    const token = data.data.token;
+                    const user = data.data.user;
+                    
+                    console.log('Token received: ' + (token ? token.substring(0, 30) + '...' : 'NO'));
+                    console.log('User role: ' + (user?.role || 'NO ROLE'));
+                    
+                    // Save to localStorage
+                    localStorage.setItem('authToken', token);
+                    localStorage.setItem('user', JSON.stringify(user));
+                    
+                    console.log('✅ Saved to localStorage');
+                    
+                    // Verify
+                    console.log('Verify - Token in storage: ' + (localStorage.getItem('authToken') ? 'YES' : 'NO'));
+                    console.log('Verify - User in storage: ' + (localStorage.getItem('user') ? 'YES' : 'NO'));
+                    
+                    // Redirect suggestion
+                    const redirectUrl = user.role === 'admin' ? '/admin/home_ad.html' : '/user/home.html';
+                    console.log('Should redirect to: ' + redirectUrl);
+                    
+                    if (confirm('Login thành công! Redirect đến ' + redirectUrl + '?')) {
+                        window.location.href = redirectUrl;
+                    }
+                } else {
+                    console.error('Login failed: ' + (data.error?.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Login error: ' + error.message);
+            }
+            
+            console.log('===== END LOGIN TEST =====');
+        }
+        
+        async function testAdminPage() {
+            console.log('===== ADMIN PAGE TEST START =====');
+            
+            // Check current auth
+            const token = localStorage.getItem('authToken');
+            const userStr = localStorage.getItem('user');
+            
+            if (!token) {
+                console.error('❌ No token found. Please login first.');
+                alert('Vui lòng đăng nhập trước!');
+                return;
+            }
+            
+            console.log('Token exists: YES');
+            
+            if (userStr) {
+                try {
+                    const user = JSON.parse(userStr);
+                    console.log('User role: ' + (user.role || 'UNDEFINED'));
+                    
+                    if (user.role !== 'admin') {
+                        console.error('❌ User is not admin. Role: ' + user.role);
+                        alert('Bạn không phải admin. Role: ' + user.role);
+                        return;
+                    }
+                } catch (e) {
+                    console.error('❌ Cannot parse user data');
+                }
+            } else {
+                console.warn('⚠️ No user data, but have token');
+            }
+            
+            // Try to access admin profile API
+            console.log('Testing /api/auth/profile...');
+            try {
+                const response = await fetch('/api/auth/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                console.log('API Status: ' + response.status);
+                const data = await response.json();
+                console.log('API Response: ' + JSON.stringify(data, null, 2));
+                
+                if (data.success && data.data) {
+                    console.log('✅ Profile fetched successfully');
+                    console.log('   Email: ' + data.data.email);
+                    console.log('   Role: ' + data.data.role);
+                    
+                    if (data.data.role !== 'admin') {
+                        console.error('❌ Profile says you are not admin!');
+                        alert('API says you are: ' + data.data.role + '\nNot admin!');
+                        return;
+                    }
+                }
+            } catch (error) {
+                console.error('❌ API Error: ' + error.message);
+                alert('Lỗi gọi API: ' + error.message);
+                return;
+            }
+            
+            // If all checks passed, redirect to admin page
+            console.log('✅ All checks passed. Redirecting to admin page...');
+            if (confirm('Redirect to admin page?')) {
+                window.location.href = '/admin/home_ad.html';
+            }
+            
+            console.log('===== ADMIN PAGE TEST END =====');
+        }
+        
+        function clearStorage() {
+            if (confirm('Xóa tất cả dữ liệu localStorage?')) {
+                localStorage.clear();
+                console.log('✅ localStorage cleared');
+                checkAuth();
+            }
+        }
+        
+        function clearConsole() {
+            consoleDiv.innerHTML = '';
+            console.log('Console cleared');
+        }
+        
+        // Initial check
+        console.log('📱 Mobile Debug Console Ready');
+        console.log('Tap buttons above to test');
+        checkAuth();
+    </script>
+</body>
+</html>

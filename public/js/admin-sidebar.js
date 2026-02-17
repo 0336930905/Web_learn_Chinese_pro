@@ -95,7 +95,12 @@ function handleAdminLogout() {
 
 // Initialize admin sidebar when DOM is loaded
 document.addEventListener('DOMContentLoaded', async function() {
+    console.log('===== ADMIN SIDEBAR INIT START =====');
     console.log('🔧 Admin sidebar initializing...');
+    console.log('📱 User agent:', navigator.userAgent);
+    
+    const isMobile = /Mobile|Android|iPhone|iPad|Zalo/i.test(navigator.userAgent);
+    console.log('📱 Device type:', isMobile ? 'MOBILE' : 'DESKTOP');
     
     // Get active page from current filename
     const currentPage = window.location.pathname.split('/').pop();
@@ -112,49 +117,204 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
     
     // Check authentication with multiple token keys
-    const token = localStorage.getItem('authToken') || localStorage.getItem('token') || localStorage.getItem('jwtToken');
-    console.log('🔑 Token check:', token ? 'Found' : 'Not found');
-    console.log('🔑 authToken:', localStorage.getItem('authToken') ? 'exists' : 'missing');
-    console.log('🔑 user data:', localStorage.getItem('user') ? 'exists' : 'missing');
+    let token = localStorage.getItem('authToken') || localStorage.getItem('token') || localStorage.getItem('jwtToken');
+    console.log('🔑 Token check:', token ? 'Found (' + token.substring(0, 15) + '...)' : 'Not found');
     
+    // retry logic for token if missing (mobile specific)
     if (!token) {
-        console.warn('⚠️ No token found, redirecting to login');
+        console.log('⚠️ Token missing initially, checking URL params and retrying...');
+        
+        // Check URL params directly as a fallback
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlToken = urlParams.get('token');
+        
+        if (urlToken) {
+            console.log('✅ Found token in URL params, saving...');
+            token = urlToken;
+            localStorage.setItem('authToken', token);
+        } else {
+             // Wait a bit and try reading storage again
+             await new Promise(resolve => setTimeout(resolve, 500));
+             token = localStorage.getItem('authToken') || localStorage.getItem('token');
+             console.log('🔑 Token retry check:', token ? 'Found' : 'Still not found');
+        }
+    }
+
+    if (!token) {
+        console.error('⚠️ No token found, redirecting to login');
+        // Only redirect if we are SURE it's not a loading glitch
+        // alert('Vui lòng đăng nhập để tiếp tục'); 
+        // Commented out alert to avoid disrupting user flow if it's just a refresh
         window.location.href = '/login_screen.html';
         return;
     }
     
     // Verify admin role
-    const userStr = localStorage.getItem('user');
+    let userStr = localStorage.getItem('user');
+    console.log('👤 Initial user data check:', userStr ? 'EXISTS' : 'MISSING');
+    
+    // Mobile compatibility: Wait longer if user data is missing
     if (!userStr) {
-        console.error('❌ User data not found in localStorage');
+        const mobileDelay = isMobile ? 1500 : 500; // Increased mobile delay
+        console.warn(`⏳ User data not immediately found, waiting ${mobileDelay}ms for mobile sync...`);
+        await new Promise(resolve => setTimeout(resolve, mobileDelay));
+        userStr = localStorage.getItem('user');
+        console.log('👤 After delay check:', userStr ? 'FOUND' : 'STILL MISSING');
+    }
+    
+    // Additional mobile-specific check: verify token exists
+    if (isMobile && !localStorage.getItem('authToken')) {
+        console.log('📱 Mobile: Token still missing after delay, checking URL params...');
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlToken = urlParams.get('token');
+        if (urlToken) {
+            console.log('✅ Recovered token from URL');
+            localStorage.setItem('authToken', urlToken);
+        }
+    }
+    
+    // Parse user data if available to check if we need full fetch
+    let needsFullFetch = false;
+    let currentUser = null;
+    
+    if (userStr) {
+        try {
+            currentUser = JSON.parse(userStr);
+            console.log('👤 Parsed user:', currentUser);
+            
+            // Check if this is a minimal mobile auth user (needs full fetch)
+            if (currentUser._isMobileAuth || !currentUser.email || !currentUser.fullName) {
+                console.log('⚠️ Detected minimal user data, need full fetch');
+                needsFullFetch = true;
+            }
+        } catch (e) {
+            console.error('❌ Error parsing user data:', e);
+            needsFullFetch = true;
+        }
+    }
+    
+    // If still no user data OR needs full fetch, fetch from API using the token
+    if (!userStr || needsFullFetch) {
+        if (!userStr) {
+            console.log('🌐 User data missing, fetching from API...');
+        } else {
+            console.log('🌐 Fetching full user profile from API...');
+        }
+        
+        let fetchAttempts = 0;
+        const maxAttempts = 2;
+        let fetchSuccess = false;
+        
+        while (fetchAttempts < maxAttempts && !fetchSuccess) {
+            fetchAttempts++;
+            console.log(`📡 Fetch attempt ${fetchAttempts}/${maxAttempts}...`);
+        while (fetchAttempts < maxAttempts && !fetchSuccess) {
+            fetchAttempts++;
+            console.log(`📡 Fetch attempt ${fetchAttempts}/${maxAttempts}...`);
+            
+            try {
+                const response = await fetch('/api/auth/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                console.log('📡 API response status:', response.status);
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('📡 API result:', result);
+                    
+                    if (result.success && result.data) {
+                        console.log('✅ Fetched user from API:', result.data.email, '| Role:', result.data.role);
+                        
+                        // Save to localStorage for future use
+                        const userData = {
+                            _id: result.data._id,
+                            id: result.data._id,
+                            email: result.data.email,
+                            fullName: result.data.fullName,
+                            role: result.data.role,
+                            avatar: result.data.avatar
+                        };
+                        localStorage.setItem('user', JSON.stringify(userData));
+                        userStr = JSON.stringify(userData);
+                        currentUser = userData;
+                        fetchSuccess = true;
+                        console.log('✅ Full user data saved to localStorage');
+                    } else {
+                        throw new Error('Invalid API response structure');
+                    }
+                } else if (response.status === 401) {
+                    throw new Error('Token expired or invalid (401)');
+                } else {
+                    throw new Error('API request failed with status: ' + response.status);
+                }
+            } catch (fetchError) {
+                console.error(`❌ Fetch attempt ${fetchAttempts} failed:`, fetchError.message);
+                
+                if (fetchAttempts >= maxAttempts) {
+                    // All attempts failed
+                    console.error('❌ All fetch attempts failed');
+                    console.error('Stack:', fetchError.stack);
+                    alert('Không thể tải thông tin người dùng sau ' + maxAttempts + ' lần thử.\n\nLỗi: ' + fetchError.message + '\n\nVui lòng đăng nhập lại.');
+                    localStorage.clear();
+                    window.location.href = '/login_screen.html';
+                    return;
+                } else {
+                    // Wait before retry
+                    console.log('⏳ Waiting 500ms before retry...');
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+            }
+        }
+    }
+    
+    // Final verification
+    if (!userStr) {
+        console.error('❌ User data not found after all attempts');
         alert('Dữ liệu người dùng không hợp lệ. Vui lòng đăng nhập lại.');
         localStorage.clear();
         window.location.href = '/login_screen.html';
         return;
     }
     
+    // Parse and verify user data
     try {
-        const user = JSON.parse(userStr);
-        console.log('👤 User data:', user);
-        console.log('👤 User role:', user.role);
+        if (!currentUser) {
+            currentUser = JSON.parse(userStr);
+        }
         
-        if (user.role !== 'admin') {
-            console.warn('⚠️ User is not admin, role:', user.role);
-            alert('Bạn không có quyền truy cập trang quản trị!');
+        console.log('===== USER VERIFICATION =====');
+        console.log('User email:', currentUser.email);
+        console.log('User role:', currentUser.role);
+        console.log('User name:', currentUser.fullName);
+        console.log('=============================');
+        
+        if (currentUser.role !== 'admin') {
+            console.error('⚠️ ACCESS DENIED: User is not admin');
+            console.error('Role received:', currentUser.role);
+            alert('Bạn không có quyền truy cập trang quản trị!\n\nRole của bạn: ' + currentUser.role);
             window.location.href = '/user/home.html';
             return;
         }
         
-        console.log('✅ Admin authenticated successfully');
+        console.log('✅ Admin access verified successfully');
         
         // Update admin name if available
-        const adminNameEl = document.getElementById('admin-name');
-        if (adminNameEl && user.fullName) {
-            adminNameEl.textContent = user.fullName;
-        }
+        setTimeout(() => {
+            const adminNameEl = document.getElementById('admin-name');
+            if (adminNameEl && currentUser.fullName) {
+                adminNameEl.textContent = currentUser.fullName;
+                console.log('✅ Admin name updated:', currentUser.fullName);
+            }
+        }, 100);
+        
     } catch (error) {
-        console.error('❌ Error parsing user data:', error);
-        alert('Dữ liệu người dùng không hợp lệ. Vui lòng đăng nhập lại.');
+        console.error('❌ Error parsing/verifying user data:', error);
+        console.error('Stack:', error.stack);
+        alert('Dữ liệu người dùng không hợp lệ.\n\nLỗi: ' + error.message + '\n\nVui lòng đăng nhập lại.');
         localStorage.clear();
         window.location.href = '/login_screen.html';
         return;
@@ -168,4 +328,17 @@ document.addEventListener('DOMContentLoaded', async function() {
     } else {
         console.error('❌ Sidebar container not found');
     }
+    
+    // Clean URL params after successful auth if present
+    const urlParamsCleanup = new URLSearchParams(window.location.search);
+    if (urlParamsCleanup.get('token') && urlParamsCleanup.get('auth') === 'success') {
+        try {
+            window.history.replaceState({}, document.title, window.location.pathname);
+            console.log('🧹 Cleaned auth params from URL');
+        } catch (e) {
+            console.error('Failed to clean URL:', e);
+        }
+    }
+    
+    console.log('===== ADMIN SIDEBAR INIT COMPLETE =====');
 });

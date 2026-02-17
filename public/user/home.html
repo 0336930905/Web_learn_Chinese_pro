@@ -75,6 +75,46 @@
             }
         }
     </style>
+    
+    <!-- Mobile compatibility: Handle auth from URL params if localStorage fails -->
+    <script>
+        (function() {
+            console.log('===== USER HOME URL PARAMS HANDLER =====');
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const urlToken = urlParams.get('token');
+                const urlRole = urlParams.get('role');
+                const authSuccess = urlParams.get('auth');
+                
+                console.log('🔍 URL params:', { token: urlToken ? 'exists' : 'missing', role: urlRole, auth: authSuccess });
+                
+                // Check existing storage
+                const existingToken = localStorage.getItem('authToken');
+                const existingUser = localStorage.getItem('user');
+                
+                // If token is in URL (mobile fallback), save to localStorage
+                if (urlToken && authSuccess === 'success') {
+                    console.log('📱 Mobile auth: Saving token from URL');
+                    localStorage.setItem('authToken', urlToken);
+                    
+                    // ONLY create minimal user if NO user data exists
+                    if (!existingUser && urlRole) {
+                        const minimalUser = { role: urlRole };
+                        localStorage.setItem('user', JSON.stringify(minimalUser));
+                        console.log('📱 Minimal user saved, sidebar will fetch full profile');
+                    } else if (existingUser) {
+                        console.log('ℹ️ User data already exists, keeping it');
+                    }
+                    
+                    // Clean URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+            } catch (e) {
+                console.error('❌ Error handling URL params:', e);
+            }
+        })();
+    </script>
+    
     <script src="../js/sidebar.js"></script>
 </head>
 

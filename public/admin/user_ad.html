@@ -11,6 +11,103 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
         rel="stylesheet" />
+    
+    <!-- Mobile compatibility: Handle auth from URL params if localStorage fails -->
+    <script>
+        (function() {
+            console.log('===== URL PARAMS HANDLER START =====');
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const urlToken = urlParams.get('token');
+                const urlRole = urlParams.get('role');
+                const authSuccess = urlParams.get('auth');
+                
+                console.log('🔍 URL params check:');
+                console.log('  - token:', urlToken ? 'EXISTS (' + urlToken.substring(0, 20) + '...)' : 'MISSING');
+                console.log('  - role:', urlRole || 'MISSING');
+                console.log('  - auth:', authSuccess || 'MISSING');
+                
+                // Check existing storage BEFORE processing URL params
+                const existingToken = localStorage.getItem('authToken');
+                const existingUser = localStorage.getItem('user');
+                console.log('📦 Existing storage:');
+                console.log('  - authToken:', existingToken ? 'EXISTS' : 'MISSING');
+                console.log('  - user:', existingUser ? 'EXISTS' : 'MISSING');
+                
+                // If token is in URL (mobile fallback), save to localStorage
+                if (urlToken && authSuccess === 'success') {
+                    console.log('📱 MOBILE AUTH: Processing URL params...');
+                    
+                    // Save token immediately
+                    localStorage.setItem('authToken', urlToken);
+                    console.log('✅ Token saved to localStorage');
+                    
+                    // ALWAYS update user role from URL params (critical for role switching)
+                    if (urlRole) {
+                        // Check if we need to update existing user data
+                        let needsUpdate = true;
+                        
+                        if (existingUser) {
+                            try {
+                                const existingUserObj = JSON.parse(existingUser);
+                                console.log('📦 Existing user data found:');
+                                console.log('   - Email:', existingUserObj.email || 'N/A');
+                                console.log('   - Old Role:', existingUserObj.role || 'N/A');
+                                console.log('   - New Role:', urlRole);
+                                
+                                // Check if role changed (e.g., student -> admin)
+                                if (existingUserObj.role !== urlRole) {
+                                    console.log('🔄 Role changed! Must update user data');
+                                    needsUpdate = true;
+                                } else if (existingUserObj.email && existingUserObj.fullName) {
+                                    console.log('✅ User data valid and role matches, keeping existing');
+                                    needsUpdate = false;
+                                }
+                            } catch (e) {
+                                console.error('❌ Existing user data corrupted:', e);
+                                needsUpdate = true;
+                            }
+                        }
+                        
+                        if (needsUpdate) {
+                            // Create/update minimal user object with correct role
+                            const minimalUser = { 
+                                role: urlRole,
+                                _isMobileAuth: true,
+                                _timestamp: Date.now()
+                            };
+                            localStorage.setItem('user', JSON.stringify(minimalUser));
+                            console.log('✅ User data updated with role:', urlRole);
+                        }
+                    }
+                    
+                    // Verify storage
+                    const verifyToken = localStorage.getItem('authToken');
+                    const verifyUser = localStorage.getItem('user');
+                    console.log('🔍 Storage verification:');
+                    console.log('  - Token:', verifyToken ? 'VERIFIED' : '❌ FAILED');
+                    console.log('  - User:', verifyUser ? 'VERIFIED' : '❌ FAILED');
+                    
+                    if (!verifyToken) {
+                        console.error('❌ CRITICAL: Token save failed!');
+                        alert('Lỗi lưu token. Vui lòng đăng nhập lại.');
+                        window.location.href = '/login_screen.html';
+                        return;
+                    }
+                    
+                    // Clean URL - DELAYED to let other scripts read params if needed
+                    // window.history.replaceState({}, document.title, window.location.pathname);
+                    console.log('✅ URL params preserved for sidebar script');
+                }
+                
+                console.log('===== URL PARAMS HANDLER END =====');
+            } catch (e) {
+                console.error('❌ Error handling URL auth params:', e);
+                console.error('Stack:', e.stack);
+            }
+        })();
+    </script>
+    
     <script src="/js/admin-sidebar.js"></script>
     <script id="tailwind-config">
         tailwind.config = {
