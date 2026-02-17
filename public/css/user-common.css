@@ -557,6 +557,7 @@ textarea:focus-visible {
 /* Chatbot smooth scrolling */
 #chatbot-messages {
     scroll-behavior: smooth;
+    overscroll-behavior: contain;
 }
 
 /* Chatbot message animations */
@@ -575,22 +576,69 @@ textarea:focus-visible {
     animation: fadeIn 0.3s ease-out;
 }
 
+/* Chatbot button pulse animation */
+@keyframes pulse-shadow {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(76, 230, 76, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 10px rgba(76, 230, 76, 0);
+    }
+}
+
+#chatbot-toggle:hover {
+    animation: pulse-shadow 1.5s infinite;
+}
+
+/* Smooth scrollbar for chatbot */
+#chatbot-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+#chatbot-messages::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#chatbot-messages::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.3);
+    border-radius: 3px;
+}
+
+#chatbot-messages::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.5);
+}
+
 /* Mobile chatbot optimizations */
 @media (max-width: 768px) {
     /* Prevent scroll issues on iOS */
     #chatbot-container {
         -webkit-overflow-scrolling: touch;
+        touch-action: pan-y;
     }
     
-    /* Smaller quick action buttons on mobile */
+    /* Better touch targets */
     .chatbot-quick-btn {
-        font-size: 10px;
-        padding: 6px 10px;
+        min-height: 44px;
+        touch-action: manipulation;
     }
     
     /* Adjust chatbot input for mobile */
     #chatbot-input {
-        font-size: 14px; /* Prevents iOS zoom */
+        font-size: 16px; /* Prevents iOS zoom */
+        -webkit-appearance: none;
+        border-radius: 999px;
+    }
+    
+    /* Better message spacing on mobile */
+    #chatbot-messages {
+        padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+    
+    /* Prevent body scroll when chatbot is open */
+    body.chatbot-open {
+        overflow: hidden;
+        position: fixed;
+        width: 100%;
     }
 }
 
