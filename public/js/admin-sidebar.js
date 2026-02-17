@@ -243,9 +243,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         while (fetchAttempts < maxAttempts && !fetchSuccess) {
             fetchAttempts++;
             console.log(`📡 Fetch attempt ${fetchAttempts}/${maxAttempts}...`);
-        while (fetchAttempts < maxAttempts && !fetchSuccess) {
-            fetchAttempts++;
-            console.log(`📡 Fetch attempt ${fetchAttempts}/${maxAttempts}...`);
             
             try {
                 const response = await fetch('/api/auth/profile', {
