@@ -95,6 +95,8 @@ function handleAdminLogout() {
 
 // Initialize admin sidebar when DOM is loaded
 document.addEventListener('DOMContentLoaded', async function() {
+    console.log('🔧 Admin sidebar initializing...');
+    
     // Get active page from current filename
     const currentPage = window.location.pathname.split('/').pop();
     let activePage = 'dashboard';
@@ -109,37 +111,61 @@ document.addEventListener('DOMContentLoaded', async function() {
         activePage = 'backup';
     }
     
-    // Check authentication
+    // Check authentication with multiple token keys
     const token = localStorage.getItem('authToken') || localStorage.getItem('token') || localStorage.getItem('jwtToken');
+    console.log('🔑 Token check:', token ? 'Found' : 'Not found');
+    console.log('🔑 authToken:', localStorage.getItem('authToken') ? 'exists' : 'missing');
+    console.log('🔑 user data:', localStorage.getItem('user') ? 'exists' : 'missing');
+    
     if (!token) {
+        console.warn('⚠️ No token found, redirecting to login');
         window.location.href = '/login_screen.html';
         return;
     }
     
     // Verify admin role
     const userStr = localStorage.getItem('user');
-    if (userStr) {
-        try {
-            const user = JSON.parse(userStr);
-            if (user.role !== 'admin') {
-                alert('Bạn không có quyền truy cập trang quản trị!');
-                window.location.href = '/user/home.html';
-                return;
-            }
-            
-            // Update admin name if available
-            const adminNameEl = document.getElementById('admin-name');
-            if (adminNameEl && user.fullName) {
-                adminNameEl.textContent = user.fullName;
-            }
-        } catch (error) {
-            console.error('Error parsing user data:', error);
+    if (!userStr) {
+        console.error('❌ User data not found in localStorage');
+        alert('Dữ liệu người dùng không hợp lệ. Vui lòng đăng nhập lại.');
+        localStorage.clear();
+        window.location.href = '/login_screen.html';
+        return;
+    }
+    
+    try {
+        const user = JSON.parse(userStr);
+        console.log('👤 User data:', user);
+        console.log('👤 User role:', user.role);
+        
+        if (user.role !== 'admin') {
+            console.warn('⚠️ User is not admin, role:', user.role);
+            alert('Bạn không có quyền truy cập trang quản trị!');
+            window.location.href = '/user/home.html';
+            return;
         }
+        
+        console.log('✅ Admin authenticated successfully');
+        
+        // Update admin name if available
+        const adminNameEl = document.getElementById('admin-name');
+        if (adminNameEl && user.fullName) {
+            adminNameEl.textContent = user.fullName;
+        }
+    } catch (error) {
+        console.error('❌ Error parsing user data:', error);
+        alert('Dữ liệu người dùng không hợp lệ. Vui lòng đăng nhập lại.');
+        localStorage.clear();
+        window.location.href = '/login_screen.html';
+        return;
     }
     
     // Insert sidebar
     const sidebarContainer = document.getElementById('admin-sidebar-container');
     if (sidebarContainer) {
         sidebarContainer.innerHTML = renderAdminSidebar(activePage);
+        console.log('✅ Admin sidebar rendered');
+    } else {
+        console.error('❌ Sidebar container not found');
     }
 });
