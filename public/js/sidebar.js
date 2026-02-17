@@ -158,17 +158,20 @@ function initializeChatbot() {
     };
 
     const chatbotHTML = `
+        <!-- Chatbot Overlay/Backdrop -->
+        <div id="chatbot-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
         <!-- Chatbot Button -->
         <button id="chatbot-toggle" 
             class="fixed bottom-4 right-4 size-12 md:size-14 bg-primary hover:bg-primary-dark text-white rounded-full shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all z-50 flex items-center justify-center">
             <span class="material-symbols-outlined text-xl md:text-2xl">chat</span>
         </button>
 
-        <!-- Chatbot Container -->
+        <!-- Chatbot Container - Full screen on mobile, positioned on desktop -->
         <div id="chatbot-container" 
-            class="fixed inset-x-3 bottom-[4.5rem] sm:inset-x-auto sm:bottom-20 sm:right-4 sm:w-[340px] md:w-[360px] h-[calc(100vh-6rem)] sm:h-[480px] md:h-[500px] max-h-[calc(100vh-6rem)] bg-white dark:bg-slate-900 rounded-xl md:rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden z-50 transition-all duration-300 opacity-0 pointer-events-none scale-95">
+            class="fixed inset-0 sm:inset-auto sm:bottom-4 sm:right-4 sm:w-[360px] md:w-[380px] h-full sm:h-[85vh] sm:max-h-[600px] bg-white dark:bg-slate-900 sm:rounded-2xl shadow-2xl border-0 sm:border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden z-50 transition-all duration-300 opacity-0 pointer-events-none translate-y-full sm:translate-y-0 sm:scale-95">
             
-            <!-- Header -->
+            <!-- Header with Close Button -->
             <div class="bg-gradient-to-r from-primary to-emerald-400 text-white p-3 flex items-center justify-between flex-shrink-0 shadow-md">
                 <div class="flex items-center gap-2 min-w-0">
                     <div class="size-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center flex-shrink-0">
@@ -182,13 +185,20 @@ function initializeChatbot() {
                         </p>
                     </div>
                 </div>
-                <button id="chatbot-close" class="hover:bg-white/20 p-1.5 rounded-lg transition-colors flex-shrink-0 active:scale-95">
-                    <span class="material-symbols-outlined text-lg">close</span>
-                </button>
+                <div class="flex items-center gap-1">
+                    <!-- Minimize button (mobile only) -->
+                    <button id="chatbot-minimize" class="sm:hidden hover:bg-white/20 p-1.5 rounded-lg transition-colors active:scale-95">
+                        <span class="material-symbols-outlined text-lg">expand_more</span>
+                    </button>
+                    <!-- Close button -->
+                    <button id="chatbot-close" class="hover:bg-white/20 p-1.5 rounded-lg transition-colors active:scale-95">
+                        <span class="material-symbols-outlined text-lg">close</span>
+                    </button>
+                </div>
             </div>
 
-            <!-- Messages -->
-            <div id="chatbot-messages" class="flex-1 overflow-y-auto p-3 space-y-2.5 bg-slate-50 dark:bg-slate-950 min-h-0 scroll-smooth">
+            <!-- Messages - Flexible height for keyboard -->
+            <div id="chatbot-messages" class="flex-1 overflow-y-auto p-3 space-y-2.5 bg-slate-50 dark:bg-slate-950 min-h-0 scroll-smooth overscroll-contain">
                 <div class="flex gap-2 animate-fadeIn">
                     <div class="size-7 bg-primary rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
                         <span class="material-symbols-outlined text-white text-sm">smart_toy</span>
@@ -225,8 +235,8 @@ function initializeChatbot() {
                 </div>
             </div>
 
-            <!-- Input -->
-            <div class="p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex-shrink-0">
+            <!-- Input - Fixed at bottom -->
+            <div class="p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex-shrink-0 safe-area-bottom">
                 <div class="flex gap-2">
                     <input id="chatbot-input" 
                         type="text" 
@@ -254,6 +264,8 @@ function initializeChatbot() {
     // Elements
     const toggleBtn = document.getElementById('chatbot-toggle');
     const closeBtn = document.getElementById('chatbot-close');
+    const minimizeBtn = document.getElementById('chatbot-minimize');
+    const overlay = document.getElementById('chatbot-overlay');
     const container = document.getElementById('chatbot-container');
     const messagesDiv = document.getElementById('chatbot-messages');
     const input = document.getElementById('chatbot-input');
@@ -264,23 +276,67 @@ function initializeChatbot() {
     function toggleChatbot() {
         isOpen = !isOpen;
         if (isOpen) {
-            container.classList.remove('opacity-0', 'pointer-events-none', 'scale-95');
-            container.classList.add('opacity-100', 'scale-100');
-            // Prevent body scroll on mobile
-            if (window.innerWidth < 640) {
-                document.body.classList.add('chatbot-open');
+            // Mobile: slide up, Desktop: scale
+            container.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-full', 'scale-95');
+            container.classList.add('opacity-100', 'translate-y-0', 'scale-100');
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            overlay.classList.add('opacity-100');
+            
+            // Prevent body scroll
+            document.body.classList.add('chatbot-open');
+            
+            // Focus input after animation on desktop
+            if (window.innerWidth >= 640) {
+                setTimeout(() => input.focus(), 250);
             }
-            setTimeout(() => input.focus(), 250);
         } else {
-            container.classList.add('opacity-0', 'pointer-events-none', 'scale-95');
-            container.classList.remove('opacity-100', 'scale-100');
+            // Mobile: slide down, Desktop: scale down
+            container.classList.add('opacity-0', 'pointer-events-none', 'translate-y-full', 'scale-95');
+            container.classList.remove('opacity-100', 'translate-y-0', 'scale-100');
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+            overlay.classList.remove('opacity-100');
+            
             // Re-enable body scroll
             document.body.classList.remove('chatbot-open');
+            
+            // Blur input
+            input.blur();
         }
     }
 
     toggleBtn.addEventListener('click', toggleChatbot);
     closeBtn.addEventListener('click', toggleChatbot);
+    if (minimizeBtn) minimizeBtn.addEventListener('click', toggleChatbot);
+    overlay.addEventListener('click', toggleChatbot);
+
+    // Handle keyboard showing/hiding on mobile
+    let initialHeight = window.innerHeight;
+    window.visualViewport?.addEventListener('resize', () => {
+        if (isOpen && window.innerWidth < 640) {
+            const currentHeight = window.visualViewport.height;
+            const keyboardHeight = initialHeight - currentHeight;
+            
+            // Adjust container when keyboard opens
+            if (keyboardHeight > 100) {
+                container.style.height = `${currentHeight}px`;
+                // Scroll to bottom to show input
+                setTimeout(() => {
+                    messagesDiv.scrollTo({ top: messagesDiv.scrollHeight, behavior: 'smooth' });
+                }, 100);
+            } else {
+                container.style.height = '';
+            }
+        }
+    });
+
+    // Auto-scroll when input is focused on mobile
+    input.addEventListener('focus', () => {
+        if (window.innerWidth < 640) {
+            setTimeout(() => {
+                messagesDiv.scrollTo({ top: messagesDiv.scrollHeight, behavior: 'smooth' });
+            }, 300);
+        }
+    });
 
     // Add message to chat
     function addMessage(message, isUser = false) {
