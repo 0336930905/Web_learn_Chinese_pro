@@ -297,6 +297,11 @@ const translations = {
       myBadge: "Mine",
       vocabulary: "vocabulary",
       selectCategoryError: "Please select a vocabulary set before playing!",
+      noWords: "(no words)",
+      emptyPersonalCategory: "This vocabulary set has no words yet. Please add words before playing!",
+      emptyPersonalCategoryTitle: "No vocabulary words",
+      emptyPersonalCategoryDesc: "Add words to this set before playing a game.",
+      addWordsNow: "Add words now",
       // Category name translations
       categoryNames: {
         "Chào hỏi cơ bản": "Basic Greetings",
@@ -689,6 +694,11 @@ const translations = {
       myBadge: "Của tôi",
       vocabulary: "từ vựng",
       selectCategoryError: "Vui lòng chọn bộ từ vựng trước khi chơi game!",
+      noWords: "(chưa có từ)",
+      emptyPersonalCategory: "Bộ từ vựng này chưa có từ nào. Hãy thêm từ vựng trước khi chơi!",
+      emptyPersonalCategoryTitle: "Chưa có từ vựng",
+      emptyPersonalCategoryDesc: "Hãy thêm từ vào bộ này trước khi chơi game.",
+      addWordsNow: "Thêm từ vựng ngay",
       // Category name translations (original Vietnamese)
       categoryNames: {
         "Chào hỏi cơ bản": "Chào hỏi cơ bản",
@@ -1081,6 +1091,11 @@ const translations = {
       myBadge: "我的",
       vocabulary: "詞彙",
       selectCategoryError: "請先選擇詞彙集再開始遊戲！",
+      noWords: "(沒有單字)",
+      emptyPersonalCategory: "此詞彙集尚無單字。請先加入單字再開始遊戲！",
+      emptyPersonalCategoryTitle: "沒有詞彙",
+      emptyPersonalCategoryDesc: "請先將單字加入此集後再玄擦。",
+      addWordsNow: "立即新增單字",
       // Category name translations (Traditional Chinese)
       categoryNames: {
         "Chào hỏi cơ bản": "基本問候",

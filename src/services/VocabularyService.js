@@ -42,17 +42,38 @@ class VocabularyService {
       const query = {};
       
       if (categoryId) {
-        // Specific category - verify it belongs to user
+        // Specific category - verify it exists and user has access
         if (userId) {
           const category = await this.db.collection(COLLECTIONS.CATEGORIES)
-            .findOne({ _id: new ObjectId(categoryId), userId: new ObjectId(userId) });
-          
+            .findOne({ _id: new ObjectId(categoryId) });
+
           if (!category) {
             throw new AppError(
-              'Danh mục không tồn tại hoặc không thuộc về bạn',
-              HTTP_STATUS.FORBIDDEN,
-              ERROR_CODES.AUTH_UNAUTHORIZED
+              'Danh mục không tồn tại',
+              HTTP_STATUS.NOT_FOUND,
+              ERROR_CODES.RESOURCE_NOT_FOUND
             );
+          }
+
+          // Allow if user owns it, or if it's a system/admin category
+          const isOwnCategory = category.userId &&
+            category.userId.toString() === userId.toString();
+
+          if (!isOwnCategory) {
+            // Check if creator is an admin (system category)
+            const creator = category.userId
+              ? await this.db.collection('users')
+                  .findOne({ _id: category.userId }, { projection: { role: 1 } })
+              : null;
+            const isAdminCategory = creator?.role === 'admin';
+
+            if (!isAdminCategory) {
+              throw new AppError(
+                'Danh mục không tồn tại hoặc không thuộc về bạn',
+                HTTP_STATUS.FORBIDDEN,
+                ERROR_CODES.AUTH_UNAUTHORIZED
+              );
+            }
           }
         }
         query.categoryId = new ObjectId(categoryId);

@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Quản lý Nội dung Admin | Bé Minh Anh Admin</title>
+    <title>Quản lý Nội dung Admin</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&amp;display=swap"
         rel="stylesheet" />
@@ -193,11 +193,11 @@
             <div class="grid grid-cols-12 gap-4 md:gap-6 h-full overflow-hidden pb-4 md:pb-6">
                 <!-- Category Sidebar - Hidden on mobile by default, shown via toggle -->
                 <div id="category-sidebar"
-                    class="fixed md:relative inset-0 md:inset-auto z-30 md:z-auto bg-black/50 md:bg-transparent -translate-x-full md:translate-x-0 transition-transform duration-300 col-span-12 md:col-span-4 lg:col-span-3 flex flex-col overflow-hidden">
-                    <div class="w-4/5 sm:w-2/3 md:w-full h-full md:h-auto bg-white dark:bg-sidebar-dark rounded-r-2xl md:rounded-2xl border border-gray-200 dark:border-gray-800 shadow-xl md:shadow-sm overflow-hidden flex flex-col">
+                    class="fixed md:relative inset-0 md:inset-auto z-30 md:z-auto bg-black/50 md:bg-transparent -translate-x-full md:translate-x-0 transition-transform duration-300 col-span-12 md:col-span-4 lg:col-span-3 flex flex-col overflow-hidden md:h-full">
+                    <div class="w-4/5 sm:w-2/3 md:w-full h-full bg-white dark:bg-sidebar-dark rounded-r-2xl md:rounded-2xl border border-gray-200 dark:border-gray-800 shadow-xl md:shadow-sm overflow-hidden flex flex-col">
                         <div
-                            class="p-4 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/20">
-                            <h3 class="font-bold text-base md:text-lg">Danh mục</h3>
+                            class="p-3 md:p-4 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/20 shrink-0">
+                            <h3 class="font-bold text-sm md:text-base">Danh mục</h3>
                             <div class="flex items-center gap-2">
                                 <button id="addCategoryBtn" class="text-primary hover:bg-primary/10 p-1.5 rounded-lg transition-colors"
                                     title="Thêm danh mục">
@@ -208,44 +208,45 @@
                                 </button>
                             </div>
                         </div>
-                    <div class="p-3">
+                    <div class="p-2 md:p-3 shrink-0">
                         <div class="relative">
                             <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <span class="material-symbols-outlined text-gray-400 text-lg">search</span>
                             </span>
-                            <input
+                            <input id="category-search-input"
                                 class="block w-full pl-10 pr-3 py-2 border-none rounded-xl bg-gray-100 dark:bg-gray-800 text-sm focus:ring-2 focus:ring-primary/50 placeholder-gray-400"
                                 placeholder="Tìm danh mục..." type="text" />
                         </div>
                     </div>
-                    <div class="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-1">
+                    <div id="category-list-container" class="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-1">
                         <!-- Categories will be dynamically loaded by JavaScript -->
                         <div class="text-center py-8 text-gray-500">
                             <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
                             <p>Đang tải danh mục...</p>
                         </div>
                     </div>
-                    <div class="p-3 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/20">
+                    <div class="p-2 md:p-3 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/20 shrink-0">
                         <button id="createCategoryBtn"
-                            class="w-full py-2 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl text-gray-500 hover:border-primary hover:text-primary hover:bg-primary/5 transition-all text-sm font-bold flex items-center justify-center gap-2">
+                            class="w-full py-2 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl text-gray-500 hover:border-primary hover:text-primary hover:bg-primary/5 transition-all text-xs md:text-sm font-bold flex items-center justify-center gap-2">
                             <span class="material-symbols-outlined text-lg">add_circle</span>
                             Tạo danh mục mới
                         </button>
                     </div>
-                </div>
-                <div class="col-span-12 md:col-span-8 lg:col-span-9 flex flex-col h-full overflow-hidden">
-                    <div
-                        class="bg-white dark:bg-sidebar-dark rounded-t-2xl border-x border-t border-gray-200 dark:border-gray-800 p-3 md:p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 md:gap-4 shadow-sm z-10">
+                    </div><!-- end inner white card -->
+                </div><!-- end category-sidebar -->
+
+                <!-- Vocabulary Content Area -->
+                <div class="col-span-12 md:col-span-8 lg:col-span-9 flex flex-col h-full overflow-hidden min-w-0">
+                    <!-- Toolbar -->
+                    <div class="bg-white dark:bg-sidebar-dark rounded-t-2xl border-x border-t border-gray-200 dark:border-gray-800 p-3 md:p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 md:gap-4 shadow-sm z-10 shrink-0">
                         <div class="flex items-center gap-2 md:gap-3 w-full sm:w-auto">
-                            <div class="p-1.5 md:p-2 bg-primary/10 rounded-lg text-primary">
+                            <div class="p-1.5 md:p-2 bg-primary/10 rounded-lg text-primary shrink-0">
                                 <span class="material-symbols-outlined text-lg md:text-xl">folder_open</span>
                             </div>
                             <div class="flex-1 min-w-0">
-                                <h2 class="font-bold text-base md:text-lg truncate">Tiếng Đài Loan cơ bản</h2>
+                                <h2 id="current-category-title" class="font-bold text-base md:text-lg truncate">Chọn danh mục</h2>
                                 <div class="flex items-center gap-2 text-xs text-gray-500">
-                                    <span class="truncate">Cập nhật: 2 giờ trước</span>
-                                    <span class="hidden sm:inline size-1 bg-gray-300 rounded-full"></span>
-                                    <span class="hidden sm:inline text-green-600 font-medium">Đang hoạt động</span>
+                                    <span id="current-category-meta" class="truncate">Chọn một danh mục để xem từ vựng</span>
                                 </div>
                             </div>
                         </div>
@@ -254,7 +255,7 @@
                                 <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <span class="material-symbols-outlined text-gray-400 text-lg">search</span>
                                 </span>
-                                <input
+                                <input id="vocab-search-input"
                                     class="block w-full sm:w-48 md:w-64 pl-10 pr-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800 text-sm focus:ring-2 focus:ring-primary/50"
                                     placeholder="Tìm từ vựng..." type="text" />
                             </div>
@@ -265,64 +266,50 @@
                             </button>
                         </div>
                     </div>
-                    <div
-                        class="bg-white dark:bg-sidebar-dark border border-gray-200 dark:border-gray-800 rounded-b-2xl shadow-sm flex-1 overflow-hidden flex flex-col">
-                        <div class="overflow-y-auto custom-scrollbar flex-1 -mx-4 md:mx-0">
+
+                    <!-- Table -->
+                    <div class="bg-white dark:bg-sidebar-dark border border-gray-200 dark:border-gray-800 rounded-b-2xl shadow-sm flex-1 overflow-hidden flex flex-col">
+                        <div class="overflow-y-auto custom-scrollbar flex-1">
                             <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse min-w-[640px]">
-                                <thead class="sticky top-0 bg-gray-50/95 dark:bg-gray-800/95 backdrop-blur-sm z-10">
-                                    <tr class="border-b border-gray-200 dark:border-gray-700">
-                                        <th class="px-4 py-4 font-bold text-xs text-gray-500 uppercase tracking-wider text-left">
-                                            Ảnh</th>
-                                        <th class="px-4 py-4 font-bold text-xs text-gray-500 uppercase tracking-wider text-left">
-                                            Phồn thể</th>
-                                        <th class="px-4 py-4 font-bold text-xs text-gray-500 uppercase tracking-wider text-left">
-                                            Giản thể</th>
-                                        <th class="px-4 py-4 font-bold text-xs text-gray-500 uppercase tracking-wider text-left">
-                                            Phiên âm</th>
-                                        <th class="px-4 py-4 font-bold text-xs text-gray-500 uppercase tracking-wider text-left">Ý
-                                            nghĩa</th>
-                                        <th class="px-4 py-4 font-bold text-xs text-gray-500 uppercase tracking-wider text-left">
-                                            Độ khó</th>
-                                        <th
-                                            class="px-4 py-4 font-bold text-xs text-gray-500 uppercase tracking-wider text-right">
-                                            Thao tác</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-                                    <!-- Vocabulary rows will be dynamically loaded by JavaScript -->
-                                    <tr>
-                                        <td colspan="7" class="px-6 py-8 text-center text-gray-500">
-                                            <div class="flex flex-col items-center gap-2">
-                                                <span class="material-symbols-outlined text-4xl">folder_open</span>
-                                                <p>Chọn danh mục để xem từ vựng</p>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                                <table class="w-full text-left border-collapse min-w-[640px]">
+                                    <thead class="sticky top-0 bg-gray-50/95 dark:bg-gray-800/95 backdrop-blur-sm z-10">
+                                        <tr class="border-b border-gray-200 dark:border-gray-700">
+                                            <th class="px-4 py-4 font-bold text-xs text-gray-500 uppercase tracking-wider">Ảnh</th>
+                                            <th class="px-4 py-4 font-bold text-xs text-gray-500 uppercase tracking-wider">Phồn thể</th>
+                                            <th class="px-4 py-4 font-bold text-xs text-gray-500 uppercase tracking-wider">Giản thể</th>
+                                            <th class="px-4 py-4 font-bold text-xs text-gray-500 uppercase tracking-wider">Phiên âm</th>
+                                            <th class="px-4 py-4 font-bold text-xs text-gray-500 uppercase tracking-wider">Ý nghĩa</th>
+                                            <th class="px-4 py-4 font-bold text-xs text-gray-500 uppercase tracking-wider">Độ khó</th>
+                                            <th class="px-4 py-4 font-bold text-xs text-gray-500 uppercase tracking-wider text-right">Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                                        <tr>
+                                            <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                                                <div class="flex flex-col items-center gap-2">
+                                                    <span class="material-symbols-outlined text-4xl">folder_open</span>
+                                                    <p>Chọn danh mục để xem từ vựng</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
-                        <div
-                            class="border-t border-gray-200 dark:border-gray-800 p-3 md:p-4 bg-gray-50 dark:bg-gray-800/30 flex flex-col sm:flex-row justify-between items-center gap-3">
-                            <span class="text-xs md:text-sm text-gray-500 dark:text-gray-400 text-center sm:text-left">Hiển thị <span
-                                    class="font-bold text-gray-900 dark:text-white">1-5</span> của <span
-                                    class="font-bold text-gray-900 dark:text-white">24</span> từ vựng</span>
-                            <div class="flex gap-1 md:gap-2 flex-wrap justify-center">
-                                <button
-                                    class="px-2 md:px-3 py-1 text-xs md:text-sm rounded-lg border border-gray-200 dark:border-gray-700 text-gray-500 bg-white dark:bg-sidebar-dark hover:bg-gray-50 disabled:opacity-50"
-                                    disabled="">Trước</button>
+                        <!-- Pagination -->
+                        <div class="border-t border-gray-200 dark:border-gray-800 p-3 md:p-4 bg-gray-50 dark:bg-gray-800/30 flex flex-col sm:flex-row justify-between items-center gap-3 shrink-0">
+                            <span id="pagination-info" class="text-xs md:text-sm text-gray-500 dark:text-gray-400 text-center sm:text-left">
+                                Chưa có dữ liệu
+                            </span>
+                            <div id="pagination-container" class="flex gap-1 md:gap-2 flex-wrap justify-center">
+                                <button class="px-2 md:px-3 py-1 text-xs md:text-sm rounded-lg border border-gray-200 dark:border-gray-700 text-gray-300 bg-white dark:bg-sidebar-dark" disabled>Trước</button>
                                 <button class="px-2 md:px-3 py-1 text-xs md:text-sm rounded-lg bg-primary text-white font-bold">1</button>
-                                <button
-                                    class="px-2 md:px-3 py-1 text-xs md:text-sm rounded-lg border border-gray-200 dark:border-gray-700 text-gray-500 bg-white dark:bg-sidebar-dark hover:bg-gray-50">2</button>
-                                <button
-                                    class="px-2 md:px-3 py-1 text-xs md:text-sm rounded-lg border border-gray-200 dark:border-gray-700 text-gray-500 bg-white dark:bg-sidebar-dark hover:bg-gray-50">3</button>
-                                <button
-                                    class="px-2 md:px-3 py-1 text-xs md:text-sm rounded-lg border border-gray-200 dark:border-gray-700 text-gray-500 bg-white dark:bg-sidebar-dark hover:bg-gray-50">Sau</button>
+                                <button class="px-2 md:px-3 py-1 text-xs md:text-sm rounded-lg border border-gray-200 dark:border-gray-700 text-gray-300 bg-white dark:bg-sidebar-dark" disabled>Sau</button>
                             </div>
                         </div>
                     </div>
-                </div>
+                </div><!-- end vocabulary content -->
+
             </div>
         </main>
     </div>

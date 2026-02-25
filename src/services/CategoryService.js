@@ -377,17 +377,25 @@ class CategoryService {
               );
           }
 
+          const isAdminCategory = creator?.role === 'admin';
+
           return {
             ...category,
             wordCount,
             creator: creator || null,
-            isAdmin: creator?.role === 'admin'
+            isAdmin: isAdminCategory
           };
         })
       );
 
-      // Filter out categories with no words
-      const categoriesWithWords = categoriesWithDetails.filter(cat => cat.wordCount > 0);
+      // Admin categories: only show if they have words
+      // Personal (user's own) categories: always show, even if empty
+      const categoriesWithWords = categoriesWithDetails.filter(cat => {
+        if (cat.isAdmin) {
+          return cat.wordCount > 0; // Admin categories need words to be playable
+        }
+        return true; // Personal categories always shown (user can see their own even if empty)
+      });
 
       logger.info('Get categories for games', { 
         userId, 

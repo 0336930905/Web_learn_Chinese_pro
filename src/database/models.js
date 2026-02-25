@@ -90,6 +90,14 @@ async function createIndexes(db) {
       { key: { status: 1 } },
     ]);
 
+    // Practice Custom Sets indexes
+    await db.collection(COLLECTIONS.PRACTICE_CUSTOM_SETS).createIndexes([
+      { key: { userId: 1 } },
+      { key: { userId: 1, name: 1 }, unique: true }, // one name per user
+      { key: { createdAt: -1 } },
+      { key: { updatedAt: -1 } },
+    ]);
+
     console.log('Database indexes created successfully');
   } catch (error) {
     console.error('Error creating indexes:', error.message);
@@ -396,6 +404,49 @@ async function setupCollectionValidation(db) {
       // Ignore if collection doesn't exist
     });
 
+    // Practice Custom Sets validation
+    await db.command({
+      collMod: COLLECTIONS.PRACTICE_CUSTOM_SETS,
+      validator: {
+        $jsonSchema: {
+          bsonType: 'object',
+          required: ['userId', 'name', 'words'],
+          properties: {
+            userId: {
+              bsonType: 'objectId',
+              description: 'ID of the user who owns this set',
+            },
+            name: {
+              bsonType: 'string',
+              description: 'Set name (customSetName)',
+            },
+            words: {
+              bsonType: 'array',
+              description: 'Array of word entries',
+              items: {
+                bsonType: 'object',
+                required: ['hanzi', 'pinyin', 'meaning'],
+                properties: {
+                  hanzi:   { bsonType: 'string' },
+                  pinyin:  { bsonType: 'string' },
+                  meaning: { bsonType: 'string' },
+                },
+              },
+            },
+            wordCount: {
+              bsonType: 'int',
+              minimum: 0,
+            },
+            createdAt: { bsonType: 'date' },
+            updatedAt: { bsonType: 'date' },
+          },
+        },
+      },
+      validationLevel: 'moderate',
+    }).catch(() => {
+      // Ignore if collection doesn't exist yet
+    });
+
     console.log('Collection validation set up successfully');
   } catch (error) {
     console.error('Error setting up validation:', error.message);
@@ -416,6 +467,7 @@ const Models = {
   Backups: COLLECTIONS.BACKUPS,
   BackupSchedule: COLLECTIONS.BACKUP_SCHEDULE,
   RestoreLogs: COLLECTIONS.RESTORE_LOGS,
+  CustomWordSets: COLLECTIONS.PRACTICE_CUSTOM_SETS,
 };
 
 module.exports = {

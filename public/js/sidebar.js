@@ -42,6 +42,11 @@ function renderSidebar(activePage = 'home', profileData = null) {
                     <span class="material-symbols-outlined ${activePage === 'home' ? 'text-primary' : ''}">home</span>
                     <span class="${activePage === 'home' ? 'font-semibold' : 'font-medium'}">${t('sidebar.home', 'Trang chủ')}</span>
                 </a>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-full ${activePage === 'practice' ? 'bg-primary/20 text-slate-900 dark:text-white active-fill' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors'}"
+                    href="practice_vocabulary.html">
+                    <span class="material-symbols-outlined ${activePage === 'practice' ? 'text-primary' : ''}">school</span>
+                    <span class="${activePage === 'practice' ? 'font-semibold' : 'font-medium'}">${t('sidebar.practice', 'Luyện từ vựng tổng hợp')}</span>
+                </a>
                 <a class="flex items-center gap-3 px-4 py-3 rounded-full ${activePage === 'categories' ? 'bg-primary/20 text-slate-900 dark:text-white active-fill' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors'}"
                     href="personal_vocabulary_categories_screen.html">
                     <span class="material-symbols-outlined ${activePage === 'categories' ? 'text-primary' : ''}">grid_view</span>

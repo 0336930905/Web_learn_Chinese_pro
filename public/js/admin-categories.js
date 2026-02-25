@@ -111,7 +111,7 @@ async function loadCategories(search = '') {
  * Render categories list
  */
 function renderCategories(cats) {
-    const container = document.querySelector('.flex-1.overflow-y-auto.custom-scrollbar');
+    const container = document.getElementById('category-list-container');
     if (!container) return;
 
     if (cats.length === 0) {
@@ -167,7 +167,8 @@ async function selectCategory(categoryId) {
     if (!category) return;
 
     // Update header
-    document.querySelector('.bg-white.dark\\:bg-sidebar-dark.rounded-t-2xl h2').textContent = category.name;
+    const titleEl = document.getElementById('current-category-title');
+    if (titleEl) titleEl.textContent = category.name;
     
     // Reload categories to update active state
     renderCategories(categories);
@@ -294,7 +295,7 @@ function updateVocabularyTable(vocabulary) {
  * Update vocabulary pagination
  */
 function updateVocabularyPagination(pagination) {
-    const infoSpan = document.querySelector('.text-sm.text-gray-500');
+    const infoSpan = document.getElementById('pagination-info');
     if (infoSpan) {
         const start = (pagination.page - 1) * pagination.limit + 1;
         const end = Math.min(pagination.page * pagination.limit, pagination.total);
@@ -302,7 +303,7 @@ function updateVocabularyPagination(pagination) {
     }
 
     // Select pagination container in table footer, not sidebar
-    const paginationContainer = document.querySelector('.border-t.border-gray-200 .flex.gap-2');
+    const paginationContainer = document.getElementById('pagination-container');
     if (!paginationContainer) return;
 
     const pages = [];
@@ -1021,7 +1022,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadCategories();
 
     // Setup category search
-    const categorySearch = document.querySelector('.p-3 input[placeholder="Tìm danh mục..."]');
+    const categorySearch = document.getElementById('category-search-input');
     if (categorySearch) {
         let searchTimeout;
         categorySearch.addEventListener('input', (e) => {
@@ -1033,7 +1034,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Setup vocabulary search
-    const vocabSearch = document.querySelector('input[placeholder="Tìm từ vựng..."]');
+    const vocabSearch = document.getElementById('vocab-search-input');
     if (vocabSearch) {
         let searchTimeout;
         vocabSearch.addEventListener('input', (e) => {

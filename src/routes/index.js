@@ -15,6 +15,7 @@ const achievementsRoutes = require('./achievements.routes');
 const activityRoutes = require('./activity');
 const chatbotRoutes = require('./chatbot.routes');
 const backupRoutes = require('./backup.routes');
+const practiceRoutes = require('./practice.routes');
 
 /**
  * Simple router implementation for serverless
@@ -229,6 +230,7 @@ function setupRoutes(db) {
   const activityRouter = new Router();
   const chatbotRouter = new Router();
   const backupRouter = new Router();
+  const practiceRouter = new Router();
 
   authRoutes(authRouter, db);
   adminRoutes(adminRouter, db);
@@ -242,6 +244,7 @@ function setupRoutes(db) {
   activityRoutes(activityRouter, db);
   chatbotRoutes(chatbotRouter, db);
   backupRoutes(backupRouter, db);
+  practiceRoutes(practiceRouter, db);
 
   return {
     '/auth': authRouter,
@@ -256,6 +259,7 @@ function setupRoutes(db) {
     '/activities': activityRouter,
     '/chatbot': chatbotRouter,
     '/backup': backupRouter,
+    '/practice': practiceRouter,
   };
 }
 

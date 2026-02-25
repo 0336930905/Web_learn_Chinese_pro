@@ -160,6 +160,8 @@ const COLLECTIONS = {
   BACKUPS: 'backups',
   BACKUP_SCHEDULE: 'backup_schedule',
   RESTORE_LOGS: 'restore_logs',
+  PRACTICE_SESSIONS: 'practice_sessions',
+  PRACTICE_CUSTOM_SETS: 'practice_custom_sets',
 };
 
 // Sort Orders

@@ -194,6 +194,20 @@
                                         </div>
                                     </div>
 
+                                <!-- Warning: empty personal category -->
+                                <div id="emptyPersonalCategoryWarning" class="hidden mt-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl border-2 border-yellow-300 dark:border-yellow-700/50">
+                                    <div class="flex items-start gap-2">
+                                        <span class="material-symbols-outlined text-yellow-500 text-lg mt-0.5">warning</span>
+                                        <div>
+                                            <p class="text-xs font-bold text-yellow-800 dark:text-yellow-400" data-i18n="gamesHome.emptyPersonalCategoryTitle">Chưa có từ vựng</p>
+                                            <p class="text-xs text-yellow-700 dark:text-yellow-500 mt-0.5" data-i18n="gamesHome.emptyPersonalCategoryDesc">Hãy thêm từ vào bộ này trước khi chơi game.</p>
+                                            <a id="addWordsLink" href="#" class="inline-flex items-center gap-1 mt-2 text-xs font-bold text-yellow-700 dark:text-yellow-400 underline hover:no-underline">
+                                                <span class="material-symbols-outlined text-sm">add_circle</span>
+                                                <span data-i18n="gamesHome.addWordsNow">Thêm từ vựng ngay</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
 
                                 </div>
                             </div>
@@ -397,8 +411,12 @@
                 const translatedName = i18n.translateCategoryName(cat.name);
                 const option = document.createElement('option');
                 option.value = cat._id;
-                option.textContent = `${translatedName} (${cat.wordCount} ${i18n.t('gamesHome.wordsCount')}) ${badge}`;
+                const emptyNote = (!cat.isAdmin && cat.wordCount === 0) ? ` ⚠️ ${i18n.t('gamesHome.noWords') || '(chưa có từ)'}` : '';
+                option.textContent = `${translatedName} (${cat.wordCount} ${i18n.t('gamesHome.wordsCount')}) ${badge}${emptyNote}`;
                 option.dataset.category = JSON.stringify(cat);
+                if (!cat.isAdmin && cat.wordCount === 0) {
+                    option.style.color = '#9ca3af'; // gray out empty personal categories
+                }
                 select.appendChild(option);
             });
 
@@ -589,6 +607,21 @@
                 : `<span class="font-bold text-green-700 dark:text-green-500">👤 ${i18n.t('gamesHome.myBadge')}</span>`;
 
             info.classList.remove('hidden');
+
+            // Show warning banner if personal category has no words
+            const warningBanner = document.getElementById('emptyPersonalCategoryWarning');
+            if (warningBanner) {
+                if (!selectedCategory.isAdmin && selectedCategory.wordCount === 0) {
+                    warningBanner.classList.remove('hidden');
+                    // Update "add words" link
+                    const addWordsLink = document.getElementById('addWordsLink');
+                    if (addWordsLink) {
+                        addWordsLink.href = `category_word_list_screen.html?categoryId=${selectedCategory._id}`;
+                    }
+                } else {
+                    warningBanner.classList.add('hidden');
+                }
+            }
         }
 
         // ========== Play Game ==========
@@ -615,6 +648,16 @@
 
                 // Scroll to select
                 select.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            // Warn if selected personal category has no words
+            if (!selectedCategory.isAdmin && selectedCategory.wordCount === 0) {
+                showError(i18n.t('gamesHome.emptyPersonalCategory') || 'Bộ từ vựng này chưa có từ nào. Hãy thêm từ vựng trước khi chơi!');
+                // Redirect user to word list screen to add words
+                setTimeout(() => {
+                    window.location.href = `category_word_list_screen.html?categoryId=${selectedCategoryId}`;
+                }, 2500);
                 return;
             }
 
