@@ -50,11 +50,68 @@
             background-size: 24px 24px;
             opacity: 0.1;
         }
+
+        /* Word card shimmer */
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        .word-shimmer {
+            background: linear-gradient(90deg, transparent 0%, rgba(13,127,242,0.08) 50%, transparent 100%);
+            background-size: 200% 100%;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        /* Option button letter badge */
+        .option-letter {
+            position: absolute;
+            top: 8px;
+            left: 10px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            font-size: 11px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f5f9;
+            color: #94a3b8;
+            transition: all 0.2s;
+        }
+        .dark .option-letter {
+            background: rgba(255,255,255,0.08);
+            color: #64748b;
+        }
+        button:hover .option-letter,
+        button:focus .option-letter {
+            background: #0d7ff2;
+            color: white;
+        }
+
+        /* Answer button entrance */
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .answer-btn { animation: slideInUp 0.3s ease both; }
+        .answer-btn:nth-child(1) { animation-delay: 0.05s; }
+        .answer-btn:nth-child(2) { animation-delay: 0.10s; }
+        .answer-btn:nth-child(3) { animation-delay: 0.15s; }
+        .answer-btn:nth-child(4) { animation-delay: 0.20s; }
+
+        /* Pulse glow on word */
+        @keyframes wordPop {
+            0%   { transform: scale(0.85); opacity: 0; }
+            60%  { transform: scale(1.05); }
+            100% { transform: scale(1);    opacity: 1; }
+        }
+        #questionWordText { animation: wordPop 0.4s cubic-bezier(0.34,1.56,0.64,1) both; }
     </style>
 </head>
 
 <body
-    class="bg-background-light dark:bg-background-dark font-display min-h-screen flex flex-col overflow-hidden text-text-main dark:text-white transition-colors duration-200">
+    class="bg-background-light dark:bg-background-dark font-display min-h-screen flex flex-col overflow-x-hidden text-text-main dark:text-white transition-colors duration-200">
     <!-- Decorative Background Pattern -->
     <div class="fixed inset-0 pattern-bg pointer-events-none z-0"></div>
     <!-- Common Game Header -->
@@ -80,117 +137,139 @@
       .catch(err => console.error('Failed to load game header:', err));
     </script>
         <!-- Main Game Content -->
-        <main class="flex-1 flex flex-col items-center justify-center p-3 sm:p-4 md:p-6 lg:p-8 w-full max-w-6xl mx-auto">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 md:gap-8 w-full h-full lg:h-auto items-center">
-                <!-- Left Column: The Stage (Image & Prompt) -->
-                <div class="lg:col-span-7 flex flex-col w-full h-full justify-center">
+        <main class="flex-1 flex flex-col items-center justify-start py-4 px-3 sm:px-4 md:px-6 lg:px-8 w-full max-w-6xl mx-auto relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 w-full lg:items-center">
+
+                <!-- ══════════════════════════════════════
+                     Left Column: Word Stage
+                ══════════════════════════════════════ -->
+                <div class="lg:col-span-7 flex flex-col w-full">
+
                     <!-- Question Prompt -->
-                    <h1
-                        class="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-center lg:text-left mb-4 sm:mb-6 md:mb-8 text-gray-800 dark:text-gray-100 drop-shadow-sm leading-tight">
-                        Nhìn ảnh và đoán nghĩa.<br />
-                        <span class="text-primary">đây là gì?</span>
-                    </h1>
-                    <!-- Image Card -->
-                    <div
-                        class="relative w-full aspect-[4/3] rounded-xl overflow-hidden shadow-2xl bg-surface-light dark:bg-surface-dark border-2 sm:border-4 border-white dark:border-surface-dark ring-1 ring-black/5 group">
-                        <!-- Countdown Timer Overlay (Top Right) -->
-                        <div class="absolute top-3 right-3 sm:top-4 sm:right-4 md:top-6 md:right-6 z-20">
-                            <div
-                                class="relative flex items-center justify-center size-16 sm:size-18 md:size-20 rounded-full bg-white dark:bg-surface-dark shadow-lg">
-                                <svg class="transform -rotate-90 size-16 sm:size-18 md:size-20" viewbox="0 0 100 100">
-                                    <circle class="dark:stroke-gray-700" cx="50" cy="50" fill="none" r="45"
-                                        stroke="#e5e7eb" stroke-width="8"></circle>
-                                    <circle class="text-primary transition-all duration-1000 ease-linear" cx="50"
-                                        cy="50" fill="none" r="45" stroke="currentColor" stroke-dasharray="283"
-                                        stroke-dashoffset="70" stroke-linecap="round" stroke-width="8"></circle>
+                    <div class="mb-4 sm:mb-5">
+                        <p class="text-xs sm:text-sm font-bold uppercase tracking-widest text-primary/60 mb-1">Nhận diện từ vựng</p>
+                        <h1 id="questionPromptHeading"
+                            class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 dark:text-gray-100 leading-tight">
+                            Nhìn từ tiếng Trung —
+                            <span class="text-primary">Nghĩa là gì?</span>
+                        </h1>
+                    </div>
+
+                    <!-- Word Card -->
+                    <div class="relative w-full rounded-2xl overflow-hidden shadow-2xl ring-1 ring-black/5 group">
+
+                        <!-- Colored top accent bar -->
+                        <div class="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-primary via-blue-400 to-indigo-500 z-30"></div>
+
+                        <!-- Timer — top right -->
+                        <div class="absolute top-4 right-4 z-20">
+                            <div class="relative flex items-center justify-center size-16 sm:size-18 md:size-20 rounded-full bg-white/90 dark:bg-gray-900/80 shadow-lg backdrop-blur-sm border border-white dark:border-gray-700">
+                                <svg class="transform -rotate-90 size-16 sm:size-18 md:size-20" viewBox="0 0 100 100">
+                                    <circle cx="50" cy="50" fill="none" r="45" stroke="#e5e7eb" stroke-width="7" class="dark:stroke-gray-700"></circle>
+                                    <circle class="text-primary transition-all duration-1000 ease-linear" id="timerCircle" cx="50" cy="50" fill="none" r="45"
+                                        stroke="currentColor" stroke-dasharray="283" stroke-dashoffset="70"
+                                        stroke-linecap="round" stroke-width="7"></circle>
                                 </svg>
                                 <div class="absolute flex flex-col items-center">
-                                    <span class="text-lg sm:text-xl font-bold text-gray-800 dark:text-white leading-none">15</span>
-                                    <span
-                                        class="text-[9px] sm:text-[10px] uppercase font-bold text-text-muted dark:text-gray-400 mt-0.5">Sec</span>
+                                    <span id="timerText" class="text-base sm:text-lg font-black text-gray-800 dark:text-white leading-none tabular-nums">15</span>
+                                    <span class="text-[8px] sm:text-[9px] uppercase font-bold text-slate-400 tracking-wider mt-0.5">sec</span>
                                 </div>
                             </div>
                         </div>
-                        <!-- Main Image -->
-                        <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-                            data-alt="A close up of a happy child smiling brightly outdoors"
-                            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDjKg3iIv3jIveELoNW93gCcsPEfVVC0ad0jjJjIsp1vEhkO8bwJOx6r97GOinghkV45sT59VJZ5IlgFXGbpAV882qoY0MdfwUv0FeCyKhqE1l7P7Xcc5MwKjxR0FsWSFNhSrQx7hrvq-McznapWp38kFKIo5EMmjgpPJ_WZWPX2BVctNkCs5-MvAAarCz9vTqug1cdj5KgALtu9ZdB6O7eRI3wS5zE3NjbK1irutsD_tRVfDDawWbLwj8YbJjUddWE5z10U353kaw');">
+
+                        <!-- Main word display -->
+                        <div id="questionWordPanel"
+                            class="word-shimmer w-full flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-slate-100 dark:from-slate-800 dark:via-slate-700 dark:to-slate-800"
+                            style="min-height: 220px; height: clamp(220px, 36vw, 340px);">
+                            <span id="questionWordText"
+                                class="text-[80px] sm:text-[100px] md:text-[120px] lg:text-[140px] font-black text-primary leading-none select-none drop-shadow-md"></span>
                         </div>
-                        <!-- Label Overlay (Optional Hint) -->
-                        <div class="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 md:bottom-6 md:left-6 z-20">
-                            <div class="px-3 py-1.5 sm:px-4 sm:py-2 bg-white/90 dark:bg-black/60 backdrop-blur-sm rounded-lg shadow-sm">
-                                <p class="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300 flex items-center gap-1.5 sm:gap-2">
-                                    <span class="material-symbols-outlined text-primary text-base sm:text-lg">lightbulb</span>
-                                    Hint: It shows happiness
-                                </p>
-                            </div>
+
+                        <!-- Hint pill — bottom left -->
+                        <div class="absolute bottom-0 inset-x-0 z-20 flex items-center gap-2 px-4 sm:px-5 py-2.5 bg-white/80 dark:bg-gray-900/70 backdrop-blur-sm border-t border-white/60 dark:border-gray-700">
+                            <span class="material-symbols-outlined text-primary text-base" style="font-size:18px">lightbulb</span>
+                            <span class="text-[11px] sm:text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Pinyin:&nbsp;</span>
+                            <span id="hintPinyin" class="text-xs sm:text-sm font-bold text-gray-700 dark:text-gray-200">—</span>
                         </div>
+                    </div>
+
+                    <!-- Listen button (below card) -->
+                    <div class="mt-3 sm:mt-4 flex items-center gap-2">
+                        <button id="listenBtn"
+                            class="flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 text-slate-500 dark:text-slate-400 hover:border-primary hover:text-primary dark:hover:text-primary active:scale-95 transition-all shadow-sm text-xs sm:text-sm font-bold">
+                            <span class="material-symbols-outlined text-[18px]">volume_up</span>
+                            Nghe phát âm
+                        </button>
+                        <span class="text-[11px] text-slate-400 dark:text-slate-500">Nhấn để nghe từ</span>
                     </div>
                 </div>
-                <!-- Right Column: Answer Grid -->
-                <div class="lg:col-span-5 w-full flex flex-col justify-center gap-3 sm:gap-4 lg:pl-8">
-                    <div class="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4 w-full">
-                        <!-- Option 1 -->
-                        <button
-                            class="group relative flex flex-col items-center justify-center p-3 sm:p-4 md:p-6 lg:p-8 h-24 sm:h-28 md:h-32 lg:h-40 rounded-xl bg-white dark:bg-surface-dark border-b-4 border-gray-200 dark:border-gray-700 hover:border-primary active:border-primary active:translate-y-1 active:scale-95 transition-all duration-200 shadow-sm hover:shadow-xl hover:shadow-primary/10">
-                            <div
-                                class="size-8 sm:size-9 md:size-10 mb-1.5 sm:mb-2 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-500 dark:text-blue-300 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <span class="material-symbols-outlined text-lg sm:text-xl md:text-2xl">sentiment_dissatisfied</span>
+
+                <!-- ══════════════════════════════════════
+                     Right Column: Answer Options
+                ══════════════════════════════════════ -->
+                <div class="lg:col-span-5 flex flex-col gap-3 sm:gap-4 lg:pl-6">
+
+                    <!-- Section label -->
+                    <div class="flex items-center justify-between">
+                        <p class="text-xs sm:text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">Chọn đáp án</p>
+                        <span class="text-[11px] text-slate-400 bg-slate-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">4 lựa chọn</span>
+                    </div>
+
+                    <!-- 2×2 answer grid -->
+                    <div id="optionsGrid" class="grid grid-cols-2 gap-3 sm:gap-4 w-full">
+
+                        <!-- Option A -->
+                        <button class="answer-btn group relative flex flex-col items-center justify-center pt-6 pb-4 px-3 sm:px-4 h-28 sm:h-32 md:h-36 rounded-2xl bg-white dark:bg-surface-dark border-2 border-gray-100 dark:border-gray-700 border-b-4 hover:border-primary hover:border-b-primary active:translate-y-1 active:scale-[0.97] transition-all duration-150 shadow-sm hover:shadow-lg hover:shadow-primary/10 cursor-pointer">
+                            <span class="option-letter">A</span>
+                            <div class="size-8 sm:size-9 mb-1.5 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <span class="material-symbols-outlined text-lg">sentiment_dissatisfied</span>
                             </div>
-                            <span
-                                class="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors">Cry</span>
-                            <div
-                                class="absolute inset-0 border-2 border-transparent group-hover:border-primary rounded-xl pointer-events-none transition-colors">
-                            </div>
+                            <span class="text-sm sm:text-base md:text-lg font-bold text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors text-center leading-snug">Cry</span>
+                            <div class="absolute inset-0 rounded-2xl ring-2 ring-transparent group-hover:ring-primary/30 pointer-events-none transition-all"></div>
                         </button>
-                        <!-- Option 2 (Correct) -->
-                        <button
-                            class="group relative flex flex-col items-center justify-center p-3 sm:p-4 md:p-6 lg:p-8 h-24 sm:h-28 md:h-32 lg:h-40 rounded-xl bg-white dark:bg-surface-dark border-b-4 border-gray-200 dark:border-gray-700 hover:border-primary active:border-primary active:translate-y-1 active:scale-95 transition-all duration-200 shadow-sm hover:shadow-xl hover:shadow-primary/10">
-                            <div
-                                class="size-8 sm:size-9 md:size-10 mb-1.5 sm:mb-2 rounded-full bg-orange-50 dark:bg-orange-900/30 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <span class="material-symbols-outlined text-lg sm:text-xl md:text-2xl">sentiment_very_satisfied</span>
+
+                        <!-- Option B -->
+                        <button class="answer-btn group relative flex flex-col items-center justify-center pt-6 pb-4 px-3 sm:px-4 h-28 sm:h-32 md:h-36 rounded-2xl bg-white dark:bg-surface-dark border-2 border-gray-100 dark:border-gray-700 border-b-4 hover:border-primary hover:border-b-primary active:translate-y-1 active:scale-[0.97] transition-all duration-150 shadow-sm hover:shadow-lg hover:shadow-primary/10 cursor-pointer">
+                            <span class="option-letter">B</span>
+                            <div class="size-8 sm:size-9 mb-1.5 rounded-full bg-orange-50 dark:bg-orange-900/20 text-orange-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <span class="material-symbols-outlined text-lg">sentiment_very_satisfied</span>
                             </div>
-                            <span
-                                class="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors">Smile</span>
-                            <div
-                                class="absolute inset-0 border-2 border-transparent group-hover:border-primary rounded-xl pointer-events-none transition-colors">
-                            </div>
+                            <span class="text-sm sm:text-base md:text-lg font-bold text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors text-center leading-snug">Smile</span>
+                            <div class="absolute inset-0 rounded-2xl ring-2 ring-transparent group-hover:ring-primary/30 pointer-events-none transition-all"></div>
                         </button>
-                        <!-- Option 3 -->
-                        <button
-                            class="group relative flex flex-col items-center justify-center p-3 sm:p-4 md:p-6 lg:p-8 h-24 sm:h-28 md:h-32 lg:h-40 rounded-xl bg-white dark:bg-surface-dark border-b-4 border-gray-200 dark:border-gray-700 hover:border-primary active:border-primary active:translate-y-1 active:scale-95 transition-all duration-200 shadow-sm hover:shadow-xl hover:shadow-primary/10">
-                            <div
-                                class="size-8 sm:size-9 md:size-10 mb-1.5 sm:mb-2 rounded-full bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <span class="material-symbols-outlined text-lg sm:text-xl md:text-2xl">directions_run</span>
+
+                        <!-- Option C -->
+                        <button class="answer-btn group relative flex flex-col items-center justify-center pt-6 pb-4 px-3 sm:px-4 h-28 sm:h-32 md:h-36 rounded-2xl bg-white dark:bg-surface-dark border-2 border-gray-100 dark:border-gray-700 border-b-4 hover:border-primary hover:border-b-primary active:translate-y-1 active:scale-[0.97] transition-all duration-150 shadow-sm hover:shadow-lg hover:shadow-primary/10 cursor-pointer">
+                            <span class="option-letter">C</span>
+                            <div class="size-8 sm:size-9 mb-1.5 rounded-full bg-green-50 dark:bg-green-900/20 text-green-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <span class="material-symbols-outlined text-lg">directions_run</span>
                             </div>
-                            <span
-                                class="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors">Run</span>
-                            <div
-                                class="absolute inset-0 border-2 border-transparent group-hover:border-primary rounded-xl pointer-events-none transition-colors">
-                            </div>
+                            <span class="text-sm sm:text-base md:text-lg font-bold text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors text-center leading-snug">Run</span>
+                            <div class="absolute inset-0 rounded-2xl ring-2 ring-transparent group-hover:ring-primary/30 pointer-events-none transition-all"></div>
                         </button>
-                        <!-- Option 4 -->
-                        <button
-                            class="group relative flex flex-col items-center justify-center p-3 sm:p-4 md:p-6 lg:p-8 h-24 sm:h-28 md:h-32 lg:h-40 rounded-xl bg-white dark:bg-surface-dark border-b-4 border-gray-200 dark:border-gray-700 hover:border-primary active:border-primary active:translate-y-1 active:scale-95 transition-all duration-200 shadow-sm hover:shadow-xl hover:shadow-primary/10">
-                            <div
-                                class="size-8 sm:size-9 md:size-10 mb-1.5 sm:mb-2 rounded-full bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <span class="material-symbols-outlined text-lg sm:text-xl md:text-2xl">chair_alt</span>
+
+                        <!-- Option D -->
+                        <button class="answer-btn group relative flex flex-col items-center justify-center pt-6 pb-4 px-3 sm:px-4 h-28 sm:h-32 md:h-36 rounded-2xl bg-white dark:bg-surface-dark border-2 border-gray-100 dark:border-gray-700 border-b-4 hover:border-primary hover:border-b-primary active:translate-y-1 active:scale-[0.97] transition-all duration-150 shadow-sm hover:shadow-lg hover:shadow-primary/10 cursor-pointer">
+                            <span class="option-letter">D</span>
+                            <div class="size-8 sm:size-9 mb-1.5 rounded-full bg-purple-50 dark:bg-purple-900/20 text-purple-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <span class="material-symbols-outlined text-lg">chair_alt</span>
                             </div>
-                            <span
-                                class="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors">Sit</span>
-                            <div
-                                class="absolute inset-0 border-2 border-transparent group-hover:border-primary rounded-xl pointer-events-none transition-colors">
-                            </div>
+                            <span class="text-sm sm:text-base md:text-lg font-bold text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors text-center leading-snug">Sit</span>
+                            <div class="absolute inset-0 rounded-2xl ring-2 ring-transparent group-hover:ring-primary/30 pointer-events-none transition-all"></div>
                         </button>
                     </div>
-                    <div class="mt-3 sm:mt-4 md:mt-6 flex justify-center lg:justify-start">
-                        <button
-                            class="flex items-center gap-1.5 sm:gap-2 px-4 py-2 sm:px-6 sm:py-3 rounded-full bg-gray-100 dark:bg-surface-dark text-text-muted dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 active:scale-95 transition-all text-xs sm:text-sm font-bold">
-                            <span class="material-symbols-outlined text-base sm:text-[20px]">volume_up</span>
-                            Listen to question
-                        </button>
-                    </div>
+
+                    <!-- Keyboard hint -->
+                    <p class="hidden lg:flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-600">
+                        <span class="material-symbols-outlined text-sm">keyboard</span>
+                        Nhấn <kbd class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-gray-800 font-mono text-[11px] border border-slate-200 dark:border-gray-700">A</kbd>
+                        <kbd class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-gray-800 font-mono text-[11px] border border-slate-200 dark:border-gray-700">B</kbd>
+                        <kbd class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-gray-800 font-mono text-[11px] border border-slate-200 dark:border-gray-700">C</kbd>
+                        <kbd class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-gray-800 font-mono text-[11px] border border-slate-200 dark:border-gray-700">D</kbd>
+                        để trả lời nhanh
+                    </p>
                 </div>
+
             </div>
         </main>
         <!-- Mobile Bottom Progress (Visible only on small screens) -->
@@ -276,57 +355,53 @@ function renderQuestion() {
     // Reset timer
     resetTimer();
 
-    // Update image
-    const imageDiv = document.querySelector('.bg-cover.bg-center');
-    imageDiv.style.backgroundImage = `url('${q.imageUrl}')`;
-    imageDiv.setAttribute('data-alt', q.meaning);
-
-    // Update hint
-    const hintDiv = document.querySelector('.absolute.bottom-3 p, .absolute.bottom-4 p, .absolute.bottom-6 p');
-    if (hintDiv) {
-        hintDiv.innerHTML = `<span class="material-symbols-outlined text-primary text-base sm:text-lg">lightbulb</span>
-            Hint: ${q.pinyin}`;
+    // Update Traditional Chinese word display
+    const wordText = document.getElementById('questionWordText');
+    if (wordText) {
+        // Re-trigger wordPop animation
+        wordText.style.animation = 'none';
+        wordText.offsetHeight; // reflow
+        wordText.style.animation = '';
+        wordText.textContent = q.traditional || q.simplified || '';
     }
+
+    // Update pinyin hint
+    const hintEl = document.getElementById('hintPinyin');
+    if (hintEl) hintEl.textContent = q.pinyin || q.hint || '\u2014';
 
     // Render options
-    const optionsContainer = document.querySelector('.grid.grid-cols-2');
-    if (!optionsContainer) {
-        console.error('Options container not found');
-        return;
-    }
+    const optionsContainer = document.getElementById('optionsGrid');
+    if (!optionsContainer) { console.error('optionsGrid not found'); return; }
     optionsContainer.innerHTML = '';
-    
+
+    const letters = ['A', 'B', 'C', 'D'];
+    const iconOpts = [
+        { icon: 'sentiment_very_satisfied', bg: 'bg-blue-50 dark:bg-blue-900/20',   text: 'text-blue-500'   },
+        { icon: 'favorite',                 bg: 'bg-orange-50 dark:bg-orange-900/20', text: 'text-orange-500' },
+        { icon: 'star',                     bg: 'bg-green-50 dark:bg-green-900/20',  text: 'text-green-500'  },
+        { icon: 'emoji_objects',            bg: 'bg-purple-50 dark:bg-purple-900/20', text: 'text-purple-500' },
+    ];
+
     q.options.forEach((opt, idx) => {
+        const io = iconOpts[idx];
         const btn = document.createElement('button');
-        btn.className = 'group relative flex flex-col items-center justify-center p-3 sm:p-4 md:p-6 lg:p-8 h-24 sm:h-28 md:h-32 lg:h-40 rounded-xl bg-white dark:bg-surface-dark border-b-4 border-gray-200 dark:border-gray-700 hover:border-primary active:border-primary active:translate-y-1 active:scale-95 transition-all duration-200 shadow-sm hover:shadow-xl hover:shadow-primary/10';
+        btn.className = 'answer-btn group relative flex flex-col items-center justify-center pt-6 pb-4 px-3 sm:px-4 h-28 sm:h-32 md:h-36 rounded-2xl bg-white dark:bg-surface-dark border-2 border-gray-100 dark:border-gray-700 border-b-4 hover:border-primary hover:border-b-primary active:translate-y-1 active:scale-[0.97] transition-all duration-150 shadow-sm hover:shadow-lg hover:shadow-primary/10 cursor-pointer';
+        btn.dataset.idx = idx;
         btn.onclick = () => selectAnswer(idx);
-        
-        // Icon placeholder
-        const iconDiv = document.createElement('div');
-        iconDiv.className = 'size-8 sm:size-9 md:size-10 mb-1.5 sm:mb-2 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-500 dark:text-blue-300 flex items-center justify-center group-hover:scale-110 transition-transform';
-        iconDiv.innerHTML = '<span class="material-symbols-outlined text-lg sm:text-xl md:text-2xl">translate</span>';
-        
-        // Meaning text (English/Vietnamese)
-        const meaningSpan = document.createElement('span');
-        meaningSpan.className = 'text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors text-center';
-        meaningSpan.textContent = opt.meaning;
-        
-        // Pinyin text (smaller)
-        const pinyinSpan = document.createElement('span');
-       
-        
-        btn.appendChild(iconDiv);
-        btn.appendChild(meaningSpan);
-        btn.appendChild(pinyinSpan);
-        
+        btn.innerHTML = `
+            <span class="option-letter">${letters[idx]}</span>
+            <div class="size-8 sm:size-9 mb-1.5 rounded-full ${io.bg} ${io.text} flex items-center justify-center group-hover:scale-110 transition-transform">
+                <span class="material-symbols-outlined text-lg">${io.icon}</span>
+            </div>
+            <span class="meaning-text text-sm sm:text-base md:text-lg font-bold text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors text-center leading-snug">${opt.meaning}</span>
+            <div class="absolute inset-0 rounded-2xl ring-2 ring-transparent group-hover:ring-primary/30 pointer-events-none transition-all"></div>
+        `;
         optionsContainer.appendChild(btn);
     });
 
     // Update listen button
-    const listenBtn = document.querySelector('button[class*="mt-"]');
-    if (listenBtn) {
-        listenBtn.onclick = () => speakQuestion();
-    }
+    const listenBtn = document.getElementById('listenBtn');
+    if (listenBtn) listenBtn.onclick = () => speakQuestion();
 }
 
 // ========== Timer Functions ==========
@@ -351,55 +426,60 @@ function resetTimer() {
 }
 
 function updateTimerDisplay() {
-    const timerText = document.querySelector('.absolute.flex.flex-col.items-center span:first-of-type');
+    const timerText = document.getElementById('timerText');
     if (timerText) timerText.textContent = timeLeft;
-    
-    // Update circular progress
-    const circle = document.querySelector('.text-primary.transition-all');
+
+    const circle = document.getElementById('timerCircle');
     if (circle) {
         const progress = (timeLeft / 15) * 283;
         circle.setAttribute('stroke-dashoffset', 283 - progress);
+        if (timeLeft <= 5) {
+            circle.classList.remove('text-primary');
+            circle.classList.add('text-red-500');
+        } else {
+            circle.classList.remove('text-red-500');
+            circle.classList.add('text-primary');
+        }
     }
 }
 
 // ========== Select Answer ==========
 function selectAnswer(idx) {
     if (timer) clearInterval(timer);
-    
+
     const q = questions[currentIndex];
     const isCorrect = q.options[idx].isCorrect;
-    const optionsContainer = document.querySelector('.grid.grid-cols-2');
+    const optionsContainer = document.getElementById('optionsGrid');
     if (!optionsContainer) return;
     const buttons = Array.from(optionsContainer.children);
-    
-    // Highlight correct and selected answers
+
     buttons.forEach((btn, i) => {
         btn.disabled = true;
-        btn.classList.remove('hover:border-primary');
-        
+        btn.classList.remove('hover:border-primary', 'hover:shadow-lg', 'hover:shadow-primary/10');
+
         if (q.options[i].isCorrect) {
-            btn.classList.remove('border-gray-200');
-            btn.classList.add('border-green-500', 'bg-green-50', 'dark:bg-green-900/30');
+            btn.classList.remove('border-gray-100', 'border-b-4');
+            btn.classList.add('border-green-400', 'bg-green-50', 'dark:bg-green-900/20');
+            btn.querySelector('.meaning-text')?.classList.add('text-green-600');
+            const letter = btn.querySelector('.option-letter');
+            if (letter) { letter.style.background = '#22c55e'; letter.style.color = 'white'; }
         } else if (i === idx) {
-            btn.classList.remove('border-gray-200');
-            btn.classList.add('border-red-500', 'bg-red-50', 'dark:bg-red-900/30');
+            btn.classList.remove('border-gray-100', 'border-b-4');
+            btn.classList.add('border-red-400', 'bg-red-50', 'dark:bg-red-900/20');
+            btn.querySelector('.meaning-text')?.classList.add('text-red-500');
+            const letter = btn.querySelector('.option-letter');
+            if (letter) { letter.style.background = '#ef4444'; letter.style.color = 'white'; }
+        } else {
+            btn.classList.add('opacity-50');
         }
     });
-    
-    // Update score
+
     if (isCorrect) {
         score++;
-        // Update score display immediately with animation
-        if (window.animateScoreUpdate) {
-            window.animateScoreUpdate(score);
-        }
+        if (window.animateScoreUpdate) window.animateScoreUpdate(score);
     }
-    
-    // Move to next question after delay
-    setTimeout(() => {
-        currentIndex++;
-        renderQuestion();
-    }, 1500);
+
+    setTimeout(() => { currentIndex++; renderQuestion(); }, 1500);
 }
 
 // ========== Speak Question ==========
@@ -660,6 +740,17 @@ function createConfetti() {
 document.addEventListener('DOMContentLoaded', () => {
     // Load questions after a short delay to ensure header is ready
     setTimeout(loadQuestions, 200);
+
+    // Keyboard shortcuts A/B/C/D
+    document.addEventListener('keydown', (e) => {
+        if (questions.length === 0 || currentIndex >= questions.length) return;
+        const map = { 'a': 0, 'b': 1, 'c': 2, 'd': 3 };
+        const idx = map[e.key.toLowerCase()];
+        if (idx !== undefined) {
+            const btns = document.querySelectorAll('#optionsGrid .answer-btn');
+            if (btns[idx] && !btns[idx].disabled) btns[idx].click();
+        }
+    });
 });
 </script>
 </body>

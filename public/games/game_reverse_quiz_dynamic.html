@@ -47,15 +47,12 @@
             background-size: 24px 24px;
             opacity: 0.1;
         }
-        .pt-0 {
-            padding-top: 0 !important;
-            padding-bottom: 0 !important;
-        }
+        /* removed forced pt-0 override */
     </style>
 </head>
 
 <body
-    class="bg-background-light dark:bg-background-dark font-display min-h-screen flex flex-col overflow-hidden text-text-main dark:text-white transition-colors duration-200">
+    class="bg-background-light dark:bg-background-dark font-display min-h-screen flex flex-col overflow-x-hidden text-text-main dark:text-white transition-colors duration-200">
     <!-- Decorative Background Pattern -->
     <div class="fixed inset-0 pattern-bg pointer-events-none z-0"></div>
     <!-- Common Game Header -->
@@ -82,19 +79,19 @@
     </script>
     
     <!-- Main Game Content -->
-    <main class="pt-0 flex-1 flex flex-col items-center justify-center p-4 md:p-8 w-full max-w-6xl mx-auto relative z-10">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full h-full lg:h-auto items-center">
+    <main class="flex-1 flex flex-col items-center justify-start py-4 px-4 md:py-6 md:px-8 w-full max-w-6xl mx-auto relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 w-full items-start">
             <!-- Left Column: The Stage (Image & Prompt) -->
-            <div class="lg:col-span-7 flex flex-col w-full h-full justify-center">
+            <div class="lg:col-span-7 flex flex-col w-full justify-center">
                 <!-- Question Prompt -->
                 <h1 id="questionPrompt"
-                    class="text-3xl md:text-4xl lg:text-5xl font-bold text-center lg:text-left mb-8 text-gray-800 dark:text-gray-100 drop-shadow-sm leading-tight">
-                    Look at the picture.<br />
-                    <span class="text-primary">Which word matches?</span>
+                    class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-center lg:text-left mb-4 sm:mb-6 lg:mb-8 text-gray-800 dark:text-gray-100 drop-shadow-sm leading-tight">
+                    Nhìn từ tiếng Đài Loan.<br />
+                    <span class="text-primary">Nghĩa là gì?</span>
                 </h1>
                 <!-- Image Card -->
                 <div
-                    class="relative w-full aspect-[4/3] rounded-xl overflow-hidden shadow-2xl bg-surface-light dark:bg-surface-dark border-4 border-white dark:border-surface-dark ring-1 ring-black/5 group">
+                    class="relative w-full aspect-[3/2] sm:aspect-[4/3] max-h-72 sm:max-h-80 lg:max-h-none rounded-xl overflow-hidden shadow-2xl bg-surface-light dark:bg-surface-dark border-4 border-white dark:border-surface-dark ring-1 ring-black/5 group">
                     <!-- Countdown Timer Overlay (Top Right) -->
                     <div class="absolute top-6 right-6 z-20" id="timerContainer">
                         <div
@@ -113,7 +110,10 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Main Image -->
+                    <!-- Main Word Display -->
+                    <div id="questionImage" class="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-700 dark:to-slate-800">
+                        <span id="questionWordText" class="text-7xl md:text-8xl lg:text-9xl font-black text-primary select-none"></span>
+                    </div>
                
                     <!-- Label Overlay (Optional Hint) -->
                     <div class="absolute bottom-6 left-6 z-20" id="hintContainer">
@@ -127,11 +127,11 @@
                 </div>
             </div>
             <!-- Right Column: Answer Grid -->
-            <div class="lg:col-span-5 w-full flex flex-col justify-center gap-4 lg:pl-8">
+            <div class="lg:col-span-5 w-full flex flex-col justify-start gap-4 lg:pl-8">
                 <div id="optionsGrid" class="grid grid-cols-2 gap-4 w-full">
                     <!-- Options will be dynamically loaded here -->
                 </div>
-                <div class="mt-6 flex justify-center lg:justify-start">
+                <div class="mt-3 sm:mt-4 lg:mt-6 flex justify-center lg:justify-start">
                     <button id="speakBtn"
                         class="flex items-center gap-2 px-6 py-3 rounded-full bg-gray-100 dark:bg-surface-dark text-text-muted dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-sm font-bold">
                         <span class="material-symbols-outlined text-[20px]">volume_up</span>
@@ -206,13 +206,12 @@ function renderQuestion() {
     // Reset timer
     startTimer();
 
-    // Update image
-    const imageDiv = document.getElementById('questionImage');
-    imageDiv.style.backgroundImage = `url('${q.imageUrl}')`;
-    imageDiv.setAttribute('data-alt', q.meaning);
+    // Update Traditional Chinese word display
+    const wordText = document.getElementById('questionWordText');
+    if (wordText) wordText.textContent = q.traditional || q.simplified || '';
 
     // Update hint
-    document.getElementById('hintContent').textContent = `Pinyin: ${q.hint}`;
+    document.getElementById('hintContent').textContent = `Pinyin: ${q.hint || q.pinyin || ''}`;
 
     // Render options
     const optionsGrid = document.getElementById('optionsGrid');
@@ -228,12 +227,12 @@ function renderQuestion() {
     q.options.forEach((opt, idx) => {
         const iconOpt = iconOptions[idx] || iconOptions[0];
         const btn = document.createElement('button');
-        btn.className = 'option-btn group relative flex flex-col items-center justify-center p-6 lg:p-8 h-32 lg:h-40 rounded-xl bg-white dark:bg-surface-dark border-b-4 border-gray-200 dark:border-gray-700 hover:border-primary active:translate-y-1 transition-all duration-200 shadow-sm hover:shadow-xl hover:shadow-primary/10';
+        btn.className = 'option-btn group relative flex flex-col items-center justify-center p-3 sm:p-4 lg:p-6 h-24 sm:h-28 lg:h-36 rounded-xl bg-white dark:bg-surface-dark border-b-4 border-gray-200 dark:border-gray-700 hover:border-primary active:translate-y-1 transition-all duration-200 shadow-sm hover:shadow-xl hover:shadow-primary/10';
         btn.innerHTML = `
-            <div class="size-10 mb-2 rounded-full bg-${iconOpt.color}-50 dark:bg-${iconOpt.color}-900/30 text-${iconOpt.color}-600 dark:text-${iconOpt.color}-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <span class="material-symbols-outlined">${iconOpt.icon}</span>
+            <div class="size-7 sm:size-8 lg:size-10 mb-1 sm:mb-2 rounded-full bg-${iconOpt.color}-50 dark:bg-${iconOpt.color}-900/30 text-${iconOpt.color}-600 dark:text-${iconOpt.color}-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <span class="material-symbols-outlined text-base sm:text-lg lg:text-xl">${iconOpt.icon}</span>
             </div>
-            <span class="text-xl lg:text-2xl font-bold text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors">${opt.meaning}</span>
+            <span class="meaning-text text-base sm:text-lg lg:text-xl font-bold text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors text-center leading-tight">${opt.meaning}</span>
             <div class="absolute inset-0 border-2 border-transparent group-hover:border-primary rounded-xl pointer-events-none transition-colors"></div>
         `;
         btn.onclick = () => selectAnswer(idx, opt.isCorrect);
@@ -305,10 +304,10 @@ function selectAnswer(idx, isCorrect) {
         const q = questions[currentIndex];
         if (q.options[i].isCorrect) {
             btn.classList.add('border-green-500');
-            btn.querySelector('.text-xl').classList.add('text-green-600');
+            btn.querySelector('.meaning-text').classList.add('text-green-600');
         } else if (i === idx && !isCorrect) {
             btn.classList.add('border-red-500');
-            btn.querySelector('.text-xl').classList.add('text-red-600');
+            btn.querySelector('.meaning-text').classList.add('text-red-600');
         }
     });
 
@@ -345,13 +344,30 @@ function handleTimeout() {
 // ========== Speak Word ==========
 function speakWord() {
     const q = questions[currentIndex];
+    if (!q) return;
+    const text = q.traditional || q.simplified || '';
+    if (!text) return;
+
+    // Cancel any ongoing speech first
+    speechSynthesis.cancel();
+
     if (window.speakText) {
-        window.speakText(q.traditional || q.simplified);
+        window.speakText(text);
     } else {
-        const utterance = new SpeechSynthesisUtterance(q.traditional || q.simplified);
+        const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'zh-TW';
+        // Pick a Chinese voice if available
+        const voices = speechSynthesis.getVoices();
+        const zhVoice = voices.find(v => v.lang.startsWith('zh'));
+        if (zhVoice) utterance.voice = zhVoice;
+        utterance.rate = 0.85;
         speechSynthesis.speak(utterance);
     }
+}
+
+// Pre-load voices so they're ready when needed
+if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
+    speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
 }
 
 // ========== Update Progress ==========

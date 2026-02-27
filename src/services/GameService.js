@@ -1084,9 +1084,10 @@ class GameService {
           .toArray();
 
         const allOptions = [
-          { text: `${word.traditional} (${word.pinyin})`, isCorrect: true },
+          { text: `${word.traditional} (${word.pinyin})`, meaning: word.meaning, isCorrect: true },
           ...wrongAnswers.map(w => ({ 
             text: `${w.traditional} (${w.pinyin})`, 
+            meaning: w.meaning,
             isCorrect: false 
           }))
         ];
