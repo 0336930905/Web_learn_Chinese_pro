@@ -9,6 +9,7 @@
     "deploy": "vercel --prod",
     "db:setup": "node src/database/setup.js",
     "db:seed": "node src/database/seed.js",
+    "db:seed:taiwanese-user": "node src/database/seed-taiwanese-user.js",
     "db:clear": "node clear-vocab-categories.js",
     "db:add-admin": "node add-admin-categories.js",
     "db:setup-old": "node database/setup.js setup",
