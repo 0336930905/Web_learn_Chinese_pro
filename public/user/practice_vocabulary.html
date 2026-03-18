@@ -226,11 +226,23 @@
                       text-sm font-semibold rounded-xl hover:bg-gray-200 dark:hover:bg-green-900/30 border border-transparent dark:border-green-900/30 transition-all">
                       <span class="material-symbols-outlined text-base">format_list_bulleted</span> Nhập nhiều
                     </button>
-                      <label for="excelUpload" class="flex items-center gap-2 px-4 py-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300
-                        text-sm font-semibold rounded-xl hover:bg-green-200 dark:hover:bg-green-800/40 border border-transparent dark:border-green-800/30 transition-all cursor-pointer">
-                        <span class="material-symbols-outlined text-base">upload_file</span> Nhập từ Excel
-                        <input type="file" id="excelUpload" accept=".xlsx, .xls, .csv" class="hidden" onchange="processExcelImport(event)">
-                      </label>
+                    <label for="excelUpload" class="flex items-center gap-2 px-4 py-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300
+                      text-sm font-semibold rounded-xl hover:bg-green-200 dark:hover:bg-green-800/40 border border-transparent dark:border-green-800/30 transition-all cursor-pointer">
+                      <span class="material-symbols-outlined text-base">upload_file</span> Nhập từ Excel
+                      <input type="file" id="excelUpload" accept=".xlsx, .xls, .csv" class="hidden" onchange="processExcelImport(event)">
+                    </label>
+                  </div>
+
+                  <!-- Bulk import panel -->
+                  <div id="bulkImportPanel" class="hidden mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-2xl border border-blue-200 dark:border-blue-800">
+                    <p class="text-xs font-bold text-blue-700 dark:text-blue-400 mb-2">NHẬP HÀNG LOẠT (mỗi dòng: <code class="bg-blue-100 dark:bg-blue-800 px-1 rounded">字 | pīnyīn | nghĩa</code>)</p>
+                    <textarea id="bulkImportText" rows="5"
+                      class="w-full px-3 py-2 text-sm rounded-xl border-2 border-blue-200 dark:border-blue-700
+                      bg-white dark:bg-background-dark focus:border-primary outline-none font-mono"
+                      placeholder="你好 | nǐ hǎo | xin chào&#10;谢谢 | xiè xiè | cảm ơn&#10;再见 | zài jiàn | tạm biệt"></textarea>
+                    <div class="flex gap-2 mt-2">
+                      <button onclick="processBulkImport()"
+                        class="px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 transition-all">Nhập</button>
                       <button onclick="document.getElementById('bulkImportPanel').classList.add('hidden')"
                         class="px-4 py-2 bg-gray-200 dark:bg-card-dark text-gray-600 dark:text-gray-300 text-sm font-semibold rounded-xl hover:bg-gray-300 dark:hover:bg-green-900/30 transition-all">Đóng</button>
                     </div>
@@ -728,62 +740,76 @@ function processBulkImport() {
     : showToast('Không tìm thấy từ hợp lệ. Định dạng: 字 | pīnyīn | nghĩa', 'error');
 }
 
-  function processExcelImport(event) {
-    const file = event.target.files[0];
-    if (!file) return;
+function processExcelImport(event) {
+  const file = event.target.files[0];
+  if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      try {
-        const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, {type: 'array'});
-        const firstSheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[firstSheetName];
-        
-        // Convert sheet to json array
-        const json = XLSX.utils.sheet_to_json(worksheet, {header: 1});
-        let added = 0;
-
-        json.forEach(row => {
-          // Attempt to extract values robustly. 
-          // It handles arrays (no header) or objects (with header)
-          let hanzi = '';
-          let pinyin = '';
-          let meaning = '';
-
-          if (Array.isArray(row)) {
-            hanzi = row[0] || '';
-            pinyin = row[1] || '';
-            meaning = row[2] || '';
-          } else {
-            // Get values from object values if headers exist
-            const values = Object.values(row);
-            hanzi = values[0] || '';
-            pinyin = values[1] || '';
-            meaning = values[2] || '';
-          }
-
-          if (hanzi) {
-            addWordRow(String(hanzi).trim(), String(pinyin).trim(), String(meaning).trim());
-            added++;
-          }
-        });
-
-        if (added > 0) {
-          showToast(`Đã nhập thành công ${added} từ từ file Excel`, 'success');
-        } else {
-          showToast('Không tìm thấy dữ liệu hợp lệ trong file Excel. Vui lòng đảm bảo file có ít nhất 2 cột (Chữ, Pinyin, Nghĩa).', 'error');
-        }
-      } catch (error) {
-        console.error('Excel import error:', error);
-        showToast('Lỗi khi đọc file Excel. Vui lòng kiểm tra lại định dạng file.', 'error');
-      }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, {type: 'array'});
+      const firstSheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[firstSheetName];
       
-      // Reset input so the same file can be selected again
-      event.target.value = '';
-    };
-    reader.readAsArrayBuffer(file);
-  }
+      // Convert sheet to json array
+      const json = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+      let added = 0;
+
+      json.forEach(row => {
+        // Attempt to extract values robustly. 
+        // It handles arrays (no header) or objects (with header)
+        let hanzi = '';
+        let pinyin = '';
+        let meaning = '';
+
+        if (Array.isArray(row)) {
+          hanzi = row[0] || '';
+          pinyin = row[1] || '';
+          meaning = row[2] || '';
+        } else {
+          // Get values from object values if headers exist
+          const values = Object.values(row);
+          hanzi = values[0] || '';
+          pinyin = values[1] || '';
+          meaning = values[2] || '';
+        }
+
+        if (hanzi) {
+          addWordRow(String(hanzi).trim(), String(pinyin).trim(), String(meaning).trim());
+          added++;
+        }
+      });
+
+      if (added > 0) {
+        showToast(`Đã nhập thành công ${added} từ từ file Excel`, 'success');
+      } else {
+        showToast('Không tìm thấy dữ liệu hợp lệ trong file Excel. Vui lòng đảm bảo file có ít nhất 2 cột (Chữ, Pinyin, Nghĩa).', 'error');
+      }
+    } catch (error) {
+      console.error('Excel import error:', error);
+      showToast('Lỗi khi đọc file Excel. Vui lòng kiểm tra lại định dạng file.', 'error');
+    }
+    
+    // Reset input so the same file can be selected again
+    event.target.value = '';
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// ==================== SAVED SETS ====================
+// ==================== CUSTOM SETS — UI STATE ====================
+function openCustomForm(setData = null) {
+  document.getElementById('customListView').classList.add('hidden');
+  document.getElementById('customFormView').classList.remove('hidden');
+  document.getElementById('customHeaderList').classList.add('hidden');
+  document.getElementById('customHeaderForm').classList.remove('hidden');
+
+  if (setData) {
+    document.getElementById('customFormTitle').textContent = 'Chỉnh sửa bộ từ';
+    document.getElementById('customSetName').value = setData.name;
+    document.getElementById('wordRowsContainer').innerHTML = '';
+    customWordRowCount = 0;
     setData.words.forEach(w => addWordRow(w.hanzi, w.pinyin, w.meaning));
   } else {
     document.getElementById('customFormTitle').textContent = 'Tạo bộ từ mới';
