@@ -312,7 +312,7 @@ async function loadQuestions() {
     gameStartTime = Date.now(); // Reset timer
     
     try {
-        const res = await fetch(`/api/games/reverse-quiz?categoryId=${categoryId}&count=10`);
+        const res = await fetch(`/api/games/reverse-quiz?categoryId=${categoryId}`);
         const data = await res.json();
         if (!data.success) {
             alert('Không thể tải câu hỏi: ' + (data.error?.message || 'Lỗi không xác định'));
