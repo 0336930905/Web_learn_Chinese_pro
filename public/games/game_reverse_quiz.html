@@ -202,6 +202,15 @@
                         </button>
                         <span class="text-[11px] text-slate-400 dark:text-slate-500">Nhấn để nghe từ</span>
                     </div>
+
+                    <!-- Quit Game Button -->
+                    <div class="mt-6 sm:mt-8">
+                        <button id="quitGameBtn" 
+                            class="w-full px-4 py-2.5 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white rounded-lg font-bold transition-all duration-150 shadow-md hover:shadow-lg hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined text-lg">exit_to_app</span>
+                            <span>Kết thúc trò chơi</span>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- ══════════════════════════════════════
@@ -736,10 +745,78 @@ function createConfetti() {
     }
 }
 
+// ========== Quit Game Handler ==========
+function quitGame() {
+    // Show confirmation dialog
+    const confirmed = confirm('Bạn có chắc chắn muốn kết thúc trò chơi?\n\nQuá trình tiến hành sẽ không được lưu.');
+    
+    if (!confirmed) return;
+    
+    // Clear timer if running
+    if (timer) clearInterval(timer);
+    
+    // Show quit confirmation with stats
+    const timeSpent = Math.floor((Date.now() - gameStartTime) / 1000);
+    const minutes = Math.floor(timeSpent / 60);
+    const seconds = timeSpent % 60;
+    const percentage = questions.length > 0 ? Math.round((score / questions.length) * 100) : 0;
+    
+    const overlay = document.createElement('div');
+    overlay.className = 'fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 px-4';
+    overlay.innerHTML = `
+        <div class="bg-gradient-to-br from-white via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-2xl md:rounded-3xl shadow-2xl p-6 sm:p-8 max-w-md w-full border-4 border-gradient-to-r from-orange-200 via-red-200 to-rose-200 dark:border-gray-700">
+            <div class="text-center">
+                <!-- Icon -->
+                <div class="text-6xl mb-4 inline-block">⏸️</div>
+                
+                <!-- Title -->
+                <h2 class="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white mb-2">Trò chơi bị dừng</h2>
+                <p class="text-gray-600 dark:text-gray-300 mb-6">Dữ liệu tiến hành sẽ không được lưu</p>
+                
+                <!-- Quick Stats -->
+                <div class="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 mb-6 space-y-2">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600 dark:text-gray-400">Câu trả lời đúng:</span>
+                        <span class="font-bold text-gray-900 dark:text-white">${score}/${questions.length}</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600 dark:text-gray-400">Tỷ lệ:</span>
+                        <span class="font-bold text-gray-900 dark:text-white">${percentage}%</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600 dark:text-gray-400">Thời gian:</span>
+                        <span class="font-bold text-gray-900 dark:text-white">${minutes}:${seconds.toString().padStart(2, '0')}</span>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex flex-col gap-3">
+                    <button onclick="window.location.href='../user/games_home.html'" class="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white px-6 py-3 rounded-lg font-bold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-lg">home</span>
+                        Về trang chủ
+                    </button>
+                    <button onclick="window.location.reload()" class="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-6 py-3 rounded-lg font-bold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-lg">refresh</span>
+                        Chơi lại
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(overlay);
+}
+
 // ========== Start Game ==========
 document.addEventListener('DOMContentLoaded', () => {
     // Load questions after a short delay to ensure header is ready
     setTimeout(loadQuestions, 200);
+
+    // Quit game button event listener
+    const quitBtn = document.getElementById('quitGameBtn');
+    if (quitBtn) {
+        quitBtn.addEventListener('click', quitGame);
+    }
 
     // Keyboard shortcuts A/B/C/D
     document.addEventListener('keydown', (e) => {
