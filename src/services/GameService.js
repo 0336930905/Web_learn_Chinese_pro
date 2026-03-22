@@ -811,7 +811,7 @@ class GameService {
    * Get Reverse Quiz
    * User sees image and selects matching word
    */
-  async getReverseQuiz(categoryId, count = 10) {
+  async getReverseQuiz(categoryId, count = null) {
     try {
       if (!ObjectId.isValid(categoryId)) {
         throw new AppError(
@@ -821,12 +821,18 @@ class GameService {
         );
       }
 
-      // Get random vocabulary from category
+      // Get vocabulary from category - if count is not specified, get all
+      const pipeline = [
+        { $match: { categoryId: new ObjectId(categoryId) } }
+      ];
+
+      // Only add $sample stage if count is specified and valid
+      if (count && parseInt(count) > 0) {
+        pipeline.push({ $sample: { size: parseInt(count) } });
+      }
+
       const vocabulary = await this.vocabularyCollection
-        .aggregate([
-          { $match: { categoryId: new ObjectId(categoryId) } },
-          { $sample: { size: parseInt(count) } }
-        ])
+        .aggregate(pipeline)
         .toArray();
 
       if (vocabulary.length === 0) {
