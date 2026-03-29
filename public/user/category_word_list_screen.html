@@ -18,12 +18,12 @@
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
         rel="stylesheet" />
     <link rel="stylesheet" href="../css/user-common.css" />
+    <!-- XLSX Library for Excel import - Load first -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js"></script>
     <!-- Translations -->
     <script src="../i18n/translations.js"></script>
     <!-- API Client -->
     <script src="../js/api-client.js"></script>
-    <!-- XLSX Library for Excel import -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js"></script>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <!-- Theme Config -->
@@ -1017,7 +1017,11 @@
                         rows = parseCSV(data);
                     } else {
                         // Parse Excel
-                        const workbook = XLSX.read(data, { type: 'binary' });
+                        if (typeof XLSX === 'undefined') {
+                            showError('Thư viện XLSX chưa sẵn sàng. Vui lòng thử lại.');
+                            return;
+                        }
+                        const workbook = XLSX.read(data, { type: 'array' });
                         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
                         rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
                     }
@@ -1048,7 +1052,7 @@
                 showError('Lỗi khi đọc file');
             };
             
-            reader.readAsBinaryString(file);
+            reader.readAsArrayBuffer(file);
         }
         
         function parseCSV(data) {

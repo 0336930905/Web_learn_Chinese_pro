@@ -3,15 +3,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Luyện Tập Từ Vựng</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>📚</text></svg>">
+  <title>luyện tập từ vựng</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>??</text></svg>">
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../css/user-common.css" />
-  <script src="../i18n/translations.js"></script>
-  <script src="../js/api-client.js"></script>
-  <script src="../js/sidebar.js"></script>
+  <link rel="stylesheet" href="/css/user-common.css" />
+  <script src="/i18n/translations.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/sidebar.js"></script>
   <script id="tailwind-config">
     tailwind.config = {
       darkMode: "class",
@@ -82,7 +83,7 @@
       <header class="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div class="flex items-center gap-3">
           <div class="w-12 h-12 rounded-2xl bg-primary/20 dark:bg-primary/30 flex items-center justify-center text-2xl shadow-soft shrink-0">
-            📚
+            ??
           </div>
           <div>
             <h1 class="text-3xl md:text-4xl font-extrabold text-text-main dark:text-white tracking-tight leading-tight">
@@ -99,13 +100,13 @@
             class="flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-card-dark text-text-secondary dark:text-green-400/80
             text-sm font-semibold rounded-full border border-gray-200 dark:border-green-900/30 shadow-soft
             hover:border-primary hover:text-primary transition-all">
-            <span class="material-symbols-outlined text-base">folder_open</span> Quản lý danh mục
+            <span class="material-symbols-outlined text-base">folder_open</span> Qu?n l� danh m?c
           </a>
           <a href="games_home.html"
             class="flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-card-dark text-text-secondary dark:text-green-400/80
             text-sm font-semibold rounded-full border border-gray-200 dark:border-green-900/30 shadow-soft
             hover:border-primary hover:text-primary transition-all">
-            <span class="material-symbols-outlined text-base">games</span> Trò chơi
+            <span class="material-symbols-outlined text-base">games</span> Tr� choi
           </a>
         </div>
       </header>
@@ -117,11 +118,11 @@
         <div class="flex gap-2 mb-6 p-1.5 bg-white dark:bg-card-dark rounded-2xl w-fit shadow-soft border border-gray-100 dark:border-green-900/30">
           <button id="tabCustom" onclick="switchTab('custom')"
             class="tab-active px-6 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-base">edit_note</span>Tự tạo
+            <span class="material-symbols-outlined text-base">edit_note</span>T? t?o
           </button>
           <button id="tabExisting" onclick="switchTab('existing')"
             class="tab-inactive px-6 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-base">folder_open</span>Bộ có sẵn
+            <span class="material-symbols-outlined text-base">folder_open</span>B? c� s?n
           </button>
         </div>
 
@@ -129,7 +130,7 @@
         <div id="panelCustom" class="">
           <div class="practice-card bg-white dark:bg-card-dark rounded-3xl border border-gray-100 dark:border-green-900/30 shadow-soft overflow-hidden">
 
-            <!-- ── Dynamic Card Header ── -->
+            <!-- -- Dynamic Card Header -- -->
             <div id="customPanelHeader"
               class="bg-gradient-to-br from-primary/20 via-green-100/50 to-transparent dark:from-primary/20 dark:via-green-900/20 dark:to-transparent px-6 py-5 border-b border-gray-100 dark:border-green-900/20">
               <!-- List mode header (default) -->
@@ -137,8 +138,8 @@
                 <div class="flex items-center gap-2">
                   <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1">collections_bookmark</span>
                   <div>
-                    <h2 class="font-extrabold text-text-main dark:text-white text-base">Bộ từ của bạn</h2>
-                    <p class="text-xs text-text-secondary dark:text-primary/60 mt-0.5">Chọn bộ từ để luyện tập hoặc tạo bộ từ mới</p>
+                    <h2 class="font-extrabold text-text-main dark:text-white text-base">B? t? c?a b?n</h2>
+                    <p class="text-xs text-text-secondary dark:text-primary/60 mt-0.5">Ch?n b? t? d? luy?n t?p ho?c t?o b? t? m?i</p>
                   </div>
                 </div>
                 <button onclick="openCustomForm()"
@@ -146,7 +147,7 @@
                   shadow-fun hover:shadow-fun-hover hover:brightness-105 active:scale-95 transition-all shrink-0">
                   <span class="material-symbols-outlined text-base">add</span>
                   <span class="hidden sm:inline">Tạo bộ từ mới</span>
-                  <span class="sm:hidden">Tạo mới</span>
+                  <span class="sm:hidden">Tao mới</span>
                 </button>
               </div>
               <!-- Form mode header (hidden) -->
@@ -158,12 +159,12 @@
                 </button>
                 <div>
                   <h2 id="customFormTitle" class="font-extrabold text-text-main dark:text-white text-base">Tạo bộ từ mới</h2>
-                  <p class="text-xs text-text-secondary dark:text-primary/60 mt-0.5">Nhập từ thủ công hoặc dùng tính năng nhập hàng loạt</p>
+                  <p class="text-xs text-text-secondary dark:text-primary/60 mt-0.5">Nhập từ thành công hoặc dng tnh nang nhp hng lo?t</p>
                 </div>
               </div>
             </div>
 
-            <!-- ══ VIEW 1: LIST OF SAVED SETS (default) ══ -->
+            <!-- -- VIEW 1: LIST OF SAVED SETS (default) -- -->
             <div id="customListView" class="p-6">
 
               <!-- Loading skeleton -->
@@ -178,8 +179,8 @@
                 <div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
                   <span class="material-symbols-outlined text-4xl text-primary/60">library_books</span>
                 </div>
-                <p class="font-bold text-gray-600 dark:text-gray-300">Chưa có bộ từ nào</p>
-                <p class="text-sm text-gray-400 dark:text-zinc-500">Nhấn <strong>"Tạo bộ từ mới"</strong> ở trên để bắt đầu!</p>
+                <p class="font-bold text-gray-600 dark:text-gray-300">Chua c� b? t? n�o</p>
+                <p class="text-sm text-gray-400 dark:text-zinc-500">Nh?n <strong>"T?o b? t? m?i"</strong> ? tr�n d? b?t d?u!</p>
               </div>
 
               <!-- Sets grid -->
@@ -187,26 +188,26 @@
 
             </div><!-- /customListView -->
 
-            <!-- ══ VIEW 2: CREATE / EDIT FORM (hidden) ══ -->
+            <!-- -- VIEW 2: CREATE / EDIT FORM (hidden) -- -->
             <div id="customFormView" class="hidden p-6">
               <div class="flex flex-col lg:flex-row gap-6">
 
-                <!-- ── Left: Word Input Table ── -->
+                <!-- -- Left: Word Input Table -- -->
                 <div class="flex-1 min-w-0">
 
                   <!-- Set name -->
                   <div class="mb-5">
-                    <label class="block text-xs font-bold text-text-secondary dark:text-green-400/80 mb-1.5 uppercase tracking-wide">Tên bộ từ</label>
-                    <input id="customSetName" type="text" placeholder="VD: Từ vựng HSK 1 của tôi"
+                    <label class="block text-xs font-bold text-text-secondary dark:text-green-400/80 mb-1.5 uppercase tracking-wide">T�n b? t?</label>
+                    <input id="customSetName" type="text" placeholder="VD: T? v?ng HSK 1 c?a t�i"
                       class="w-full px-4 py-2.5 text-sm rounded-xl border-2 border-gray-200 dark:border-green-900/40
                       bg-white dark:bg-background-dark focus:border-primary outline-none transition-all" />
                   </div>
 
                   <!-- Word table header -->
                   <div class="grid grid-cols-[2fr_2fr_3fr_40px] gap-2 mb-2 px-1">
-                    <span class="text-xs font-bold text-text-secondary dark:text-green-400/70 uppercase tracking-wide">Chữ Hán 漢字</span>
-                    <span class="text-xs font-bold text-text-secondary dark:text-green-400/70 uppercase tracking-wide">Phiên âm (Pinyin)</span>
-                    <span class="text-xs font-bold text-text-secondary dark:text-green-400/70 uppercase tracking-wide">Nghĩa tiếng Việt</span>
+                    <span class="text-xs font-bold text-text-secondary dark:text-green-400/70 uppercase tracking-wide">Ch? H�n ??</span>
+                    <span class="text-xs font-bold text-text-secondary dark:text-green-400/70 uppercase tracking-wide">Phi�n �m (Pinyin)</span>
+                    <span class="text-xs font-bold text-text-secondary dark:text-green-400/70 uppercase tracking-wide">Nghia ti?ng Vi?t</span>
                     <span></span>
                   </div>
 
@@ -218,55 +219,60 @@
                     <button onclick="addWordRow()"
                       class="flex items-center gap-2 px-4 py-2 bg-primary/10 text-text-secondary dark:text-primary
                       text-sm font-semibold rounded-xl hover:bg-primary/20 border border-primary/20 transition-all">
-                      <span class="material-symbols-outlined text-base">add</span> Thêm từ
+                      <span class="material-symbols-outlined text-base">add</span> Th�m t?
                     </button>
                     <button onclick="addWordRowsBulk()"
                       class="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-background-dark text-gray-600 dark:text-gray-300
                       text-sm font-semibold rounded-xl hover:bg-gray-200 dark:hover:bg-green-900/30 border border-transparent dark:border-green-900/30 transition-all">
-                      <span class="material-symbols-outlined text-base">format_list_bulleted</span> Nhập nhiều
+                      <span class="material-symbols-outlined text-base">format_list_bulleted</span> Nh?p nhi?u
                     </button>
+                    <label for="excelUpload" class="flex items-center gap-2 px-4 py-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300
+                      text-sm font-semibold rounded-xl hover:bg-green-200 dark:hover:bg-green-800/40 border border-transparent dark:border-green-800/30 transition-all cursor-pointer">
+                      <span class="material-symbols-outlined text-base">upload_file</span> Nh?p t? Excel
+                      <input type="file" id="excelUpload" accept=".xlsx, .xls, .csv" class="hidden" onchange="processExcelImport(event)">
+                    </label>
                   </div>
 
                   <!-- Bulk import panel -->
                   <div id="bulkImportPanel" class="hidden mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-2xl border border-blue-200 dark:border-blue-800">
-                    <p class="text-xs font-bold text-blue-700 dark:text-blue-400 mb-2">NHẬP HÀNG LOẠT (mỗi dòng: <code class="bg-blue-100 dark:bg-blue-800 px-1 rounded">字 | pīnyīn | nghĩa</code>)</p>
+                    <p class="text-xs font-bold text-blue-700 dark:text-blue-400 mb-2">NH?P H�NG LO?T (m?i d�ng: <code class="bg-blue-100 dark:bg-blue-800 px-1 rounded">? | pinyin | nghia</code>)</p>
                     <textarea id="bulkImportText" rows="5"
                       class="w-full px-3 py-2 text-sm rounded-xl border-2 border-blue-200 dark:border-blue-700
                       bg-white dark:bg-background-dark focus:border-primary outline-none font-mono"
-                      placeholder="你好 | nǐ hǎo | xin chào&#10;谢谢 | xiè xiè | cảm ơn&#10;再见 | zài jiàn | tạm biệt"></textarea>
+                      placeholder="?? | ni hao | xin ch�o&#10;?? | xi� xi� | c?m on&#10;?? | z�i ji�n | t?m bi?t"></textarea>
                     <div class="flex gap-2 mt-2">
                       <button onclick="processBulkImport()"
-                        class="px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 transition-all">Nhập</button>
+                        class="px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 transition-all">Nh?p</button>
                       <button onclick="document.getElementById('bulkImportPanel').classList.add('hidden')"
-                        class="px-4 py-2 bg-gray-200 dark:bg-card-dark text-gray-600 dark:text-gray-300 text-sm font-semibold rounded-xl hover:bg-gray-300 dark:hover:bg-green-900/30 transition-all">Đóng</button>
+                        class="px-4 py-2 bg-gray-200 dark:bg-card-dark text-gray-600 dark:text-gray-300 text-sm font-semibold rounded-xl hover:bg-gray-300 dark:hover:bg-green-900/30 transition-all">��ng</button>
                     </div>
                   </div>
 
                   <!-- Word count badge -->
                   <p class="mt-4 text-xs text-gray-400 dark:text-zinc-500">
-                    <span id="customWordCount" class="font-bold text-primary">0</span> từ đã thêm
-                    <span class="ml-2 text-yellow-500" id="customMinWarning" style="display:none">⚠️ Cần ít nhất 2 từ</span>
+                    <span id="customWordCount" class="font-bold text-primary">0</span> t? d� th�m
+                    <span class="ml-2 text-yellow-500" id="customMinWarning" style="display:none">?? C?n �t nh?t 2 t?</span>
                   </p>
 
-                  <!-- START button — mobile only -->
+                  <!-- START button � mobile only -->
                   <button onclick="startPractice()"
                     class="mt-6 w-full lg:hidden py-4 bg-primary text-text-main font-extrabold text-base rounded-2xl
                     shadow-fun hover:shadow-fun-hover hover:brightness-105 active:scale-[0.99] transition-all flex items-center justify-center gap-2">
                     <span class="material-symbols-outlined text-xl">play_arrow</span>
-                    Bắt đầu luyện tập
+                    B?t d?u luy?n t?p
                   </button>
 
                 </div>
 
-                <!-- ── Right: Sidebar ── -->
+                <!-- -- Right: Sidebar -- -->
                 <div class="lg:w-64 xl:w-72 shrink-0 flex flex-col gap-3">
-                  <p class="text-xs font-bold text-text-secondary dark:text-green-400/70 uppercase tracking-wide hidden lg:block">Lưu & luyện tập</p>
+                  <p class="text-xs font-bold text-text-secondary dark:text-green-400/70 uppercase tracking-wide hidden lg:block">Luu & luy?n t?p</p>
 
                   <!-- Save -->
                   <button onclick="saveCustomSet()"
                     class="w-full px-5 py-3 bg-primary text-text-main text-sm font-bold rounded-2xl shadow-fun
                     hover:shadow-fun-hover hover:brightness-105 active:scale-95 transition-all flex items-center justify-center gap-2">
-                    <span class="material-symbols-outlined text-base">save</span> Lưu bộ từ
+                    <span class="material-symbols-outlined text-base">save</span> Luu b? t?
                   </button>
 
                   <!-- Save and back -->
@@ -274,7 +280,7 @@
                     class="w-full px-4 py-2.5 bg-white dark:bg-background-dark text-gray-600 dark:text-gray-300
                     text-sm font-semibold rounded-2xl hover:bg-gray-50 dark:hover:bg-green-900/30 border border-gray-200
                     dark:border-green-900/40 transition-all flex items-center justify-center gap-2">
-                    <span class="material-symbols-outlined text-base">check</span> Lưu và quay lại
+                    <span class="material-symbols-outlined text-base">check</span> Luu v� quay l?i
                   </button>
 
                   <div class="hidden lg:block flex-1"></div>
@@ -282,17 +288,17 @@
                   <!-- Tips box -->
                   <div class="hidden lg:block p-3 bg-primary/5 dark:bg-primary/10 rounded-2xl border border-primary/15 text-xs text-text-secondary dark:text-green-400/60">
                     <div class="flex items-center gap-1.5 font-bold text-primary mb-1.5">
-                      <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1">lightbulb</span> Mẹo
+                      <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1">lightbulb</span> M?o
                     </div>
-                    Nhập theo định dạng <code class="bg-primary/10 px-1 rounded">字 | pīnyīn | nghĩa</code> để nhập nhanh nhiều từ cùng lúc.
+                    Nh?p theo d?nh d?ng <code class="bg-primary/10 px-1 rounded">? | pinyin | nghia</code> d? nh?p nhanh nhi?u t? c�ng l�c.
                   </div>
 
-                  <!-- START — desktop -->
+                  <!-- START � desktop -->
                   <button onclick="startPractice()"
                     class="hidden lg:flex w-full py-4 bg-primary text-text-main font-extrabold text-base rounded-2xl
                     shadow-fun hover:shadow-fun-hover hover:brightness-105 active:scale-[0.99] transition-all items-center justify-center gap-2">
                     <span class="material-symbols-outlined text-xl">play_arrow</span>
-                    Bắt đầu luyện tập
+                    B?t d?u luy?n t?p
                   </button>
 
                 </div>
@@ -303,27 +309,27 @@
           </div>
         </div>
 
-        <!-- ── TAB 2: EXISTING SET ── -->
+        <!-- -- TAB 2: EXISTING SET -- -->
         <div id="panelExisting" class="hidden">
           <div class="practice-card bg-white dark:bg-card-dark rounded-3xl border border-gray-100 dark:border-green-900/30 shadow-soft overflow-hidden">
             <!-- Card header gradient -->
             <div class="bg-gradient-to-br from-blue-100/60 via-indigo-50/40 to-transparent dark:from-blue-900/30 dark:via-indigo-900/20 dark:to-transparent px-6 py-5 border-b border-gray-100 dark:border-green-900/20">
               <div class="flex items-center gap-2">
                 <span class="material-symbols-outlined text-blue-500 dark:text-blue-400" style="font-variation-settings:'FILL' 1">folder_open</span>
-                <h2 class="font-extrabold text-text-main dark:text-white text-base">Chọn bộ từ vựng có sẵn</h2>
+                <h2 class="font-extrabold text-text-main dark:text-white text-base">Ch?n b? t? v?ng c� s?n</h2>
               </div>
-              <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Hệ thống hoặc danh mục cá nhân của bạn</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">H? th?ng ho?c danh m?c c� nh�n c?a b?n</p>
             </div>
             <div class="p-6">
               <div class="flex flex-col lg:flex-row gap-6">
 
-                <!-- ── Left: Category Selector ── -->
+                <!-- -- Left: Category Selector -- -->
                 <div class="flex-1 min-w-0">
 
                   <!-- Loading -->
                   <div id="catLoading" class="flex items-center gap-3 py-4">
                     <div class="animate-spin rounded-full h-6 w-6 border-4 border-primary border-t-transparent"></div>
-                    <span class="text-sm text-gray-500">Đang tải danh mục...</span>
+                    <span class="text-sm text-gray-500">�ang t?i danh m?c...</span>
                   </div>
 
                   <!-- Empty state -->
@@ -331,31 +337,31 @@
                     <div class="w-16 h-16 rounded-2xl bg-yellow-100 dark:bg-yellow-900/20 flex items-center justify-center mx-auto mb-4">
                       <span class="material-symbols-outlined text-4xl text-yellow-500">folder_off</span>
                     </div>
-                    <p class="font-bold text-gray-600 dark:text-gray-300 mb-1">Chưa có bộ từ vựng nào</p>
-                    <p class="text-sm text-gray-400 mb-4">Hãy tạo danh mục và thêm từ trước!</p>
+                    <p class="font-bold text-gray-600 dark:text-gray-300 mb-1">Chua c� b? t? v?ng n�o</p>
+                    <p class="text-sm text-gray-400 mb-4">H�y t?o danh m?c v� th�m t? tru?c!</p>
                     <a href="personal_vocabulary_categories_screen.html"
                       class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-text-main text-sm font-bold rounded-full shadow-fun hover:shadow-fun-hover hover:brightness-105 transition-all">
-                      <span class="material-symbols-outlined text-base">add</span> Tạo danh mục
+                      <span class="material-symbols-outlined text-base">add</span> T?o danh m?c
                     </a>
                   </div>
 
                   <!-- Category select -->
                   <div id="catSelectContainer" class="hidden">
-                    <label class="block text-xs font-bold text-text-secondary dark:text-green-400/80 mb-2 uppercase tracking-wide">Chọn bộ từ vựng</label>
+                    <label class="block text-xs font-bold text-text-secondary dark:text-green-400/80 mb-2 uppercase tracking-wide">Ch?n b? t? v?ng</label>
                     <select id="categorySelect"
                       class="w-full px-4 py-3 text-sm font-semibold bg-white dark:bg-background-dark border-2 border-primary/40
                       dark:border-green-900/40 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary/30
                       focus:border-primary transition-all cursor-pointer shadow-soft">
-                      <option value="">-- Chọn bộ từ vựng --</option>
+                      <option value="">-- Ch?n b? t? v?ng --</option>
                     </select>
                     <p class="mt-3 text-xs text-gray-400 dark:text-zinc-500">
-                      Chọn một bộ từ vựng từ danh sách để xem chi tiết và bắt đầu luyện tập.
+                      Ch?n m?t b? t? v?ng t? danh s�ch d? xem chi ti?t v� b?t d?u luy?n t?p.
                     </p>
                   </div>
 
                 </div>
 
-                <!-- ── Right: Category Info Sidebar ── -->
+                <!-- -- Right: Category Info Sidebar -- -->
                 <div class="lg:w-72 xl:w-80 shrink-0 flex flex-col gap-4">
 
                   <!-- Placeholder (no selection) -->
@@ -363,7 +369,7 @@
                     class="flex flex-col items-center justify-center p-6 bg-gray-50 dark:bg-background-dark rounded-2xl
                     border-2 border-dashed border-gray-200 dark:border-green-900/30 text-center gap-2 min-h-[140px]">
                     <span class="material-symbols-outlined text-4xl text-gray-300 dark:text-zinc-600">folder_open</span>
-                    <p class="text-xs font-semibold text-gray-400 dark:text-zinc-500">Chọn bộ từ để xem thông tin</p>
+                    <p class="text-xs font-semibold text-gray-400 dark:text-zinc-500">Ch?n b? t? d? xem th�ng tin</p>
                   </div>
 
                   <!-- Selected category info card -->
@@ -371,13 +377,13 @@
                     dark:from-primary/20 dark:via-green-900/10 dark:to-transparent rounded-2xl border border-primary/30 dark:border-green-700/30 shadow-soft">
                     <div class="flex items-center gap-3 mb-3">
                       <div class="w-14 h-14 rounded-2xl bg-primary/20 dark:bg-primary/30 flex items-center justify-center text-3xl shrink-0 shadow-soft">
-                        <span id="selIcon">📂</span>
+                        <span id="selIcon">??</span>
                       </div>
                       <div class="flex-1 min-w-0">
                         <div id="selName" class="font-extrabold text-base text-text-main dark:text-white truncate"></div>
                         <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 flex items-center gap-1.5">
-                          <span id="selWordCount" class="font-bold text-primary"></span> từ
-                          <span class="text-gray-300 dark:text-zinc-600">•</span>
+                          <span id="selWordCount" class="font-bold text-primary"></span> t?
+                          <span class="text-gray-300 dark:text-zinc-600">�</span>
                           <span class="font-semibold" id="selBadge"></span>
                         </div>
                       </div>
@@ -386,8 +392,8 @@
                     <!-- Warning: empty set -->
                     <div id="selEmptyWarning" class="hidden mb-3 p-2.5 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl
                       border border-yellow-300 dark:border-yellow-700 text-xs text-yellow-700 dark:text-yellow-300">
-                      ⚠️ Bộ từ này chưa có từ nào.
-                      <a id="selAddWordsLink" href="#" class="font-bold underline ml-1">Thêm từ ngay</a>
+                      ?? B? t? n�y chua c� t? n�o.
+                      <a id="selAddWordsLink" href="#" class="font-bold underline ml-1">Th�m t? ngay</a>
                     </div>
 
                     <!-- START button -->
@@ -395,7 +401,7 @@
                       text-text-main font-extrabold text-base rounded-2xl shadow-fun hover:shadow-fun-hover
                       hover:brightness-105 active:scale-[0.99] transition-all flex items-center justify-center gap-2">
                       <span class="material-symbols-outlined text-xl">play_arrow</span>
-                      Bắt đầu luyện tập
+                      B?t d?u luy?n t?p
                     </button>
                   </div>
 
@@ -430,10 +436,10 @@
         <!-- Game area -->
         <div class="flex-1 flex flex-col overflow-y-auto px-5 sm:px-10 pb-8 max-w-xl mx-auto w-full">
 
-          <!-- Character + Không biết -->
+          <!-- Character + Kh�ng bi?t -->
           <div class="flex items-start justify-between mt-10 mb-6 gap-4">
             <div class="flex-1 min-w-0">
-              <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Chữ Hán</p>
+              <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Ch? H�n</p>
               <p id="gameHanzi"
                 class="text-6xl sm:text-7xl font-extrabold text-text-main dark:text-white leading-none tracking-wide select-none drop-shadow-sm">
               </p>
@@ -446,7 +452,7 @@
               text-sm font-bold text-gray-500 dark:text-gray-400 bg-white dark:bg-card-dark
               hover:border-red-300 hover:text-red-400 dark:hover:border-red-700 dark:hover:text-red-400
               transition-all active:scale-95 shadow-soft">
-              Không biết
+              Kh�ng bi?t
             </button>
           </div>
 
@@ -458,7 +464,7 @@
           <div class="flex-1 min-h-[2rem]"></div>
 
           <!-- Input prompt label -->
-          <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Nhập nghĩa tiếng Việt</p>
+          <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Nh?p nghia ti?ng Vi?t</p>
 
           <!-- Underline-style input -->
           <div class="border-b-2 border-primary pb-1 mb-2">
@@ -467,12 +473,12 @@
               autocomplete="off"
               autocorrect="off"
               spellcheck="false"
-              placeholder="Nhập bằng định nghĩa"
+              placeholder="Nh?p b?ng d?nh nghia"
               onkeydown="if(event.key==='Enter')checkWrite()"
               class="w-full bg-transparent border-none outline-none shadow-none ring-0 focus:ring-0 text-xl font-semibold
               text-text-main dark:text-white placeholder-gray-300 dark:placeholder-green-900/60 py-2 rounded-none" />
           </div>
-          <p class="text-xs text-gray-300 dark:text-zinc-700">Nhấn Enter để kiểm tra</p>
+          <p class="text-xs text-gray-300 dark:text-zinc-700">Nh?n Enter d? ki?m tra</p>
 
           <!-- Progress label -->
           <p id="progressLabel" class="text-xs text-gray-300 dark:text-zinc-700 text-right mt-4">0 / 0</p>
@@ -483,20 +489,20 @@
       <div id="resultsPanel" class="hidden">
         <div class="practice-card bg-white dark:bg-card-dark rounded-3xl border border-gray-100 dark:border-green-900/30 p-8 shadow-soft max-w-xl mx-auto text-center relative">
           <!-- Close button -->
-          <button onclick="backToSetup()" title="Đóng kết quả"
+          <button onclick="backToSetup()" title="��ng k?t qu?"
             class="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-xl
             bg-gray-100 dark:bg-background-dark text-gray-400 dark:text-zinc-400
             hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500 transition-all">
             <span class="material-symbols-outlined text-xl">close</span>
           </button>
           <div class="text-6xl mb-4" id="resultEmoji"></div>
-          <h2 class="text-2xl font-extrabold text-text-main dark:text-white mb-1">Hoàn thành!</h2>
-          <p class="text-gray-500 dark:text-gray-400 text-sm mb-6">Kết quả phiên luyện tập của bạn</p>
+          <h2 class="text-2xl font-extrabold text-text-main dark:text-white mb-1">Ho�n th�nh!</h2>
+          <p class="text-gray-500 dark:text-gray-400 text-sm mb-6">K?t qu? phi�n luy?n t?p c?a b?n</p>
 
           <div class="grid grid-cols-3 gap-4 mb-6">
             <div class="bg-green-50 dark:bg-green-900/20 rounded-2xl p-4 border border-green-100 dark:border-green-800/30">
               <div id="resCorrect" class="text-3xl font-extrabold text-green-600">0</div>
-              <div class="text-xs text-green-600/80 font-semibold mt-1">Đúng</div>
+              <div class="text-xs text-green-600/80 font-semibold mt-1">��ng</div>
             </div>
             <div class="bg-red-50 dark:bg-red-900/20 rounded-2xl p-4 border border-red-100 dark:border-red-800/30">
               <div id="resWrong" class="text-3xl font-extrabold text-red-500">0</div>
@@ -504,31 +510,31 @@
             </div>
             <div class="bg-primary/10 rounded-2xl p-4 border border-primary/20">
               <div id="resAccuracy" class="text-3xl font-extrabold text-primary">0%</div>
-              <div class="text-xs text-text-secondary font-semibold mt-1">Chính xác</div>
+              <div class="text-xs text-text-secondary font-semibold mt-1">Ch�nh x�c</div>
             </div>
           </div>
 
           <!-- Review mistakes -->
           <div id="mistakeSection" class="hidden mb-6 text-left">
-            <p class="text-xs font-bold text-red-500 uppercase tracking-wide mb-3">Từ cần ôn lại ❌</p>
+            <p class="text-xs font-bold text-red-500 uppercase tracking-wide mb-3">T? c?n �n l?i ?</p>
             <div id="mistakeList" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
           </div>
 
           <div class="flex gap-3 flex-col sm:flex-row">
             <button onclick="retryPractice()"
               class="flex-1 py-3.5 bg-primary text-text-main font-extrabold rounded-2xl shadow-fun hover:shadow-fun-hover hover:brightness-105 transition-all flex items-center justify-center gap-2">
-              <span class="material-symbols-outlined">replay</span> Luyện lại
+              <span class="material-symbols-outlined">replay</span> Luy?n l?i
             </button>
             <button onclick="retryMistakes()"
               id="retryMistakesBtn"
               class="hidden flex-1 py-3.5 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 font-extrabold
               rounded-2xl hover:bg-red-200 dark:hover:bg-red-900/50 border border-red-200 dark:border-red-800/30 transition-all flex items-center justify-center gap-2 text-sm">
-              <span class="material-symbols-outlined text-base">build</span> Ôn từ sai
+              <span class="material-symbols-outlined text-base">build</span> �n t? sai
             </button>
             <button onclick="backToSetup()"
               class="flex-1 py-3.5 bg-gray-100 dark:bg-card-dark text-gray-600 dark:text-gray-300 font-bold
               rounded-2xl hover:bg-gray-200 dark:hover:bg-green-900/30 border border-gray-200 dark:border-green-900/30 transition-all flex items-center justify-center gap-2 text-sm">
-              <span class="material-symbols-outlined text-base">home</span> Về trang chọn
+              <span class="material-symbols-outlined text-base">home</span> V? trang ch?n
             </button>
           </div>
         </div>
@@ -537,7 +543,7 @@
         <div class="mt-8 max-w-xl mx-auto">
           <h3 class="text-base font-extrabold text-text-main dark:text-white mb-3 flex items-center gap-2">
             <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1">history</span>
-            Lịch sử luyện tập gần đây
+            L?ch s? luy?n t?p g?n d�y
           </h3>
           <div id="historyList" class="space-y-2"></div>
         </div>
@@ -611,17 +617,17 @@ async function loadCategories() {
     const admin = categories.filter(c => c.isAdmin);
     const own   = categories.filter(c => !c.isAdmin);
 
-    sel.innerHTML = '<option value="">-- Chọn bộ từ vựng --</option>';
+    sel.innerHTML = '<option value="">-- Ch?n b? t? v?ng --</option>';
 
     if (admin.length) {
-      const g = document.createElement('optgroup'); g.label = '📚 Hệ thống';
-      admin.forEach(c => g.appendChild(new Option(`${c.name} (${c.wordCount} từ)`, c._id)));
+      const g = document.createElement('optgroup'); g.label = '?? H? th?ng';
+      admin.forEach(c => g.appendChild(new Option(`${c.name} (${c.wordCount} t?)`, c._id)));
       sel.appendChild(g);
     }
     if (own.length) {
-      const g = document.createElement('optgroup'); g.label = '👤 Cá nhân';
+      const g = document.createElement('optgroup'); g.label = '?? C� nh�n';
       own.forEach(c => {
-        const suffix = c.wordCount === 0 ? '  (chưa có từ)' : ` (${c.wordCount} từ)`;
+        const suffix = c.wordCount === 0 ? '  (chua c� t?)' : ` (${c.wordCount} t?)`;
         g.appendChild(new Option(c.name + suffix, c._id));
       });
       sel.appendChild(g);
@@ -629,7 +635,7 @@ async function loadCategories() {
 
     sel.onchange = () => displaySelectedCategory(sel.value);
   } catch (e) {
-    loading.innerHTML = `<span class="text-sm text-red-400">Lỗi tải danh mục: ${esc(e.message)}</span>`;
+    loading.innerHTML = `<span class="text-sm text-red-400">L?i t?i danh m?c: ${esc(e.message)}</span>`;
   }
 }
 
@@ -648,10 +654,10 @@ function displaySelectedCategory(id) {
 
   if (placeholder) placeholder.classList.add('hidden');
   info.classList.remove('hidden');
-  document.getElementById('selIcon').textContent      = selectedCategory.isAdmin ? '📚' : '👤';
+  document.getElementById('selIcon').textContent      = selectedCategory.isAdmin ? '??' : '??';
   document.getElementById('selName').textContent      = selectedCategory.name;
   document.getElementById('selWordCount').textContent = selectedCategory.wordCount;
-  document.getElementById('selBadge').textContent     = selectedCategory.isAdmin ? 'Hệ thống' : 'Cá nhân';
+  document.getElementById('selBadge').textContent     = selectedCategory.isAdmin ? 'H? th?ng' : 'C� nh�n';
 
   if (selectedCategory.wordCount > 0) {
     startBtn.classList.remove('hidden');
@@ -672,11 +678,11 @@ function addWordRow(hanziVal = '', pinyinVal = '', meaningVal = '') {
   row.className = 'grid grid-cols-[2fr_2fr_3fr_40px] gap-2 items-center';
   row.innerHTML = `
     <input type="text" class="px-3 py-2 text-sm rounded-xl border-2 border-gray-200 dark:border-zinc-700
-      bg-white dark:bg-card-dark focus:border-primary outline-none transition-all" placeholder="字" value="${esc(hanziVal)}" oninput="updateWordCount()" />
+      bg-white dark:bg-card-dark focus:border-primary outline-none transition-all" placeholder="?" value="${esc(hanziVal)}" oninput="updateWordCount()" />
     <input type="text" class="px-3 py-2 text-sm rounded-xl border-2 border-gray-200 dark:border-zinc-700
-      bg-white dark:bg-card-dark focus:border-primary outline-none transition-all" placeholder="Pīnyīn" value="${esc(pinyinVal)}" />
+      bg-white dark:bg-card-dark focus:border-primary outline-none transition-all" placeholder="Pinyin" value="${esc(pinyinVal)}" />
     <input type="text" class="px-3 py-2 text-sm rounded-xl border-2 border-gray-200 dark:border-zinc-700
-      bg-white dark:bg-card-dark focus:border-primary outline-none transition-all" placeholder="Nghĩa" value="${esc(meaningVal)}" oninput="updateWordCount()" />
+      bg-white dark:bg-card-dark focus:border-primary outline-none transition-all" placeholder="Nghia" value="${esc(meaningVal)}" oninput="updateWordCount()" />
     <button onclick="removeWordRow('${id}')"
       class="w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-400 transition-colors rounded-xl">
       <span class="material-symbols-outlined text-base">delete</span>
@@ -730,12 +736,69 @@ function processBulkImport() {
   document.getElementById('bulkImportPanel').classList.add('hidden');
   document.getElementById('bulkImportText').value = '';
   added > 0
-    ? showToast(`Đã nhập ${added} từ`, 'success')
-    : showToast('Không tìm thấy từ hợp lệ. Định dạng: 字 | pīnyīn | nghĩa', 'error');
+    ? showToast(`�� nh?p ${added} t?`, 'success')
+    : showToast('Kh�ng t�m th?y t? h?p l?. �?nh d?ng: ? | pinyin | nghia', 'error');
+}
+
+function processExcelImport(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, {type: 'array'});
+      const firstSheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[firstSheetName];
+      
+      // Convert sheet to json array
+      const json = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+      let added = 0;
+
+      json.forEach(row => {
+        // Attempt to extract values robustly. 
+        // It handles arrays (no header) or objects (with header)
+        let hanzi = '';
+        let pinyin = '';
+        let meaning = '';
+
+        if (Array.isArray(row)) {
+          hanzi = row[0] || '';
+          pinyin = row[1] || '';
+          meaning = row[2] || '';
+        } else {
+          // Get values from object values if headers exist
+          const values = Object.values(row);
+          hanzi = values[0] || '';
+          pinyin = values[1] || '';
+          meaning = values[2] || '';
+        }
+
+        if (hanzi) {
+          addWordRow(String(hanzi).trim(), String(pinyin).trim(), String(meaning).trim());
+          added++;
+        }
+      });
+
+      if (added > 0) {
+        showToast(`�� nh?p th�nh c�ng ${added} t? t? file Excel`, 'success');
+      } else {
+        showToast('Kh�ng t�m th?y d? li?u h?p l? trong file Excel. Vui l�ng d?m b?o file c� �t nh?t 2 c?t (Ch?, Pinyin, Nghia).', 'error');
+      }
+    } catch (error) {
+      console.error('Excel import error:', error);
+      showToast('L?i khi d?c file Excel. Vui l�ng ki?m tra l?i d?nh d?ng file.', 'error');
+    }
+    
+    // Reset input so the same file can be selected again
+    event.target.value = '';
+  };
+  reader.readAsArrayBuffer(file);
 }
 
 // ==================== SAVED SETS ====================
-// ==================== CUSTOM SETS — UI STATE ====================
+// ==================== CUSTOM SETS � UI STATE ====================
 function openCustomForm(setData = null) {
   document.getElementById('customListView').classList.add('hidden');
   document.getElementById('customFormView').classList.remove('hidden');
@@ -743,13 +806,13 @@ function openCustomForm(setData = null) {
   document.getElementById('customHeaderForm').classList.remove('hidden');
 
   if (setData) {
-    document.getElementById('customFormTitle').textContent = 'Chỉnh sửa bộ từ';
+    document.getElementById('customFormTitle').textContent = 'Ch?nh s?a b? t?';
     document.getElementById('customSetName').value = setData.name;
     document.getElementById('wordRowsContainer').innerHTML = '';
     customWordRowCount = 0;
     setData.words.forEach(w => addWordRow(w.hanzi, w.pinyin, w.meaning));
   } else {
-    document.getElementById('customFormTitle').textContent = 'Tạo bộ từ mới';
+    document.getElementById('customFormTitle').textContent = 'T?o b? t? m?i';
     document.getElementById('customSetName').value = '';
     document.getElementById('wordRowsContainer').innerHTML = '';
     customWordRowCount = 0;
@@ -769,17 +832,17 @@ function backToCustomList() {
 async function saveCustomSet(goBack = false) {
   const name  = document.getElementById('customSetName').value.trim();
   const words = getCustomWords();
-  if (!name)         { showToast('Vui lòng nhập tên bộ từ', 'error'); return; }
-  if (!words.length) { showToast('Thêm ít nhất 1 từ trước khi lưu', 'error'); return; }
+  if (!name)         { showToast('Vui l�ng nh?p t�n b? t?', 'error'); return; }
+  if (!words.length) { showToast('Th�m �t nh?t 1 t? tru?c khi luu', 'error'); return; }
   try {
     const res = await authAPI.post('/practice/custom-sets', { name, words });
     if (res.success) {
-      showToast(`Đã lưu bộ từ "${name}" (${words.length} từ)`, 'success');
+      showToast(`�� luu b? t? "${name}" (${words.length} t?)`, 'success');
       if (goBack) backToCustomList();
     } else {
-      showToast(res.error?.message || 'Lưu thất bại', 'error');
+      showToast(res.error?.message || 'Luu th?t b?i', 'error');
     }
-  } catch (e) { showToast('Lỗi: ' + e.message, 'error'); }
+  } catch (e) { showToast('L?i: ' + e.message, 'error'); }
 }
 
 async function loadSavedSets() {
@@ -810,7 +873,7 @@ async function loadSavedSets() {
           </div>
           <div class="flex-1 min-w-0">
             <div class="font-bold text-sm text-text-main dark:text-white truncate">${esc(s.name)}</div>
-            <div class="text-xs text-gray-400 dark:text-zinc-500 mt-0.5">${s.wordCount || 0} từ &nbsp;·&nbsp; ${formatDate(s.createdAt)}</div>
+            <div class="text-xs text-gray-400 dark:text-zinc-500 mt-0.5">${s.wordCount || 0} t? &nbsp;�&nbsp; ${formatDate(s.createdAt)}</div>
           </div>
         </div>
         <!-- Action row -->
@@ -818,7 +881,7 @@ async function loadSavedSets() {
           <button onclick="event.stopPropagation(); practiceFromSet('${s._id}')"
             class="flex-1 py-2 bg-primary text-text-main text-xs font-bold rounded-xl
             hover:brightness-105 shadow-fun hover:shadow-fun-hover transition-all flex items-center justify-center gap-1">
-            <span class="material-symbols-outlined text-sm">play_arrow</span> Luyện tập
+            <span class="material-symbols-outlined text-sm">play_arrow</span> Luy?n t?p
           </button>
           <button onclick="event.stopPropagation(); loadSetIntoEditor('${s._id}')"
             class="px-3 py-2 bg-gray-100 dark:bg-card-dark text-gray-600 dark:text-gray-300 text-xs font-semibold
@@ -834,7 +897,7 @@ async function loadSavedSets() {
       </div>`).join('');
   } catch (e) {
     loading.classList.add('hidden');
-    grid.innerHTML = `<div class="col-span-full text-center py-6 text-sm text-red-400">Lỗi tải dữ liệu: ${esc(e.message)}</div>`;
+    grid.innerHTML = `<div class="col-span-full text-center py-6 text-sm text-red-400">L?i t?i d? li?u: ${esc(e.message)}</div>`;
   }
 }
 
@@ -842,17 +905,17 @@ async function loadSetIntoEditor(setId) {
   try {
     const res = await authAPI.get('/practice/custom-sets');
     const set = (res.data || []).find(s => s._id === setId);
-    if (!set) { showToast('Không tìm thấy bộ từ', 'error'); return; }
+    if (!set) { showToast('Kh�ng t�m th?y b? t?', 'error'); return; }
     openCustomForm(set);
-    showToast(`Đã tải bộ từ "${set.name}"`, 'success');
-  } catch (e) { showToast('Lỗi tải bộ từ: ' + e.message, 'error'); }
+    showToast(`�� t?i b? t? "${set.name}"`, 'success');
+  } catch (e) { showToast('L?i t?i b? t?: ' + e.message, 'error'); }
 }
 
 async function practiceFromSet(setId) {
   try {
     const res = await authAPI.get('/practice/custom-sets');
     const set = (res.data || []).find(s => s._id === setId);
-    if (!set) { showToast('Không tìm thấy bộ từ', 'error'); return; }
+    if (!set) { showToast('Kh�ng t�m th?y b? t?', 'error'); return; }
     // Load into editor state so startPractice() can read it
     document.getElementById('wordRowsContainer').innerHTML = '';
     customWordRowCount = 0;
@@ -860,16 +923,16 @@ async function practiceFromSet(setId) {
     set.words.forEach(w => addWordRow(w.hanzi, w.pinyin, w.meaning));
     updateWordCount();
     await startPractice();
-  } catch (e) { showToast('Lỗi: ' + e.message, 'error'); }
+  } catch (e) { showToast('L?i: ' + e.message, 'error'); }
 }
 
 async function deleteCustomSet(setId, btn) {
-  if (!confirm('Xóa bộ từ này?')) return;
+  if (!confirm('X�a b? t? n�y?')) return;
   try {
     const res = await authAPI.delete(`/practice/custom-sets/${setId}`);
-    if (res.success) { btn.closest('.group').remove(); showToast('Đã xóa bộ từ', 'success'); }
-    else showToast(res.error?.message || 'Xóa thất bại', 'error');
-  } catch (e) { showToast('Lỗi: ' + e.message, 'error'); }
+    if (res.success) { btn.closest('.group').remove(); showToast('�� x�a b? t?', 'success'); }
+    else showToast(res.error?.message || 'X�a th?t b?i', 'error');
+  } catch (e) { showToast('L?i: ' + e.message, 'error'); }
 }
 
 // ==================== START PRACTICE ====================
@@ -878,12 +941,12 @@ async function startPractice() {
 
   if (activeTab === 'custom') {
     words = getCustomWords();
-    if (words.length < 2) { showToast('Cần ít nhất 2 từ để luyện tập', 'error'); return; }
+    if (words.length < 2) { showToast('C?n �t nh?t 2 t? d? luy?n t?p', 'error'); return; }
   } else {
-    if (!selectedCategory) { showToast('Vui lòng chọn bộ từ vựng', 'error'); return; }
-    if (selectedCategory.wordCount === 0) { showToast('Bộ từ này chưa có từ nào', 'error'); return; }
+    if (!selectedCategory) { showToast('Vui l�ng ch?n b? t? v?ng', 'error'); return; }
+    if (selectedCategory.wordCount === 0) { showToast('B? t? n�y chua c� t? n�o', 'error'); return; }
     try {
-      showToast('Đang tải từ vựng', 'info');
+      showToast('�ang t?i t? v?ng', 'info');
       const res = await authAPI.get('/vocabulary', { categoryId: selectedCategory._id, limit: 200 });
       const raw = Array.isArray(res.data) ? res.data : (res.data?.vocabulary || res.data?.items || []);
       words = raw.map(v => ({
@@ -891,8 +954,8 @@ async function startPractice() {
         pinyin:  v.pinyin || '',
         meaning: v.meaning || v.vietnamese || '',
       })).filter(w => w.hanzi && w.meaning);
-      if (words.length < 2) { showToast('Bộ từ cần ít nhất 2 từ có đầy đủ thông tin', 'error'); return; }
-    } catch (e) { showToast('Lỗi tải từ vựng: ' + e.message, 'error'); return; }
+      if (words.length < 2) { showToast('B? t? c?n �t nh?t 2 t? c� d?y d? th�ng tin', 'error'); return; }
+    } catch (e) { showToast('L?i t?i t? v?ng: ' + e.message, 'error'); return; }
   }
 
   practiceWords    = shuffle([...words]);
@@ -954,11 +1017,11 @@ function checkWrite() {
   if (isCorrect) {
     correctCount++;
     fb.className = 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-2xl p-3 text-sm font-bold text-center mb-5 transition-all';
-    fb.innerHTML = `✅ Chính xác! &nbsp;<span class="opacity-60">${esc(w.meaning)}</span>`;
+    fb.innerHTML = `? Ch�nh x�c! &nbsp;<span class="opacity-60">${esc(w.meaning)}</span>`;
   } else {
     wrongCount++;
     fb.className = 'bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 rounded-2xl p-3 text-sm font-bold text-center mb-5 transition-all';
-    fb.innerHTML = `❌ Đáp án đúng: <span class="font-black">${esc(w.meaning)}</span>`;
+    fb.innerHTML = `? ��p �n d�ng: <span class="font-black">${esc(w.meaning)}</span>`;
   }
 
   document.getElementById('writeInput').disabled = true;
@@ -971,7 +1034,7 @@ function skipWrite() {
   const w  = practiceWords[currentIdx];
   const fb = document.getElementById('writeFeedback');
   fb.className = 'bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 rounded-2xl p-3 text-sm font-bold text-center mb-5 transition-all';
-  fb.innerHTML = `⏭️ Đã bỏ qua &nbsp; Đáp án: <span class="font-black">${esc(w.meaning)}</span>`;
+  fb.innerHTML = `?? �� b? qua &nbsp; ��p �n: <span class="font-black">${esc(w.meaning)}</span>`;
 
   sessionResults.push({ word: w, correct: false });
   wrongCount++;
@@ -996,7 +1059,7 @@ async function endPractice() {
   document.getElementById('resWrong').textContent    = wrong;
   document.getElementById('resAccuracy').textContent = accuracy + '%';
   document.getElementById('resultEmoji').textContent =
-    accuracy >= 90 ? '🏆' : accuracy >= 70 ? '🎉' : accuracy >= 50 ? '💪' : '📖';
+    accuracy >= 90 ? '??' : accuracy >= 70 ? '??' : accuracy >= 50 ? '??' : '??';
 
   const mistakes       = sessionResults.filter(r => !r.correct).map(r => r.word);
   const mistakeSection = document.getElementById('mistakeSection');
@@ -1037,22 +1100,22 @@ async function loadHistory() {
     const res      = await authAPI.get('/practice/sessions', { limit: 5 });
     const sessions = res.data?.sessions || [];
     if (!sessions.length) {
-      list.innerHTML = '<p class="text-xs text-gray-400">Chưa có lịch sử luyện tập</p>';
+      list.innerHTML = '<p class="text-xs text-gray-400">Chua c� l?ch s? luy?n t?p</p>';
       return;
     }
     list.innerHTML = sessions.map(s => `
       <div class="flex items-center gap-3 p-3 bg-white dark:bg-card-dark rounded-2xl border
            border-gray-100 dark:border-green-900/30 text-sm shadow-soft">
-        <span class="text-2xl">${s.accuracy >= 90 ? '🏆' : s.accuracy >= 70 ? '🎉' : '📖'}</span>
+        <span class="text-2xl">${s.accuracy >= 90 ? '??' : s.accuracy >= 70 ? '??' : '??'}</span>
         <div class="flex-1 min-w-0">
           <div class="font-semibold text-text-main dark:text-white text-xs">
-            Điền nghĩa &nbsp;·&nbsp; ${s.sourceType === 'custom' ? 'Tự tạo' : 'Bộ có sẵn'}
+            �i?n nghia &nbsp;�&nbsp; ${s.sourceType === 'custom' ? 'T? t?o' : 'B? c� s?n'}
           </div>
-          <div class="text-xs text-gray-400">${formatDate(s.createdAt)} &nbsp; ${s.totalWords} từ</div>
+          <div class="text-xs text-gray-400">${formatDate(s.createdAt)} &nbsp; ${s.totalWords} t?</div>
         </div>
         <div class="text-right shrink-0">
           <div class="font-extrabold text-primary">${s.accuracy}%</div>
-          <div class="text-xs text-gray-400">${s.correctWords}/${s.totalWords} đúng</div>
+          <div class="text-xs text-gray-400">${s.correctWords}/${s.totalWords} d�ng</div>
         </div>
       </div>`).join('');
   } catch {}
@@ -1073,7 +1136,7 @@ function retryPractice() {
 
 function retryMistakes() {
   const mistakes = sessionResults.filter(r => !r.correct).map(r => r.word);
-  if (mistakes.length < 2) { showToast('Cần ít nhất 2 từ sai để ôn lại', 'info'); return; }
+  if (mistakes.length < 2) { showToast('C?n �t nh?t 2 t? sai d? �n l?i', 'info'); return; }
   practiceWords    = shuffle([...mistakes]);
   currentIdx       = correctCount = wrongCount = 0;
   sessionResults   = [];
