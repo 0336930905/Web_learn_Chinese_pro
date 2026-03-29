@@ -37,7 +37,7 @@
       "src": "/(.*\\.(json|xml|txt))$",
       "dest": "/public/$1",
       "headers": {
-        "cache-control": "public, max-age=3600"
+        "cache-control": "public, max-age=3600, must-revalidate"
       }
     },
     {
