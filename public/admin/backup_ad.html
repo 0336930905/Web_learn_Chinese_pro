@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html class="light" lang="vi">
 
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Quáº£n lÃ½ Sao lÆ°u & KhÃ´i phá»¥c | Admin Portal</title>
+    <title>Quản lý Sao lưu & Khôi phục | Admin Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&amp;display=swap"
         rel="stylesheet" />
@@ -22,7 +22,7 @@
                 const urlRole = urlParams.get('role');
                 const authSuccess = urlParams.get('auth');
                 
-                console.log('ðŸ” URL params check:');
+                console.log('🔍 URL params check:');
                 console.log('  - token:', urlToken ? 'EXISTS (' + urlToken.substring(0, 20) + '...)' : 'MISSING');
                 console.log('  - role:', urlRole || 'MISSING');
                 console.log('  - auth:', authSuccess || 'MISSING');
@@ -30,17 +30,17 @@
                 // Check existing storage BEFORE processing URL params
                 const existingToken = localStorage.getItem('authToken');
                 const existingUser = localStorage.getItem('user');
-                console.log('ðŸ“¦ Existing storage:');
+                console.log('📦 Existing storage:');
                 console.log('  - authToken:', existingToken ? 'EXISTS' : 'MISSING');
                 console.log('  - user:', existingUser ? 'EXISTS' : 'MISSING');
                 
                 // If token is in URL (mobile fallback), save to localStorage
                 if (urlToken && authSuccess === 'success') {
-                    console.log('ðŸ“± MOBILE AUTH: Processing URL params...');
+                    console.log('📱 MOBILE AUTH: Processing URL params...');
                     
                     // Save token immediately
                     localStorage.setItem('authToken', urlToken);
-                    console.log('âœ… Token saved to localStorage');
+                    console.log('✅ Token saved to localStorage');
                     
                     // ALWAYS update user role from URL params (critical for role switching)
                     if (urlRole) {
@@ -50,21 +50,21 @@
                         if (existingUser) {
                             try {
                                 const existingUserObj = JSON.parse(existingUser);
-                                console.log('ðŸ“¦ Existing user data found:');
+                                console.log('📦 Existing user data found:');
                                 console.log('   - Email:', existingUserObj.email || 'N/A');
                                 console.log('   - Old Role:', existingUserObj.role || 'N/A');
                                 console.log('   - New Role:', urlRole);
                                 
                                 // Check if role changed (e.g., student -> admin)
                                 if (existingUserObj.role !== urlRole) {
-                                    console.log('ðŸ”„ Role changed! Must update user data');
+                                    console.log('🔄 Role changed! Must update user data');
                                     needsUpdate = true;
                                 } else if (existingUserObj.email && existingUserObj.fullName) {
-                                    console.log('âœ… User data valid and role matches, keeping existing');
+                                    console.log('✅ User data valid and role matches, keeping existing');
                                     needsUpdate = false;
                                 }
                             } catch (e) {
-                                console.error('âŒ Existing user data corrupted:', e);
+                                console.error('❌ Existing user data corrupted:', e);
                                 needsUpdate = true;
                             }
                         }
@@ -77,32 +77,32 @@
                                 _timestamp: Date.now()
                             };
                             localStorage.setItem('user', JSON.stringify(minimalUser));
-                            console.log('âœ… User data updated with role:', urlRole);
+                            console.log('✅ User data updated with role:', urlRole);
                         }
                     }
                     
                     // Verify storage
                     const verifyToken = localStorage.getItem('authToken');
                     const verifyUser = localStorage.getItem('user');
-                    console.log('ðŸ” Storage verification:');
-                    console.log('  - Token:', verifyToken ? 'VERIFIED' : 'âŒ FAILED');
-                    console.log('  - User:', verifyUser ? 'VERIFIED' : 'âŒ FAILED');
+                    console.log('🔍 Storage verification:');
+                    console.log('  - Token:', verifyToken ? 'VERIFIED' : '❌ FAILED');
+                    console.log('  - User:', verifyUser ? 'VERIFIED' : '❌ FAILED');
                     
                     if (!verifyToken) {
-                        console.error('âŒ CRITICAL: Token save failed!');
-                        alert('Lá»—i lÆ°u token. Vui lÃ²ng Ä‘Äƒng nháº­p láº¡i.');
+                        console.error('❌ CRITICAL: Token save failed!');
+                        alert('Lỗi lưu token. Vui lòng đăng nhập lại.');
                         window.location.href = '/login_screen.html';
                         return;
                     }
                     
                     // Clean URL - DELAYED to let other scripts read params if needed
                     // window.history.replaceState({}, document.title, window.location.pathname);
-                    console.log('âœ… URL params preserved for sidebar script');
+                    console.log('✅ URL params preserved for sidebar script');
                 }
                 
                 console.log('===== URL PARAMS HANDLER END =====');
             } catch (e) {
-                console.error('âŒ Error handling URL auth params:', e);
+                console.error('❌ Error handling URL auth params:', e);
                 console.error('Stack:', e.stack);
             }
         })();
@@ -174,20 +174,20 @@
                 <!-- Header Section -->
                 <div class="flex justify-between items-start md:items-center flex-col md:flex-row gap-4">
                     <div>
-                        <h1 class="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Quáº£n lÃ½ Sao lÆ°u & KhÃ´i phá»¥c</h1>
-                        <p class="text-sm md:text-base text-slate-500 dark:text-slate-400 mt-1">Báº£o vá»‡ dá»¯ liá»‡u há»‡ thá»‘ng vá»›i quáº£n lÃ½ backup tá»± Ä‘á»™ng vÃ  thá»§ cÃ´ng.</p>
+                        <h1 class="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Quản lý Sao lưu & Khôi phục</h1>
+                        <p class="text-sm md:text-base text-slate-500 dark:text-slate-400 mt-1">Bảo vệ dữ liệu hệ thống với quản lý backup tự động và thủ công.</p>
                     </div>
                     <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full md:w-auto">
                         <button
                             class="bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 px-4 py-2.5 rounded-lg font-medium transition-all flex items-center justify-center gap-2 text-sm shadow-sm">
                             <span class="material-symbols-outlined text-lg">schedule</span>
-                            <span class="hidden sm:inline">Lá»‹ch tá»± Ä‘á»™ng</span>
-                            <span class="sm:hidden">Lá»‹ch</span>
+                            <span class="hidden sm:inline">Lịch tự động</span>
+                            <span class="sm:hidden">Lịch</span>
                         </button>
                         <button
                             class="bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg font-medium transition-all flex items-center justify-center gap-2 text-sm shadow-md shadow-primary/20">
                             <span class="material-symbols-outlined text-lg">backup</span>
-                            Táº¡o Backup má»›i
+                            Tạo Backup mới
                         </button>
                     </div>
                 </div>
@@ -199,10 +199,10 @@
                             <div class="size-12 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600">
                                 <span class="material-symbols-outlined text-2xl">cloud_done</span>
                             </div>
-                            <span class="text-xs font-bold text-green-600 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-full">ThÃ nh cÃ´ng</span>
+                            <span class="text-xs font-bold text-green-600 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-full">Thành công</span>
                         </div>
                         <h3 class="text-2xl font-bold text-slate-900 dark:text-white">47</h3>
-                        <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Tá»•ng Backup</p>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Tổng Backup</p>
                     </div>
 
                     <div class="stat-card bg-card-light dark:bg-card-dark p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
@@ -212,7 +212,7 @@
                             </div>
                         </div>
                         <h3 class="text-2xl font-bold text-slate-900 dark:text-white">112.4 GB</h3>
-                        <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Tá»•ng dung lÆ°á»£ng</p>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Tổng dung lượng</p>
                     </div>
 
                     <div class="stat-card bg-card-light dark:bg-card-dark p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
@@ -221,8 +221,8 @@
                                 <span class="material-symbols-outlined text-2xl">access_time</span>
                             </div>
                         </div>
-                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white">2 giá» trÆ°á»›c</h3>
-                        <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Backup gáº§n nháº¥t</p>
+                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white">2 giờ trước</h3>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Backup gần nhất</p>
                     </div>
 
                     <div class="stat-card bg-card-light dark:bg-card-dark p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
@@ -231,8 +231,8 @@
                                 <span class="material-symbols-outlined text-2xl">event_repeat</span>
                             </div>
                         </div>
-                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white">HÃ ng ngÃ y</h3>
-                        <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Chu ká»³ tá»± Ä‘á»™ng</p>
+                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white">Hàng ngày</h3>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Chu kỳ tự động</p>
                     </div>
                 </section>
 
@@ -242,10 +242,10 @@
                         <div class="size-14 rounded-xl bg-white/20 flex items-center justify-center mb-4">
                             <span class="material-symbols-outlined text-3xl">backup</span>
                         </div>
-                        <h3 class="text-xl font-bold mb-2">Sao lÆ°u Thá»§ cÃ´ng</h3>
-                        <p class="text-blue-100 text-sm mb-4">Táº¡o báº£n backup toÃ n bá»™ cÆ¡ sá»Ÿ dá»¯ liá»‡u ngay bÃ¢y giá»</p>
+                        <h3 class="text-xl font-bold mb-2">Sao lưu Thủ công</h3>
+                        <p class="text-blue-100 text-sm mb-4">Tạo bản backup toàn bộ cơ sở dữ liệu ngay bây giờ</p>
                         <button class="bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-blue-50 transition-colors">
-                            Báº¯t Ä‘áº§u Backup
+                            Bắt đầu Backup
                         </button>
                     </div>
 
@@ -253,10 +253,10 @@
                         <div class="size-14 rounded-xl bg-white/20 flex items-center justify-center mb-4">
                             <span class="material-symbols-outlined text-3xl">restore</span>
                         </div>
-                        <h3 class="text-xl font-bold mb-2">KhÃ´i phá»¥c Dá»¯ liá»‡u</h3>
-                        <p class="text-purple-100 text-sm mb-4">KhÃ´i phá»¥c há»‡ thá»‘ng tá»« báº£n backup Ä‘Ã£ lÆ°u</p>
+                        <h3 class="text-xl font-bold mb-2">Khôi phục Dữ liệu</h3>
+                        <p class="text-purple-100 text-sm mb-4">Khôi phục hệ thống từ bản backup đã lưu</p>
                         <button class="bg-white text-purple-600 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-purple-50 transition-colors">
-                            Chá»n Backup
+                            Chọn Backup
                         </button>
                     </div>
 
@@ -264,10 +264,10 @@
                         <div class="size-14 rounded-xl bg-white/20 flex items-center justify-center mb-4">
                             <span class="material-symbols-outlined text-3xl">schedule</span>
                         </div>
-                        <h3 class="text-xl font-bold mb-2">Lá»‹ch trÃ¬nh Tá»± Ä‘á»™ng</h3>
-                        <p class="text-orange-100 text-sm mb-4">Cáº¥u hÃ¬nh backup tá»± Ä‘á»™ng theo lá»‹ch</p>
+                        <h3 class="text-xl font-bold mb-2">Lịch trình Tự động</h3>
+                        <p class="text-orange-100 text-sm mb-4">Cấu hình backup tự động theo lịch</p>
                         <button class="bg-white text-orange-600 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-orange-50 transition-colors">
-                            CÃ i Ä‘áº·t
+                            Cài đặt
                         </button>
                     </div>
                 </section>
@@ -278,9 +278,9 @@
                         <div>
                             <h2 class="text-lg md:text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
                                 <span class="material-symbols-outlined text-slate-400">history</span>
-                                Lá»‹ch sá»­ Backup
+                                Lịch sử Backup
                             </h2>
-                            <p class="text-slate-500 text-xs md:text-sm mt-1">Danh sÃ¡ch táº¥t cáº£ cÃ¡c báº£n sao lÆ°u Ä‘Ã£ táº¡o</p>
+                            <p class="text-slate-500 text-xs md:text-sm mt-1">Danh sách tất cả các bản sao lưu đã tạo</p>
                         </div>
                         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full md:w-auto">
                             <div class="relative flex-1 sm:flex-initial">
@@ -289,13 +289,13 @@
                                 </span>
                                 <input
                                     class="block w-full sm:w-64 pl-10 pr-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-primary/50"
-                                    placeholder="TÃ¬m kiáº¿m backup..." type="text" />
+                                    placeholder="Tìm kiếm backup..." type="text" />
                             </div>
                             <select class="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-sm">
-                                <option>Táº¥t cáº£ tráº¡ng thÃ¡i</option>
-                                <option>HoÃ n thÃ nh</option>
-                                <option>Äang xá»­ lÃ½</option>
-                                <option>Lá»—i</option>
+                                <option>Tất cả trạng thái</option>
+                                <option>Hoàn thành</option>
+                                <option>Đang xử lý</option>
+                                <option>Lỗi</option>
                             </select>
                         </div>
                     </div>
@@ -307,17 +307,17 @@
                                         <input class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox" />
                                     </th>
                                     <th class="px-6 py-4 font-semibold text-xs text-slate-500 uppercase tracking-wider">
-                                        TÃªn Backup</th>
+                                        Tên Backup</th>
                                     <th class="px-6 py-4 font-semibold text-xs text-slate-500 uppercase tracking-wider">
-                                        Loáº¡i</th>
+                                        Loại</th>
                                     <th class="px-6 py-4 font-semibold text-xs text-slate-500 uppercase tracking-wider">
-                                        Thá»i gian táº¡o</th>
+                                        Thời gian tạo</th>
                                     <th class="px-6 py-4 font-semibold text-xs text-slate-500 uppercase tracking-wider">
-                                        KÃ­ch thÆ°á»›c</th>
+                                        Kích thước</th>
                                     <th class="px-6 py-4 font-semibold text-xs text-slate-500 uppercase tracking-wider">
-                                        Tráº¡ng thÃ¡i</th>
+                                        Trạng thái</th>
                                     <th class="px-6 py-4 font-semibold text-xs text-slate-500 uppercase tracking-wider text-right">
-                                        HÃ nh Ä‘á»™ng</th>
+                                        Hành động</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
@@ -339,32 +339,32 @@
                                     <td class="px-6 py-4">
                                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
                                             <span class="material-symbols-outlined text-sm">cloud</span>
-                                            Tá»± Ä‘á»™ng
+                                            Tự động
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
                                         <div>12/02/2026 08:00</div>
-                                        <div class="text-xs text-slate-400">2 giá» trÆ°á»›c</div>
+                                        <div class="text-xs text-slate-400">2 giờ trước</div>
                                     </td>
                                     <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 font-mono">2.45 GB</td>
                                     <td class="px-6 py-4">
                                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800">
                                             <span class="size-1.5 rounded-full bg-green-500"></span>
-                                            HoÃ n thÃ nh
+                                            Hoàn thành
                                         </span>
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg" title="Táº£i xuá»‘ng">
+                                            <button class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg" title="Tải xuống">
                                                 <span class="material-symbols-outlined text-lg">download</span>
                                             </button>
-                                            <button class="p-1.5 text-purple-600 hover:bg-purple-50 rounded-lg" title="KhÃ´i phá»¥c">
+                                            <button class="p-1.5 text-purple-600 hover:bg-purple-50 rounded-lg" title="Khôi phục">
                                                 <span class="material-symbols-outlined text-lg">restore</span>
                                             </button>
-                                            <button class="p-1.5 text-slate-600 hover:bg-slate-50 rounded-lg" title="Chi tiáº¿t">
+                                            <button class="p-1.5 text-slate-600 hover:bg-slate-50 rounded-lg" title="Chi tiết">
                                                 <span class="material-symbols-outlined text-lg">info</span>
                                             </button>
-                                            <button class="p-1.5 text-red-500 hover:bg-red-50 rounded-lg" title="XÃ³a">
+                                            <button class="p-1.5 text-red-500 hover:bg-red-50 rounded-lg" title="Xóa">
                                                 <span class="material-symbols-outlined text-lg">delete</span>
                                             </button>
                                         </div>
@@ -388,32 +388,32 @@
                                     <td class="px-6 py-4">
                                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">
                                             <span class="material-symbols-outlined text-sm">person</span>
-                                            Thá»§ cÃ´ng
+                                            Thủ công
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
                                         <div>11/02/2026 15:30</div>
-                                        <div class="text-xs text-slate-400">HÃ´m qua</div>
+                                        <div class="text-xs text-slate-400">Hôm qua</div>
                                     </td>
                                     <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 font-mono">2.42 GB</td>
                                     <td class="px-6 py-4">
                                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800">
                                             <span class="size-1.5 rounded-full bg-green-500"></span>
-                                            HoÃ n thÃ nh
+                                            Hoàn thành
                                         </span>
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg" title="Táº£i xuá»‘ng">
+                                            <button class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg" title="Tải xuống">
                                                 <span class="material-symbols-outlined text-lg">download</span>
                                             </button>
-                                            <button class="p-1.5 text-purple-600 hover:bg-purple-50 rounded-lg" title="KhÃ´i phá»¥c">
+                                            <button class="p-1.5 text-purple-600 hover:bg-purple-50 rounded-lg" title="Khôi phục">
                                                 <span class="material-symbols-outlined text-lg">restore</span>
                                             </button>
-                                            <button class="p-1.5 text-slate-600 hover:bg-slate-50 rounded-lg" title="Chi tiáº¿t">
+                                            <button class="p-1.5 text-slate-600 hover:bg-slate-50 rounded-lg" title="Chi tiết">
                                                 <span class="material-symbols-outlined text-lg">info</span>
                                             </button>
-                                            <button class="p-1.5 text-red-500 hover:bg-red-50 rounded-lg" title="XÃ³a">
+                                            <button class="p-1.5 text-red-500 hover:bg-red-50 rounded-lg" title="Xóa">
                                                 <span class="material-symbols-outlined text-lg">delete</span>
                                             </button>
                                         </div>
@@ -437,32 +437,32 @@
                                     <td class="px-6 py-4">
                                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
                                             <span class="material-symbols-outlined text-sm">cloud</span>
-                                            Tá»± Ä‘á»™ng
+                                            Tự động
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
                                         <div>11/02/2026 08:00</div>
-                                        <div class="text-xs text-slate-400">HÃ´m qua</div>
+                                        <div class="text-xs text-slate-400">Hôm qua</div>
                                     </td>
                                     <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 font-mono">2.41 GB</td>
                                     <td class="px-6 py-4">
                                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800">
                                             <span class="size-1.5 rounded-full bg-yellow-500"></span>
-                                            Cáº£nh bÃ¡o
+                                            Cảnh báo
                                         </span>
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg" title="Táº£i xuá»‘ng">
+                                            <button class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg" title="Tải xuống">
                                                 <span class="material-symbols-outlined text-lg">download</span>
                                             </button>
-                                            <button class="p-1.5 text-purple-600 hover:bg-purple-50 rounded-lg" title="KhÃ´i phá»¥c">
+                                            <button class="p-1.5 text-purple-600 hover:bg-purple-50 rounded-lg" title="Khôi phục">
                                                 <span class="material-symbols-outlined text-lg">restore</span>
                                             </button>
-                                            <button class="p-1.5 text-slate-600 hover:bg-slate-50 rounded-lg" title="Chi tiáº¿t">
+                                            <button class="p-1.5 text-slate-600 hover:bg-slate-50 rounded-lg" title="Chi tiết">
                                                 <span class="material-symbols-outlined text-lg">info</span>
                                             </button>
-                                            <button class="p-1.5 text-red-500 hover:bg-red-50 rounded-lg" title="XÃ³a">
+                                            <button class="p-1.5 text-red-500 hover:bg-red-50 rounded-lg" title="Xóa">
                                                 <span class="material-symbols-outlined text-lg">delete</span>
                                             </button>
                                         </div>
@@ -486,32 +486,32 @@
                                     <td class="px-6 py-4">
                                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
                                             <span class="material-symbols-outlined text-sm">cloud</span>
-                                            Tá»± Ä‘á»™ng
+                                            Tự động
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
                                         <div>10/02/2026 08:00</div>
-                                        <div class="text-xs text-slate-400">2 ngÃ y trÆ°á»›c</div>
+                                        <div class="text-xs text-slate-400">2 ngày trước</div>
                                     </td>
                                     <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 font-mono">2.39 GB</td>
                                     <td class="px-6 py-4">
                                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800">
                                             <span class="size-1.5 rounded-full bg-green-500"></span>
-                                            HoÃ n thÃ nh
+                                            Hoàn thành
                                         </span>
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg" title="Táº£i xuá»‘ng">
+                                            <button class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg" title="Tải xuống">
                                                 <span class="material-symbols-outlined text-lg">download</span>
                                             </button>
-                                            <button class="p-1.5 text-purple-600 hover:bg-purple-50 rounded-lg" title="KhÃ´i phá»¥c">
+                                            <button class="p-1.5 text-purple-600 hover:bg-purple-50 rounded-lg" title="Khôi phục">
                                                 <span class="material-symbols-outlined text-lg">restore</span>
                                             </button>
-                                            <button class="p-1.5 text-slate-600 hover:bg-slate-50 rounded-lg" title="Chi tiáº¿t">
+                                            <button class="p-1.5 text-slate-600 hover:bg-slate-50 rounded-lg" title="Chi tiết">
                                                 <span class="material-symbols-outlined text-lg">info</span>
                                             </button>
-                                            <button class="p-1.5 text-red-500 hover:bg-red-50 rounded-lg" title="XÃ³a">
+                                            <button class="p-1.5 text-red-500 hover:bg-red-50 rounded-lg" title="Xóa">
                                                 <span class="material-symbols-outlined text-lg">delete</span>
                                             </button>
                                         </div>
@@ -535,32 +535,32 @@
                                     <td class="px-6 py-4">
                                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
                                             <span class="material-symbols-outlined text-sm">cloud</span>
-                                            Tá»± Ä‘á»™ng
+                                            Tự động
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
                                         <div>09/02/2026 08:00</div>
-                                        <div class="text-xs text-slate-400">3 ngÃ y trÆ°á»›c</div>
+                                        <div class="text-xs text-slate-400">3 ngày trước</div>
                                     </td>
                                     <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 font-mono">2.38 GB</td>
                                     <td class="px-6 py-4">
                                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800">
                                             <span class="size-1.5 rounded-full bg-green-500"></span>
-                                            HoÃ n thÃ nh
+                                            Hoàn thành
                                         </span>
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg" title="Táº£i xuá»‘ng">
+                                            <button class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg" title="Tải xuống">
                                                 <span class="material-symbols-outlined text-lg">download</span>
                                             </button>
-                                            <button class="p-1.5 text-purple-600 hover:bg-purple-50 rounded-lg" title="KhÃ´i phá»¥c">
+                                            <button class="p-1.5 text-purple-600 hover:bg-purple-50 rounded-lg" title="Khôi phục">
                                                 <span class="material-symbols-outlined text-lg">restore</span>
                                             </button>
-                                            <button class="p-1.5 text-slate-600 hover:bg-slate-50 rounded-lg" title="Chi tiáº¿t">
+                                            <button class="p-1.5 text-slate-600 hover:bg-slate-50 rounded-lg" title="Chi tiết">
                                                 <span class="material-symbols-outlined text-lg">info</span>
                                             </button>
-                                            <button class="p-1.5 text-red-500 hover:bg-red-50 rounded-lg" title="XÃ³a">
+                                            <button class="p-1.5 text-red-500 hover:bg-red-50 rounded-lg" title="Xóa">
                                                 <span class="material-symbols-outlined text-lg">delete</span>
                                             </button>
                                         </div>
@@ -570,9 +570,9 @@
                         </table>
                     </div>
                     <div class="border-t border-slate-200 dark:border-slate-700 p-3 md:p-4 bg-slate-50 dark:bg-slate-800/30 flex flex-col sm:flex-row justify-between items-center gap-3">
-                        <span class="text-xs md:text-sm text-slate-500 dark:text-slate-400 text-center sm:text-left">Hiá»ƒn thá»‹ <span class="font-bold text-slate-900 dark:text-white">1-5</span> cá»§a <span class="font-bold text-slate-900 dark:text-white">47</span> backup</span>
+                        <span class="text-xs md:text-sm text-slate-500 dark:text-slate-400 text-center sm:text-left">Hiển thị <span class="font-bold text-slate-900 dark:text-white">1-5</span> của <span class="font-bold text-slate-900 dark:text-white">47</span> backup</span>
                         <div class="flex gap-1 md:gap-2">
-                            <button class="px-2 md:px-3 py-1 text-xs md:text-sm rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 bg-white dark:bg-card-dark hover:bg-slate-50 disabled:opacity-50" disabled>TrÆ°á»›c</button>
+                            <button class="px-2 md:px-3 py-1 text-xs md:text-sm rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 bg-white dark:bg-card-dark hover:bg-slate-50 disabled:opacity-50" disabled>Trước</button>
                             <button class="px-2 md:px-3 py-1 text-xs md:text-sm rounded-lg bg-primary text-white font-bold">1</button>
                             <button class="px-2 md:px-3 py-1 text-xs md:text-sm rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 bg-white dark:bg-card-dark hover:bg-slate-50">2</button>
                             <button class="px-2 md:px-3 py-1 text-xs md:text-sm rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 bg-white dark:bg-card-dark hover:bg-slate-50">3</button>
@@ -587,51 +587,51 @@
                         <div>
                             <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
                                 <span class="material-symbols-outlined text-slate-400">event_repeat</span>
-                                Lá»‹ch trÃ¬nh Sao lÆ°u Tá»± Ä‘á»™ng
+                                Lịch trình Sao lưu Tự động
                             </h2>
-                            <p class="text-slate-500 text-sm mt-1">Cáº¥u hÃ¬nh vÃ  quáº£n lÃ½ backup tá»± Ä‘á»™ng</p>
+                            <p class="text-slate-500 text-sm mt-1">Cấu hình và quản lý backup tự động</p>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer">
                             <input type="checkbox" class="sr-only peer" checked>
                             <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-blue-600"></div>
-                            <span class="ml-3 text-sm font-medium text-slate-700 dark:text-slate-300">Äang báº­t</span>
+                            <span class="ml-3 text-sm font-medium text-slate-700 dark:text-slate-300">Đang bật</span>
                         </label>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
                         <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
                             <div class="flex items-center gap-2 mb-2">
                                 <span class="material-symbols-outlined text-blue-600 text-xl">schedule</span>
-                                <h4 class="font-semibold text-sm">Chu ká»³</h4>
+                                <h4 class="font-semibold text-sm">Chu kỳ</h4>
                             </div>
                             <select class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-800">
-                                <option>HÃ ng ngÃ y</option>
-                                <option>HÃ ng tuáº§n</option>
-                                <option>HÃ ng thÃ¡ng</option>
+                                <option>Hàng ngày</option>
+                                <option>Hàng tuần</option>
+                                <option>Hàng tháng</option>
                             </select>
                         </div>
                         <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
                             <div class="flex items-center gap-2 mb-2">
                                 <span class="material-symbols-outlined text-purple-600 text-xl">access_time</span>
-                                <h4 class="font-semibold text-sm">Thá»i gian</h4>
+                                <h4 class="font-semibold text-sm">Thời gian</h4>
                             </div>
                             <input type="time" value="08:00" class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-800">
                         </div>
                         <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
                             <div class="flex items-center gap-2 mb-2">
                                 <span class="material-symbols-outlined text-orange-600 text-xl">inventory_2</span>
-                                <h4 class="font-semibold text-sm">LÆ°u trá»¯</h4>
+                                <h4 class="font-semibold text-sm">Lưu trữ</h4>
                             </div>
                             <select class="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-800">
-                                <option>30 ngÃ y</option>
-                                <option>60 ngÃ y</option>
-                                <option>90 ngÃ y</option>
-                                <option>VÃ´ thá»i háº¡n</option>
+                                <option>30 ngày</option>
+                                <option>60 ngày</option>
+                                <option>90 ngày</option>
+                                <option>Vô thời hạn</option>
                             </select>
                         </div>
                     </div>
                     <div class="mt-4 flex justify-end">
                         <button class="bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg font-medium transition-all text-sm shadow-sm">
-                            LÆ°u cáº¥u hÃ¬nh
+                            Lưu cấu hình
                         </button>
                     </div>
                 </section>

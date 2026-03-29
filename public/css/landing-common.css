@@ -1,4 +1,4 @@
-﻿/* ============================================
+/* ============================================
    Landing Pages Common Styles
    ============================================
    Shared CSS for: index.html, login_screen.html, sign_up_screen.html
@@ -188,7 +188,7 @@
 }
 
 .lang-dropdown button.active::before {
-    content: 'âœ“';
+    content: '✓';
     position: absolute;
     right: 1rem;
     font-weight: 700;

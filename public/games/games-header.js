@@ -1,5 +1,5 @@
-﻿// games-header.js
-// DÃ¹ng chung cho táº¥t cáº£ game
+// games-header.js
+// Dùng chung cho tất cả game
 
 // ========== Initialize Styles ==========
 (function initializeStyles() {
@@ -88,7 +88,7 @@
 })();
 
 /**
- * Cáº­p nháº­t progress label (vÃ­ dá»¥: Level 1, Question 3)
+ * Cập nhật progress label (ví dụ: Level 1, Question 3)
  */
 function setGameHeaderProgressLabel(label) {
   const el = document.querySelector('.game-header-progress-label');
@@ -96,7 +96,7 @@ function setGameHeaderProgressLabel(label) {
 }
 
 /**
- * Cáº­p nháº­t progress value (vÃ­ dá»¥: 3/10)
+ * Cập nhật progress value (ví dụ: 3/10)
  */
 function setGameHeaderProgressValue(value) {
   const el = document.querySelector('.game-header-progress-value');
@@ -104,7 +104,7 @@ function setGameHeaderProgressValue(value) {
 }
 
 /**
- * Cáº­p nháº­t Ä‘iá»ƒm sá»‘
+ * Cập nhật điểm số
  */
 function setGameHeaderScore(score) {
   const el = document.querySelector('.game-header-score');
@@ -112,9 +112,9 @@ function setGameHeaderScore(score) {
 }
 
 /**
- * Cáº­p nháº­t segmented progress bars vá»›i animation
- * @param {number} current - CÃ¢u há»i/má»¥c hiá»‡n táº¡i (1-based)
- * @param {number} total - Tá»•ng sá»‘ cÃ¢u há»i/má»¥c
+ * Cập nhật segmented progress bars với animation
+ * @param {number} current - Câu hỏi/mục hiện tại (1-based)
+ * @param {number} total - Tổng số câu hỏi/mục
  */
 function updateSegmentedProgressBars(current, total) {
   const progressBarsContainer = document.querySelector('header .flex.gap-1\\.5.h-3.w-full');
@@ -160,7 +160,7 @@ function updateSegmentedProgressBars(current, total) {
 
 /**
  * Animate score update with bounce effect
- * @param {number} newScore - Äiá»ƒm sá»‘ má»›i
+ * @param {number} newScore - Điểm số mới
  */
 function animateScoreUpdate(newScore) {
   const scoreEl = document.querySelector('.game-header-score');
@@ -177,13 +177,13 @@ function animateScoreUpdate(newScore) {
 }
 
 /**
- * HÃ€M Tá»”NG Há»¢P: Cáº­p nháº­t toÃ n bá»™ progress header
- * @param {Object} options - Cáº¥u hÃ¬nh
- * @param {number} options.current - Vá»‹ trÃ­ hiá»‡n táº¡i (1-based)
- * @param {number} options.total - Tá»•ng sá»‘ items
- * @param {number} options.score - Äiá»ƒm sá»‘ hiá»‡n táº¡i (optional)
- * @param {string} options.label - Label tÃ¹y chá»‰nh (optional, máº·c Ä‘á»‹nh "Question")
- * @param {boolean} options.animateScore - CÃ³ animate score khÃ´ng (optional, máº·c Ä‘á»‹nh true)
+ * HÀM TỔNG HỢP: Cập nhật toàn bộ progress header
+ * @param {Object} options - Cấu hình
+ * @param {number} options.current - Vị trí hiện tại (1-based)
+ * @param {number} options.total - Tổng số items
+ * @param {number} options.score - Điểm số hiện tại (optional)
+ * @param {string} options.label - Label tùy chỉnh (optional, mặc định "Question")
+ * @param {boolean} options.animateScore - Có animate score không (optional, mặc định true)
  */
 function updateGameHeaderProgress(options) {
   const {
@@ -196,7 +196,7 @@ function updateGameHeaderProgress(options) {
   
   // Validate inputs
   if (!current || !total) {
-    console.warn('updateGameHeaderProgress: current vÃ  total lÃ  báº¯t buá»™c');
+    console.warn('updateGameHeaderProgress: current và total là bắt buộc');
     return;
   }
   
@@ -220,10 +220,10 @@ function updateGameHeaderProgress(options) {
 }
 
 /**
- * Text-to-Speech: Äá»c vÄƒn báº£n vá»›i giá»ng Ä‘Ã£ chá»n (GLOBAL audio setting)
- * @param {string} text - VÄƒn báº£n cáº§n Ä‘á»c (traditional Chinese)
- * @param {number} rate - Tá»‘c Ä‘á»™ Ä‘á»c (0.1-10, máº·c Ä‘á»‹nh 0.9)
- * @param {function} onEndCallback - Callback khi káº¿t thÃºc Ä‘á»c
+ * Text-to-Speech: Đọc văn bản với giọng đã chọn (GLOBAL audio setting)
+ * @param {string} text - Văn bản cần đọc (traditional Chinese)
+ * @param {number} rate - Tốc độ đọc (0.1-10, mặc định 0.9)
+ * @param {function} onEndCallback - Callback khi kết thúc đọc
  */
 function speakText(text, rate = 0.9, onEndCallback = null) {
   if (!text) {
@@ -234,7 +234,7 @@ function speakText(text, rate = 0.9, onEndCallback = null) {
   // Check if audio is enabled
   const audioEnabled = localStorage.getItem('audioEnabled') !== 'false';
   if (!audioEnabled) {
-    console.log('ðŸ”‡ Audio is disabled');
+    console.log('🔇 Audio is disabled');
     if (onEndCallback) onEndCallback();
     return;
   }
@@ -243,7 +243,7 @@ function speakText(text, rate = 0.9, onEndCallback = null) {
   try {
     window.speechSynthesis.cancel();
   } catch (e) {
-    console.warn('âš ï¸ Error canceling speech:', e.message);
+    console.warn('⚠️ Error canceling speech:', e.message);
   }
   
   const utterance = new SpeechSynthesisUtterance(text);
@@ -264,10 +264,10 @@ function speakText(text, rate = 0.9, onEndCallback = null) {
   
   // Ensure voices are loaded (force reload if empty)
   if (voices.length === 0) {
-    console.warn('âš ï¸ Voices not loaded yet, using default voice for lang:', savedLang);
+    console.warn('⚠️ Voices not loaded yet, using default voice for lang:', savedLang);
     utterance.lang = savedLang;
   } else {
-    console.log(`ðŸ” Looking for voice: "${savedVoiceName}" in ${voices.length} available voices`);
+    console.log(`🔍 Looking for voice: "${savedVoiceName}" in ${voices.length} available voices`);
     
     // First try: Match by exact voice name (most accurate)
     if (savedVoiceName && savedVoiceName !== 'zh-TW' && savedVoiceName !== 'zh-CN' && savedVoiceName !== 'zh-HK' && savedVoiceName !== 'default') {
@@ -275,15 +275,15 @@ function speakText(text, rate = 0.9, onEndCallback = null) {
       if (selectedVoice) {
         utterance.voice = selectedVoice;
         utterance.lang = selectedVoice.lang; // Use voice's language
-        console.log(`âœ… Using saved voice: "${selectedVoice.name}" [${selectedVoice.lang}] ${selectedVoice.localService ? '(Local)' : '(Remote)'}`);
+        console.log(`✅ Using saved voice: "${selectedVoice.name}" [${selectedVoice.lang}] ${selectedVoice.localService ? '(Local)' : '(Remote)'}`);
       } else {
-        console.warn(`âš ï¸ Saved voice "${savedVoiceName}" not found`);
+        console.warn(`⚠️ Saved voice "${savedVoiceName}" not found`);
       }
     }
     
     // Second try: Match by language code (fallback)
     if (!selectedVoice) {
-      console.log(`ðŸ” Searching for voice with language: ${savedLang}`);
+      console.log(`🔍 Searching for voice with language: ${savedLang}`);
       
       // Try exact language match first
       selectedVoice = voices.find(voice => voice.lang === savedLang);
@@ -314,9 +314,9 @@ function speakText(text, rate = 0.9, onEndCallback = null) {
       if (selectedVoice) {
         utterance.voice = selectedVoice;
         utterance.lang = selectedVoice.lang;
-        console.log(`âœ… Using fallback voice: "${selectedVoice.name}" [${selectedVoice.lang}] ${selectedVoice.localService ? '(Local)' : '(Remote)'}`);
+        console.log(`✅ Using fallback voice: "${selectedVoice.name}" [${selectedVoice.lang}] ${selectedVoice.localService ? '(Local)' : '(Remote)'}`);
       } else {
-        console.warn(`âš ï¸ No Chinese voice found, using browser default for: ${savedLang}`);
+        console.warn(`⚠️ No Chinese voice found, using browser default for: ${savedLang}`);
       }
     }
   }
@@ -325,7 +325,7 @@ function speakText(text, rate = 0.9, onEndCallback = null) {
   utterance.onerror = (event) => {
     // Only log non-trivial errors
     if (event.error !== 'canceled' && event.error !== 'interrupted') {
-      console.warn('âŒ Speech synthesis error:', event.error);
+      console.warn('❌ Speech synthesis error:', event.error);
     }
     if (onEndCallback) onEndCallback();
   };
@@ -340,7 +340,7 @@ function speakText(text, rate = 0.9, onEndCallback = null) {
     // Estimate speech duration (rough calculation: ~150ms per character for Chinese)
     const estimatedDuration = Math.max(text.length * 150 / rate, 1000);
     timeoutId = setTimeout(() => {
-      console.log('â° Speech timeout triggered (safety for mobile)');
+      console.log('⏰ Speech timeout triggered (safety for mobile)');
       try {
         window.speechSynthesis.cancel();
       } catch (e) {}
@@ -358,7 +358,7 @@ function speakText(text, rate = 0.9, onEndCallback = null) {
     try {
       window.speechSynthesis.speak(utterance);
     } catch (e) {
-      console.error('âŒ Error speaking text:', e.message);
+      console.error('❌ Error speaking text:', e.message);
       if (timeoutId) clearTimeout(timeoutId);
       if (onEndCallback) onEndCallback();
     }
@@ -369,14 +369,14 @@ function speakText(text, rate = 0.9, onEndCallback = null) {
 }
 
 /**
- * Dá»«ng phÃ¡t Ã¢m
+ * Dừng phát âm
  */
 function stopSpeaking() {
   window.speechSynthesis.cancel();
 }
 
 /**
- * Láº¥y giá»ng Ä‘á»c hiá»‡n táº¡i (voice name vÃ  language)
+ * Lấy giọng đọc hiện tại (voice name và language)
  */
 function getCurrentVoice() {
   return {
@@ -417,7 +417,7 @@ function toggleAudio(enable) {
     detail: { enabled: newState }
   }));
   
-  console.log('ðŸ”Š [GLOBAL AUDIO SETTING] Audio', newState ? 'ENABLED' : 'DISABLED');
+  console.log('🔊 [GLOBAL AUDIO SETTING] Audio', newState ? 'ENABLED' : 'DISABLED');
   return newState;
 }
 
@@ -434,14 +434,14 @@ function getAudioSettings() {
 
 /**
  * ========== VOICE LIBRARY UTILITIES ==========
- * Utility functions Ä‘á»ƒ láº¥y vÃ  quáº£n lÃ½ thÆ° viá»‡n giá»ng nÃ³i
+ * Utility functions để lấy và quản lý thư viện giọng nói
  */
 
 /**
- * Láº¥y táº¥t cáº£ voices cÃ³ sáºµn vá»›i retry mechanism
- * @param {number} maxRetries - Sá»‘ láº§n retry tá»‘i Ä‘a (máº·c Ä‘á»‹nh 20)
- * @param {number} retryDelay - Thá»i gian chá» giá»¯a cÃ¡c retry (ms, máº·c Ä‘á»‹nh 100)
- * @returns {Promise<SpeechSynthesisVoice[]>} - Promise chá»©a danh sÃ¡ch voices
+ * Lấy tất cả voices có sẵn với retry mechanism
+ * @param {number} maxRetries - Số lần retry tối đa (mặc định 20)
+ * @param {number} retryDelay - Thời gian chờ giữa các retry (ms, mặc định 100)
+ * @returns {Promise<SpeechSynthesisVoice[]>} - Promise chứa danh sách voices
  */
 function getVoicesWithRetry(maxRetries = 20, retryDelay = 100) {
   return new Promise((resolve) => {
@@ -451,14 +451,14 @@ function getVoicesWithRetry(maxRetries = 20, retryDelay = 100) {
       const voices = window.speechSynthesis.getVoices();
       
       if (voices.length > 0) {
-        console.log(`âœ… Loaded ${voices.length} voices after ${attempts + 1} attempt(s)`);
+        console.log(`✅ Loaded ${voices.length} voices after ${attempts + 1} attempt(s)`);
         resolve(voices);
       } else if (attempts < maxRetries) {
         attempts++;
-        console.log(`â³ Retry ${attempts}/${maxRetries}...`);
+        console.log(`⏳ Retry ${attempts}/${maxRetries}...`);
         setTimeout(attemptGetVoices, retryDelay);
       } else {
-        console.warn('âš ï¸ No voices found after max retries');
+        console.warn('⚠️ No voices found after max retries');
         resolve([]);
       }
     }
@@ -473,12 +473,12 @@ function getVoicesWithRetry(maxRetries = 20, retryDelay = 100) {
 }
 
 /**
- * Láº¥y Chinese voices vá»›i filtering vÃ  grouping
- * @param {Object} options - Cáº¥u hÃ¬nh filter
- * @param {string[]} options.languages - Danh sÃ¡ch language codes cáº§n filter ['zh-TW', 'zh-CN', 'zh-HK']
- * @param {boolean} options.groupByLanguage - Group theo language (máº·c Ä‘á»‹nh false)
- * @param {number} options.limit - Giá»›i háº¡n sá»‘ voices tráº£ vá» (máº·c Ä‘á»‹nh khÃ´ng giá»›i háº¡n)
- * @returns {Promise<Object>} - Promise chá»©a thÃ´ng tin voices
+ * Lấy Chinese voices với filtering và grouping
+ * @param {Object} options - Cấu hình filter
+ * @param {string[]} options.languages - Danh sách language codes cần filter ['zh-TW', 'zh-CN', 'zh-HK']
+ * @param {boolean} options.groupByLanguage - Group theo language (mặc định false)
+ * @param {number} options.limit - Giới hạn số voices trả về (mặc định không giới hạn)
+ * @returns {Promise<Object>} - Promise chứa thông tin voices
  */
 async function getChineseVoices(options = {}) {
   const {
@@ -494,7 +494,7 @@ async function getChineseVoices(options = {}) {
     return languages.some(lang => voice.lang.startsWith(lang));
   });
   
-  console.log(`ðŸ” Found ${chineseVoices.length} Chinese voices from ${allVoices.length} total voices`);
+  console.log(`🔍 Found ${chineseVoices.length} Chinese voices from ${allVoices.length} total voices`);
   
   if (groupByLanguage) {
     // Group voices by language code
@@ -540,14 +540,14 @@ async function getChineseVoices(options = {}) {
 }
 
 /**
- * Log thÃ´ng tin chi tiáº¿t vá» táº¥t cáº£ voices trong console
- * @param {boolean} chineseOnly - Chá»‰ hiá»ƒn thá»‹ Chinese voices (máº·c Ä‘á»‹nh false)
+ * Log thông tin chi tiết về tất cả voices trong console
+ * @param {boolean} chineseOnly - Chỉ hiển thị Chinese voices (mặc định false)
  */
 async function logVoiceLibrary(chineseOnly = false) {
   const allVoices = await getVoicesWithRetry();
   
   console.log('========================================');
-  console.log('ðŸ“š VOICE LIBRARY INFORMATION');
+  console.log('📚 VOICE LIBRARY INFORMATION');
   console.log('========================================');
   console.log(`Total voices available: ${allVoices.length}`);
   console.log('----------------------------------------');
@@ -570,10 +570,10 @@ async function logVoiceLibrary(chineseOnly = false) {
 }
 
 /**
- * TÃ¬m voice tá»‘t nháº¥t dá»±a trÃªn keywords
- * @param {string[]} keywords - Danh sÃ¡ch keywords Ä‘á»ƒ tÃ¬m kiáº¿m
- * @param {string} preferredLang - Language code Æ°u tiÃªn (máº·c Ä‘á»‹nh 'zh-TW')
- * @returns {Promise<Object|null>} - Voice object hoáº·c null
+ * Tìm voice tốt nhất dựa trên keywords
+ * @param {string[]} keywords - Danh sách keywords để tìm kiếm
+ * @param {string} preferredLang - Language code ưu tiên (mặc định 'zh-TW')
+ * @returns {Promise<Object|null>} - Voice object hoặc null
  */
 async function findBestVoice(keywords = ['hanhan', 'yating', 'zhiwei'], preferredLang = 'zh-TW') {
   const allVoices = await getVoicesWithRetry();
@@ -585,7 +585,7 @@ async function findBestVoice(keywords = ['hanhan', 'yating', 'zhiwei'], preferre
       voice.lang.startsWith(preferredLang)
     );
     if (found) {
-      console.log(`âœ… Found best voice by keyword "${keyword}":`, found.name);
+      console.log(`✅ Found best voice by keyword "${keyword}":`, found.name);
       return {
         name: found.name,
         lang: found.lang,
@@ -598,7 +598,7 @@ async function findBestVoice(keywords = ['hanhan', 'yating', 'zhiwei'], preferre
   // Second: Find any voice with preferred language
   const langMatch = allVoices.find(voice => voice.lang.startsWith(preferredLang));
   if (langMatch) {
-    console.log(`âœ… Found voice by language "${preferredLang}":`, langMatch.name);
+    console.log(`✅ Found voice by language "${preferredLang}":`, langMatch.name);
     return {
       name: langMatch.name,
       lang: langMatch.lang,
@@ -607,17 +607,17 @@ async function findBestVoice(keywords = ['hanhan', 'yating', 'zhiwei'], preferre
     };
   }
   
-  console.warn('âš ï¸ No matching voice found');
+  console.warn('⚠️ No matching voice found');
   return null;
 }
 
 /**
- * Test giá»ng nÃ³i báº±ng cÃ¡ch Ä‘á»c má»™t Ä‘oáº¡n vÄƒn máº«u
- * @param {string} voiceName - TÃªn voice cáº§n test
- * @param {string} testText - VÄƒn báº£n test (máº·c Ä‘á»‹nh 'ä½ å¥½ï¼Œæ­¡è¿Žå­¸ç¿’ä¸­æ–‡ï¼')
- * @returns {Promise<boolean>} - Promise tráº£ vá» true náº¿u test thÃ nh cÃ´ng
+ * Test giọng nói bằng cách đọc một đoạn văn mẫu
+ * @param {string} voiceName - Tên voice cần test
+ * @param {string} testText - Văn bản test (mặc định '你好，歡迎學習中文！')
+ * @returns {Promise<boolean>} - Promise trả về true nếu test thành công
  */
-function testVoice(voiceName, testText = 'ä½ å¥½ï¼Œæ­¡è¿Žå­¸ç¿’ä¸­æ–‡ï¼') {
+function testVoice(voiceName, testText = '你好，歡迎學習中文！') {
   return new Promise((resolve) => {
     window.speechSynthesis.cancel();
     
@@ -625,7 +625,7 @@ function testVoice(voiceName, testText = 'ä½ å¥½ï¼Œæ­¡è¿Žå­¸ç
       const voice = voices.find(v => v.name === voiceName);
       
       if (!voice) {
-        console.error(`âŒ Voice "${voiceName}" not found`);
+        console.error(`❌ Voice "${voiceName}" not found`);
         resolve(false);
         return;
       }
@@ -637,16 +637,16 @@ function testVoice(voiceName, testText = 'ä½ å¥½ï¼Œæ­¡è¿Žå­¸ç
       utterance.volume = 1.0;
       
       utterance.onend = () => {
-        console.log(`âœ… Voice test successful: ${voiceName}`);
+        console.log(`✅ Voice test successful: ${voiceName}`);
         resolve(true);
       };
       
       utterance.onerror = (event) => {
-        console.error(`âŒ Voice test failed: ${voiceName}`, event.error);
+        console.error(`❌ Voice test failed: ${voiceName}`, event.error);
         resolve(false);
       };
       
-      console.log(`ðŸ”Š Testing voice: ${voiceName}`);
+      console.log(`🔊 Testing voice: ${voiceName}`);
       window.speechSynthesis.speak(utterance);
     });
   });
@@ -681,17 +681,17 @@ let voiceSelectorState = {
 // Voice matching patterns (priority order)
 const VOICE_PATTERNS = [
   // iOS voices (Siri voices)
-  { keywords: ['meijia'], label: 'Meijia ðŸ‡¹ðŸ‡¼ (F)', priority: 1, isIOS: true },
-  { keywords: ['tingting'], label: 'Tingting ðŸ‡¨ðŸ‡³ (F)', priority: 2, isIOS: true },
-  { keywords: ['shelley'], label: 'Shelley ðŸ‡¹ðŸ‡¼ (F)', priority: 3, isIOS: true },
-  { keywords: ['sinji'], label: 'Sinji ðŸ‡­ðŸ‡° (F)', priority: 4, isIOS: true },
-  { keywords: ['grandma'], label: 'Grandma ðŸ‡¹ðŸ‡¼ (F)', priority: 5, isIOS: true },
-  { keywords: ['sandy'], label: 'Sandy ðŸ‡¨ðŸ‡³ (F)', priority: 6, isIOS: true },
-  { keywords: ['flo'], label: 'Flo ðŸ‡­ðŸ‡° (F)', priority: 7, isIOS: true },
-  { keywords: ['eddy'], label: 'Eddy ðŸ‡¨ðŸ‡³ (M)', priority: 8, isIOS: true },
-  { keywords: ['grandpa'], label: 'Grandpa ðŸ‡¹ðŸ‡¼ (M)', priority: 9, isIOS: true },
-  { keywords: ['reed'], label: 'Reed ðŸ‡­ðŸ‡° (M)', priority: 10, isIOS: true },
-  { keywords: ['rocko'], label: 'Rocko ðŸ‡¨ðŸ‡³ (M)', priority: 11, isIOS: true },
+  { keywords: ['meijia'], label: 'Meijia 🇹🇼 (F)', priority: 1, isIOS: true },
+  { keywords: ['tingting'], label: 'Tingting 🇨🇳 (F)', priority: 2, isIOS: true },
+  { keywords: ['shelley'], label: 'Shelley 🇹🇼 (F)', priority: 3, isIOS: true },
+  { keywords: ['sinji'], label: 'Sinji 🇭🇰 (F)', priority: 4, isIOS: true },
+  { keywords: ['grandma'], label: 'Grandma 🇹🇼 (F)', priority: 5, isIOS: true },
+  { keywords: ['sandy'], label: 'Sandy 🇨🇳 (F)', priority: 6, isIOS: true },
+  { keywords: ['flo'], label: 'Flo 🇭🇰 (F)', priority: 7, isIOS: true },
+  { keywords: ['eddy'], label: 'Eddy 🇨🇳 (M)', priority: 8, isIOS: true },
+  { keywords: ['grandpa'], label: 'Grandpa 🇹🇼 (M)', priority: 9, isIOS: true },
+  { keywords: ['reed'], label: 'Reed 🇭🇰 (M)', priority: 10, isIOS: true },
+  { keywords: ['rocko'], label: 'Rocko 🇨🇳 (M)', priority: 11, isIOS: true },
   
   // Windows/Desktop voices
   { keywords: ['hanhan'], label: 'HanHan (F)', priority: 12 },
@@ -700,12 +700,12 @@ const VOICE_PATTERNS = [
   { keywords: ['huihui'], label: 'Huihui (F)', priority: 15 },
   
   // Google voices
-  { keywords: ['google', 'åœ‹èªž', 'è‡ºç£', 'taiwan'], label: 'Google TW', priority: 16 },
-  { keywords: ['æ™®é€šè¯', 'ä¸­å›½å¤§é™†', 'china'], label: 'Google CN', priority: 17 },
-  { keywords: ['ç²¤èªž', 'é¦™æ¸¯', 'hong kong', 'cantonese'], label: 'Google HK', priority: 18 }
+  { keywords: ['google', '國語', '臺灣', 'taiwan'], label: 'Google TW', priority: 16 },
+  { keywords: ['普通话', '中国大陆', 'china'], label: 'Google CN', priority: 17 },
+  { keywords: ['粤語', '香港', 'hong kong', 'cantonese'], label: 'Google HK', priority: 18 }
 ];
 
-console.log(`ðŸ“± Device detected: ${voiceSelectorState.isMobile ? 'Mobile' : 'Desktop'} ${voiceSelectorState.isIOS ? '(iOS)' : ''}`);
+console.log(`📱 Device detected: ${voiceSelectorState.isMobile ? 'Mobile' : 'Desktop'} ${voiceSelectorState.isIOS ? '(iOS)' : ''}`);
 
 /**
  * Initialize voice selector when DOM is ready
@@ -713,12 +713,12 @@ console.log(`ðŸ“± Device detected: ${voiceSelectorState.isMobile ? 'Mobile'
 function initializeVoiceSelector() {
   const voiceSelect = document.getElementById('voiceSelect');
   if (!voiceSelect) {
-    console.warn('âš ï¸ Voice selector not found in DOM');
+    console.warn('⚠️ Voice selector not found in DOM');
     return;
   }
   
-  console.log('ðŸŽ¤ Initializing voice selector...');
-  console.log(`ðŸ“± Mobile: ${voiceSelectorState.isMobile}, iOS: ${voiceSelectorState.isIOS}`);
+  console.log('🎤 Initializing voice selector...');
+  console.log(`📱 Mobile: ${voiceSelectorState.isMobile}, iOS: ${voiceSelectorState.isIOS}`);
   
   // Setup change listener first
   voiceSelect.addEventListener('change', onVoiceSelectionChanged);
@@ -741,15 +741,15 @@ function initializeVoiceSelector() {
     utterance.lang = 'zh-TW';
     window.speechSynthesis.speak(utterance);
     setTimeout(() => window.speechSynthesis.cancel(), 50);
-    console.log('âœ… Dummy utterance triggered');
+    console.log('✅ Dummy utterance triggered');
   } catch (e) {
-    console.warn('âš ï¸ Dummy utterance failed:', e.message);
+    console.warn('⚠️ Dummy utterance failed:', e.message);
   }
   
   // Listen for voiceschanged event
   if (window.speechSynthesis.onvoiceschanged !== undefined) {
     window.speechSynthesis.onvoiceschanged = function() {
-      console.log('ðŸ”” voiceschanged event fired');
+      console.log('🔔 voiceschanged event fired');
       if (!voiceSelectorState.voicesLoaded) {
         // Reset retry count and try to populate
         voiceSelectorState.retryCount = 0;
@@ -776,7 +776,7 @@ function initializeVoiceSelector() {
   const gestureEvents = ['touchstart', 'pointerdown', 'click'];
   const handleFirstGesture = function() {
     if (!voiceSelectorState.voicesLoaded) {
-      console.log('ðŸ‘† User gesture detected, loading voices...');
+      console.log('👆 User gesture detected, loading voices...');
       voiceSelectorState.retryCount = 0;
       populateVoiceSelector();
     }
@@ -792,7 +792,7 @@ function initializeVoiceSelector() {
   // Page visibility change (helps with iOS backgrounding)
   document.addEventListener('visibilitychange', function() {
     if (document.visibilityState === 'visible' && !voiceSelectorState.voicesLoaded) {
-      console.log('ðŸ‘ï¸ Page visible, retrying voice load...');
+      console.log('👁️ Page visible, retrying voice load...');
       voiceSelectorState.retryCount = 0;
       setTimeout(populateVoiceSelector, 100);
     }
@@ -804,7 +804,7 @@ function initializeVoiceSelector() {
  */
 function populateVoiceSelector() {
   if (voiceSelectorState.voicesLoaded) {
-    console.log('âœ… Voices already loaded, skipping...');
+    console.log('✅ Voices already loaded, skipping...');
     return;
   }
   
@@ -816,35 +816,35 @@ function populateVoiceSelector() {
   if (voices.length === 0) {
     voiceSelectorState.retryCount++;
     if (voiceSelectorState.retryCount < voiceSelectorState.maxRetries) {
-      console.log(`â³ Retry ${voiceSelectorState.retryCount}/${voiceSelectorState.maxRetries}...`);
+      console.log(`⏳ Retry ${voiceSelectorState.retryCount}/${voiceSelectorState.maxRetries}...`);
       const retryDelay = voiceSelectorState.isMobile ? 150 : 100;
       setTimeout(populateVoiceSelector, retryDelay);
       return;
     } else {
-      console.warn('âš ï¸ No voices after max retries, keeping fallback');
+      console.warn('⚠️ No voices after max retries, keeping fallback');
       // Keep fallback options, don't reset
       return;
     }
   }
   
-  console.log(`ðŸ” Found ${voices.length} total voices`);
+  console.log(`🔍 Found ${voices.length} total voices`);
   
   // Filter Chinese voices (any Chinese dialect)
   let chineseVoices = voices.filter(v => v.lang && v.lang.startsWith('zh'));
   
   if (chineseVoices.length === 0) {
-    console.warn('âš ï¸ No Chinese voices found, keeping fallback');
+    console.warn('⚠️ No Chinese voices found, keeping fallback');
     // Keep fallback options if no Chinese voices
     return;
   }
   
   voiceSelectorState.voicesLoaded = true;
   voiceSelectorState.retryCount = 0;
-  console.log(`âœ… Found ${chineseVoices.length} Chinese voices`);
+  console.log(`✅ Found ${chineseVoices.length} Chinese voices`);
   
   // Log all voices for debugging (especially useful for mobile)
   if (voiceSelectorState.isMobile) {
-    console.log('ðŸ“ Voice details:');
+    console.log('📝 Voice details:');
     chineseVoices.forEach((v, i) => {
       console.log(`  ${i + 1}. "${v.name}" [${v.lang}] ${v.localService ? 'Local' : 'Remote'}`);
     });
@@ -871,7 +871,7 @@ function populateVoiceSelector() {
       
       if (matchCount > 0) {
         matched = pattern;
-        console.log(`âœ“ Matched voice "${voice.name}" with pattern "${pattern.label}"`);
+        console.log(`✓ Matched voice "${voice.name}" with pattern "${pattern.label}"`);
         break;
       }
     }
@@ -898,16 +898,16 @@ function populateVoiceSelector() {
       
       // Add region indicator
       let regionLabel = '';
-      if (voice.lang.startsWith('zh-CN')) regionLabel = ' ðŸ‡¨ðŸ‡³';
-      else if (voice.lang.startsWith('zh-HK')) regionLabel = ' ðŸ‡­ðŸ‡°';
-      else if (voice.lang.startsWith('zh-TW')) regionLabel = ' ðŸ‡¹ðŸ‡¼';
+      if (voice.lang.startsWith('zh-CN')) regionLabel = ' 🇨🇳';
+      else if (voice.lang.startsWith('zh-HK')) regionLabel = ' 🇭🇰';
+      else if (voice.lang.startsWith('zh-TW')) regionLabel = ' 🇹🇼';
       
       matchedVoices.push({ 
         voice, 
         config: { label: displayLabel + regionLabel, priority: 99 } 
       });
       
-      console.log(`â„¹ï¸ Unmatched voice "${voice.name}" â†’ "${displayLabel}${regionLabel}"`);
+      console.log(`ℹ️ Unmatched voice "${voice.name}" → "${displayLabel}${regionLabel}"`);
     }
     
     addedNames.add(voice.name);
@@ -931,7 +931,7 @@ function populateVoiceSelector() {
   // Add iOS/Apple voices group (priority for mobile)
   if (iosVoices.length > 0) {
     const iosGroup = document.createElement('optgroup');
-    iosGroup.label = `ðŸŽ iOS/Apple (${iosVoices.length})`;
+    iosGroup.label = `🍎 iOS/Apple (${iosVoices.length})`;
     iosVoices.forEach(item => {
       const option = document.createElement('option');
       option.value = item.voice.name;
@@ -941,13 +941,13 @@ function populateVoiceSelector() {
       iosGroup.appendChild(option);
     });
     voiceSelect.appendChild(iosGroup);
-    console.log(`âœ… Added ${iosVoices.length} iOS voices`);
+    console.log(`✅ Added ${iosVoices.length} iOS voices`);
   }
   
   // Add Google voices group
   if (googleVoices.length > 0) {
     const googleGroup = document.createElement('optgroup');
-    googleGroup.label = `ðŸŒ Google (${googleVoices.length})`;
+    googleGroup.label = `🌐 Google (${googleVoices.length})`;
     googleVoices.forEach(item => {
       const option = document.createElement('option');
       option.value = item.voice.name;
@@ -957,13 +957,13 @@ function populateVoiceSelector() {
       googleGroup.appendChild(option);
     });
     voiceSelect.appendChild(googleGroup);
-    console.log(`âœ… Added ${googleVoices.length} Google voices`);
+    console.log(`✅ Added ${googleVoices.length} Google voices`);
   }
   
   // Add Microsoft voices group
   if (microsoftVoices.length > 0) {
     const msGroup = document.createElement('optgroup');
-    msGroup.label = `ðŸªŸ Microsoft (${microsoftVoices.length})`;
+    msGroup.label = `🪟 Microsoft (${microsoftVoices.length})`;
     microsoftVoices.forEach(item => {
       const option = document.createElement('option');
       option.value = item.voice.name;
@@ -973,13 +973,13 @@ function populateVoiceSelector() {
       msGroup.appendChild(option);
     });
     voiceSelect.appendChild(msGroup);
-    console.log(`âœ… Added ${microsoftVoices.length} Microsoft voices`);
+    console.log(`✅ Added ${microsoftVoices.length} Microsoft voices`);
   }
   
   // Add other voices if any
   if (otherVoices.length > 0) {
     const otherGroup = document.createElement('optgroup');
-    otherGroup.label = `ðŸ”§ Other (${otherVoices.length})`;
+    otherGroup.label = `🔧 Other (${otherVoices.length})`;
     otherVoices.forEach(item => {
       const option = document.createElement('option');
       option.value = item.voice.name;
@@ -989,17 +989,17 @@ function populateVoiceSelector() {
       otherGroup.appendChild(option);
     });
     voiceSelect.appendChild(otherGroup);
-    console.log(`âœ… Added ${otherVoices.length} other voices`);
+    console.log(`✅ Added ${otherVoices.length} other voices`);
   }
   
   // Add default fallback
   const fallbackOpt = document.createElement('option');
   fallbackOpt.value = 'zh-TW';
-  fallbackOpt.textContent = 'ðŸŒ Default (zh-TW)';
+  fallbackOpt.textContent = '🌐 Default (zh-TW)';
   fallbackOpt.setAttribute('data-lang', 'zh-TW');
   voiceSelect.appendChild(fallbackOpt);
   
-  console.log(`âœ… Voice selector populated with ${voiceSelect.options.length} options`);
+  console.log(`✅ Voice selector populated with ${voiceSelect.options.length} options`);
   
   // Load saved selection
   loadSavedVoiceSelection();
@@ -1021,19 +1021,19 @@ function createVoiceSelectorFallback() {
   if (voiceSelect.options.length > 1 && 
       voiceSelect.options[0].value !== '' && 
       !voiceSelect.options[0].disabled) {
-    console.log('âœ… Dropdown already has valid options, skipping fallback');
+    console.log('✅ Dropdown already has valid options, skipping fallback');
     return;
   }
   
-  console.warn('âš ï¸ Creating fallback options (voices not available)');
+  console.warn('⚠️ Creating fallback options (voices not available)');
   voiceSelect.innerHTML = '';
   
   // Create comprehensive fallback options
   const fallbacks = [
-    { value: 'zh-TW', label: 'ðŸ‡¹ðŸ‡¼ ç¹é«”ä¸­æ–‡ (Taiwan)', lang: 'zh-TW' },
-    { value: 'zh-CN', label: 'ðŸ‡¨ðŸ‡³ ç®€ä½“ä¸­æ–‡ (China)', lang: 'zh-CN' },
-    { value: 'zh-HK', label: 'ðŸ‡­ðŸ‡° å»£æ±è©± (Hong Kong)', lang: 'zh-HK' },
-    { value: 'default', label: 'ðŸŒ System Default', lang: 'zh-TW' }
+    { value: 'zh-TW', label: '🇹🇼 繁體中文 (Taiwan)', lang: 'zh-TW' },
+    { value: 'zh-CN', label: '🇨🇳 简体中文 (China)', lang: 'zh-CN' },
+    { value: 'zh-HK', label: '🇭🇰 廣東話 (Hong Kong)', lang: 'zh-HK' },
+    { value: 'default', label: '🌐 System Default', lang: 'zh-TW' }
   ];
   
   fallbacks.forEach(opt => {
@@ -1045,7 +1045,7 @@ function createVoiceSelectorFallback() {
   });
   
   voiceSelect.selectedIndex = 0;
-  console.log(`âœ… Created ${fallbacks.length} fallback options`);
+  console.log(`✅ Created ${fallbacks.length} fallback options`);
   
   // Try to load saved selection
   loadSavedVoiceSelection();
@@ -1053,7 +1053,7 @@ function createVoiceSelectorFallback() {
   // Mark as partially loaded (so we don't keep creating fallback)
   // but keep trying to load real voices in background
   if (!voiceSelectorState.voicesLoaded) {
-    console.log('ðŸ”„ Fallback created, but will keep trying to load real voices...');
+    console.log('🔄 Fallback created, but will keep trying to load real voices...');
     
     // Continue trying to load voices at longer intervals
     setTimeout(() => {
@@ -1081,7 +1081,7 @@ function loadSavedVoiceSelection() {
   
   const savedName = localStorage.getItem('selectedVoiceName');
   if (!savedName) {
-    console.log('â„¹ï¸ No saved voice preference');
+    console.log('ℹ️ No saved voice preference');
     return;
   }
   
@@ -1090,12 +1090,12 @@ function loadSavedVoiceSelection() {
   for (let i = 0; i < options.length; i++) {
     if (options[i].value === savedName) {
       voiceSelect.selectedIndex = i;
-      console.log(`âœ… Restored saved voice: ${savedName}`);
+      console.log(`✅ Restored saved voice: ${savedName}`);
       return;
     }
   }
   
-  console.warn(`âš ï¸ Saved voice "${savedName}" not found in current options`);
+  console.warn(`⚠️ Saved voice "${savedName}" not found in current options`);
 }
 
 /**
@@ -1113,7 +1113,7 @@ function onVoiceSelectionChanged() {
   localStorage.setItem('selectedVoiceName', selectedValue);
   localStorage.setItem('selectedVoice', selectedLang);
   
-  console.log(`ðŸ”Š Voice changed: ${selectedValue} (${selectedLang})`);
+  console.log(`🔊 Voice changed: ${selectedValue} (${selectedLang})`);
   
   // Broadcast voice change event
   window.dispatchEvent(new CustomEvent('voiceChanged', {
@@ -1123,7 +1123,7 @@ function onVoiceSelectionChanged() {
   // Sync to backend if API available
   if (window.SETTINGS_API && localStorage.getItem('token')) {
     window.SETTINGS_API.syncVoiceToBackend(selectedValue).catch(err => {
-      console.warn('âš ï¸ Failed to sync voice to backend:', err);
+      console.warn('⚠️ Failed to sync voice to backend:', err);
     });
   }
 }
@@ -1134,16 +1134,16 @@ function onVoiceSelectionChanged() {
 function testCurrentVoice() {
   const voiceSelect = document.getElementById('voiceSelect');
   if (!voiceSelect) {
-    console.error('âŒ Voice selector not found');
+    console.error('❌ Voice selector not found');
     return;
   }
   
   const selectedValue = voiceSelect.value;
   if (!selectedValue) {
     if (typeof showError === 'function') {
-        showError('Vui lÃ²ng chá»n giá»ng Ä‘á»c trÆ°á»›c!');
+        showError('Vui lòng chọn giọng đọc trước!');
     } else {
-        alert('Vui lÃ²ng chá»n giá»ng Ä‘á»c trÆ°á»›c!');
+        alert('Vui lòng chọn giọng đọc trước!');
     }
     
     // Highlight select
@@ -1152,12 +1152,12 @@ function testCurrentVoice() {
     return;
   }
   
-  console.log(`ðŸ”Š Testing voice: ${selectedValue}`);
+  console.log(`🔊 Testing voice: ${selectedValue}`);
 
   // Show playing toast (mobile-friendly)
   const toast = document.createElement('div');
   toast.className = 'fixed top-4 left-1/2 -translate-x-1/2 sm:left-auto sm:right-4 sm:translate-x-0 bg-primary text-white px-4 py-3 sm:px-6 sm:py-4 rounded-xl sm:rounded-2xl shadow-xl z-50 animate-slide-in flex items-center gap-2 font-bold text-sm sm:text-base max-w-[90vw] sm:max-w-none';
-  toast.innerHTML = '<span class="material-symbols-outlined text-lg sm:text-xl">volume_up</span> <span>Äang Ä‘á»c máº«u...</span>';
+  toast.innerHTML = '<span class="material-symbols-outlined text-lg sm:text-xl">volume_up</span> <span>Đang đọc mẫu...</span>';
   toast.style.animation = 'slideIn 0.3s ease-out forwards';
   document.body.appendChild(toast);
   setTimeout(() => {
@@ -1166,8 +1166,8 @@ function testCurrentVoice() {
   }, 2000);
   
   // Use the global speakText function (respects audio enabled setting)
-  speakText('ä½ å¥½ï¼Œæ­¡è¿Žå­¸ç¿’ä¸­æ–‡ï¼', 0.9, () => {
-    console.log('âœ… Voice test complete');
+  speakText('你好，歡迎學習中文！', 0.9, () => {
+    console.log('✅ Voice test complete');
   });
 }
 
@@ -1175,7 +1175,7 @@ function testCurrentVoice() {
  * Initialize on DOM ready
  */
 document.addEventListener('DOMContentLoaded', function() {
-  console.log('ðŸ“„ DOM ready, initializing header...');
+  console.log('📄 DOM ready, initializing header...');
   
   // Initialize back button
   const backBtn = document.querySelector('a[href*="games_home.html"]');
@@ -1184,14 +1184,14 @@ document.addEventListener('DOMContentLoaded', function() {
       e.preventDefault();
       window.location.href = '../user/games_home.html';
     });
-    console.log('âœ… Back button initialized');
+    console.log('✅ Back button initialized');
   }
   
   // Initialize voice selector
   initializeVoiceSelector();
 });
 
-// Äáº£m báº£o cÃ¡c hÃ m nÃ y global
+// Đảm bảo các hàm này global
 window.setGameHeaderProgressLabel = setGameHeaderProgressLabel;
 window.setGameHeaderProgressValue = setGameHeaderProgressValue;
 window.setGameHeaderScore = setGameHeaderScore;

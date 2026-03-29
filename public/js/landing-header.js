@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Landing Pages Shared Header Component
  * Renders unified header for index.html, login_screen.html, sign_up_screen.html
  */
@@ -65,8 +65,8 @@
                             </button>
                             <div class="lang-dropdown" id="langDropdown">
                                 <button class="lang-option" data-lang="en">English</button>
-                                <button class="lang-option ${currentPage === 'index' ? 'active' : ''}" data-lang="vi">Tiáº¿ng Viá»‡t</button>
-                                <button class="lang-option" data-lang="tw">ç¹é«”ä¸­æ–‡</button>
+                                <button class="lang-option ${currentPage === 'index' ? 'active' : ''}" data-lang="vi">Tiếng Việt</button>
+                                <button class="lang-option" data-lang="tw">繁體中文</button>
                             </div>
                         </div>
                         
@@ -81,13 +81,13 @@
                                 ${currentPage !== 'login' ? `
                                     <button class="mobile-auth-option" id="mobileLoginBtn" data-i18n="landing.navLogin">
                                         <span class="material-symbols-outlined">login</span>
-                                        <span>ÄÄƒng nháº­p</span>
+                                        <span>Đăng nhập</span>
                                     </button>
                                 ` : ''}
                                 ${currentPage !== 'signup' ? `
                                     <button class="mobile-auth-option" id="mobileSignupBtn" data-i18n="landing.navSignup">
                                         <span class="material-symbols-outlined">person_add</span>
-                                        <span>ÄÄƒng kÃ½</span>
+                                        <span>Đăng ký</span>
                                     </button>
                                 ` : ''}
                             </div>

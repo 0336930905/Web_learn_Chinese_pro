@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 
 <html class="light" lang="en">
 
@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Listen and Choose Game</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>ðŸŽ®</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎮</text></svg>">
     <link
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
         rel="stylesheet" />
@@ -77,7 +77,7 @@
             <!-- Real-time Stats Display -->
             <div class="mb-4 text-center">
                 <p id="game-stats" class="text-sm font-semibold text-slate-600 dark:text-slate-400">
-                    <span id="stats-correct">0</span>/<span id="stats-total">0</span> Ä‘Ãºng Â· <span id="stats-percentage">0</span>%
+                    <span id="stats-correct">0</span>/<span id="stats-total">0</span> đúng · <span id="stats-percentage">0</span>%
                 </p>
             </div>
             <div class="max-w-4xl w-full flex flex-col gap-8 md:gap-12">
@@ -117,7 +117,7 @@
             <div class="max-w-4xl mx-auto flex justify-center items-center">
                 <button id="nextBtn" disabled
                     class="flex items-center justify-center gap-2 bg-slate-300 dark:bg-slate-700 text-slate-500 dark:text-slate-400 font-bold text-lg px-8 py-3 rounded-full shadow-lg transition-all min-w-[160px] disabled:cursor-not-allowed">
-                    <span>Chá»n Ä‘Ã¡p Ã¡n</span>
+                    <span>Chọn đáp án</span>
                 </button>
             </div>
         </footer>
@@ -180,7 +180,7 @@ let answers = []; // Track all answers for submission
 async function loadQuestions() {
     categoryId = getCategoryIdFromUrl();
     if (!categoryId) {
-        alert('KhÃ´ng tÃ¬m tháº¥y categoryId!');
+        alert('Không tìm thấy categoryId!');
         window.location.href = '../user/games_home.html';
         return;
     }
@@ -195,7 +195,7 @@ async function loadQuestions() {
         const data = await res.json();
         
         if (!data.success) {
-            alert('KhÃ´ng thá»ƒ táº£i cÃ¢u há»i: ' + (data.error?.message || 'Lá»—i khÃ´ng xÃ¡c Ä‘á»‹nh'));
+            alert('Không thể tải câu hỏi: ' + (data.error?.message || 'Lỗi không xác định'));
             window.location.href = '../user/games_home.html';
             return;
         }
@@ -205,7 +205,7 @@ async function loadQuestions() {
         score = 0;
         renderQuestion();
     } catch (err) {
-        alert('Lá»—i khi gá»i API: ' + err.message);
+        alert('Lỗi khi gọi API: ' + err.message);
         window.location.href = '../user/games_home.html';
     }
 }
@@ -442,24 +442,24 @@ function renderResult() {
     const seconds = duration % 60;
     
     // Determine performance level
-    let performanceEmoji = 'ðŸŽ‰';
+    let performanceEmoji = '🎉';
     let performanceText = i18n.t('gameListen.great');
     let performanceColor = 'from-green-500 to-emerald-500';
     
     if (percentage >= 90) {
-        performanceEmoji = 'ðŸ†';
+        performanceEmoji = '🏆';
         performanceText = i18n.t('gameListen.excellent');
         performanceColor = 'from-yellow-400 to-amber-500';
     } else if (percentage >= 70) {
-        performanceEmoji = 'ðŸŽ‰';
+        performanceEmoji = '🎉';
         performanceText = i18n.t('gameListen.great');
         performanceColor = 'from-green-500 to-emerald-500';
     } else if (percentage >= 50) {
-        performanceEmoji = 'ðŸ‘';
+        performanceEmoji = '👍';
         performanceText = i18n.t('gameListen.good');
         performanceColor = 'from-blue-500 to-cyan-500';
     } else {
-        performanceEmoji = 'ðŸ’ª';
+        performanceEmoji = '💪';
         performanceText = i18n.t('gameListen.keepTrying');
         performanceColor = 'from-orange-500 to-red-500';
     }
@@ -509,11 +509,11 @@ function renderResult() {
                 <!-- Action Buttons -->
                 <div class="flex flex-col sm:flex-row gap-3">
                     <button onclick="location.reload()" class="group flex-1 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white px-6 py-3 rounded-full font-bold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
-                        <span class="transform group-hover:rotate-180 transition-transform duration-500">ðŸ”„</span>
+                        <span class="transform group-hover:rotate-180 transition-transform duration-500">🔄</span>
                         <span>${i18n.t('gameListen.playAgain')}</span>
                     </button>
                     <button onclick="window.location.href='../user/games_home.html'" class="group flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-6 py-3 rounded-full font-bold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
-                        <span class="transform group-hover:scale-110 transition-transform duration-200">ðŸ </span>
+                        <span class="transform group-hover:scale-110 transition-transform duration-200">🏠</span>
                         <span>${i18n.t('gameListen.backHome')}</span>
                     </button>
                 </div>

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * API Client
  * Handles all HTTP requests to the backend API
  */
@@ -40,7 +40,7 @@ class ApiClient {
       if (!response.ok) {
         // Handle 401 Unauthorized - clear invalid tokens
         if (response.status === 401) {
-          console.error('âŒ 401 Unauthorized - Token invalid or expired');
+          console.error('❌ 401 Unauthorized - Token invalid or expired');
           localStorage.removeItem('authToken');
           localStorage.removeItem('token');
           localStorage.removeItem('jwtToken');
@@ -204,14 +204,14 @@ class AuthAPI {
                   || localStorage.getItem('jwtToken');
     
     if (!token) {
-      console.warn('âš ï¸ No authentication token found');
+      console.warn('⚠️ No authentication token found');
       return false;
     }
     
     // Basic JWT structure validation (header.payload.signature)
     const parts = token.split('.');
     if (parts.length !== 3) {
-      console.error('âŒ Invalid token format');
+      console.error('❌ Invalid token format');
       this.clearInvalidToken();
       return false;
     }
@@ -222,14 +222,14 @@ class AuthAPI {
       
       // Check if token is expired (exp is in seconds, Date.now() is in milliseconds)
       if (payload.exp && payload.exp * 1000 < Date.now()) {
-        console.warn('âš ï¸ Token has expired');
+        console.warn('⚠️ Token has expired');
         this.clearInvalidToken();
         return false;
       }
       
       return true;
     } catch (error) {
-      console.error('âŒ Error validating token:', error);
+      console.error('❌ Error validating token:', error);
       this.clearInvalidToken();
       return false;
     }

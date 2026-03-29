@@ -1,28 +1,28 @@
-﻿// Admin Sidebar Component - Shared across all admin pages
+// Admin Sidebar Component - Shared across all admin pages
 function renderAdminSidebar(activePage = 'dashboard') {
     const menuItems = [
         {
             id: 'dashboard',
             icon: 'dashboard',
-            label: 'Tá»•ng quan',
+            label: 'Tổng quan',
             href: '/admin/home_ad.html'
         },
         {
             id: 'users',
             icon: 'group',
-            label: 'Quáº£n lÃ½ ngÆ°á»i dÃ¹ng',
+            label: 'Quản lý người dùng',
             href: '/admin/user_ad.html'
         },
         {
             id: 'categories',
             icon: 'folder_open',
-            label: 'Quáº£n lÃ½ tá»« vá»±ng',
+            label: 'Quản lý từ vựng',
             href: '/admin/category_ad.html'
         },
         {
             id: 'backup',
             icon: 'backup',
-            label: 'Sao lÆ°u dá»¯ liá»‡u',
+            label: 'Sao lưu dữ liệu',
             href: '/admin/backup_ad.html'
         }
     ];
@@ -69,7 +69,7 @@ function renderAdminSidebar(activePage = 'dashboard') {
                 <!-- Navigation Menu -->
                 <nav class="flex flex-col gap-2">
                     <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-4 mb-1">
-                        Menu chÃ­nh
+                        Menu chính
                     </p>
                     ${menuHTML}
                 </nav>
@@ -78,7 +78,7 @@ function renderAdminSidebar(activePage = 'dashboard') {
                 <div class="mt-auto border-t border-slate-100 dark:border-slate-700 pt-4">
                     <button onclick="handleAdminLogout()" class="flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors group w-full">
                         <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">logout</span>
-                        <span class="font-medium">ÄÄƒng xuáº¥t há»‡ thá»‘ng</span>
+                        <span class="font-medium">Đăng xuất hệ thống</span>
                     </button>
                 </div>
             </div>
@@ -90,7 +90,7 @@ function renderAdminSidebar(activePage = 'dashboard') {
 
 // Handle admin logout
 function handleAdminLogout() {
-    if (confirm('Báº¡n cÃ³ cháº¯c muá»‘n Ä‘Äƒng xuáº¥t khá»i há»‡ thá»‘ng quáº£n trá»‹?')) {
+    if (confirm('Bạn có chắc muốn đăng xuất khỏi hệ thống quản trị?')) {
         // Clear all auth data
         localStorage.removeItem('authToken');
         localStorage.removeItem('token');
@@ -131,11 +131,11 @@ function toggleMobileSidebar() {
 // Initialize admin sidebar when DOM is loaded
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('===== ADMIN SIDEBAR INIT START =====');
-    console.log('ðŸ”§ Admin sidebar initializing...');
-    console.log('ðŸ“± User agent:', navigator.userAgent);
+    console.log('🔧 Admin sidebar initializing...');
+    console.log('📱 User agent:', navigator.userAgent);
     
     const isMobile = /Mobile|Android|iPhone|iPad|Zalo/i.test(navigator.userAgent);
-    console.log('ðŸ“± Device type:', isMobile ? 'MOBILE' : 'DESKTOP');
+    console.log('📱 Device type:', isMobile ? 'MOBILE' : 'DESKTOP');
     
     // Get active page from current filename
     const currentPage = window.location.pathname.split('/').pop();
@@ -153,32 +153,32 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     // Check authentication with multiple token keys
     let token = localStorage.getItem('authToken') || localStorage.getItem('token') || localStorage.getItem('jwtToken');
-    console.log('ðŸ”‘ Token check:', token ? 'Found (' + token.substring(0, 15) + '...)' : 'Not found');
+    console.log('🔑 Token check:', token ? 'Found (' + token.substring(0, 15) + '...)' : 'Not found');
     
     // retry logic for token if missing (mobile specific)
     if (!token) {
-        console.log('âš ï¸ Token missing initially, checking URL params and retrying...');
+        console.log('⚠️ Token missing initially, checking URL params and retrying...');
         
         // Check URL params directly as a fallback
         const urlParams = new URLSearchParams(window.location.search);
         const urlToken = urlParams.get('token');
         
         if (urlToken) {
-            console.log('âœ… Found token in URL params, saving...');
+            console.log('✅ Found token in URL params, saving...');
             token = urlToken;
             localStorage.setItem('authToken', token);
         } else {
              // Wait a bit and try reading storage again
              await new Promise(resolve => setTimeout(resolve, 500));
              token = localStorage.getItem('authToken') || localStorage.getItem('token');
-             console.log('ðŸ”‘ Token retry check:', token ? 'Found' : 'Still not found');
+             console.log('🔑 Token retry check:', token ? 'Found' : 'Still not found');
         }
     }
 
     if (!token) {
-        console.error('âš ï¸ No token found, redirecting to login');
+        console.error('⚠️ No token found, redirecting to login');
         // Only redirect if we are SURE it's not a loading glitch
-        // alert('Vui lÃ²ng Ä‘Äƒng nháº­p Ä‘á»ƒ tiáº¿p tá»¥c'); 
+        // alert('Vui lòng đăng nhập để tiếp tục'); 
         // Commented out alert to avoid disrupting user flow if it's just a refresh
         window.location.href = '/login_screen.html';
         return;
@@ -186,24 +186,24 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     // Verify admin role
     let userStr = localStorage.getItem('user');
-    console.log('ðŸ‘¤ Initial user data check:', userStr ? 'EXISTS' : 'MISSING');
+    console.log('👤 Initial user data check:', userStr ? 'EXISTS' : 'MISSING');
     
     // Mobile compatibility: Wait longer if user data is missing
     if (!userStr) {
         const mobileDelay = isMobile ? 1500 : 500; // Increased mobile delay
-        console.warn(`â³ User data not immediately found, waiting ${mobileDelay}ms for mobile sync...`);
+        console.warn(`⏳ User data not immediately found, waiting ${mobileDelay}ms for mobile sync...`);
         await new Promise(resolve => setTimeout(resolve, mobileDelay));
         userStr = localStorage.getItem('user');
-        console.log('ðŸ‘¤ After delay check:', userStr ? 'FOUND' : 'STILL MISSING');
+        console.log('👤 After delay check:', userStr ? 'FOUND' : 'STILL MISSING');
     }
     
     // Additional mobile-specific check: verify token exists
     if (isMobile && !localStorage.getItem('authToken')) {
-        console.log('ðŸ“± Mobile: Token still missing after delay, checking URL params...');
+        console.log('📱 Mobile: Token still missing after delay, checking URL params...');
         const urlParams = new URLSearchParams(window.location.search);
         const urlToken = urlParams.get('token');
         if (urlToken) {
-            console.log('âœ… Recovered token from URL');
+            console.log('✅ Recovered token from URL');
             localStorage.setItem('authToken', urlToken);
         }
     }
@@ -215,15 +215,15 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (userStr) {
         try {
             currentUser = JSON.parse(userStr);
-            console.log('ðŸ‘¤ Parsed user:', currentUser);
+            console.log('👤 Parsed user:', currentUser);
             
             // Check if this is a minimal mobile auth user (needs full fetch)
             if (currentUser._isMobileAuth || !currentUser.email || !currentUser.fullName) {
-                console.log('âš ï¸ Detected minimal user data, need full fetch');
+                console.log('⚠️ Detected minimal user data, need full fetch');
                 needsFullFetch = true;
             }
         } catch (e) {
-            console.error('âŒ Error parsing user data:', e);
+            console.error('❌ Error parsing user data:', e);
             needsFullFetch = true;
         }
     }
@@ -231,9 +231,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     // If still no user data OR needs full fetch, fetch from API using the token
     if (!userStr || needsFullFetch) {
         if (!userStr) {
-            console.log('ðŸŒ User data missing, fetching from API...');
+            console.log('🌐 User data missing, fetching from API...');
         } else {
-            console.log('ðŸŒ Fetching full user profile from API...');
+            console.log('🌐 Fetching full user profile from API...');
         }
         
         let fetchAttempts = 0;
@@ -242,7 +242,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         
         while (fetchAttempts < maxAttempts && !fetchSuccess) {
             fetchAttempts++;
-            console.log(`ðŸ“¡ Fetch attempt ${fetchAttempts}/${maxAttempts}...`);
+            console.log(`📡 Fetch attempt ${fetchAttempts}/${maxAttempts}...`);
             
             try {
                 const response = await fetch('/api/auth/profile', {
@@ -252,14 +252,14 @@ document.addEventListener('DOMContentLoaded', async function() {
                     }
                 });
                 
-                console.log('ðŸ“¡ API response status:', response.status);
+                console.log('📡 API response status:', response.status);
                 
                 if (response.ok) {
                     const result = await response.json();
-                    console.log('ðŸ“¡ API result:', result);
+                    console.log('📡 API result:', result);
                     
                     if (result.success && result.data) {
-                        console.log('âœ… Fetched user from API:', result.data.email, '| Role:', result.data.role);
+                        console.log('✅ Fetched user from API:', result.data.email, '| Role:', result.data.role);
                         
                         // Save to localStorage for future use
                         const userData = {
@@ -274,7 +274,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                         userStr = JSON.stringify(userData);
                         currentUser = userData;
                         fetchSuccess = true;
-                        console.log('âœ… Full user data saved to localStorage');
+                        console.log('✅ Full user data saved to localStorage');
                     } else {
                         throw new Error('Invalid API response structure');
                     }
@@ -284,19 +284,19 @@ document.addEventListener('DOMContentLoaded', async function() {
                     throw new Error('API request failed with status: ' + response.status);
                 }
             } catch (fetchError) {
-                console.error(`âŒ Fetch attempt ${fetchAttempts} failed:`, fetchError.message);
+                console.error(`❌ Fetch attempt ${fetchAttempts} failed:`, fetchError.message);
                 
                 if (fetchAttempts >= maxAttempts) {
                     // All attempts failed
-                    console.error('âŒ All fetch attempts failed');
+                    console.error('❌ All fetch attempts failed');
                     console.error('Stack:', fetchError.stack);
-                    alert('KhÃ´ng thá»ƒ táº£i thÃ´ng tin ngÆ°á»i dÃ¹ng sau ' + maxAttempts + ' láº§n thá»­.\n\nLá»—i: ' + fetchError.message + '\n\nVui lÃ²ng Ä‘Äƒng nháº­p láº¡i.');
+                    alert('Không thể tải thông tin người dùng sau ' + maxAttempts + ' lần thử.\n\nLỗi: ' + fetchError.message + '\n\nVui lòng đăng nhập lại.');
                     localStorage.clear();
                     window.location.href = '/login_screen.html';
                     return;
                 } else {
                     // Wait before retry
-                    console.log('â³ Waiting 500ms before retry...');
+                    console.log('⏳ Waiting 500ms before retry...');
                     await new Promise(resolve => setTimeout(resolve, 500));
                 }
             }
@@ -305,8 +305,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     // Final verification
     if (!userStr) {
-        console.error('âŒ User data not found after all attempts');
-        alert('Dá»¯ liá»‡u ngÆ°á»i dÃ¹ng khÃ´ng há»£p lá»‡. Vui lÃ²ng Ä‘Äƒng nháº­p láº¡i.');
+        console.error('❌ User data not found after all attempts');
+        alert('Dữ liệu người dùng không hợp lệ. Vui lòng đăng nhập lại.');
         localStorage.clear();
         window.location.href = '/login_screen.html';
         return;
@@ -325,28 +325,28 @@ document.addEventListener('DOMContentLoaded', async function() {
         console.log('=============================');
         
         if (currentUser.role !== 'admin') {
-            console.error('âš ï¸ ACCESS DENIED: User is not admin');
+            console.error('⚠️ ACCESS DENIED: User is not admin');
             console.error('Role received:', currentUser.role);
-            alert('Báº¡n khÃ´ng cÃ³ quyá»n truy cáº­p trang quáº£n trá»‹!\n\nRole cá»§a báº¡n: ' + currentUser.role);
+            alert('Bạn không có quyền truy cập trang quản trị!\n\nRole của bạn: ' + currentUser.role);
             window.location.href = '/user/home.html';
             return;
         }
         
-        console.log('âœ… Admin access verified successfully');
+        console.log('✅ Admin access verified successfully');
         
         // Update admin name if available
         setTimeout(() => {
             const adminNameEl = document.getElementById('admin-name');
             if (adminNameEl && currentUser.fullName) {
                 adminNameEl.textContent = currentUser.fullName;
-                console.log('âœ… Admin name updated:', currentUser.fullName);
+                console.log('✅ Admin name updated:', currentUser.fullName);
             }
         }, 100);
         
     } catch (error) {
-        console.error('âŒ Error parsing/verifying user data:', error);
+        console.error('❌ Error parsing/verifying user data:', error);
         console.error('Stack:', error.stack);
-        alert('Dá»¯ liá»‡u ngÆ°á»i dÃ¹ng khÃ´ng há»£p lá»‡.\n\nLá»—i: ' + error.message + '\n\nVui lÃ²ng Ä‘Äƒng nháº­p láº¡i.');
+        alert('Dữ liệu người dùng không hợp lệ.\n\nLỗi: ' + error.message + '\n\nVui lòng đăng nhập lại.');
         localStorage.clear();
         window.location.href = '/login_screen.html';
         return;
@@ -356,9 +356,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     const sidebarContainer = document.getElementById('admin-sidebar-container');
     if (sidebarContainer) {
         sidebarContainer.innerHTML = renderAdminSidebar(activePage);
-        console.log('âœ… Admin sidebar rendered');
+        console.log('✅ Admin sidebar rendered');
     } else {
-        console.error('âŒ Sidebar container not found');
+        console.error('❌ Sidebar container not found');
     }
     
     // Clean URL params after successful auth if present
@@ -366,7 +366,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (urlParamsCleanup.get('token') && urlParamsCleanup.get('auth') === 'success') {
         try {
             window.history.replaceState({}, document.title, window.location.pathname);
-            console.log('ðŸ§¹ Cleaned auth params from URL');
+            console.log('🧹 Cleaned auth params from URL');
         } catch (e) {
             console.error('Failed to clean URL:', e);
         }

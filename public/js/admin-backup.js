@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Admin Backup Management
  * Frontend JavaScript for backup_ad.html
  */
@@ -31,7 +31,7 @@ async function apiRequest(endpoint, options = {}) {
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(data.error?.message || data.message || 'CÃ³ lá»—i xáº£y ra');
+        throw new Error(data.error?.message || data.message || 'Có lỗi xảy ra');
     }
 
     return data;
@@ -68,9 +68,9 @@ function formatRelativeTime(date) {
     const hours = Math.floor(diff / 3600000);
     const days = Math.floor(diff / 86400000);
 
-    if (minutes < 60) return `${minutes} phÃºt trÆ°á»›c`;
-    if (hours < 24) return `${hours} giá» trÆ°á»›c`;
-    return `${days} ngÃ y trÆ°á»›c`;
+    if (minutes < 60) return `${minutes} phút trước`;
+    if (hours < 24) return `${hours} giờ trước`;
+    return `${days} ngày trước`;
 }
 
 /**
@@ -102,11 +102,11 @@ async function loadBackupStats() {
         // Update statistics cards
         document.querySelector('.stat-card:nth-child(1) h3').textContent = stats.totalBackups || 0;
         document.querySelector('.stat-card:nth-child(2) h3').textContent = formatFileSize(stats.totalSize || 0);
-        document.querySelector('.stat-card:nth-child(3) h3').textContent = stats.lastBackup ? formatRelativeTime(stats.lastBackup.createdAt) : 'ChÆ°a cÃ³';
+        document.querySelector('.stat-card:nth-child(3) h3').textContent = stats.lastBackup ? formatRelativeTime(stats.lastBackup.createdAt) : 'Chưa có';
         document.querySelector('.stat-card:nth-child(4) h3').textContent = stats.schedule?.enabled ? 
-            (stats.schedule.frequency === 'daily' ? 'HÃ ng ngÃ y' : 
-             stats.schedule.frequency === 'weekly' ? 'HÃ ng tuáº§n' : 'HÃ ng thÃ¡ng') : 
-            'Táº¯t';
+            (stats.schedule.frequency === 'daily' ? 'Hàng ngày' : 
+             stats.schedule.frequency === 'weekly' ? 'Hàng tuần' : 'Hàng tháng') : 
+            'Tắt';
     } catch (error) {
         console.error('Failed to load stats:', error);
     }
@@ -154,7 +154,7 @@ function renderBackupsTable(backups) {
             <tr>
                 <td colspan="7" class="px-6 py-8 text-center text-slate-500">
                     <span class="material-symbols-outlined text-4xl mb-2">backup</span>
-                    <p>ChÆ°a cÃ³ backup nÃ o</p>
+                    <p>Chưa có backup nào</p>
                 </td>
             </tr>
         `;
@@ -174,9 +174,9 @@ function renderBackupsTable(backups) {
                     backup.status === 'failed' ? 'bg-red-100 text-red-700' :
                     'bg-gray-100 text-gray-700'
                 }">
-                    ${backup.status === 'completed' ? 'HoÃ n thÃ nh' :
-                      backup.status === 'in-progress' ? 'Äang xá»­ lÃ½' :
-                      backup.status === 'failed' ? 'Tháº¥t báº¡i' : 'Äang chá»'}
+                    ${backup.status === 'completed' ? 'Hoàn thành' :
+                      backup.status === 'in-progress' ? 'Đang xử lý' :
+                      backup.status === 'failed' ? 'Thất bại' : 'Đang chờ'}
                 </span>
             </td>
             <td class="px-6 py-4">
@@ -184,7 +184,7 @@ function renderBackupsTable(backups) {
                     backup.type === 'manual' ? 'bg-purple-100 text-purple-700' :
                     'bg-blue-100 text-blue-700'
                 }">
-                    ${backup.type === 'manual' ? 'Thá»§ cÃ´ng' : 'Tá»± Ä‘á»™ng'}
+                    ${backup.type === 'manual' ? 'Thủ công' : 'Tự động'}
                 </span>
             </td>
             <td class="px-6 py-4 text-slate-600 dark:text-slate-400">
@@ -201,18 +201,18 @@ function renderBackupsTable(backups) {
                     ${backup.status === 'completed' ? `
                         <button onclick="restoreBackup('${backup._id}')" 
                             class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                            title="KhÃ´i phá»¥c">
+                            title="Khôi phục">
                             <span class="material-symbols-outlined text-lg">restore</span>
                         </button>
                         <button onclick="downloadBackup('${backup._id}')" 
                             class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                            title="Táº£i xuá»‘ng">
+                            title="Tải xuống">
                             <span class="material-symbols-outlined text-lg">download</span>
                         </button>
                     ` : ''}
                     <button onclick="deleteBackup('${backup._id}')" 
                         class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                        title="XÃ³a">
+                        title="Xóa">
                         <span class="material-symbols-outlined text-lg">delete</span>
                     </button>
                 </div>
@@ -229,7 +229,7 @@ function renderPagination(pagination) {
     if (infoSpan) {
         const start = (pagination.page - 1) * pagination.limit + 1;
         const end = Math.min(pagination.page * pagination.limit, pagination.total);
-        infoSpan.innerHTML = `Hiá»ƒn thá»‹ <span class="font-bold text-slate-900 dark:text-white">${start}-${end}</span> cá»§a <span class="font-bold text-slate-900 dark:text-white">${pagination.total}</span> backup`;
+        infoSpan.innerHTML = `Hiển thị <span class="font-bold text-slate-900 dark:text-white">${start}-${end}</span> của <span class="font-bold text-slate-900 dark:text-white">${pagination.total}</span> backup`;
     }
 
     const paginationContainer = document.querySelector('.flex.gap-2');
@@ -248,7 +248,7 @@ function renderPagination(pagination) {
         <button onclick="loadBackups(${pagination.page - 1})" 
             class="px-3 py-1 text-sm rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 bg-white dark:bg-card-dark hover:bg-slate-50 disabled:opacity-50"
             ${pagination.page === 1 ? 'disabled' : ''}>
-            TrÆ°á»›c
+            Trước
         </button>
         ${pages.map(p => p === '...' ? 
             `<span class="px-3 py-1">...</span>` :
@@ -273,20 +273,20 @@ function renderPagination(pagination) {
  * Create new backup
  */
 async function createBackup() {
-    const name = prompt('Nháº­p tÃªn backup:');
+    const name = prompt('Nhập tên backup:');
     if (!name) return;
 
-    const description = prompt('MÃ´ táº£ (tÃ¹y chá»n):');
+    const description = prompt('Mô tả (tùy chọn):');
 
     try {
-        showToast('Äang táº¡o backup...', 'info');
+        showToast('Đang tạo backup...', 'info');
         
         await apiRequest('/api/backup/create', {
             method: 'POST',
             body: JSON.stringify({ name, description })
         });
 
-        showToast('Backup Ä‘ang Ä‘Æ°á»£c táº¡o, vui lÃ²ng Ä‘á»£i...', 'success');
+        showToast('Backup đang được tạo, vui lòng đợi...', 'success');
         
         // Reload after a delay
         setTimeout(() => {
@@ -302,25 +302,25 @@ async function createBackup() {
  * Restore backup
  */
 async function restoreBackup(backupId) {
-    const confirm = prompt('âš ï¸ Cáº¢NH BÃO: KhÃ´i phá»¥c sáº½ ghi Ä‘Ã¨ toÃ n bá»™ dá»¯ liá»‡u hiá»‡n táº¡i!\n\nNháº­p "RESTORE" Ä‘á»ƒ xÃ¡c nháº­n:');
+    const confirm = prompt('⚠️ CẢNH BÁO: Khôi phục sẽ ghi đè toàn bộ dữ liệu hiện tại!\n\nNhập "RESTORE" để xác nhận:');
     
     if (confirm !== 'RESTORE') {
-        alert('ÄÃ£ há»§y khÃ´i phá»¥c');
+        alert('Đã hủy khôi phục');
         return;
     }
 
-    const password = prompt('Nháº­p máº­t kháº©u admin Ä‘á»ƒ xÃ¡c nháº­n:');
+    const password = prompt('Nhập mật khẩu admin để xác nhận:');
     if (!password) return;
 
     try {
-        showToast('Äang khÃ´i phá»¥c dá»¯ liá»‡u...', 'info');
+        showToast('Đang khôi phục dữ liệu...', 'info');
         
         await apiRequest(`/api/backup/restore/${backupId}`, {
             method: 'POST',
             body: JSON.stringify({ confirmPassword: password })
         });
 
-        showToast('Äang khÃ´i phá»¥c, há»‡ thá»‘ng cÃ³ thá»ƒ táº¡m dá»«ng...', 'success');
+        showToast('Đang khôi phục, hệ thống có thể tạm dừng...', 'success');
         
         // Reload after delay
         setTimeout(() => {
@@ -347,14 +347,14 @@ async function downloadBackup(backupId) {
  * Delete backup
  */
 async function deleteBackup(backupId) {
-    if (!confirm('Báº¡n cÃ³ cháº¯c cháº¯n muá»‘n xÃ³a backup nÃ y?')) return;
+    if (!confirm('Bạn có chắc chắn muốn xóa backup này?')) return;
 
     try {
         await apiRequest(`/api/backup/${backupId}`, {
             method: 'DELETE'
         });
 
-        showToast(' XÃ³a backup thÃ nh cÃ´ng', 'success');
+        showToast(' Xóa backup thành công', 'success');
         loadBackups(currentPage);
         loadBackupStats();
     } catch (error) {
@@ -386,7 +386,7 @@ async function loadBackupSchedule() {
  */
 async function updateBackupSchedule() {
     // This would open a modal or form to configure schedule
-    showToast('Chá»©c nÄƒng cáº¥u hÃ¬nh lá»‹ch tá»± Ä‘á»™ng Ä‘ang Ä‘Æ°á»£c phÃ¡t triá»ƒn', 'info');
+    showToast('Chức năng cấu hình lịch tự động đang được phát triển', 'info');
 }
 
 /**
@@ -430,7 +430,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadBackupSchedule();
 
     // Setup search
-    const searchInput = document.querySelector('input[placeholder*="TÃ¬m kiáº¿m"]');
+    const searchInput = document.querySelector('input[placeholder*="Tìm kiếm"]');
     if (searchInput) {
         searchInput.addEventListener('input', (e) => searchBackups(e.target.value));
     }
@@ -438,7 +438,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Setup create backup button
     const createBtns = document.querySelectorAll('button');
     createBtns.forEach(btn => {
-        if (btn.textContent.includes('Táº¡o Backup má»›i') || btn.textContent.includes('Sao lÆ°u Thá»§ cÃ´ng')) {
+        if (btn.textContent.includes('Tạo Backup mới') || btn.textContent.includes('Sao lưu Thủ công')) {
             btn.addEventListener('click', createBackup);
         }
     });

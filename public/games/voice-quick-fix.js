@@ -1,12 +1,12 @@
-﻿// ========================================
+// ========================================
 // VOICE QUICK FIX SCRIPT
 // ========================================
-// Copy & paste script nÃ y vÃ o Console (F12) Ä‘á»ƒ fix voice loading
-// hoáº·c load tá»« file: <script src="/games/voice-quick-fix.js"></script>
+// Copy & paste script này vào Console (F12) để fix voice loading
+// hoặc load từ file: <script src="/games/voice-quick-fix.js"></script>
 
 (function() {
-    console.log('%cðŸ”§ VOICE QUICK FIX SCRIPT', 'background: #667eea; color: white; font-size: 20px; padding: 10px; border-radius: 5px;');
-    console.log('Äang kháº¯c phá»¥c váº¥n Ä‘á» load giá»ng...\n');
+    console.log('%c🔧 VOICE QUICK FIX SCRIPT', 'background: #667eea; color: white; font-size: 20px; padding: 10px; border-radius: 5px;');
+    console.log('Đang khắc phục vấn đề load giọng...\n');
     
     let attemptCount = 0;
     const maxAttempts = 20;
@@ -16,19 +16,19 @@
         
         // Method 1: getVoices()
         const voices = window.speechSynthesis.getVoices();
-        console.log(`Láº§n thá»­ ${attemptCount}: TÃ¬m tháº¥y ${voices.length} giá»ng`);
+        console.log(`Lần thử ${attemptCount}: Tìm thấy ${voices.length} giọng`);
         
         if (voices.length > 0) {
             const chineseVoices = voices.filter(v => v.lang.startsWith('zh'));
             
-            console.log('%câœ… THÃ€NH CÃ”NG!', 'background: #4caf50; color: white; font-size: 16px; padding: 5px;');
-            console.log(`\nTá»•ng sá»‘ giá»ng: ${voices.length}`);
-            console.log(`Giá»ng tiáº¿ng Trung: ${chineseVoices.length}`);
+            console.log('%c✅ THÀNH CÔNG!', 'background: #4caf50; color: white; font-size: 16px; padding: 5px;');
+            console.log(`\nTổng số giọng: ${voices.length}`);
+            console.log(`Giọng tiếng Trung: ${chineseVoices.length}`);
             
             if (chineseVoices.length > 0) {
-                console.log('\nðŸ‡¹ðŸ‡¼ðŸ‡¨ðŸ‡³ðŸ‡­ðŸ‡° Danh sÃ¡ch giá»ng tiáº¿ng Trung:');
+                console.log('\n🇹🇼🇨🇳🇭🇰 Danh sách giọng tiếng Trung:');
                 chineseVoices.forEach((v, i) => {
-                    console.log(`  ${i+1}. ${v.name} (${v.lang}) ${v.default ? 'â­' : ''}`);
+                    console.log(`  ${i+1}. ${v.name} (${v.lang}) ${v.default ? '⭐' : ''}`);
                 });
                 
                 // Auto-select first Taiwan voice
@@ -36,21 +36,21 @@
                 if (taiwanVoice) {
                     localStorage.setItem('selectedVoiceName', taiwanVoice.name);
                     localStorage.setItem('selectedVoice', taiwanVoice.lang);
-                    console.log(`\nâœ… ÄÃ£ tá»± Ä‘á»™ng chá»n: ${taiwanVoice.name}`);
+                    console.log(`\n✅ Đã tự động chọn: ${taiwanVoice.name}`);
                     
                     // Test voice
-                    console.log('ðŸ”Š Testing voice...');
-                    const utterance = new SpeechSynthesisUtterance('ä½ å¥½ï¼Œæ­¡è¿Žå­¸ç¿’ä¸­æ–‡ï¼');
+                    console.log('🔊 Testing voice...');
+                    const utterance = new SpeechSynthesisUtterance('你好，歡迎學習中文！');
                     utterance.voice = taiwanVoice;
                     utterance.rate = 0.9;
                     window.speechSynthesis.speak(utterance);
                 }
                 
-                console.log('\nðŸ’¡ HÃ£y refresh trang (F5) Ä‘á»ƒ Ã¡p dá»¥ng!');
+                console.log('\n💡 Hãy refresh trang (F5) để áp dụng!');
                 
             } else {
-                console.log('%câš ï¸ KHÃ”NG TÃŒM THáº¤Y GIá»ŒNG TIáº¾NG TRUNG', 'background: #ff9800; color: white; font-size: 14px; padding: 5px;');
-                console.log('\nðŸ’¡ CÃ¡ch cÃ i Ä‘áº·t:');
+                console.log('%c⚠️ KHÔNG TÌM THẤY GIỌNG TIẾNG TRUNG', 'background: #ff9800; color: white; font-size: 14px; padding: 5px;');
+                console.log('\n💡 Cách cài đặt:');
                 console.log('Windows: Settings > Time & Language > Language > Add Chinese');
                 console.log('macOS: System Preferences > Accessibility > Spoken Content > Manage Voices');
             }
@@ -59,9 +59,9 @@
         }
         
         if (attemptCount < maxAttempts) {
-            // Method 2: Trigger vá»›i dummy utterance
+            // Method 2: Trigger với dummy utterance
             if (attemptCount === 5) {
-                console.log('ðŸ”„ Thá»­ phÆ°Æ¡ng phÃ¡p khÃ¡c...');
+                console.log('🔄 Thử phương pháp khác...');
                 try {
                     const dummy = new SpeechSynthesisUtterance('');
                     window.speechSynthesis.speak(dummy);
@@ -74,19 +74,19 @@
             setTimeout(forceLoadVoices, 100);
             return false;
         } else {
-            console.log('%câŒ THáº¤T Báº I!', 'background: #f44336; color: white; font-size: 16px; padding: 5px;');
-            console.log(`\nÄÃ£ thá»­ ${maxAttempts} láº§n nhÆ°ng khÃ´ng load Ä‘Æ°á»£c giá»ng.`);
-            console.log('\nðŸ’¡ HÃ£y thá»­:');
-            console.log('1. Refresh trang (F5) vÃ  Ä‘á»£i 3-5 giÃ¢y');
-            console.log('2. Thá»­ browser khÃ¡c (Chrome/Edge)');
-            console.log('3. Má»Ÿ voice diagnostic tool: /games/voice-diagnostic.html');
-            console.log('4. Check browser console cÃ³ lá»—i khÃ´ng');
+            console.log('%c❌ THẤT BẠI!', 'background: #f44336; color: white; font-size: 16px; padding: 5px;');
+            console.log(`\nĐã thử ${maxAttempts} lần nhưng không load được giọng.`);
+            console.log('\n💡 Hãy thử:');
+            console.log('1. Refresh trang (F5) và đợi 3-5 giây');
+            console.log('2. Thử browser khác (Chrome/Edge)');
+            console.log('3. Mở voice diagnostic tool: /games/voice-diagnostic.html');
+            console.log('4. Check browser console có lỗi không');
             return false;
         }
     }
     
     // Kick start
-    console.log('ðŸš€ Äang kick-start voice loading...\n');
+    console.log('🚀 Đang kick-start voice loading...\n');
     
     // Force trigger
     window.speechSynthesis.getVoices();
@@ -94,7 +94,7 @@
     // Listen for event
     if (window.speechSynthesis.onvoiceschanged !== undefined) {
         window.speechSynthesis.onvoiceschanged = function() {
-            console.log('ðŸ”„ voiceschanged event triggered!');
+            console.log('🔄 voiceschanged event triggered!');
             if (attemptCount < maxAttempts) {
                 forceLoadVoices();
             }
@@ -120,23 +120,23 @@
             const voices = window.speechSynthesis.getVoices();
             const voice = voices.find(v => v.name === voiceName);
             if (voice) {
-                const utterance = new SpeechSynthesisUtterance('ä½ å¥½ï¼Œæ­¡è¿Žå­¸ç¿’ä¸­æ–‡ï¼');
+                const utterance = new SpeechSynthesisUtterance('你好，歡迎學習中文！');
                 utterance.voice = voice;
                 utterance.rate = 0.9;
                 window.speechSynthesis.speak(utterance);
-                console.log('ðŸ”Š Testing:', voice.name);
+                console.log('🔊 Testing:', voice.name);
             } else {
-                console.log('âŒ Voice not found:', voiceName);
+                console.log('❌ Voice not found:', voiceName);
             }
         },
         clear: function() {
             localStorage.removeItem('selectedVoiceName');
             localStorage.removeItem('selectedVoice');
-            console.log('ðŸ—‘ï¸ Cleared voice settings');
+            console.log('🗑️ Cleared voice settings');
         }
     };
     
-    console.log('\nðŸ“ Available commands:');
+    console.log('\n📝 Available commands:');
     console.log('  voiceQuickFix.reload()  - Reload voices');
     console.log('  voiceQuickFix.list()    - List all voices');
     console.log('  voiceQuickFix.test("voice name") - Test a voice');

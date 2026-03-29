@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html class="light" lang="vi">
 
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Trang Quáº£n trá»‹ Há»‡ thá»‘ng | Admin Portal</title>
+    <title>Trang Quản trị Hệ thống | Admin Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&amp;display=swap"
         rel="stylesheet" />
@@ -22,7 +22,7 @@
                 const urlRole = urlParams.get('role');
                 const authSuccess = urlParams.get('auth');
                 
-                console.log('ðŸ” URL params check:');
+                console.log('🔍 URL params check:');
                 console.log('  - token:', urlToken ? 'EXISTS (' + urlToken.substring(0, 20) + '...)' : 'MISSING');
                 console.log('  - role:', urlRole || 'MISSING');
                 console.log('  - auth:', authSuccess || 'MISSING');
@@ -30,17 +30,17 @@
                 // Check existing storage BEFORE processing URL params
                 const existingToken = localStorage.getItem('authToken');
                 const existingUser = localStorage.getItem('user');
-                console.log('ðŸ“¦ Existing storage:');
+                console.log('📦 Existing storage:');
                 console.log('  - authToken:', existingToken ? 'EXISTS' : 'MISSING');
                 console.log('  - user:', existingUser ? 'EXISTS' : 'MISSING');
                 
                 // If token is in URL (mobile fallback), save to localStorage
                 if (urlToken && authSuccess === 'success') {
-                    console.log('ðŸ“± MOBILE AUTH: Processing URL params...');
+                    console.log('📱 MOBILE AUTH: Processing URL params...');
                     
                     // Save token immediately
                     localStorage.setItem('authToken', urlToken);
-                    console.log('âœ… Token saved to localStorage');
+                    console.log('✅ Token saved to localStorage');
                     
                     // ALWAYS update user role from URL params (critical for role switching)
                     if (urlRole) {
@@ -50,21 +50,21 @@
                         if (existingUser) {
                             try {
                                 const existingUserObj = JSON.parse(existingUser);
-                                console.log('ðŸ“¦ Existing user data found:');
+                                console.log('📦 Existing user data found:');
                                 console.log('   - Email:', existingUserObj.email || 'N/A');
                                 console.log('   - Old Role:', existingUserObj.role || 'N/A');
                                 console.log('   - New Role:', urlRole);
                                 
                                 // Check if role changed (e.g., student -> admin)
                                 if (existingUserObj.role !== urlRole) {
-                                    console.log('ðŸ”„ Role changed! Must update user data');
+                                    console.log('🔄 Role changed! Must update user data');
                                     needsUpdate = true;
                                 } else if (existingUserObj.email && existingUserObj.fullName) {
-                                    console.log('âœ… User data valid and role matches, keeping existing');
+                                    console.log('✅ User data valid and role matches, keeping existing');
                                     needsUpdate = false;
                                 }
                             } catch (e) {
-                                console.error('âŒ Existing user data corrupted:', e);
+                                console.error('❌ Existing user data corrupted:', e);
                                 needsUpdate = true;
                             }
                         }
@@ -77,32 +77,32 @@
                                 _timestamp: Date.now()
                             };
                             localStorage.setItem('user', JSON.stringify(minimalUser));
-                            console.log('âœ… User data updated with role:', urlRole);
+                            console.log('✅ User data updated with role:', urlRole);
                         }
                     }
                     
                     // Verify storage
                     const verifyToken = localStorage.getItem('authToken');
                     const verifyUser = localStorage.getItem('user');
-                    console.log('ðŸ” Storage verification:');
-                    console.log('  - Token:', verifyToken ? 'VERIFIED' : 'âŒ FAILED');
-                    console.log('  - User:', verifyUser ? 'VERIFIED' : 'âŒ FAILED');
+                    console.log('🔍 Storage verification:');
+                    console.log('  - Token:', verifyToken ? 'VERIFIED' : '❌ FAILED');
+                    console.log('  - User:', verifyUser ? 'VERIFIED' : '❌ FAILED');
                     
                     if (!verifyToken) {
-                        console.error('âŒ CRITICAL: Token save failed!');
-                        alert('Lá»—i lÆ°u token. Vui lÃ²ng Ä‘Äƒng nháº­p láº¡i.');
+                        console.error('❌ CRITICAL: Token save failed!');
+                        alert('Lỗi lưu token. Vui lòng đăng nhập lại.');
                         window.location.href = '/login_screen.html';
                         return;
                     }
                     
                     // Clean URL - DELAYED to let other scripts read params if needed
                     // window.history.replaceState({}, document.title, window.location.pathname);
-                    console.log('âœ… URL params preserved for sidebar script');
+                    console.log('✅ URL params preserved for sidebar script');
                 }
                 
                 console.log('===== URL PARAMS HANDLER END =====');
             } catch (e) {
-                console.error('âŒ Error handling URL auth params:', e);
+                console.error('❌ Error handling URL auth params:', e);
                 console.error('Stack:', e.stack);
             }
         })();
@@ -156,22 +156,22 @@
             <div class="max-w-7xl mx-auto space-y-6 md:space-y-8">
                 <div class="flex justify-between items-start md:items-center flex-col md:flex-row gap-4">
                     <div>
-                        <h1 class="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Tá»•ng quan Quáº£n trá»‹
+                        <h1 class="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Tổng quan Quản trị
                         </h1>
-                        <p class="text-sm md:text-base text-slate-500 dark:text-slate-400 mt-1">ChÃ o má»«ng quay trá»Ÿ láº¡i. Há»‡ thá»‘ng Ä‘ang hoáº¡t
-                            Ä‘á»™ng á»•n Ä‘á»‹nh.</p>
+                        <p class="text-sm md:text-base text-slate-500 dark:text-slate-400 mt-1">Chào mừng quay trở lại. Hệ thống đang hoạt
+                            động ổn định.</p>
                     </div>
                     <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full md:w-auto">
                         <button
                             class="bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 px-4 py-2.5 rounded-lg font-medium transition-all flex items-center justify-center gap-2 text-sm shadow-sm">
                             <span class="material-symbols-outlined text-lg">notifications</span>
-                            <span class="hidden sm:inline">ThÃ´ng bÃ¡o</span>
+                            <span class="hidden sm:inline">Thông báo</span>
                         </button>
                         <button
                             class="bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg font-medium transition-all flex items-center justify-center gap-2 text-sm shadow-md shadow-primary/20">
                             <span class="material-symbols-outlined text-lg">settings</span>
-                            <span class="hidden sm:inline">Cáº¥u hÃ¬nh chung</span>
-                            <span class="sm:hidden">CÃ i Ä‘áº·t</span>
+                            <span class="hidden sm:inline">Cấu hình chung</span>
+                            <span class="sm:hidden">Cài đặt</span>
                         </button>
                     </div>
                 </div>
@@ -180,12 +180,12 @@
                         class="stat-card bg-card-light dark:bg-card-dark p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-between">
                         <div>
                             <p class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wide">
-                                Tá»•ng ngÆ°á»i dÃ¹ng</p>
+                                Tổng người dùng</p>
                             <h3 class="text-3xl font-bold mt-1 text-slate-900 dark:text-white">2,845</h3>
                             <div
                                 class="flex items-center gap-1 mt-2 text-green-600 bg-green-50 dark:bg-green-900/20 w-fit px-2 py-0.5 rounded text-xs font-bold">
                                 <span class="material-symbols-outlined text-sm">trending_up</span>
-                                <span>+124 tuáº§n nÃ y</span>
+                                <span>+124 tuần này</span>
                             </div>
                         </div>
                         <div
@@ -197,12 +197,12 @@
                         class="stat-card bg-card-light dark:bg-card-dark p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-between">
                         <div>
                             <p class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wide">
-                                Tá»•ng tá»« vá»±ng</p>
+                                Tổng từ vựng</p>
                             <h3 class="text-3xl font-bold mt-1 text-slate-900 dark:text-white">12,500</h3>
                             <div
                                 class="flex items-center gap-1 mt-2 text-slate-500 bg-slate-100 dark:bg-slate-800 w-fit px-2 py-0.5 rounded text-xs font-bold">
                                 <span class="material-symbols-outlined text-sm">add</span>
-                                <span>50 tá»« má»›i hÃ´m nay</span>
+                                <span>50 từ mới hôm nay</span>
                             </div>
                         </div>
                         <div
@@ -214,8 +214,8 @@
                         class="stat-card bg-card-light dark:bg-card-dark p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-between">
                         <div>
                             <p class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wide">
-                                Tráº¡ng thÃ¡i há»‡ thá»‘ng</p>
-                            <h3 class="text-3xl font-bold mt-1 text-green-600">á»”n Ä‘á»‹nh</h3>
+                                Trạng thái hệ thống</p>
+                            <h3 class="text-3xl font-bold mt-1 text-green-600">Ổn định</h3>
                             <div class="flex items-center gap-1 mt-2 text-slate-500 text-xs font-medium">
                                 <span class="material-symbols-outlined text-sm text-green-500">check_circle</span>
                                 <span>Uptime: 99.9%</span>
@@ -235,35 +235,35 @@
                                 <div class="p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg text-indigo-600">
                                     <span class="material-symbols-outlined">database</span>
                                 </div>
-                                <h2 class="text-xl font-bold text-slate-900 dark:text-white">Quáº£n lÃ½ Dá»¯ liá»‡u</h2>
+                                <h2 class="text-xl font-bold text-slate-900 dark:text-white">Quản lý Dữ liệu</h2>
                             </div>
                             <div class="space-y-4 flex-1">
                                 <div
                                     class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
-                                    <h4 class="font-semibold text-sm mb-1">Sao lÆ°u há»‡ thá»‘ng</h4>
-                                    <p class="text-xs text-slate-500 mb-4">Táº¡o báº£n sao lÆ°u toÃ n bá»™ cÆ¡ sá»Ÿ dá»¯ liá»‡u hiá»‡n
-                                        táº¡i.</p>
+                                    <h4 class="font-semibold text-sm mb-1">Sao lưu hệ thống</h4>
+                                    <p class="text-xs text-slate-500 mb-4">Tạo bản sao lưu toàn bộ cơ sở dữ liệu hiện
+                                        tại.</p>
                                     <button
                                         class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg font-medium text-sm transition-colors flex items-center justify-center gap-2">
                                         <span class="material-symbols-outlined text-lg">backup</span>
-                                        Sao lÆ°u ngay
+                                        Sao lưu ngay
                                     </button>
                                 </div>
                                 <div
                                     class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
-                                    <h4 class="font-semibold text-sm mb-1">KhÃ´i phá»¥c dá»¯ liá»‡u</h4>
-                                    <p class="text-xs text-slate-500 mb-4">KhÃ´i phá»¥c há»‡ thá»‘ng tá»« báº£n sao lÆ°u gáº§n nháº¥t.
+                                    <h4 class="font-semibold text-sm mb-1">Khôi phục dữ liệu</h4>
+                                    <p class="text-xs text-slate-500 mb-4">Khôi phục hệ thống từ bản sao lưu gần nhất.
                                     </p>
                                     <button
                                         class="w-full bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-700 dark:text-white border border-slate-300 dark:border-slate-600 py-2.5 rounded-lg font-medium text-sm transition-colors flex items-center justify-center gap-2">
                                         <span class="material-symbols-outlined text-lg">restore</span>
-                                        KhÃ´i phá»¥c dá»¯ liá»‡u
+                                        Khôi phục dữ liệu
                                     </button>
                                 </div>
                             </div>
                             <div class="mt-6 pt-6 border-t border-slate-100 dark:border-slate-700 text-center">
-                                <p class="text-xs text-slate-400">Láº§n sao lÆ°u cuá»‘i: <span
-                                        class="font-semibold text-slate-600 dark:text-slate-300">HÃ´m nay, 08:00
+                                <p class="text-xs text-slate-400">Lần sao lưu cuối: <span
+                                        class="font-semibold text-slate-600 dark:text-slate-300">Hôm nay, 08:00
                                         AM</span></p>
                             </div>
                         </div>
@@ -275,9 +275,9 @@
                                 class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
                                 <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
                                     <span class="material-symbols-outlined text-slate-400">history</span>
-                                    Lá»‹ch sá»­ Backup
+                                    Lịch sử Backup
                                 </h2>
-                                <button class="text-primary text-sm font-semibold hover:underline">Xem táº¥t cáº£</button>
+                                <button class="text-primary text-sm font-semibold hover:underline">Xem tất cả</button>
                             </div>
                             <div class="overflow-x-auto flex-1">
                                 <table class="w-full text-left border-collapse">
@@ -285,19 +285,19 @@
                                         <tr>
                                             <th
                                                 class="px-6 py-4 font-semibold text-xs text-slate-500 uppercase tracking-wider">
-                                                TÃªn báº£n sao lÆ°u</th>
+                                                Tên bản sao lưu</th>
                                             <th
                                                 class="px-6 py-4 font-semibold text-xs text-slate-500 uppercase tracking-wider">
-                                                Thá»i gian</th>
+                                                Thời gian</th>
                                             <th
                                                 class="px-6 py-4 font-semibold text-xs text-slate-500 uppercase tracking-wider">
-                                                KÃ­ch thÆ°á»›c</th>
+                                                Kích thước</th>
                                             <th
                                                 class="px-6 py-4 font-semibold text-xs text-slate-500 uppercase tracking-wider">
-                                                Tráº¡ng thÃ¡i</th>
+                                                Trạng thái</th>
                                             <th
                                                 class="px-6 py-4 font-semibold text-xs text-slate-500 uppercase tracking-wider text-right">
-                                                HÃ nh Ä‘á»™ng</th>
+                                                Hành động</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
@@ -319,7 +319,7 @@
                                                 <span
                                                     class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800">
                                                     <span class="size-1.5 rounded-full bg-green-500"></span>
-                                                    HoÃ n thÃ nh
+                                                    Hoàn thành
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 text-right">
@@ -346,7 +346,7 @@
                                                 <span
                                                     class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800">
                                                     <span class="size-1.5 rounded-full bg-green-500"></span>
-                                                    HoÃ n thÃ nh
+                                                    Hoàn thành
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 text-right">
@@ -373,7 +373,7 @@
                                                 <span
                                                     class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800">
                                                     <span class="size-1.5 rounded-full bg-yellow-500"></span>
-                                                    Cáº£nh bÃ¡o
+                                                    Cảnh báo
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 text-right">
@@ -400,7 +400,7 @@
                                                 <span
                                                     class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800">
                                                     <span class="size-1.5 rounded-full bg-green-500"></span>
-                                                    HoÃ n thÃ nh
+                                                    Hoàn thành
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 text-right">

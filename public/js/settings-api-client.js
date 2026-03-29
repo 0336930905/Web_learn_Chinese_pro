@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Settings API Client
  * Client-side functions to interact with Settings API
  */
@@ -132,7 +132,7 @@ const SETTINGS_API = {
 
       // Update backend
       await this.updateVoice(voice);
-      console.log('âœ… Voice synced to backend:', voice);
+      console.log('✅ Voice synced to backend:', voice);
     } catch (error) {
       console.error('Failed to sync voice to backend:', error);
       // Don't throw - localStorage is already updated
@@ -169,7 +169,7 @@ const SETTINGS_API = {
         }
       }
 
-      console.log('âœ… Settings loaded and synced from backend');
+      console.log('✅ Settings loaded and synced from backend');
       return settings;
     } catch (error) {
       console.error('Failed to load settings from backend:', error);

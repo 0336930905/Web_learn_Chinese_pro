@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Admin Category & Vocabulary Management
  * Frontend JavaScript for category_ad.html
  */
@@ -25,7 +25,7 @@ function checkAuth() {
     
     if (!token) {
         console.error('No auth token, redirecting to login');
-        alert('Vui lÃ²ng Ä‘Äƒng nháº­p Ä‘á»ƒ tiáº¿p tá»¥c');
+        alert('Vui lòng đăng nhập để tiếp tục');
         window.location.href = '/login_screen.html';
         return false;
     }
@@ -35,7 +35,7 @@ function checkAuth() {
         console.log('Token payload:', { userId: payload.userId, role: payload.role });
         
         if (payload.role !== 'admin') {
-            alert('Báº¡n khÃ´ng cÃ³ quyá»n truy cáº­p trang nÃ y');
+            alert('Bạn không có quyền truy cập trang này');
             window.location.href = '/user/home.html';
             return false;
         }
@@ -72,7 +72,7 @@ async function apiRequest(endpoint, options = {}) {
     const data = await response.json();
 
     if (!response.ok) {
-        const errorMessage = data.error?.message || data.message || 'CÃ³ lá»—i xáº£y ra';
+        const errorMessage = data.error?.message || data.message || 'Có lỗi xảy ra';
         console.error('API Error:', data);
         throw new Error(errorMessage);
     }
@@ -118,7 +118,7 @@ function renderCategories(cats) {
         container.innerHTML = `
             <div class="text-center py-8 text-gray-500">
                 <span class="material-symbols-outlined text-4xl mb-2">folder_off</span>
-                <p>KhÃ´ng cÃ³ danh má»¥c nÃ o</p>
+                <p>Không có danh mục nào</p>
             </div>
         `;
         return;
@@ -135,18 +135,18 @@ function renderCategories(cats) {
                         style="${isActive ? 'font-variation-settings: \'FILL\' 1' : ''}">${cat.icon || 'folder'}</span>
                     <div class="flex-1 min-w-0">
                         <p class="font-bold ${isActive ? 'text-primary' : 'text-gray-700 dark:text-gray-300'} text-sm truncate">${cat.name}</p>
-                        <p class="text-xs text-gray-500">${cat.vocabularyCount || 0} tá»« vá»±ng</p>
+                        <p class="text-xs text-gray-500">${cat.vocabularyCount || 0} từ vựng</p>
                     </div>
                 </div>
                 <div class="flex gap-1">
                     <button onclick="editCategory(event, '${cat._id}')" 
                         class="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded opacity-0 group-hover:opacity-100 transition-opacity"
-                        title="Sá»­a">
+                        title="Sửa">
                         <span class="material-symbols-outlined text-sm">edit</span>
                     </button>
                     <button onclick="deleteCategory(event, '${cat._id}')" 
                         class="p-1 hover:bg-red-100 hover:text-red-600 rounded opacity-0 group-hover:opacity-100 transition-opacity"
-                        title="XÃ³a">
+                        title="Xóa">
                         <span class="material-symbols-outlined text-sm">delete</span>
                     </button>
                 </div>
@@ -239,7 +239,7 @@ function updateVocabularyTable(vocabulary) {
             <tr>
                 <td colspan="7" class="px-6 py-8 text-center text-gray-500">
                     <span class="material-symbols-outlined text-4xl mb-2">description_off</span>
-                    <p>ChÆ°a cÃ³ tá»« vá»±ng nÃ o</p>
+                    <p>Chưa có từ vựng nào</p>
                 </td>
             </tr>
         `;
@@ -277,12 +277,12 @@ function updateVocabularyTable(vocabulary) {
                 <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button onclick="editVocabulary('${vocab._id}')" 
                         class="p-1.5 text-gray-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
-                        title="Chá»‰nh sá»­a">
+                        title="Chỉnh sửa">
                         <span class="material-symbols-outlined text-lg">edit</span>
                     </button>
                     <button onclick="deleteVocabulary('${vocab._id}')" 
                         class="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                        title="XÃ³a">
+                        title="Xóa">
                         <span class="material-symbols-outlined text-lg">delete</span>
                     </button>
                 </div>
@@ -299,7 +299,7 @@ function updateVocabularyPagination(pagination) {
     if (infoSpan) {
         const start = (pagination.page - 1) * pagination.limit + 1;
         const end = Math.min(pagination.page * pagination.limit, pagination.total);
-        infoSpan.innerHTML = `Hiá»ƒn thá»‹ <span class="font-bold text-gray-900 dark:text-white">${start}-${end}</span> cá»§a <span class="font-bold text-gray-900 dark:text-white">${pagination.total}</span> tá»« vá»±ng`;
+        infoSpan.innerHTML = `Hiển thị <span class="font-bold text-gray-900 dark:text-white">${start}-${end}</span> của <span class="font-bold text-gray-900 dark:text-white">${pagination.total}</span> từ vựng`;
     }
 
     // Select pagination container in table footer, not sidebar
@@ -323,7 +323,7 @@ function updateVocabularyPagination(pagination) {
         <button 
             onclick="changeVocabPage(${pagination.page - 1})"
             class="px-3 py-1 text-sm rounded-lg border ${pagination.page === 1 ? 'border-gray-200 text-gray-300 cursor-not-allowed' : 'border-gray-200 text-gray-500 hover:bg-gray-50'}"
-            ${pagination.page === 1 ? 'disabled' : ''}>TrÆ°á»›c</button>
+            ${pagination.page === 1 ? 'disabled' : ''}>Trước</button>
         ${pages.map(p => `
             <button 
                 onclick="changeVocabPage(${p})"
@@ -364,12 +364,12 @@ function getDifficultyClass(difficulty) {
  */
 function getDifficultyText(difficulty) {
     const texts = {
-        'beginner': 'CÆ¡ báº£n',
-        'intermediate': 'Trung cáº¥p',
-        'advanced': 'NÃ¢ng cao',
-        'native': 'Báº£n ngá»¯'
+        'beginner': 'Cơ bản',
+        'intermediate': 'Trung cấp',
+        'advanced': 'Nâng cao',
+        'native': 'Bản ngữ'
     };
-    return texts[difficulty] || 'CÆ¡ báº£n';
+    return texts[difficulty] || 'Cơ bản';
 }
 
 /**
@@ -388,7 +388,7 @@ function showCategoryModal(categoryId = null) {
                         <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                             <span class="material-symbols-outlined text-2xl">folder</span>
                         </div>
-                        <h2 class="text-2xl font-bold text-gray-800 dark:text-white">${isEdit ? 'Chá»‰nh sá»­a danh má»¥c' : 'Táº¡o danh má»¥c má»›i'}</h2>
+                        <h2 class="text-2xl font-bold text-gray-800 dark:text-white">${isEdit ? 'Chỉnh sửa danh mục' : 'Tạo danh mục mới'}</h2>
                     </div>
                     <button onclick="closeCategoryModal()" 
                         class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-500 dark:text-gray-400">
@@ -401,48 +401,48 @@ function showCategoryModal(categoryId = null) {
                     <div class="flex items-center justify-between mb-6">
                         <div class="flex items-center gap-2 text-primary font-bold uppercase text-sm tracking-wide">
                             <span class="material-symbols-outlined text-base">edit_note</span>
-                            <span>ThÃ´ng tin danh má»¥c</span>
+                            <span>Thông tin danh mục</span>
                         </div>
                     </div>
 
                     <form id="categoryForm" class="space-y-6">
-                        <!-- TÃªn danh má»¥c -->
+                        <!-- Tên danh mục -->
                         <div class="space-y-2">
-                            <label class="block text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">TÃªn danh má»¥c *</label>
+                            <label class="block text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tên danh mục *</label>
                             <div class="relative">
                                 <input type="text" name="name" value="${category?.name || ''}" required
                                     maxlength="100"
                                     oninput="this.nextElementSibling.textContent=this.value.length+'/100'"
                                     class="w-full bg-gray-50 dark:bg-gray-800 border-transparent focus:border-primary focus:ring-2 focus:ring-primary rounded-xl px-4 py-4 text-lg font-bold text-gray-800 dark:text-gray-100 shadow-sm transition-all outline-none"
-                                    placeholder="Nháº­p tÃªn danh má»¥c">
+                                    placeholder="Nhập tên danh mục">
                                 <span class="absolute right-4 bottom-4 text-xs text-gray-400 dark:text-gray-500 font-medium">${(category?.name || '').length}/100</span>
                             </div>
                         </div>
 
-                        <!-- MÃ´ táº£ -->
+                        <!-- Mô tả -->
                         <div class="space-y-2">
-                            <label class="block text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">MÃ´ táº£</label>
+                            <label class="block text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Mô tả</label>
                             <div class="relative">
                                 <textarea name="description" rows="3"
                                     maxlength="300"
                                     oninput="this.nextElementSibling.textContent=this.value.length+'/300'"
                                     class="w-full bg-gray-50 dark:bg-gray-800 border-transparent focus:border-primary focus:ring-2 focus:ring-primary rounded-xl px-4 py-3 text-gray-800 dark:text-gray-100 font-medium shadow-sm transition-all resize-none outline-none"
-                                    placeholder="Nháº­p mÃ´ táº£ chi tiáº¿t cho danh má»¥c">${category?.description || ''}</textarea>
+                                    placeholder="Nhập mô tả chi tiết cho danh mục">${category?.description || ''}</textarea>
                                 <span class="absolute right-3 bottom-3 text-xs text-gray-400 dark:text-gray-500 font-medium">${(category?.description || '').length}/300</span>
                             </div>
                         </div>
 
                         <!-- Grid layout -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Äá»™ khÃ³ -->
+                            <!-- Độ khó -->
                             <div class="space-y-2">
-                                <label class="block text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Äá»™ khÃ³</label>
+                                <label class="block text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Độ khó</label>
                                 <select name="difficulty"
                                     class="w-full bg-gray-50 dark:bg-gray-800 border-transparent focus:border-primary focus:ring-2 focus:ring-primary rounded-xl px-4 py-3 text-gray-800 dark:text-gray-100 font-medium shadow-sm transition-all outline-none">
-                                    <option value="beginner" ${category?.difficulty === 'beginner' ? 'selected' : ''}>ðŸŸ¢ CÆ¡ báº£n</option>
-                                    <option value="intermediate" ${category?.difficulty === 'intermediate' ? 'selected' : ''}>ðŸŸ¡ Trung cáº¥p</option>
-                                    <option value="advanced" ${category?.difficulty === 'advanced' ? 'selected' : ''}>ðŸŸ  NÃ¢ng cao</option>
-                                    <option value="native" ${category?.difficulty === 'native' ? 'selected' : ''}>ðŸ”´ Báº£n ngá»¯</option>
+                                    <option value="beginner" ${category?.difficulty === 'beginner' ? 'selected' : ''}>🟢 Cơ bản</option>
+                                    <option value="intermediate" ${category?.difficulty === 'intermediate' ? 'selected' : ''}>🟡 Trung cấp</option>
+                                    <option value="advanced" ${category?.difficulty === 'advanced' ? 'selected' : ''}>🟠 Nâng cao</option>
+                                    <option value="native" ${category?.difficulty === 'native' ? 'selected' : ''}>🔴 Bản ngữ</option>
                                 </select>
                             </div>
 
@@ -462,18 +462,18 @@ function showCategoryModal(categoryId = null) {
                         ${!isEdit ? `
                         <!-- User ID (only for create) -->
                         <div class="space-y-2 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
-                            <label class="block text-sm font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wider">NgÆ°á»i sá»Ÿ há»¯u (User ID) *</label>
+                            <label class="block text-sm font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wider">Người sở hữu (User ID) *</label>
                             <input type="text" name="userId" required
                                 class="w-full bg-white dark:bg-gray-800 border-transparent focus:border-blue-500 focus:ring-2 focus:ring-blue-500 rounded-xl px-4 py-3 text-gray-800 dark:text-gray-100 font-mono shadow-sm transition-all outline-none"
-                                placeholder="ObjectId cá»§a ngÆ°á»i dÃ¹ng">
+                                placeholder="ObjectId của người dùng">
                             <p class="text-xs text-blue-600 dark:text-blue-400 italic mt-1 pl-1">
                                 <span class="material-symbols-outlined text-[14px] align-middle mr-1">admin_panel_settings</span>
-                                Chá»‰ admin má»›i cÃ³ thá»ƒ táº¡o danh má»¥c cÃ´ng khai
+                                Chỉ admin mới có thể tạo danh mục công khai
                             </p>
                         </div>
                         ` : ''}
 
-                        <!-- Toggle cÃ´ng khai -->
+                        <!-- Toggle công khai -->
                         <div class="flex items-center gap-3 pt-4 border-t border-gray-100 dark:border-gray-800">
                             <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
                                 <input type="checkbox" name="isPrivate" id="isPrivate" 
@@ -483,7 +483,7 @@ function showCategoryModal(categoryId = null) {
                                     class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer dark:bg-gray-600"></label>
                             </div>
                             <label for="isPrivate" class="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer select-none">
-                                CÃ´ng khai (Hiá»ƒn thá»‹ cho táº¥t cáº£ ngÆ°á»i dÃ¹ng)
+                                Công khai (Hiển thị cho tất cả người dùng)
                             </label>
                         </div>
                     </form>
@@ -494,11 +494,11 @@ function showCategoryModal(categoryId = null) {
                 <div class="px-8 py-6 border-t border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md sticky bottom-0 z-20 flex justify-end gap-4">
                     <button onclick="closeCategoryModal()" 
                         class="px-6 py-3 rounded-xl font-bold text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                        Há»§y bá»
+                        Hủy bỏ
                     </button>
                     <button onclick="${isEdit ? `submitCategoryEdit('${categoryId}')` : 'submitCategoryCreate()'}" 
                         class="px-8 py-3 rounded-xl font-bold text-white bg-primary hover:bg-green-600 shadow-lg shadow-primary/30 transform hover:-translate-y-0.5 transition-all">
-                        ${isEdit ? 'ðŸ’¾ LÆ°u thay Ä‘á»•i' : 'âœ¨ Táº¡o má»›i'}
+                        ${isEdit ? '💾 Lưu thay đổi' : '✨ Tạo mới'}
                     </button>
                 </div>
             </div>
@@ -545,7 +545,7 @@ async function submitCategoryCreate() {
             body: JSON.stringify(data)
         });
 
-        showSuccess('Táº¡o danh má»¥c thÃ nh cÃ´ng');
+        showSuccess('Tạo danh mục thành công');
         closeCategoryModal();
         await loadCategories();
     } catch (error) {
@@ -564,7 +564,7 @@ async function submitCategoryEdit(categoryId) {
             body: JSON.stringify(data)
         });
 
-        showSuccess('Cáº­p nháº­t danh má»¥c thÃ nh cÃ´ng');
+        showSuccess('Cập nhật danh mục thành công');
         closeCategoryModal();
         await loadCategories();
     } catch (error) {
@@ -589,7 +589,7 @@ async function deleteCategory(event, categoryId) {
     const category = categories.find(c => c._id === categoryId);
     if (!category) return;
 
-    if (!confirm(`Báº¡n cÃ³ cháº¯c cháº¯n muá»‘n xÃ³a danh má»¥c "${category.name}"?`)) {
+    if (!confirm(`Bạn có chắc chắn muốn xóa danh mục "${category.name}"?`)) {
         return;
     }
 
@@ -598,7 +598,7 @@ async function deleteCategory(event, categoryId) {
             method: 'DELETE'
         });
 
-        showSuccess('XÃ³a danh má»¥c thÃ nh cÃ´ng');
+        showSuccess('Xóa danh mục thành công');
         
         // Reload categories
         if (currentCategoryId === categoryId) {
@@ -615,7 +615,7 @@ async function deleteCategory(event, categoryId) {
  */
 function showVocabularyModal(vocabularyId = null) {
     if (!currentCategoryId && !vocabularyId) {
-        showError('Vui lÃ²ng chá»n danh má»¥c trÆ°á»›c');
+        showError('Vui lòng chọn danh mục trước');
         return;
     }
 
@@ -648,7 +648,7 @@ function renderVocabularyModal(vocabulary = null) {
                         <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                             <span class="material-symbols-outlined text-2xl">translate</span>
                         </div>
-                        <h2 class="text-2xl font-bold text-gray-800 dark:text-white">${isEdit ? 'Chá»‰nh sá»­a tá»« vá»±ng' : 'ThÃªm tá»« vá»±ng má»›i'}</h2>
+                        <h2 class="text-2xl font-bold text-gray-800 dark:text-white">${isEdit ? 'Chỉnh sửa từ vựng' : 'Thêm từ vựng mới'}</h2>
                     </div>
                     <button onclick="closeVocabularyModal()" 
                         class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-500 dark:text-gray-400">
@@ -661,7 +661,7 @@ function renderVocabularyModal(vocabulary = null) {
                     <div class="flex items-center justify-between mb-6">
                         <div class="flex items-center gap-2 text-primary font-bold uppercase text-sm tracking-wide">
                             <span class="material-symbols-outlined text-base">edit_note</span>
-                            <span>ThÃ´ng tin tá»« vá»±ng</span>
+                            <span>Thông tin từ vựng</span>
                         </div>
                     </div>
 
@@ -670,7 +670,7 @@ function renderVocabularyModal(vocabulary = null) {
                     <div class="space-y-2">
                         <label class="block text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-3">
                             <span class="material-symbols-outlined text-sm align-middle mr-1">category</span>
-                            Danh má»¥c *
+                            Danh mục *
                         </label>
                         <select name="categoryId" required
                             class="w-full px-5 py-3.5 border-2 border-gray-300 dark:border-gray-600 rounded-2xl focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-800 text-base font-medium transition-all shadow-sm hover:shadow-md">
@@ -685,32 +685,32 @@ function renderVocabularyModal(vocabulary = null) {
                     <div class="space-y-4">
                         <div class="flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700">
                             <span class="material-symbols-outlined text-primary">translate</span>
-                            <span class="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wide">KÃ½ tá»± Trung Quá»‘c</span>
+                            <span class="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wide">Ký tự Trung Quốc</span>
                         </div>
                         <div class="grid grid-cols-2 gap-5">
                             <div class="space-y-2">
                                 <label class="block text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                                    Chá»¯ phá»“n thá»ƒ *
+                                    Chữ phồn thể *
                                 </label>
                                 <div class="relative">
                                     <input type="text" name="traditional" value="${vocabulary?.traditional || ''}" required
                                         maxlength="10"
                                         onInput="this.nextElementSibling.textContent = this.value.length + '/10'"
                                         class="w-full px-5 py-4 border-2 border-gray-300 dark:border-gray-600 rounded-2xl focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-800 text-2xl text-center font-bold transition-all shadow-sm hover:shadow-md"
-                                        placeholder="ç¹é«”">
+                                        placeholder="繁體">
                                     <div class="absolute -bottom-5 right-2 text-xs text-gray-400 font-medium">${(vocabulary?.traditional || '').length || 0}/10</div>
                                 </div>
                             </div>
                             <div class="space-y-2">
                                 <label class="block text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                                    Chá»¯ giáº£n thá»ƒ
+                                    Chữ giản thể
                                 </label>
                                 <div class="relative">
                                     <input type="text" name="simplified" value="${vocabulary?.simplified || ''}" 
                                         maxlength="10"
                                         onInput="this.nextElementSibling.textContent = this.value.length + '/10'"
                                         class="w-full px-5 py-4 border-2 border-gray-300 dark:border-gray-600 rounded-2xl focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-800 text-2xl text-center font-bold transition-all shadow-sm hover:shadow-md"
-                                        placeholder="ç®€ä½“">
+                                        placeholder="简体">
                                     <div class="absolute -bottom-5 right-2 text-xs text-gray-400 font-medium">${(vocabulary?.simplified || '').length || 0}/10</div>
                                 </div>
                             </div>
@@ -722,28 +722,28 @@ function renderVocabularyModal(vocabulary = null) {
                         <div class="space-y-2">
                             <label class="block text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                                 <span class="material-symbols-outlined text-sm align-middle mr-1">record_voice_over</span>
-                                PhiÃªn Ã¢m (Pinyin) *
+                                Phiên âm (Pinyin) *
                             </label>
                             <div class="relative">
                                 <input type="text" name="pinyin" value="${vocabulary?.pinyin || ''}" required
                                     maxlength="50"
                                     onInput="this.nextElementSibling.textContent = this.value.length + '/50'"
                                     class="w-full px-5 py-3.5 border-2 border-gray-300 dark:border-gray-600 rounded-2xl focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-800 font-mono text-base transition-all shadow-sm hover:shadow-md"
-                                    placeholder="NÇ hÇŽo">
+                                    placeholder="Nǐ hǎo">
                                 <div class="absolute -bottom-5 right-2 text-xs text-gray-400 font-medium">${(vocabulary?.pinyin || '').length || 0}/50</div>
                             </div>
                         </div>
                         <div class="space-y-2">
                             <label class="block text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                                 <span class="material-symbols-outlined text-sm align-middle mr-1">language</span>
-                                NghÄ©a tiáº¿ng Viá»‡t *
+                                Nghĩa tiếng Việt *
                             </label>
                             <div class="relative">
                                 <input type="text" name="meaning" value="${vocabulary?.meaning || ''}" required
                                     maxlength="100"
                                     onInput="this.nextElementSibling.textContent = this.value.length + '/100'"
                                     class="w-full px-5 py-3.5 border-2 border-gray-300 dark:border-gray-600 rounded-2xl focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-800 text-base transition-all shadow-sm hover:shadow-md"
-                                    placeholder="Xin chÃ o">
+                                    placeholder="Xin chào">
                                 <div class="absolute -bottom-5 right-2 text-xs text-gray-400 font-medium">${(vocabulary?.meaning || '').length || 0}/100</div>
                             </div>
                         </div>
@@ -754,27 +754,27 @@ function renderVocabularyModal(vocabulary = null) {
                         <div class="space-y-2">
                             <label class="block text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                                 <span class="material-symbols-outlined text-sm align-middle mr-1">signal_cellular_alt</span>
-                                Äá»™ khÃ³
+                                Độ khó
                             </label>
                             <select name="difficulty"
                                 class="w-full px-5 py-3.5 border-2 border-gray-300 dark:border-gray-600 rounded-2xl focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-800 text-base font-medium transition-all shadow-sm hover:shadow-md">
-                                <option value="beginner" ${vocabulary?.difficulty === 'beginner' ? 'selected' : ''}>ðŸŸ¢ CÆ¡ báº£n</option>
-                                <option value="intermediate" ${vocabulary?.difficulty === 'intermediate' ? 'selected' : ''}>ðŸŸ¡ Trung cáº¥p</option>
-                                <option value="advanced" ${vocabulary?.difficulty === 'advanced' ? 'selected' : ''}>ðŸŸ  NÃ¢ng cao</option>
-                                <option value="native" ${vocabulary?.difficulty === 'native' ? 'selected' : ''}>ðŸ”´ Báº£n ngá»¯</option>
+                                <option value="beginner" ${vocabulary?.difficulty === 'beginner' ? 'selected' : ''}>🟢 Cơ bản</option>
+                                <option value="intermediate" ${vocabulary?.difficulty === 'intermediate' ? 'selected' : ''}>🟡 Trung cấp</option>
+                                <option value="advanced" ${vocabulary?.difficulty === 'advanced' ? 'selected' : ''}>🟠 Nâng cao</option>
+                                <option value="native" ${vocabulary?.difficulty === 'native' ? 'selected' : ''}>🔴 Bản ngữ</option>
                             </select>
                         </div>
                         <div class="space-y-2">
                             <label class="block text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                                 <span class="material-symbols-outlined text-sm align-middle mr-1">description</span>
-                                VÃ­ dá»¥
+                                Ví dụ
                             </label>
                             <div class="relative">
                                 <textarea name="example" rows="3"
                                     maxlength="200"
                                     onInput="this.nextElementSibling.textContent = this.value.length + '/200'"
                                     class="w-full px-5 py-3.5 border-2 border-gray-300 dark:border-gray-600 rounded-2xl focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-800 text-base transition-all shadow-sm hover:shadow-md resize-none"
-                                    placeholder="CÃ¢u vÃ­ dá»¥ sá»­ dá»¥ng tá»« vá»±ng nÃ y (tÃ¹y chá»n)">${vocabulary?.example || ''}</textarea>
+                                    placeholder="Câu ví dụ sử dụng từ vựng này (tùy chọn)">${vocabulary?.example || ''}</textarea>
                                 <div class="absolute -bottom-5 right-2 text-xs text-gray-400 font-medium">${(vocabulary?.example || '').length || 0}/200</div>
                             </div>
                         </div>
@@ -784,7 +784,7 @@ function renderVocabularyModal(vocabulary = null) {
                     <div class="space-y-3 p-6 rounded-2xl bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-700 border-2 border-blue-100 dark:border-gray-600">
                         <label class="flex items-center gap-2 text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                             <span class="material-symbols-outlined text-lg text-blue-600 dark:text-blue-400">image</span>
-                            HÃ¬nh áº£nh minh há»a
+                            Hình ảnh minh họa
                         </label>
                         <div class="relative">
                             <input type="url" name="imageUrl" id="imageUrl" value="${vocabulary?.imageUrl || ''}" 
@@ -796,7 +796,7 @@ function renderVocabularyModal(vocabulary = null) {
                         </div>
                         <p class="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400 mt-2">
                             <span class="material-symbols-outlined text-sm">info</span>
-                            Nháº­p URL hÃ¬nh áº£nh minh há»a cho tá»« vá»±ng
+                            Nhập URL hình ảnh minh họa cho từ vựng
                         </p>
                         ${vocabulary?.imageUrl || '' ? `
                         <div id="imagePreview" class="mt-4 flex justify-center">
@@ -816,12 +816,12 @@ function renderVocabularyModal(vocabulary = null) {
                     <button onclick="closeVocabularyModal()" 
                         class="flex-1 px-6 py-3.5 border-2 border-gray-300 dark:border-gray-600 rounded-xl font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:scale-[1.02] transition-all duration-200 shadow-sm">
                         <span class="material-symbols-outlined text-sm align-middle mr-1">close</span>
-                        Há»§y
+                        Hủy
                     </button>
                     <button onclick="${isEdit ? `submitVocabularyEdit('${vocabulary._id}')` : 'submitVocabularyCreate()'}" 
                         class="flex-1 px-6 py-3.5 bg-gradient-to-r from-primary to-green-600 hover:from-green-600 hover:to-primary text-white rounded-xl font-bold hover:scale-[1.02] transition-all duration-200 shadow-lg hover:shadow-xl">
                         <span class="material-symbols-outlined text-sm align-middle mr-1">${isEdit ? 'check' : 'add'}</span>
-                        ${isEdit ? 'Cáº­p nháº­t' : 'ThÃªm má»›i'}
+                        ${isEdit ? 'Cập nhật' : 'Thêm mới'}
                     </button>
                 </div>
             </div>
@@ -866,7 +866,7 @@ function previewVocabularyImage(url) {
                 <div class="relative group">
                     <img src="${url}" alt="Preview" 
                         class="w-40 h-40 object-cover rounded-2xl border-4 border-white dark:border-gray-700 shadow-xl group-hover:scale-105 transition-transform duration-300"
-                        onerror="this.parentElement.parentElement.innerHTML='<p class=\\'text-xs text-red-500 text-center\\'>âŒ KhÃ´ng thá»ƒ táº£i áº£nh</p>'">
+                        onerror="this.parentElement.parentElement.innerHTML='<p class=\\'text-xs text-red-500 text-center\\'>❌ Không thể tải ảnh</p>'">
                     <div class="absolute inset-0 rounded-2xl bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 </div>
             </div>
@@ -897,7 +897,7 @@ async function submitVocabularyCreate() {
             body: JSON.stringify(data)
         });
 
-        showSuccess('ThÃªm tá»« vá»±ng thÃ nh cÃ´ng');
+        showSuccess('Thêm từ vựng thành công');
         closeVocabularyModal();
         await loadVocabulary(currentPage, currentSearch);
         await loadCategories(); // Refresh to update vocabulary count
@@ -920,7 +920,7 @@ async function submitVocabularyEdit(vocabularyId) {
             body: JSON.stringify(data)
         });
 
-        showSuccess('Cáº­p nháº­t tá»« vá»±ng thÃ nh cÃ´ng');
+        showSuccess('Cập nhật từ vựng thành công');
         closeVocabularyModal();
         await loadVocabulary(currentPage, currentSearch);
     } catch (error) {
@@ -939,7 +939,7 @@ function editVocabulary(vocabularyId) {
  * Delete vocabulary
  */
 async function deleteVocabulary(vocabularyId) {
-    if (!confirm('Báº¡n cÃ³ cháº¯c cháº¯n muá»‘n xÃ³a tá»« vá»±ng nÃ y?')) {
+    if (!confirm('Bạn có chắc chắn muốn xóa từ vựng này?')) {
         return;
     }
 
@@ -948,7 +948,7 @@ async function deleteVocabulary(vocabularyId) {
             method: 'DELETE'
         });
 
-        showSuccess('XÃ³a tá»« vá»±ng thÃ nh cÃ´ng');
+        showSuccess('Xóa từ vựng thành công');
         await loadVocabulary(currentPage, currentSearch);
     } catch (error) {
         showError(error.message);
@@ -1009,7 +1009,7 @@ function showInfo(message) {
  * Show filter modal
  */
 function showFilterModal() {
-    showInfo('Chá»©c nÄƒng lá»c nÃ¢ng cao Ä‘ang Ä‘Æ°á»£c phÃ¡t triá»ƒn');
+    showInfo('Chức năng lọc nâng cao đang được phát triển');
 }
 
 /**

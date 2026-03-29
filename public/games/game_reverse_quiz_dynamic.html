@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 
 <html class="light" lang="en">
 
@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Reverse Quiz Game</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>ðŸŽ®</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎮</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap"
         rel="stylesheet" />
@@ -86,8 +86,8 @@
                 <!-- Question Prompt -->
                 <h1 id="questionPrompt"
                     class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-center lg:text-left mb-4 sm:mb-6 lg:mb-8 text-gray-800 dark:text-gray-100 drop-shadow-sm leading-tight">
-                    NhÃ¬n tá»« tiáº¿ng ÄÃ i Loan.<br />
-                    <span class="text-primary">NghÄ©a lÃ  gÃ¬?</span>
+                    Nhìn từ tiếng Đài Loan.<br />
+                    <span class="text-primary">Nghĩa là gì?</span>
                 </h1>
                 <!-- Image Card -->
                 <div
@@ -172,7 +172,7 @@ let selectedAnswer = null;
 async function loadQuestions() {
     const categoryId = getCategoryIdFromUrl();
     if (!categoryId) {
-        alert('KhÃ´ng tÃ¬m tháº¥y categoryId!');
+        alert('Không tìm thấy categoryId!');
         window.location.href = '../user/games_home.html';
         return;
     }
@@ -180,7 +180,7 @@ async function loadQuestions() {
         const res = await fetch(`/api/games/reverse-quiz?categoryId=${categoryId}&count=10`);
         const data = await res.json();
         if (!data.success) {
-            alert('KhÃ´ng thá»ƒ táº£i cÃ¢u há»i: ' + (data.error?.message || 'Lá»—i khÃ´ng xÃ¡c Ä‘á»‹nh'));
+            alert('Không thể tải câu hỏi: ' + (data.error?.message || 'Lỗi không xác định'));
             window.location.href = '../user/games_home.html';
             return;
         }
@@ -190,7 +190,7 @@ async function loadQuestions() {
         renderQuestion();
         updateGameHeader();
     } catch (err) {
-        alert('Lá»—i khi gá»i API: ' + err.message);
+        alert('Lỗi khi gọi API: ' + err.message);
         window.location.href = '../user/games_home.html';
     }
 }
@@ -409,17 +409,17 @@ function renderResult() {
     let message = '';
     let emoji = '';
     if (percentage >= 80) {
-        message = 'Excellent! ðŸŽ‰';
-        emoji = 'ðŸ†';
+        message = 'Excellent! 🎉';
+        emoji = '🏆';
     } else if (percentage >= 60) {
-        message = 'Great job! ðŸ‘';
-        emoji = 'â­';
+        message = 'Great job! 👍';
+        emoji = '⭐';
     } else if (percentage >= 40) {
-        message = 'Good effort! ðŸ’ª';
-        emoji = 'ðŸ‘';
+        message = 'Good effort! 💪';
+        emoji = '👏';
     } else {
-        message = 'Keep practicing! ðŸ“š';
-        emoji = 'ðŸ’ª';
+        message = 'Keep practicing! 📚';
+        emoji = '💪';
     }
 
     main.innerHTML = `

@@ -1,4 +1,4 @@
-﻿// Sidebar Component - Shared across all pages
+// Sidebar Component - Shared across all pages
 function renderSidebar(activePage = 'home', profileData = null) {
     // Check if i18n is available, otherwise use defaults
     const t = (key, fallback) => {
@@ -10,7 +10,7 @@ function renderSidebar(activePage = 'home', profileData = null) {
 
     // Default profile data
     const defaultAvatar = 'https://ui-avatars.com/api/?name=User&background=4ce64c&color=fff&size=128';
-    const fullName = profileData?.fullName || t('common.user', 'NgÆ°á»i dÃ¹ng');
+    const fullName = profileData?.fullName || t('common.user', 'Người dùng');
     const avatar = profileData?.avatar || defaultAvatar;
     const level = profileData?.levelInfo?.level || 1;
     const levelProgress = profileData?.levelInfo?.levelProgress || 0;
@@ -40,27 +40,27 @@ function renderSidebar(activePage = 'home', profileData = null) {
                 <a class="flex items-center gap-3 px-4 py-3 rounded-full ${activePage === 'home' ? 'bg-primary/20 text-slate-900 dark:text-white active-fill' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors'}"
                     href="home.html">
                     <span class="material-symbols-outlined ${activePage === 'home' ? 'text-primary' : ''}">home</span>
-                    <span class="${activePage === 'home' ? 'font-semibold' : 'font-medium'}">${t('sidebar.home', 'Trang chá»§')}</span>
+                    <span class="${activePage === 'home' ? 'font-semibold' : 'font-medium'}">${t('sidebar.home', 'Trang chủ')}</span>
                 </a>
                 <a class="flex items-center gap-3 px-4 py-3 rounded-full ${activePage === 'practice' ? 'bg-primary/20 text-slate-900 dark:text-white active-fill' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors'}"
                     href="practice_vocabulary.html">
                     <span class="material-symbols-outlined ${activePage === 'practice' ? 'text-primary' : ''}">school</span>
-                    <span class="${activePage === 'practice' ? 'font-semibold' : 'font-medium'}">${t('sidebar.practice', 'Luyá»‡n tá»« vá»±ng tá»•ng há»£p')}</span>
+                    <span class="${activePage === 'practice' ? 'font-semibold' : 'font-medium'}">${t('sidebar.practice', 'Luyện từ vựng tổng hợp')}</span>
                 </a>
                 <a class="flex items-center gap-3 px-4 py-3 rounded-full ${activePage === 'categories' ? 'bg-primary/20 text-slate-900 dark:text-white active-fill' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors'}"
                     href="personal_vocabulary_categories_screen.html">
                     <span class="material-symbols-outlined ${activePage === 'categories' ? 'text-primary' : ''}">grid_view</span>
-                    <span class="${activePage === 'categories' ? 'font-semibold' : 'font-medium'}">${t('sidebar.categories', 'Danh má»¥c')}</span>
+                    <span class="${activePage === 'categories' ? 'font-semibold' : 'font-medium'}">${t('sidebar.categories', 'Danh mục')}</span>
                 </a>
                 <a class="flex items-center gap-3 px-4 py-3 rounded-full ${activePage === 'games' ? 'bg-primary/20 text-slate-900 dark:text-white active-fill' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors'}"
                     href="games_home.html">
                     <span class="material-symbols-outlined ${activePage === 'games' ? 'text-primary' : ''}">sports_esports</span>
-                    <span class="${activePage === 'games' ? 'font-semibold' : 'font-medium'}">${t('sidebar.games', 'TrÃ² chÆ¡i')}</span>
+                    <span class="${activePage === 'games' ? 'font-semibold' : 'font-medium'}">${t('sidebar.games', 'Trò chơi')}</span>
                 </a>
                 <a class="flex items-center gap-3 px-4 py-3 rounded-full ${activePage === 'achievements' ? 'bg-primary/20 text-slate-900 dark:text-white active-fill' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors'}"
                     href="achievements.html">
                     <span class="material-symbols-outlined ${activePage === 'achievements' ? 'text-primary' : ''}">emoji_events</span>
-                    <span class="${activePage === 'achievements' ? 'font-semibold' : 'font-medium'}">${t('sidebar.achievements', 'ThÃ nh tÃ­ch')}</span>
+                    <span class="${activePage === 'achievements' ? 'font-semibold' : 'font-medium'}">${t('sidebar.achievements', 'Thành tích')}</span>
                 </a>
             </nav>
             <div class="p-6 border-t border-slate-100 dark:border-slate-800">
@@ -76,7 +76,7 @@ function renderSidebar(activePage = 'home', profileData = null) {
                             <div class="flex items-center gap-1">
                                 <span class="material-symbols-outlined text-xs text-yellow-500"
                                     style="font-variation-settings: 'FILL' 1">stars</span>
-                                <span class="text-xs font-bold text-slate-500">${t('sidebar.level', 'Cáº¥p Ä‘á»™')} ${level}</span>
+                                <span class="text-xs font-bold text-slate-500">${t('sidebar.level', 'Cấp độ')} ${level}</span>
                             </div>
                         </div>
                     </div>
@@ -141,8 +141,8 @@ function initMobileMenu() {
 // Handle logout
 function handleLogout() {
     const confirmMsg = typeof i18n !== 'undefined' 
-        ? i18n.t('sidebar.logoutConfirm', 'Báº¡n cÃ³ cháº¯c muá»‘n Ä‘Äƒng xuáº¥t?')
-        : 'Báº¡n cÃ³ cháº¯c muá»‘n Ä‘Äƒng xuáº¥t?';
+        ? i18n.t('sidebar.logoutConfirm', 'Bạn có chắc muốn đăng xuất?')
+        : 'Bạn có chắc muốn đăng xuất?';
     
     if (confirm(confirmMsg)) {
         // Clear any stored tokens or user data
@@ -183,10 +183,10 @@ function initializeChatbot() {
                         <span class="material-symbols-outlined text-lg">smart_toy</span>
                     </div>
                     <div class="min-w-0">
-                        <h3 class="font-bold text-sm truncate">${t('chatbot.title', 'Trá»£ lÃ½ há»c táº­p')}</h3>
+                        <h3 class="font-bold text-sm truncate">${t('chatbot.title', 'Trợ lý học tập')}</h3>
                         <p class="text-[10px] opacity-90 flex items-center gap-1">
                             <span class="size-1.5 bg-white rounded-full animate-pulse"></span>
-                            ${t('chatbot.online', 'Trá»±c tuyáº¿n')}
+                            ${t('chatbot.online', 'Trực tuyến')}
                         </p>
                     </div>
                 </div>
@@ -209,7 +209,7 @@ function initializeChatbot() {
                         <span class="material-symbols-outlined text-white text-sm">smart_toy</span>
                     </div>
                     <div class="bg-white dark:bg-slate-800 rounded-xl rounded-tl-sm p-2.5 max-w-[85%] shadow-sm">
-                        <p class="text-xs leading-relaxed text-slate-700 dark:text-slate-300">${t('chatbot.welcome', 'Xin chÃ o! TÃ´i lÃ  trá»£ lÃ½ há»c táº­p cá»§a báº¡n. TÃ´i cÃ³ thá»ƒ giÃºp gÃ¬ cho báº¡n?')}</p>
+                        <p class="text-xs leading-relaxed text-slate-700 dark:text-slate-300">${t('chatbot.welcome', 'Xin chào! Tôi là trợ lý học tập của bạn. Tôi có thể giúp gì cho bạn?')}</p>
                     </div>
                 </div>
             </div>
@@ -218,24 +218,24 @@ function initializeChatbot() {
             <div id="chatbot-quick-actions" class="px-3 py-2 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex-shrink-0">
                 <div class="flex gap-1.5 overflow-x-auto pb-1.5 scrollbar-hide -mx-1 px-1 snap-x snap-mandatory">
                     <button class="chatbot-quick-btn px-2.5 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-primary/10 text-[11px] rounded-full whitespace-nowrap transition-all flex items-center gap-1 flex-shrink-0 snap-start active:scale-95" 
-                        data-message="Tá»« vá»±ng gia Ä‘Ã¬nh">
+                        data-message="Từ vựng gia đình">
                         <span class="material-symbols-outlined text-xs">family_restroom</span>
-                        <span>Gia Ä‘Ã¬nh</span>
+                        <span>Gia đình</span>
                     </button>
                     <button class="chatbot-quick-btn px-2.5 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-primary/10 text-[11px] rounded-full whitespace-nowrap transition-all flex items-center gap-1 flex-shrink-0 snap-start active:scale-95"
-                        data-message="Tá»« vá»±ng Ä‘á»“ Äƒn">
+                        data-message="Từ vựng đồ ăn">
                         <span class="material-symbols-outlined text-xs">restaurant</span>
-                        <span>Äá»“ Äƒn</span>
+                        <span>Đồ ăn</span>
                     </button>
                     <button class="chatbot-quick-btn px-2.5 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-primary/10 text-[11px] rounded-full whitespace-nowrap transition-all flex items-center gap-1 flex-shrink-0 snap-start active:scale-95"
-                        data-message="Tips há»c tiáº¿ng Trung">
+                        data-message="Tips học tiếng Trung">
                         <span class="material-symbols-outlined text-xs">tips_and_updates</span>
                         <span>Tips</span>
                     </button>
                     <button class="chatbot-quick-btn px-2.5 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-primary/10 text-[11px] rounded-full whitespace-nowrap transition-all flex items-center gap-1 flex-shrink-0 snap-start active:scale-95"
-                        data-message="Giáº£i thÃ­ch tá»« ä½ å¥½">
+                        data-message="Giải thích từ 你好">
                         <span class="material-symbols-outlined text-xs">translate</span>
-                        <span>Giáº£i thÃ­ch</span>
+                        <span>Giải thích</span>
                     </button>
                 </div>
             </div>
@@ -245,7 +245,7 @@ function initializeChatbot() {
                 <div class="flex gap-2">
                     <input id="chatbot-input" 
                         type="text" 
-                        placeholder="${t('chatbot.placeholder', 'Nháº­p tin nháº¯n...')}"
+                        placeholder="${t('chatbot.placeholder', 'Nhập tin nhắn...')}"
                         class="flex-1 px-3 py-2 bg-slate-100 dark:bg-slate-800 border-0 rounded-full focus:ring-2 focus:ring-primary outline-none text-sm transition-all"
                         autocomplete="off">
                     <button id="chatbot-send" 
@@ -404,7 +404,7 @@ function initializeChatbot() {
     // Handle bot response
     async function getBotResponse(userMessage) {
         try {
-            console.log('ðŸ¤– Chatbot: Sending message...', userMessage);
+            console.log('🤖 Chatbot: Sending message...', userMessage);
             
             // Token is optional since API doesn't require auth for testing
             const token = localStorage.getItem('authToken') 
@@ -417,7 +417,7 @@ function initializeChatbot() {
             messages.forEach(msg => {
                 const text = msg.querySelector('p')?.textContent;
                 const isUser = msg.classList.contains('justify-end');
-                if (text && text !== 'Xin chÃ o! TÃ´i lÃ  trá»£ lÃ½ há»c táº­p cá»§a báº¡n. TÃ´i cÃ³ thá»ƒ giÃºp gÃ¬ cho báº¡n?') {
+                if (text && text !== 'Xin chào! Tôi là trợ lý học tập của bạn. Tôi có thể giúp gì cho bạn?') {
                     conversationHistory.push({
                         content: text,
                         isUser: isUser
@@ -425,10 +425,10 @@ function initializeChatbot() {
                 }
             });
 
-            console.log('ðŸ“ Conversation history:', conversationHistory.length, 'messages');
+            console.log('📝 Conversation history:', conversationHistory.length, 'messages');
 
             // Call Gemini API
-            console.log('ðŸ“ž Calling API: /api/chatbot/message');
+            console.log('📞 Calling API: /api/chatbot/message');
             
             const headers = {
                 'Content-Type': 'application/json'
@@ -437,9 +437,9 @@ function initializeChatbot() {
             // Add auth header if token exists
             if (token) {
                 headers['Authorization'] = `Bearer ${token}`;
-                console.log('âœ… Using auth token');
+                console.log('✅ Using auth token');
             } else {
-                console.log('â„¹ï¸ No token - using public API');
+                console.log('ℹ️ No token - using public API');
             }
             
             const response = await fetch('/api/chatbot/message', {
@@ -451,49 +451,49 @@ function initializeChatbot() {
                 })
             });
 
-            console.log('ðŸ“¥ Response status:', response.status);
+            console.log('📥 Response status:', response.status);
 
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error('âŒ API Error:', response.status, errorText);
+                console.error('❌ API Error:', response.status, errorText);
                 
                 if (response.status === 401) {
-                    return 'ðŸ”’ Vui lÃ²ng Ä‘Äƒng nháº­p Ä‘á»ƒ sá»­ dá»¥ng chatbot.';
+                    return '🔒 Vui lòng đăng nhập để sử dụng chatbot.';
                 }
                 
                 try {
                     const errorData = JSON.parse(errorText);
-                    return `âš ï¸ ${errorData.message || errorData.error || 'KhÃ´ng thá»ƒ káº¿t ná»‘i vá»›i AI'}`;
+                    return `⚠️ ${errorData.message || errorData.error || 'Không thể kết nối với AI'}`;
                 } catch (e) {
-                    return 'âŒ Server Ä‘ang báº­n. Vui lÃ²ng thá»­ láº¡i sau.';
+                    return '❌ Server đang bận. Vui lòng thử lại sau.';
                 }
             }
 
             const result = await response.json();
-            console.log('âœ… API Response:', result);
+            console.log('✅ API Response:', result);
             
             if (result.success && result.data?.response) {
                 const aiResponse = result.data.response;
-                console.log('âœ… AI response length:', aiResponse.length, 'chars');
+                console.log('✅ AI response length:', aiResponse.length, 'chars');
                 
                 // Format markdown-style response
                 return formatChatbotResponse(aiResponse);
             } else {
-                console.error('âŒ Unexpected response format:', result);
-                return result.message || 'âŒ Xin lá»—i, tÃ´i khÃ´ng thá»ƒ tráº£ lá»i lÃºc nÃ y.';
+                console.error('❌ Unexpected response format:', result);
+                return result.message || '❌ Xin lỗi, tôi không thể trả lời lúc này.';
             }
 
         } catch (error) {
-            console.error('âŒ Chatbot Error:', error);
+            console.error('❌ Chatbot Error:', error);
             
             // Network errors
             if (error.message.includes('Failed to fetch')) {
-                return 'ðŸŒ KhÃ´ng thá»ƒ káº¿t ná»‘i server. Vui lÃ²ng kiá»ƒm tra:\n' +
-                       '- Server Ä‘ang cháº¡y?\n' +
-                       '- Káº¿t ná»‘i internet á»•n Ä‘á»‹nh?';
+                return '🌐 Không thể kết nối server. Vui lòng kiểm tra:\n' +
+                       '- Server đang chạy?\n' +
+                       '- Kết nối internet ổn định?';
             }
             
-            return `âŒ Lá»—i: ${error.message}`;
+            return `❌ Lỗi: ${error.message}`;
         }
     }
     
@@ -512,8 +512,8 @@ function initializeChatbot() {
         text = text.replace(/\n/g, '<br>');
         
         // Convert emoji shortcuts
-        text = text.replace(/:\)/g, 'ðŸ˜Š');
-        text = text.replace(/:\(/g, 'ðŸ˜¢');
+        text = text.replace(/:\)/g, '😊');
+        text = text.replace(/:\(/g, '😢');
         
         return text;
     }
@@ -588,7 +588,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             localStorage.setItem('authToken', tokenParam);
             localStorage.setItem('user', decodeURIComponent(userParam));
             
-            console.log('âœ… Auth data saved from URL parameters (mobile/Zalo flow)');
+            console.log('✅ Auth data saved from URL parameters (mobile/Zalo flow)');
             
             // Clean URL to remove parameters
             const cleanUrl = window.location.pathname;
@@ -600,7 +600,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             alertDiv.innerHTML = `
                 <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg shadow-lg flex items-center gap-2">
                     <span class="material-symbols-outlined">check_circle</span>
-                    <span class="text-sm">ÄÄƒng nháº­p thÃ nh cÃ´ng!</span>
+                    <span class="text-sm">Đăng nhập thành công!</span>
                 </div>
             `;
             document.body.appendChild(alertDiv);
@@ -613,10 +613,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Mobile compatibility: Wait for localStorage if data isn't ready yet
     let userStr = localStorage.getItem('user');
     if (!userStr && (tokenParam || authSuccess)) {
-        console.log('â³ Waiting for localStorage to sync on mobile...');
+        console.log('⏳ Waiting for localStorage to sync on mobile...');
         await new Promise(resolve => setTimeout(resolve, 300));
         userStr = localStorage.getItem('user');
-        console.log('âœ“ User data check after delay:', userStr ? 'found' : 'still missing');
+        console.log('✓ User data check after delay:', userStr ? 'found' : 'still missing');
     }
     
     const sidebarContainer = document.getElementById('sidebar-container');
