@@ -87,12 +87,12 @@
                     <!-- Question Prompt -->
                     <h1
                         class="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-center lg:text-left mb-4 sm:mb-6 md:mb-8 text-gray-800 dark:text-gray-100 drop-shadow-sm leading-tight">
-                        Nhìn ảnh và đoán nghĩa.<br />
-                        <span class="text-primary">đây là gì?</span>
+                        Nhìn chữ Hán và đoán<br />
+                        <span class="text-primary">nghĩa tiếng Việt</span>
                     </h1>
-                    <!-- Image Card -->
+                    <!-- Chinese Character Card -->
                     <div
-                        class="relative w-full aspect-[4/3] rounded-xl overflow-hidden shadow-2xl bg-surface-light dark:bg-surface-dark border-2 sm:border-4 border-white dark:border-surface-dark ring-1 ring-black/5 group">
+                        class="relative w-full aspect-[4/3] rounded-xl overflow-hidden shadow-2xl bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 border-2 sm:border-4 border-white dark:border-gray-700 ring-1 ring-black/5 group flex items-center justify-center">
                         <!-- Countdown Timer Overlay (Top Right) -->
                         <div class="absolute top-3 right-3 sm:top-4 sm:right-4 md:top-6 md:right-6 z-20">
                             <div
@@ -111,17 +111,17 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Main Image -->
-                        <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-                            data-alt="A close up of a happy child smiling brightly outdoors"
-                            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDjKg3iIv3jIveELoNW93gCcsPEfVVC0ad0jjJjIsp1vEhkO8bwJOx6r97GOinghkV45sT59VJZ5IlgFXGbpAV882qoY0MdfwUv0FeCyKhqE1l7P7Xcc5MwKjxR0FsWSFNhSrQx7hrvq-McznapWp38kFKIo5EMmjgpPJ_WZWPX2BVctNkCs5-MvAAarCz9vTqug1cdj5KgALtu9ZdB6O7eRI3wS5zE3NjbK1irutsD_tRVfDDawWbLwj8YbJjUddWE5z10U353kaw');">
+                        <!-- Main Chinese Character Display -->
+                        <div class="w-full h-full flex items-center justify-center transition-transform duration-700 group-hover:scale-105 flex-col gap-4">
+                            <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400 font-medium">Chữ Hán:</p>
+                            <div id="chinese-char" class="text-6xl sm:text-8xl md:text-9xl font-bold text-primary drop-shadow-lg">學</div>
                         </div>
-                        <!-- Label Overlay (Optional Hint) -->
+                        <!-- Pinyin Hint -->
                         <div class="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 md:bottom-6 md:left-6 z-20">
                             <div class="px-3 py-1.5 sm:px-4 sm:py-2 bg-white/90 dark:bg-black/60 backdrop-blur-sm rounded-lg shadow-sm">
                                 <p class="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300 flex items-center gap-1.5 sm:gap-2">
                                     <span class="material-symbols-outlined text-primary text-base sm:text-lg">lightbulb</span>
-                                    Hint: It shows happiness
+                                    <span id="pinyin-hint">Phát âm: xuế</span>
                                 </p>
                             </div>
                         </div>
@@ -187,7 +187,7 @@
                         <button
                             class="flex items-center gap-1.5 sm:gap-2 px-4 py-2 sm:px-6 sm:py-3 rounded-full bg-gray-100 dark:bg-surface-dark text-text-muted dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 active:scale-95 transition-all text-xs sm:text-sm font-bold">
                             <span class="material-symbols-outlined text-base sm:text-[20px]">volume_up</span>
-                            Listen to question
+                            Nghe phát âm
                         </button>
                     </div>
                 </div>
@@ -233,7 +233,7 @@ async function loadQuestions() {
     gameStartTime = Date.now(); // Reset timer
     
     try {
-        const res = await fetch(`/api/games/reverse-quiz?categoryId=${categoryId}&count=10`);
+        const res = await fetch(`/api/games/reverse-quiz?categoryId=${categoryId}`);
         const data = await res.json();
         if (!data.success) {
             alert('Không thể tải câu hỏi: ' + (data.error?.message || 'Lỗi không xác định'));
@@ -276,16 +276,16 @@ function renderQuestion() {
     // Reset timer
     resetTimer();
 
-    // Update image
-    const imageDiv = document.querySelector('.bg-cover.bg-center');
-    imageDiv.style.backgroundImage = `url('${q.imageUrl}')`;
-    imageDiv.setAttribute('data-alt', q.meaning);
+    // Update Chinese character
+    const charDiv = document.getElementById('chinese-char');
+    if (charDiv) {
+        charDiv.textContent = q.traditional || q.simplified;
+    }
 
-    // Update hint
-    const hintDiv = document.querySelector('.absolute.bottom-3 p, .absolute.bottom-4 p, .absolute.bottom-6 p');
+    // Update pinyin hint
+    const hintDiv = document.getElementById('pinyin-hint');
     if (hintDiv) {
-        hintDiv.innerHTML = `<span class="material-symbols-outlined text-primary text-base sm:text-lg">lightbulb</span>
-            Hint: ${q.pinyin}`;
+        hintDiv.textContent = `Phát âm: ${q.pinyin || 'N/A'}`;
     }
 
     // Render options
@@ -306,18 +306,13 @@ function renderQuestion() {
         iconDiv.className = 'size-8 sm:size-9 md:size-10 mb-1.5 sm:mb-2 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-500 dark:text-blue-300 flex items-center justify-center group-hover:scale-110 transition-transform';
         iconDiv.innerHTML = '<span class="material-symbols-outlined text-lg sm:text-xl md:text-2xl">translate</span>';
         
-        // Meaning text (English/Vietnamese)
+        // Meaning text (Vietnamese)
         const meaningSpan = document.createElement('span');
         meaningSpan.className = 'text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors text-center';
         meaningSpan.textContent = opt.meaning;
         
-        // Pinyin text (smaller)
-        const pinyinSpan = document.createElement('span');
-       
-        
         btn.appendChild(iconDiv);
         btn.appendChild(meaningSpan);
-        btn.appendChild(pinyinSpan);
         
         optionsContainer.appendChild(btn);
     });
@@ -405,6 +400,7 @@ function selectAnswer(idx) {
 // ========== Speak Question ==========
 function speakQuestion() {
     const q = questions[currentIndex];
+    // Speak the traditional or simplified Chinese character
     if (window.speakText) {
         window.speakText(q.traditional || q.simplified, 0.8);
     }
@@ -433,7 +429,7 @@ function updateProgress() {
         const percent = Math.round(((currentIndex + 1) / questions.length) * 100);
         
         if (mobileQuestionText) {
-            mobileQuestionText.textContent = `Question ${currentIndex + 1}/${questions.length}`;
+            mobileQuestionText.textContent = `Từ ${currentIndex + 1}/${questions.length}`;
         }
         if (mobilePercentText) {
             mobilePercentText.textContent = `${percent}%`;
@@ -491,7 +487,7 @@ function renderResult() {
                 
                 <!-- Title -->
                 <h2 class="text-2xl sm:text-4xl font-black bg-gradient-to-r ${performanceColor} bg-clip-text text-transparent mb-2">${performanceText}</h2>
-                <p class="text-base sm:text-xl text-gray-600 dark:text-gray-300 mb-4 sm:mb-6">Hoàn thành Quiz!</p>
+                <p class="text-base sm:text-xl text-gray-600 dark:text-gray-300 mb-4 sm:mb-6">Hoàn thành bài luyện tập!</p>
                 
                 <!-- Time Badge -->
                 <div class="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 px-4 py-2 rounded-full mb-4">
