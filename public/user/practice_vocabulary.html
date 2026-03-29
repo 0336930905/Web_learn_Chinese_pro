@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>luyện tập từ vựng</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>??</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>📚</text></svg>">
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -83,7 +83,7 @@
       <header class="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div class="flex items-center gap-3">
           <div class="w-12 h-12 rounded-2xl bg-primary/20 dark:bg-primary/30 flex items-center justify-center text-2xl shadow-soft shrink-0">
-            ??
+            📚
           </div>
           <div>
             <h1 class="text-3xl md:text-4xl font-extrabold text-text-main dark:text-white tracking-tight leading-tight">
@@ -205,7 +205,7 @@
 
                   <!-- Word table header -->
                   <div class="grid grid-cols-[2fr_2fr_3fr_40px] gap-2 mb-2 px-1">
-                    <span class="text-xs font-bold text-text-secondary dark:text-green-400/70 uppercase tracking-wide">Ch? H�n ??</span>
+                    <span class="text-xs font-bold text-text-secondary dark:text-green-400/70 uppercase tracking-wide">Chữ Hán</span>
                     <span class="text-xs font-bold text-text-secondary dark:text-green-400/70 uppercase tracking-wide">Phi�n �m (Pinyin)</span>
                     <span class="text-xs font-bold text-text-secondary dark:text-green-400/70 uppercase tracking-wide">Nghia ti?ng Vi?t</span>
                     <span></span>
@@ -239,7 +239,7 @@
                     <textarea id="bulkImportText" rows="5"
                       class="w-full px-3 py-2 text-sm rounded-xl border-2 border-blue-200 dark:border-blue-700
                       bg-white dark:bg-background-dark focus:border-primary outline-none font-mono"
-                      placeholder="?? | ni hao | xin ch�o&#10;?? | xi� xi� | c?m on&#10;?? | z�i ji�n | t?m bi?t"></textarea>
+                      placeholder="你好 | ni hao | xin chào&#10;谢谢 | xiè xiè | cảm ơn&#10;再见 | zài jiàn | tạm biệt"></textarea>
                     <div class="flex gap-2 mt-2">
                       <button onclick="processBulkImport()"
                         class="px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 transition-all">Nh?p</button>
@@ -251,7 +251,7 @@
                   <!-- Word count badge -->
                   <p class="mt-4 text-xs text-gray-400 dark:text-zinc-500">
                     <span id="customWordCount" class="font-bold text-primary">0</span> t? d� th�m
-                    <span class="ml-2 text-yellow-500" id="customMinWarning" style="display:none">?? C?n �t nh?t 2 t?</span>
+                    <span class="ml-2 text-yellow-500" id="customMinWarning" style="display:none">⚠️ Cần ít nhất 2 từ</span>
                   </p>
 
                   <!-- START button � mobile only -->
@@ -377,7 +377,7 @@
                     dark:from-primary/20 dark:via-green-900/10 dark:to-transparent rounded-2xl border border-primary/30 dark:border-green-700/30 shadow-soft">
                     <div class="flex items-center gap-3 mb-3">
                       <div class="w-14 h-14 rounded-2xl bg-primary/20 dark:bg-primary/30 flex items-center justify-center text-3xl shrink-0 shadow-soft">
-                        <span id="selIcon">??</span>
+                        <span id="selIcon">📁</span>
                       </div>
                       <div class="flex-1 min-w-0">
                         <div id="selName" class="font-extrabold text-base text-text-main dark:text-white truncate"></div>
@@ -392,7 +392,7 @@
                     <!-- Warning: empty set -->
                     <div id="selEmptyWarning" class="hidden mb-3 p-2.5 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl
                       border border-yellow-300 dark:border-yellow-700 text-xs text-yellow-700 dark:text-yellow-300">
-                      ?? B? t? n�y chua c� t? n�o.
+                      ⚠️ Bộ từ này chưa có từ nào.
                       <a id="selAddWordsLink" href="#" class="font-bold underline ml-1">Th�m t? ngay</a>
                     </div>
 
@@ -620,12 +620,12 @@ async function loadCategories() {
     sel.innerHTML = '<option value="">-- Ch?n b? t? v?ng --</option>';
 
     if (admin.length) {
-      const g = document.createElement('optgroup'); g.label = '?? H? th?ng';
+      const g = document.createElement('optgroup'); g.label = '📚 Hệ thống';
       admin.forEach(c => g.appendChild(new Option(`${c.name} (${c.wordCount} t?)`, c._id)));
       sel.appendChild(g);
     }
     if (own.length) {
-      const g = document.createElement('optgroup'); g.label = '?? C� nh�n';
+      const g = document.createElement('optgroup'); g.label = '👤 Cá nhân';
       own.forEach(c => {
         const suffix = c.wordCount === 0 ? '  (chua c� t?)' : ` (${c.wordCount} t?)`;
         g.appendChild(new Option(c.name + suffix, c._id));
@@ -654,7 +654,7 @@ function displaySelectedCategory(id) {
 
   if (placeholder) placeholder.classList.add('hidden');
   info.classList.remove('hidden');
-  document.getElementById('selIcon').textContent      = selectedCategory.isAdmin ? '??' : '??';
+  document.getElementById('selIcon').textContent      = selectedCategory.isAdmin ? '📚' : '👤';
   document.getElementById('selName').textContent      = selectedCategory.name;
   document.getElementById('selWordCount').textContent = selectedCategory.wordCount;
   document.getElementById('selBadge').textContent     = selectedCategory.isAdmin ? 'H? th?ng' : 'C� nh�n';
@@ -1034,7 +1034,7 @@ function skipWrite() {
   const w  = practiceWords[currentIdx];
   const fb = document.getElementById('writeFeedback');
   fb.className = 'bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 rounded-2xl p-3 text-sm font-bold text-center mb-5 transition-all';
-  fb.innerHTML = `?? �� b? qua &nbsp; ��p �n: <span class="font-black">${esc(w.meaning)}</span>`;
+  fb.innerHTML = `⏭️ Đã bỏ qua &nbsp; Đáp án: <span class="font-black">${esc(w.meaning)}</span>`;
 
   sessionResults.push({ word: w, correct: false });
   wrongCount++;
@@ -1059,7 +1059,7 @@ async function endPractice() {
   document.getElementById('resWrong').textContent    = wrong;
   document.getElementById('resAccuracy').textContent = accuracy + '%';
   document.getElementById('resultEmoji').textContent =
-    accuracy >= 90 ? '??' : accuracy >= 70 ? '??' : accuracy >= 50 ? '??' : '??';
+    accuracy >= 90 ? '⭐' : accuracy >= 70 ? '🌟' : accuracy >= 50 ? '💡' : '❌';
 
   const mistakes       = sessionResults.filter(r => !r.correct).map(r => r.word);
   const mistakeSection = document.getElementById('mistakeSection');
@@ -1106,7 +1106,7 @@ async function loadHistory() {
     list.innerHTML = sessions.map(s => `
       <div class="flex items-center gap-3 p-3 bg-white dark:bg-card-dark rounded-2xl border
            border-gray-100 dark:border-green-900/30 text-sm shadow-soft">
-        <span class="text-2xl">${s.accuracy >= 90 ? '??' : s.accuracy >= 70 ? '??' : '??'}</span>
+        <span class="text-2xl">${s.accuracy >= 90 ? '⭐' : s.accuracy >= 70 ? '🌟' : '❌'}</span>
         <div class="flex-1 min-w-0">
           <div class="font-semibold text-text-main dark:text-white text-xs">
             �i?n nghia &nbsp;�&nbsp; ${s.sourceType === 'custom' ? 'T? t?o' : 'B? c� s?n'}
