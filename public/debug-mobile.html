@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -53,13 +53,13 @@
     </style>
 </head>
 <body>
-    <h3 style="margin: 10px 0;">ðŸ“± Mobile Debug Console</h3>
+    <h3 style="margin: 10px 0;">📱 Mobile Debug Console</h3>
     
-    <button onclick="checkAuth()">ðŸ” Check Auth Status</button>
-    <button onclick="testLogin()">ðŸ§ª Test Login (admin@test.com)</button>
-    <button onclick="testAdminPage()">ðŸ‘¨â€ðŸ’¼ Test Admin Page Access</button>
-    <button onclick="clearStorage()" class="btn-danger">ðŸ—‘ï¸ Clear Storage</button>
-    <button onclick="clearConsole()">ðŸ§¹ Clear Console</button>
+    <button onclick="checkAuth()">🔍 Check Auth Status</button>
+    <button onclick="testLogin()">🧪 Test Login (admin@test.com)</button>
+    <button onclick="testAdminPage()">👨‍💼 Test Admin Page Access</button>
+    <button onclick="clearStorage()" class="btn-danger">🗑️ Clear Storage</button>
+    <button onclick="clearConsole()">🧹 Clear Console</button>
     
     <div id="console"></div>
 
@@ -151,7 +151,7 @@
                     localStorage.setItem('authToken', token);
                     localStorage.setItem('user', JSON.stringify(user));
                     
-                    console.log('âœ… Saved to localStorage');
+                    console.log('✅ Saved to localStorage');
                     
                     // Verify
                     console.log('Verify - Token in storage: ' + (localStorage.getItem('authToken') ? 'YES' : 'NO'));
@@ -161,7 +161,7 @@
                     const redirectUrl = user.role === 'admin' ? '/admin/home_ad.html' : '/user/home.html';
                     console.log('Should redirect to: ' + redirectUrl);
                     
-                    if (confirm('Login thÃ nh cÃ´ng! Redirect Ä‘áº¿n ' + redirectUrl + '?')) {
+                    if (confirm('Login thành công! Redirect đến ' + redirectUrl + '?')) {
                         window.location.href = redirectUrl;
                     }
                 } else {
@@ -182,8 +182,8 @@
             const userStr = localStorage.getItem('user');
             
             if (!token) {
-                console.error('âŒ No token found. Please login first.');
-                alert('Vui lÃ²ng Ä‘Äƒng nháº­p trÆ°á»›c!');
+                console.error('❌ No token found. Please login first.');
+                alert('Vui lòng đăng nhập trước!');
                 return;
             }
             
@@ -195,15 +195,15 @@
                     console.log('User role: ' + (user.role || 'UNDEFINED'));
                     
                     if (user.role !== 'admin') {
-                        console.error('âŒ User is not admin. Role: ' + user.role);
-                        alert('Báº¡n khÃ´ng pháº£i admin. Role: ' + user.role);
+                        console.error('❌ User is not admin. Role: ' + user.role);
+                        alert('Bạn không phải admin. Role: ' + user.role);
                         return;
                     }
                 } catch (e) {
-                    console.error('âŒ Cannot parse user data');
+                    console.error('❌ Cannot parse user data');
                 }
             } else {
-                console.warn('âš ï¸ No user data, but have token');
+                console.warn('⚠️ No user data, but have token');
             }
             
             // Try to access admin profile API
@@ -221,24 +221,24 @@
                 console.log('API Response: ' + JSON.stringify(data, null, 2));
                 
                 if (data.success && data.data) {
-                    console.log('âœ… Profile fetched successfully');
+                    console.log('✅ Profile fetched successfully');
                     console.log('   Email: ' + data.data.email);
                     console.log('   Role: ' + data.data.role);
                     
                     if (data.data.role !== 'admin') {
-                        console.error('âŒ Profile says you are not admin!');
+                        console.error('❌ Profile says you are not admin!');
                         alert('API says you are: ' + data.data.role + '\nNot admin!');
                         return;
                     }
                 }
             } catch (error) {
-                console.error('âŒ API Error: ' + error.message);
-                alert('Lá»—i gá»i API: ' + error.message);
+                console.error('❌ API Error: ' + error.message);
+                alert('Lỗi gọi API: ' + error.message);
                 return;
             }
             
             // If all checks passed, redirect to admin page
-            console.log('âœ… All checks passed. Redirecting to admin page...');
+            console.log('✅ All checks passed. Redirecting to admin page...');
             if (confirm('Redirect to admin page?')) {
                 window.location.href = '/admin/home_ad.html';
             }
@@ -247,9 +247,9 @@
         }
         
         function clearStorage() {
-            if (confirm('XÃ³a táº¥t cáº£ dá»¯ liá»‡u localStorage?')) {
+            if (confirm('Xóa tất cả dữ liệu localStorage?')) {
                 localStorage.clear();
-                console.log('âœ… localStorage cleared');
+                console.log('✅ localStorage cleared');
                 checkAuth();
             }
         }
@@ -260,7 +260,7 @@
         }
         
         // Initial check
-        console.log('ðŸ“± Mobile Debug Console Ready');
+        console.log('📱 Mobile Debug Console Ready');
         console.log('Tap buttons above to test');
         checkAuth();
     </script>

@@ -30,7 +30,9 @@ class ApiClient {
                   || sessionStorage.getItem('authToken');
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
-      // Token added to request (production: do not log sensitive data)
+      console.log('🔑 Using token:', token.substring(0, 20) + '...');
+    } else {
+      console.warn('⚠️ No token found in storage');
     }
 
     try {

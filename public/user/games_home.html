@@ -1,23 +1,23 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html class="light" lang="vi">
 
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title data-i18n="gamesHome.pageTitle">Menu Chá»n TrÃ² ChÆ¡i Há»c Táº­p</title>
+    <title data-i18n="gamesHome.pageTitle">Menu Chọn Trò Chơi Học Tập</title>
     <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>ðŸŽ®</text></svg>">
-    <script src="https://cdn.tailwindcss.com"></script>
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎮</text></svg>">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
         rel="stylesheet" />
     <link
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
         rel="stylesheet" />
-    <link rel="stylesheet" href="/css/user-common.css" />
+    <link rel="stylesheet" href="../css/user-common.css" />
     <!-- Translations -->
-    <script src="/i18n/translations.js"></script>
+    <script src="../i18n/translations.js"></script>
     <!-- API Client -->
-    <script src="/js/api-client.js"></script>
+    <script src="../js/api-client.js"></script>
     <style>
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
@@ -27,7 +27,7 @@
             font-variation-settings: 'FILL' 1;
         }
     </style>
-    <script src="/js/sidebar.js"></script>
+    <script src="../js/sidebar.js"></script>
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -125,11 +125,11 @@
                         <div class="lg:col-span-8">
                             <h1
                                 class="text-2xl md:text-4xl lg:text-5xl font-extrabold text-[#0e1b0e] dark:text-white mb-4 tracking-tight" data-i18n="gamesHome.title">
-                                Menu Chá»n TrÃ² ChÆ¡i Há»c Táº­p
+                                Menu Chọn Trò Chơi Học Tập
                             </h1>
                             <p class="text-sm md:text-lg text-gray-600 dark:text-gray-300 font-medium" data-i18n="gamesHome.subtitle">
-                                ChÃ o má»«ng bÃ© quay láº¡i! HÃ£y chá»n má»™t trÃ² chÆ¡i tháº­t vui Ä‘á»ƒ báº¯t Ä‘áº§u khÃ¡m phÃ¡ nhá»¯ng tá»« vá»±ng
-                                má»›i nhÃ©!
+                                Chào mừng bé quay lại! Hãy chọn một trò chơi thật vui để bắt đầu khám phá những từ vựng
+                                mới nhé!
                             </p>
                         </div>
 
@@ -143,8 +143,8 @@
                                     <div
                                         class="animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent">
                                     </div>
-                                    <span class="text-gray-600 dark:text-gray-300 text-sm font-medium" data-i18n="gamesHome.loadingCategories">Äang táº£i danh
-                                        má»¥c...</span>
+                                    <span class="text-gray-600 dark:text-gray-300 text-sm font-medium" data-i18n="gamesHome.loadingCategories">Đang tải danh
+                                        mục...</span>
                                 </div>
 
                                 <!-- Empty State -->
@@ -153,16 +153,16 @@
                                     <div class="flex flex-col items-center text-center gap-3 mb-3">
                                         <span
                                             class="material-symbols-outlined text-4xl text-yellow-600">folder_off</span>
-                                        <span class="font-bold text-sm text-yellow-800 dark:text-yellow-400" data-i18n="gamesHome.noCategories">ChÆ°a cÃ³ bá»™
-                                            Ä‘á» nÃ o</span>
+                                        <span class="font-bold text-sm text-yellow-800 dark:text-yellow-400" data-i18n="gamesHome.noCategories">Chưa có bộ
+                                            đề nào</span>
                                     </div>
                                     <p class="text-xs text-yellow-700 dark:text-yellow-400 mb-3 text-center" data-i18n="gamesHome.noCategoriesDesc">
-                                        HÃ£y táº¡o danh má»¥c vÃ  thÃªm tá»« vá»±ng trÆ°á»›c!
+                                        Hãy tạo danh mục và thêm từ vựng trước!
                                     </p>
                                     <a href="personal_vocabulary_categories_screen.html"
                                         class="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-white text-sm font-bold rounded-full transition-all w-full justify-center shadow-lg">
                                         <span class="material-symbols-outlined">add</span>
-                                        <span data-i18n="gamesHome.createCategory">Táº¡o danh má»¥c má»›i</span>
+                                        <span data-i18n="gamesHome.createCategory">Tạo danh mục mới</span>
                                     </a>
                                 </div>
 
@@ -170,7 +170,7 @@
                                 <div id="categorySelectContainer" class="hidden">
                                     <select id="categorySelect"
                                         class="w-full px-4 py-3 text-base font-semibold bg-white dark:bg-zinc-800 border-2 border-primary/40 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary/40 focus:border-primary transition-all cursor-pointer shadow-sm hover:shadow-md">
-                                        <option value="" data-i18n="gamesHome.selectPlaceholder">-- Chá»n bá»™ tá»« vá»±ng --</option>
+                                        <option value="" data-i18n="gamesHome.selectPlaceholder">-- Chọn bộ từ vựng --</option>
                                     </select>
 
                                     <!-- Selected Category Info -->
@@ -186,11 +186,11 @@
                                                 <div
                                                     class="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
                                                     <span class="font-semibold" id="selectedWordCountText"></span>
-                                                    <span>â€¢</span>
+                                                    <span>•</span>
                                                     <span id="selectedBadge"></span>
                                                 </div>
                                             </div>
-                                            <div class="text-2xl">âœ…</div>
+                                            <div class="text-2xl">✅</div>
                                         </div>
                                     </div>
 
@@ -199,11 +199,11 @@
                                     <div class="flex items-start gap-2">
                                         <span class="material-symbols-outlined text-yellow-500 text-lg mt-0.5">warning</span>
                                         <div>
-                                            <p class="text-xs font-bold text-yellow-800 dark:text-yellow-400" data-i18n="gamesHome.emptyPersonalCategoryTitle">ChÆ°a cÃ³ tá»« vá»±ng</p>
-                                            <p class="text-xs text-yellow-700 dark:text-yellow-500 mt-0.5" data-i18n="gamesHome.emptyPersonalCategoryDesc">HÃ£y thÃªm tá»« vÃ o bá»™ nÃ y trÆ°á»›c khi chÆ¡i game.</p>
+                                            <p class="text-xs font-bold text-yellow-800 dark:text-yellow-400" data-i18n="gamesHome.emptyPersonalCategoryTitle">Chưa có từ vựng</p>
+                                            <p class="text-xs text-yellow-700 dark:text-yellow-500 mt-0.5" data-i18n="gamesHome.emptyPersonalCategoryDesc">Hãy thêm từ vào bộ này trước khi chơi game.</p>
                                             <a id="addWordsLink" href="#" class="inline-flex items-center gap-1 mt-2 text-xs font-bold text-yellow-700 dark:text-yellow-400 underline hover:no-underline">
                                                 <span class="material-symbols-outlined text-sm">add_circle</span>
-                                                <span data-i18n="gamesHome.addWordsNow">ThÃªm tá»« vá»±ng ngay</span>
+                                                <span data-i18n="gamesHome.addWordsNow">Thêm từ vựng ngay</span>
                                             </a>
                                         </div>
                                     </div>
@@ -222,8 +222,8 @@
                                 <span class="material-symbols-outlined text-4xl text-primary"
                                     style="font-variation-settings: 'FILL' 1;">sports_esports</span>
                                 <div>
-                                    <h3 class="text-2xl font-bold text-[#0e1b0e] dark:text-white" data-i18n="gamesHome.gamesListTitle">Danh sÃ¡ch trÃ² chÆ¡i</h3>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="gamesHome.gamesListSubtitle">Click vÃ o game Ä‘á»ƒ báº¯t Ä‘áº§u chÆ¡i</p>
+                                    <h3 class="text-2xl font-bold text-[#0e1b0e] dark:text-white" data-i18n="gamesHome.gamesListTitle">Danh sách trò chơi</h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400" data-i18n="gamesHome.gamesListSubtitle">Click vào game để bắt đầu chơi</p>
                                 </div>
                             </div>
 
@@ -233,7 +233,7 @@
                                     <div class="flex-1 relative group/select">
                                         <select id="voiceSelect"
                                             class="w-full pl-10 pr-8 py-2.5 text-sm bg-gray-50 dark:bg-zinc-800/50 border-2 border-gray-200 dark:border-zinc-700 hover:border-primary/50 focus:border-primary rounded-xl appearance-none outline-none transition-all font-medium text-[#0e1b0e] dark:text-gray-200 cursor-pointer">
-                                            <option value="" disabled>â³ Äang táº£i giá»ng...</option>
+                                            <option value="" disabled>⏳ Đang tải giọng...</option>
                                         </select>
                                         <div class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-hover/select:text-primary transition-colors">
                                             <span class="material-symbols-outlined text-lg">record_voice_over</span>
@@ -246,7 +246,7 @@
                                     <button onclick="testCurrentVoice()"
                                         class="px-4 py-2.5 bg-primary hover:bg-primary/90 text-[#0e1b0e] text-sm font-bold rounded-xl shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center gap-2 whitespace-nowrap">
                                         <span class="material-symbols-outlined text-lg">volume_up</span>
-                                        <span data-i18n="gamesHome.testVoice">Nghe thá»­</span>
+                                        <span data-i18n="gamesHome.testVoice">Nghe thử</span>
                                     </button>
                                 </div>
                             </div>
@@ -261,13 +261,13 @@
                                         <span class="material-symbols-outlined text-4xl text-pink-500"
                                             style="font-variation-settings: 'FILL' 1">volume_up</span>
                                     </div>
-                                    <h3 class="text-lg font-bold text-[#0e1b0e] dark:text-white mb-1" data-i18n="gamesHome.game1Title">Nghe â€“ Chá»n Ä‘Ãºng
+                                    <h3 class="text-lg font-bold text-[#0e1b0e] dark:text-white mb-1" data-i18n="gamesHome.game1Title">Nghe – Chọn đúng
                                     </h3>
-                                    <p class="text-gray-500 dark:text-gray-400 text-xs" data-i18n="gamesHome.game1Desc">Luyá»‡n Ä‘Ã´i tai tinh anh</p>
+                                    <p class="text-gray-500 dark:text-gray-400 text-xs" data-i18n="gamesHome.game1Desc">Luyện đôi tai tinh anh</p>
                                 </div>
                                 <div
                                     class="w-full py-3 bg-primary text-[#0e1b0e] font-bold rounded-full shadow-lg shadow-primary/30 group-hover:brightness-105 transition-all flex items-center justify-center gap-2 text-sm">
-                                    <span data-i18n="gamesHome.selectSet">Chá»n bá»™ Ä‘á»</span>
+                                    <span data-i18n="gamesHome.selectSet">Chọn bộ đề</span>
                                     <span class="material-symbols-outlined text-lg">arrow_forward</span>
                                 </div>
                             </div>
@@ -279,13 +279,13 @@
                                         <span class="material-symbols-outlined text-4xl text-blue-500"
                                             style="font-variation-settings: 'FILL' 1">extension</span>
                                     </div>
-                                    <h3 class="text-lg font-bold text-[#0e1b0e] dark:text-white mb-1" data-i18n="gamesHome.game2Title">GhÃ©p chá»¯ â€“ GhÃ©p
-                                        nghÄ©a</h3>
-                                    <p class="text-gray-500 dark:text-gray-400 text-xs" data-i18n="gamesHome.game2Desc">Ná»‘i tá»« vá»›i nghÄ©a chÃ­nh xÃ¡c</p>
+                                    <h3 class="text-lg font-bold text-[#0e1b0e] dark:text-white mb-1" data-i18n="gamesHome.game2Title">Ghép chữ – Ghép
+                                        nghĩa</h3>
+                                    <p class="text-gray-500 dark:text-gray-400 text-xs" data-i18n="gamesHome.game2Desc">Nối từ với nghĩa chính xác</p>
                                 </div>
                                 <div
                                     class="w-full py-3 bg-primary text-[#0e1b0e] font-bold rounded-full shadow-lg shadow-primary/30 group-hover:brightness-105 transition-all flex items-center justify-center gap-2 text-sm">
-                                    <span data-i18n="gamesHome.selectSet">Chá»n bá»™ Ä‘á»</span>
+                                    <span data-i18n="gamesHome.selectSet">Chọn bộ đề</span>
                                     <span class="material-symbols-outlined text-lg">arrow_forward</span>
                                 </div>
                             </div>
@@ -297,13 +297,13 @@
                                         <span class="material-symbols-outlined text-4xl text-orange-500"
                                             style="font-variation-settings: 'FILL' 1">edit_square</span>
                                     </div>
-                                    <h3 class="text-lg font-bold text-[#0e1b0e] dark:text-white mb-1" data-i18n="gamesHome.game3Title">Äiá»n tá»« cÃ²n thiáº¿u
+                                    <h3 class="text-lg font-bold text-[#0e1b0e] dark:text-white mb-1" data-i18n="gamesHome.game3Title">Điền từ còn thiếu
                                     </h3>
-                                    <p class="text-gray-500 dark:text-gray-400 text-xs" data-i18n="gamesHome.game3Desc">Thá»­ tÃ i ghi nhá»› máº·t chá»¯</p>
+                                    <p class="text-gray-500 dark:text-gray-400 text-xs" data-i18n="gamesHome.game3Desc">Thử tài ghi nhớ mặt chữ</p>
                                 </div>
                                 <div
                                     class="w-full py-3 bg-primary text-[#0e1b0e] font-bold rounded-full shadow-lg shadow-primary/30 group-hover:brightness-105 transition-all flex items-center justify-center gap-2 text-sm">
-                                    <span data-i18n="gamesHome.selectSet">Chá»n bá»™ Ä‘á»</span>
+                                    <span data-i18n="gamesHome.selectSet">Chọn bộ đề</span>
                                     <span class="material-symbols-outlined text-lg">arrow_forward</span>
                                 </div>
                             </div>
@@ -315,13 +315,13 @@
                                         <span class="material-symbols-outlined text-4xl text-purple-500"
                                             style="font-variation-settings: 'FILL' 1">translate</span>
                                     </div>
-                                    <h3 class="text-lg font-bold text-[#0e1b0e] dark:text-white mb-1" data-i18n="gamesHome.game4Title">Tráº¯c nghiá»‡m Viá»‡t -
+                                    <h3 class="text-lg font-bold text-[#0e1b0e] dark:text-white mb-1" data-i18n="gamesHome.game4Title">Trắc nghiệm Việt -
                                         Anh</h3>
-                                    <p class="text-gray-500 dark:text-gray-400 text-xs" data-i18n="gamesHome.game4Desc">Dá»‹ch tá»« Viá»‡t sang Anh</p>
+                                    <p class="text-gray-500 dark:text-gray-400 text-xs" data-i18n="gamesHome.game4Desc">Dịch từ Việt sang Anh</p>
                                 </div>
                                 <div
                                     class="w-full py-3 bg-primary text-[#0e1b0e] font-bold rounded-full shadow-lg shadow-primary/30 group-hover:brightness-105 transition-all flex items-center justify-center gap-2 text-sm">
-                                    <span data-i18n="gamesHome.selectSet">Chá»n bá»™ Ä‘á»</span>
+                                    <span data-i18n="gamesHome.selectSet">Chọn bộ đề</span>
                                     <span class="material-symbols-outlined text-lg">arrow_forward</span>
                                 </div>
                             </div>
@@ -333,13 +333,13 @@
                                         <span class="material-symbols-outlined text-4xl text-emerald-500"
                                             style="font-variation-settings: 'FILL' 1">forest</span>
                                     </div>
-                                    <h3 class="text-lg font-bold text-[#0e1b0e] dark:text-white mb-1" data-i18n="gamesHome.game5Title">nghe vÃ  phÃ¡t Ã¢m
+                                    <h3 class="text-lg font-bold text-[#0e1b0e] dark:text-white mb-1" data-i18n="gamesHome.game5Title">nghe và phát âm
                                     </h3>
-                                    <p class="text-gray-500 dark:text-gray-400 text-xs" data-i18n="gamesHome.game5Desc">ChÄƒm sÃ³c CÃ¢y Kiáº¿n Thá»©c</p>
+                                    <p class="text-gray-500 dark:text-gray-400 text-xs" data-i18n="gamesHome.game5Desc">Chăm sóc Cây Kiến Thức</p>
                                 </div>
                                 <div
                                     class="w-full py-3 bg-primary text-[#0e1b0e] font-bold rounded-full shadow-lg shadow-primary/30 group-hover:brightness-105 transition-all flex items-center justify-center gap-2 text-sm">
-                                    <span data-i18n="gamesHome.selectSet">Chá»n bá»™ Ä‘á»</span>
+                                    <span data-i18n="gamesHome.selectSet">Chọn bộ đề</span>
                                     <span class="material-symbols-outlined text-lg">arrow_forward</span>
                                 </div>
                             </div>
@@ -353,12 +353,12 @@
                                         <span class="material-symbols-outlined text-4xl text-red-500"
                                             style="font-variation-settings: 'FILL' 1">quiz</span>
                                     </div>
-                                    <h3 class="text-lg font-bold text-[#0e1b0e] dark:text-white mb-1" data-i18n="gamesHome.game6Title"> kiá»ƒm tra</h3>
-                                    <p class="text-gray-500 dark:text-gray-400 text-xs" data-i18n="gamesHome.game6Desc">Thá»­ thÃ¡ch kiáº¿n thá»©c</p>
+                                    <h3 class="text-lg font-bold text-[#0e1b0e] dark:text-white mb-1" data-i18n="gamesHome.game6Title"> kiểm tra</h3>
+                                    <p class="text-gray-500 dark:text-gray-400 text-xs" data-i18n="gamesHome.game6Desc">Thử thách kiến thức</p>
                                 </div>
                                 <div
                                     class="w-full py-3 bg-primary text-[#0e1b0e] font-bold rounded-full shadow-lg shadow-primary/30 group-hover:brightness-105 transition-all flex items-center justify-center gap-2 text-sm">
-                                    <span data-i18n="gamesHome.startTest">Báº¯t Ä‘áº§u thi</span>
+                                    <span data-i18n="gamesHome.startTest">Bắt đầu thi</span>
                                     <span class="material-symbols-outlined text-lg">arrow_forward</span>
                                 </div>
                             </div>
@@ -367,7 +367,7 @@
                     </div>
                 </div>
                 <footer class="mt-12 text-center pb-10 px-8">
-                    <p class="text-sm text-gray-400 font-medium">Â© 2024 VocaKids - Há»c táº­p lÃ  niá»m vui!</p>
+                    <p class="text-sm text-gray-400 font-medium">© 2024 VocaKids - Học tập là niềm vui!</p>
                 </footer>
             </main>
         </div>
@@ -407,11 +407,11 @@
             // Re-render options with new translations
             select.innerHTML = `<option value="">${i18n.t('gamesHome.selectPlaceholder')}</option>`;
             categories.forEach(cat => {
-                const badge = cat.isAdmin ? `ðŸ‘‘ ${i18n.t('gamesHome.adminBadge')}` : `ðŸ‘¤ ${i18n.t('gamesHome.myBadge')}`;
+                const badge = cat.isAdmin ? `👑 ${i18n.t('gamesHome.adminBadge')}` : `👤 ${i18n.t('gamesHome.myBadge')}`;
                 const translatedName = i18n.translateCategoryName(cat.name);
                 const option = document.createElement('option');
                 option.value = cat._id;
-                const emptyNote = (!cat.isAdmin && cat.wordCount === 0) ? ` âš ï¸ ${i18n.t('gamesHome.noWords') || '(chÆ°a cÃ³ tá»«)'}` : '';
+                const emptyNote = (!cat.isAdmin && cat.wordCount === 0) ? ` ⚠️ ${i18n.t('gamesHome.noWords') || '(chưa có từ)'}` : '';
                 option.textContent = `${translatedName} (${cat.wordCount} ${i18n.t('gamesHome.wordsCount')}) ${badge}${emptyNote}`;
                 option.dataset.category = JSON.stringify(cat);
                 if (!cat.isAdmin && cat.wordCount === 0) {
@@ -429,7 +429,7 @@
                 }
             }
 
-            console.log('âœ… Updated category select options for language:', i18n.currentLang);
+            console.log('✅ Updated category select options for language:', i18n.currentLang);
         }
 
         // ========== Initialize ==========
@@ -439,25 +439,25 @@
             
             // Wait for authAPI to be available
             if (typeof authAPI === 'undefined') {
-                console.error('âŒ authAPI not loaded!');
+                console.error('❌ authAPI not loaded!');
                 setTimeout(() => window.location.reload(), 1000);
                 return;
             }
 
             // Check authentication using authAPI
             if (!authAPI.isAuthenticated()) {
-                console.log('âš ï¸ Not authenticated, redirecting to login...');
+                console.log('⚠️ Not authenticated, redirecting to login...');
                 window.location.href = '../login_screen.html';
                 return;
             }
-            console.log('âœ… Authenticated, loading games home...');
+            console.log('✅ Authenticated, loading games home...');
 
             // Load categories on page load
             loadCategoriesForSelect();
 
             // Register callback for language changes
             i18n.onLanguageChange(() => {
-                console.log('ðŸŒ Language changed, updating category select...');
+                console.log('🌐 Language changed, updating category select...');
                 updateCategorySelectOptions();
             });
         });
@@ -477,7 +477,7 @@
                 const response = await authAPI.get('/categories/for-games');
                 categories = response.data;
 
-                console.log('ðŸ“Š Loaded categories:', categories);
+                console.log('📊 Loaded categories:', categories);
 
                 if (categories.length === 0) {
                     loading.classList.add('hidden');
@@ -521,7 +521,7 @@
                     selectedCategoryId = savedCategoryId;
                     selectedCategory = JSON.parse(savedCategory);
 
-                    console.log('âœ… Restored saved category:', selectedCategory);
+                    console.log('✅ Restored saved category:', selectedCategory);
 
                     // Show selected category info
                     displaySelectedCategory();
@@ -530,7 +530,7 @@
                     document.getElementById('gamesSection').classList.remove('hidden');
                 } else {
                     // Category no longer exists, clear localStorage
-                    console.log('âš ï¸ Saved category not found, clearing localStorage');
+                    console.log('⚠️ Saved category not found, clearing localStorage');
                     localStorage.removeItem('selectedCategoryId');
                     localStorage.removeItem('selectedCategory');
                 }
@@ -558,7 +558,7 @@
             selectedCategoryId = select.value;
             selectedCategory = JSON.parse(selectedOption.dataset.category);
 
-            console.log('âœ… Selected category:', selectedCategory);
+            console.log('✅ Selected category:', selectedCategory);
 
             // Save to localStorage
             localStorage.setItem('selectedCategoryId', selectedCategoryId);
@@ -603,8 +603,8 @@
             
             // Update badge with translation
             document.getElementById('selectedBadge').innerHTML = selectedCategory.isAdmin
-                ? `<span class="font-bold text-yellow-700 dark:text-yellow-500">ðŸ‘‘ ${i18n.t('gamesHome.adminBadge')}</span>`
-                : `<span class="font-bold text-green-700 dark:text-green-500">ðŸ‘¤ ${i18n.t('gamesHome.myBadge')}</span>`;
+                ? `<span class="font-bold text-yellow-700 dark:text-yellow-500">👑 ${i18n.t('gamesHome.adminBadge')}</span>`
+                : `<span class="font-bold text-green-700 dark:text-green-500">👤 ${i18n.t('gamesHome.myBadge')}</span>`;
 
             info.classList.remove('hidden');
 
@@ -628,7 +628,7 @@
         function playGame(gameUrl) {
             // Special handling for game_test.html - no category needed
             if (gameUrl === 'game_test.html') {
-                console.log('ðŸŽ¯ Starting test game (no category required)');
+                console.log('🎯 Starting test game (no category required)');
                 window.location.href = `../games/${gameUrl}`;
                 return;
             }
@@ -653,7 +653,7 @@
 
             // Warn if selected personal category has no words
             if (!selectedCategory.isAdmin && selectedCategory.wordCount === 0) {
-                showError(i18n.t('gamesHome.emptyPersonalCategory') || 'Bá»™ tá»« vá»±ng nÃ y chÆ°a cÃ³ tá»« nÃ o. HÃ£y thÃªm tá»« vá»±ng trÆ°á»›c khi chÆ¡i!');
+                showError(i18n.t('gamesHome.emptyPersonalCategory') || 'Bộ từ vựng này chưa có từ nào. Hãy thêm từ vựng trước khi chơi!');
                 // Redirect user to word list screen to add words
                 setTimeout(() => {
                     window.location.href = `category_word_list_screen.html?categoryId=${selectedCategoryId}`;
@@ -662,7 +662,7 @@
             }
 
             // Redirect to game with categoryId
-            console.log(`ðŸŽ® Starting game: ${gameUrl} with category: ${selectedCategoryId}`);
+            console.log(`🎮 Starting game: ${gameUrl} with category: ${selectedCategoryId}`);
             window.location.href = `../games/${gameUrl}?categoryId=${selectedCategoryId}`;
         }
 

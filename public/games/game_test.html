@@ -1,17 +1,17 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html class="light" lang="en">
 
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Vocabulary Quest - Ultimate Challenge</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>ðŸŽ®</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎮</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/css/games-common.css" />
+    <link rel="stylesheet" href="../css/games-common.css" />
     <!-- API Client for authenticated requests -->
-    <script src="/js/api-client.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../js/api-client.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -207,7 +207,7 @@
                         scriptsLoaded++;
                         if (scriptsLoaded === totalScripts) {
                             window.headerLoaded = true;
-                            console.log('âœ… Game header fully loaded');
+                            console.log('✅ Game header fully loaded');
                         }
                     };
                     
@@ -233,45 +233,45 @@
     <div id="difficultyModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white dark:bg-gray-800 rounded-2xl sm:rounded-3xl shadow-2xl p-5 sm:p-6 md:p-8 w-full max-w-2xl animate-slide-in-up">
             <div class="text-center mb-6 sm:mb-8">
-                <div class="text-5xl sm:text-6xl mb-3 sm:mb-4">ðŸŽ¯</div>
-                <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">Chá»n Má»©c Äá»™ Kiá»ƒm Tra</h2>
-                <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400">Chá»n Ä‘á»™ khÃ³ phÃ¹ há»£p vá»›i trÃ¬nh Ä‘á»™ cá»§a báº¡n.<br/>Tá»« vá»±ng sáº½ Ä‘Æ°á»£c láº¥y ngáº«u nhiÃªn tá»« táº¥t cáº£ bá»™ Ä‘á» cÃ¹ng má»©c Ä‘á»™.</p>
+                <div class="text-5xl sm:text-6xl mb-3 sm:mb-4">🎯</div>
+                <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">Chọn Mức Độ Kiểm Tra</h2>
+                <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400">Chọn độ khó phù hợp với trình độ của bạn.<br/>Từ vựng sẽ được lấy ngẫu nhiên từ tất cả bộ đề cùng mức độ.</p>
             </div>
             
             <!-- Difficulty Selection -->
             <div class="mb-5 sm:mb-6">
                 <h3 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4 flex items-center gap-2">
                     <span class="material-symbols-outlined">tune</span>
-                    Chá»n Má»©c Äá»™
+                    Chọn Mức Độ
                 </h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
                     <button onclick="selectDifficulty('beginner')" 
                         class="difficulty-btn p-3 sm:p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-green-500 dark:hover:border-green-500 transition-all flex flex-col items-center gap-1.5 sm:gap-2 group active:scale-95"
                         data-difficulty="beginner">
-                        <span class="text-2xl sm:text-3xl">ðŸŒ±</span>
+                        <span class="text-2xl sm:text-3xl">🌱</span>
                         <span class="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white">Beginner</span>
-                        <span class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">CÆ¡ báº£n</span>
+                        <span class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">Cơ bản</span>
                     </button>
                     <button onclick="selectDifficulty('intermediate')" 
                         class="difficulty-btn p-3 sm:p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-all flex flex-col items-center gap-1.5 sm:gap-2 group active:scale-95"
                         data-difficulty="intermediate">
-                        <span class="text-2xl sm:text-3xl">ðŸŒ¿</span>
+                        <span class="text-2xl sm:text-3xl">🌿</span>
                         <span class="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white">Intermediate</span>
-                        <span class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">Trung cáº¥p</span>
+                        <span class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">Trung cấp</span>
                     </button>
                     <button onclick="selectDifficulty('advanced')" 
                         class="difficulty-btn p-3 sm:p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-purple-500 dark:hover:border-purple-500 transition-all flex flex-col items-center gap-1.5 sm:gap-2 group active:scale-95"
                         data-difficulty="advanced">
-                        <span class="text-2xl sm:text-3xl">ðŸŒ³</span>
+                        <span class="text-2xl sm:text-3xl">🌳</span>
                         <span class="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white">Advanced</span>
-                        <span class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">NÃ¢ng cao</span>
+                        <span class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">Nâng cao</span>
                     </button>
                     <button onclick="selectDifficulty('native')" 
                         class="difficulty-btn p-3 sm:p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-red-500 dark:hover:border-red-500 transition-all flex flex-col items-center gap-1.5 sm:gap-2 group active:scale-95"
                         data-difficulty="native">
-                        <span class="text-2xl sm:text-3xl">ðŸ†</span>
+                        <span class="text-2xl sm:text-3xl">🏆</span>
                         <span class="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white">Native</span>
-                        <span class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">Báº£n ngá»¯</span>
+                        <span class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">Bản ngữ</span>
                     </button>
                 </div>
             </div>
@@ -281,7 +281,7 @@
                 <button onclick="startTest()" 
                     class="w-full py-3 sm:py-4 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold text-base sm:text-lg rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 sm:gap-3 active:scale-95">
                     <span class="material-symbols-outlined text-xl sm:text-2xl">play_arrow</span>
-                    <span>Báº¯t Äáº§u Kiá»ƒm Tra</span>
+                    <span>Bắt Đầu Kiểm Tra</span>
                 </button>
             </div>
         </div>
@@ -293,7 +293,7 @@
         <!-- Real-time Test Stats -->
         <div style="display: none;" id="testStatsDisplay" class="mb-3 sm:mb-4 text-center bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-3 rounded-full shadow-md border border-slate-200 dark:border-slate-700">
             <p class="text-sm sm:text-base font-bold text-slate-700 dark:text-slate-300">
-                ðŸ“Š <span id="test-stats-correct">0</span>/<span id="test-stats-total">22</span> Ä‘Ãºng Â· <span id="test-stats-percentage">0</span>%
+                📊 <span id="test-stats-correct">0</span>/<span id="test-stats-total">22</span> đúng · <span id="test-stats-percentage">0</span>%
             </p>
         </div>
         
@@ -301,7 +301,7 @@
         <div id="round1" class="game-round hidden w-full">
             <div class="text-center ">
                 <div class="inline-block px-4 sm:px-6 py-1.5 sm:py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full font-bold text-xs sm:text-sm mb-3 sm:mb-4">
-                    ðŸŽ§ ROUND 1: LISTENING | Nghe vÃ  chá»n nghÄ©a Ä‘Ãºng
+                    🎧 ROUND 1: LISTENING | Nghe và chọn nghĩa đúng
                 </div>
             </div>
             
@@ -309,7 +309,7 @@
                  <!-- Interaction Zone: Speaker -->
                  <section id="round1-speaker-section"
                     class="flex flex-col items-center text-center gap-3 sm:gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                    <h2 class="text-slate-800 dark:text-slate-200 text-base sm:text-lg md:text-xl font-medium">Nghe vÃ  chá»n nghÄ©a Ä‘Ãºng!</h2>
+                    <h2 class="text-slate-800 dark:text-slate-200 text-base sm:text-lg md:text-xl font-medium">Nghe và chọn nghĩa đúng!</h2>
                     <div class="relative group">
                         <!-- Ripple Effect Layers -->
                         <div class="absolute inset-0 rounded-full bg-primary/20 animate-ping opacity-75"></div>
@@ -322,7 +322,7 @@
                     <button id="round1-replayBtn"
                         class="text-primary hover:text-blue-600 dark:hover:text-blue-400 text-xs sm:text-sm font-semibold flex items-center gap-1 transition-colors active:scale-95">
                         <span class="material-symbols-outlined text-base sm:text-lg">replay</span>
-                        Nháº¥p Ä‘á»ƒ nghe láº¡i
+                        Nhấp để nghe lại
                     </button>
                     <!-- Display Chinese word (hidden initially, shown after first play) -->
                     <div id="round1-wordDisplay" class="hidden mt-3 sm:mt-4 text-center">
@@ -339,7 +339,7 @@
                 <!-- Next Button -->
                 <div class="flex justify-center ">
                     <button id="round1-nextBtn" disabled class="flex items-center justify-center gap-2 bg-slate-300 dark:bg-slate-700 text-slate-500 dark:text-slate-400 font-bold text-base sm:text-lg px-6 sm:px-8 py-2.5 sm:py-3 rounded-full shadow-lg transition-all min-w-[140px] sm:min-w-[160px] active:scale-95">
-                        <span>Chá»n Ä‘Ã¡p Ã¡n</span>
+                        <span>Chọn đáp án</span>
                     </button>
                 </div>
             </div>
@@ -349,16 +349,16 @@
         <div id="round2" class="game-round hidden w-full">
             <div class="text-center ">
                 <div class="inline-block px-4 sm:px-6 py-1.5 sm:py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full font-bold text-xs sm:text-sm mb-3 sm:mb-4">
-                    ðŸ”— ROUND 2: MATCHING
+                    🔗 ROUND 2: MATCHING
                 </div>
             </div>
              <!-- Instructions -->
             <div class="text-center mb-6 sm:mb-8 md:mb-12">
                 <h2 class="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-2">
-                    GhÃ©p tá»« Trung vá»›i nghÄ©a!
+                    Ghép từ Trung với nghĩa!
                 </h2>
                 <p id="round2-instruction" class="text-slate-500 dark:text-slate-400 text-base sm:text-lg">
-                    Nháº¥p vÃ o tá»« tiáº¿ng Trung, sau Ä‘Ã³ nháº¥p vÃ o nghÄ©a tiáº¿ng Viá»‡t Ä‘á»ƒ ghÃ©p chÃºng.
+                    Nhấp vào từ tiếng Trung, sau đó nhấp vào nghĩa tiếng Việt để ghép chúng.
                 </p>
             </div>
             <!-- Game Board Container -->
@@ -382,7 +382,7 @@
         <div id="round3" class="game-round hidden w-full">
             <div class="text-center ">
                  <div class="inline-block px-4 sm:px-6 py-1.5 sm:py-2 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full font-bold text-xs sm:text-sm mb-3 sm:mb-4">
-                    ðŸ–¼ï¸ ROUND 3: PICTURE QUIZ
+                    🖼️ ROUND 3: PICTURE QUIZ
                 </div>
             </div>
             
@@ -391,8 +391,8 @@
                 <div class="lg:col-span-7 flex flex-col w-full justify-center">
                     <!-- Question Prompt -->
                     <h1 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-center lg:text-left mb-3 sm:mb-4 text-gray-800 dark:text-gray-100 drop-shadow-sm leading-tight">
-                        NhÃ¬n tá»« tiáº¿ng Trung.<br />
-                        <span class="text-primary">NghÄ©a lÃ  gÃ¬?</span>
+                        Nhìn ảnh và đoán nghĩa.<br />
+                        <span class="text-primary">đây là gì?</span>
                     </h1>
                     <!-- Image Card -->
                     <div class="relative w-full aspect-[4/3] rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl bg-white dark:bg-slate-800 border-2 sm:border-4 border-white dark:border-slate-800 ring-1 ring-black/5 group">
@@ -409,9 +409,8 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Main Word Display -->
-                        <div id="round3-image" class="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-700 dark:to-slate-800">
-                            <span id="round3-word-text" class="text-6xl sm:text-7xl md:text-8xl font-black text-primary select-none"></span>
+                        <!-- Main Image -->
+                        <div id="round3-image"  class=" w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style="background-image: url('');">
                         </div>
                         <!-- Label Overlay (Hint) -->
                         <div class="absolute bottom-3 left-3 sm:bottom-6 sm:left-6 z-20">
@@ -432,7 +431,7 @@
                     <div class="mt-4 sm:mt-6 flex justify-center lg:justify-start">
                         <button id="round3-listenBtn" class="flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-gray-100 dark:bg-slate-700 text-slate-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-xs sm:text-sm font-bold active:scale-95">
                             <span class="material-symbols-outlined text-base sm:text-lg">volume_up</span>
-                            Nghe cÃ¢u há»i
+                            Nghe câu hỏi
                         </button>
                     </div>
                 </div>
@@ -443,7 +442,7 @@
         <div id="round4" class="game-round hidden w-full ">
             <div class="text-center ">
                 <div class="inline-block px-4 sm:px-6 py-1.5 sm:py-2 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-full font-bold text-xs sm:text-sm mb-3 sm:mb-4">
-                    ðŸŽ¤ ROUND 4: PRONUNCIATION PRACTICE
+                    🎤 ROUND 4: PRONUNCIATION PRACTICE
                 </div>
             </div>
             <div class="flex items-center justify-center relative w-full min-h-[500px]">
@@ -477,14 +476,14 @@
                         <div class="flex flex-row items-center justify-center w-full gap-4 sm:gap-6 md:gap-8 mt-6 sm:mt-8 md:mt-12">
                             <!-- Emoji/Image -->
                             <div id="round4-imageContainer" class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl animate-bounce duration-[2000ms]">
-                                ðŸŽ
+                                🍎
                             </div>
                             
                             <!-- Words -->
                             <div class="flex flex-col items-start gap-0.5 sm:gap-1">
                                 <span class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider">Traditional</span>
-                                <div id="round4-traditionalText" class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-primary dark:text-blue-400 leading-tight">è‹¹æžœ</div>
-                                <div id="round4-pinyinText" class="text-lg sm:text-xl md:text-2xl text-slate-500 dark:text-slate-400 font-serif italic">pÃ­ng guÇ’</div>
+                                <div id="round4-traditionalText" class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-primary dark:text-blue-400 leading-tight">苹果</div>
+                                <div id="round4-pinyinText" class="text-lg sm:text-xl md:text-2xl text-slate-500 dark:text-slate-400 font-serif italic">píng guǒ</div>
                             </div>
                         </div>
                         
@@ -494,7 +493,7 @@
                             <div id="round4-meaningText" class="text-xl sm:text-2xl md:text-3xl font-bold text-slate-700 dark:text-slate-200">Apple</div>
                               <!-- SKIP BUTTON -->
                             <button onclick="skipRound4Word()" style="margin: 0 auto; padding-top: 5px;" class="mt-1 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-300 text-[10px] sm:text-xs font-bold flex items-center gap-1 transition-all border border-slate-200 dark:border-slate-700 active:scale-95">
-                                <span>Bá» qua cÃ¢u nÃ y</span> 
+                                <span>Bỏ qua câu này</span> 
                                 <span class="material-symbols-outlined text-xs sm:text-sm">skip_next</span>
                             </button>
                         </div>
@@ -536,7 +535,7 @@
         <div id="round5" class="game-round hidden w-full">
             <div class="text-center ">
                 <div class="inline-block px-4 sm:px-6 py-1.5 sm:py-2 bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 rounded-full font-bold text-xs sm:text-sm mb-3 sm:mb-4">
-                    âœï¸ ROUND 5: FILL THE BLANKS
+                    ✏️ ROUND 5: FILL THE BLANKS
                 </div>
             </div>
             <div class="bg-white dark:bg-gray-800 rounded-2xl sm:rounded-3xl shadow-2xl p-5 sm:p-6 md:p-8 w-full max-w-3xl mx-auto">
@@ -549,7 +548,7 @@
                 <!-- Check Button -->
                 <div class="flex justify-center">
                     <button id="round5-checkButton" disabled class="flex items-center justify-center gap-2 bg-slate-300 dark:bg-slate-700 text-slate-500 dark:text-slate-400 font-bold text-base sm:text-lg px-8 sm:px-10 py-3 sm:py-4 rounded-full shadow-lg transition-all disabled:cursor-not-allowed hover:bg-primary hover:text-white disabled:hover:bg-slate-300 disabled:hover:text-slate-500 min-w-[180px] sm:min-w-[200px] active:scale-95">
-                        <span id="round5-checkButtonText">Chá»n Ä‘Ã¡p Ã¡n</span>
+                        <span id="round5-checkButtonText">Chọn đáp án</span>
                     </button>
                 </div>
             </div>
@@ -560,38 +559,38 @@
             <div id="confetti-container-test" class="fixed inset-0 pointer-events-none z-50"></div>
             <div class="bg-gradient-to-br from-white via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-2xl md:rounded-3xl shadow-2xl p-5 sm:p-8 max-w-lg w-full mx-auto border-4 border-gradient-to-r from-cyan-200 via-blue-200 to-purple-200 dark:border-gray-700 transform result-card-test max-h-[85vh] overflow-y-auto scrollbar-thin">
                 <div class="text-center">
-                    <div class="text-4xl mb-1 animate-bounce" id="finalEmoji">ðŸŽ‰</div>
-                    <h2 class="text-3xl font-black bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent mb-1" id="finalTitle">Xuáº¥t sáº¯c!</h2>
-                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">HoÃ n thÃ nh Quiz!</p>
+                    <div class="text-4xl mb-1 animate-bounce" id="finalEmoji">🎉</div>
+                    <h2 class="text-3xl font-black bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent mb-1" id="finalTitle">Xuất sắc!</h2>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">Hoàn thành Quiz!</p>
                     
                     <div class="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-md mb-3">
                         <div class="grid grid-cols-2 gap-2">
                             <div class="text-center p-2 bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-lg">
                                 <div class="text-xl font-black text-green-600 dark:text-green-400" id="finalScore">0/22</div>
-                                <div class="text-[10px] text-green-700 dark:text-green-300 font-semibold uppercase">Äiá»ƒm sá»‘</div>
+                                <div class="text-[10px] text-green-700 dark:text-green-300 font-semibold uppercase">Điểm số</div>
                             </div>
                             <div class="text-center p-2 bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/30 dark:to-cyan-900/30 rounded-lg">
                                 <div class="text-xl font-black text-blue-600 dark:text-blue-400" id="finalPercentage">0%</div>
-                                <div class="text-[10px] text-blue-700 dark:text-blue-300 font-semibold uppercase">ChÃ­nh xÃ¡c</div>
+                                <div class="text-[10px] text-blue-700 dark:text-blue-300 font-semibold uppercase">Chính xác</div>
                             </div>
                         </div>
                         
                         <!-- Round Breakdown -->
                         <div class="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
-                            <h3 class="text-xs font-bold mb-2 text-gray-700 dark:text-gray-300 uppercase tracking-wide">Chi tiáº¿t</h3>
+                            <h3 class="text-xs font-bold mb-2 text-gray-700 dark:text-gray-300 uppercase tracking-wide">Chi tiết</h3>
                             <div class="space-y-1" id="roundBreakdown"></div>
                         </div>
                         
                         <!-- Rewards Section -->
                         <div id="rewardsSection" class="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700 hidden">
                             <h3 class="text-xs font-bold mb-2 text-gray-700 dark:text-gray-300 flex items-center gap-1 uppercase tracking-wide">
-                                <span>âœ¨</span> Pháº§n thÆ°á»Ÿng
+                                <span>✨</span> Phần thưởng
                             </h3>
                             <div class="space-y-1.5">
                                 <!-- XP Gained -->
                                 <div class="flex items-center justify-between p-1.5 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
                                     <span class="text-xs font-semibold text-yellow-700 dark:text-yellow-300 flex items-center gap-1">
-                                        <span>ðŸŒŸ</span> XP
+                                        <span>🌟</span> XP
                                     </span>
                                     <span class="text-sm font-black text-yellow-600 dark:text-yellow-400" id="xpGained">+0 XP</span>
                                 </div>
@@ -599,16 +598,16 @@
                                 <!-- Streak -->
                                 <div class="flex items-center justify-between p-1.5 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
                                     <span class="text-xs font-semibold text-orange-700 dark:text-orange-300 flex items-center gap-1">
-                                        <span>ðŸ”¥</span> Chuá»—i
+                                        <span>🔥</span> Chuỗi
                                     </span>
-                                    <span class="text-sm font-black text-orange-600 dark:text-orange-400" id="streakDays">0 ngÃ y</span>
+                                    <span class="text-sm font-black text-orange-600 dark:text-orange-400" id="streakDays">0 ngày</span>
                                 </div>
                                 
                                 <!-- Level Up -->
                                 <div id="levelUpNotification" class="hidden p-2 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-lg border-2 border-purple-300 dark:border-purple-700 text-center">
-                                    <div class="text-xl mb-0.5">ðŸŽ†</div>
-                                    <div class="text-xs font-black text-purple-700 dark:text-purple-300 uppercase">LÃªn cáº¥p!</div>
-                                    <div class="text-[10px] text-purple-600 dark:text-purple-400">Báº¡n Ä‘Ã£ Ä‘áº¡t <span id="newLevelText">Level 2</span>!</div>
+                                    <div class="text-xl mb-0.5">🎆</div>
+                                    <div class="text-xs font-black text-purple-700 dark:text-purple-300 uppercase">Lên cấp!</div>
+                                    <div class="text-[10px] text-purple-600 dark:text-purple-400">Bạn đã đạt <span id="newLevelText">Level 2</span>!</div>
                                 </div>
                                 
                                 <!-- New Achievements -->
@@ -621,10 +620,10 @@
                     
                     <div class="flex gap-2">
                         <button onclick="location.reload()" class="flex-1 bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-3 py-2 rounded-xl font-bold hover:scale-105 transition-transform shadow-md text-sm">
-                            ðŸ”„ ChÆ¡i láº¡i
+                            🔄 Chơi lại
                         </button>
                         <button onclick="window.location.href='../user/games_home.html'" class="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-2 rounded-xl font-bold hover:scale-105 transition-transform shadow-md text-sm">
-                            ðŸ  Trang chá»§
+                            🏠 Trang chủ
                         </button>
                     </div>
                 </div>
@@ -663,7 +662,7 @@
                 
                 // Handle token expiration
                 if (error.status === 401 || error.message.includes('token') || error.message.includes('Token')) {
-                    alert('PhiÃªn Ä‘Äƒng nháº­p Ä‘Ã£ háº¿t háº¡n. Vui lÃ²ng Ä‘Äƒng nháº­p láº¡i.');
+                    alert('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
                     // Clear invalid token
                     localStorage.removeItem('token');
                     localStorage.removeItem('authToken');
@@ -709,7 +708,7 @@
         
         function startTest() {
             if (!selectedDifficulty) {
-                alert('Vui lÃ²ng chá»n má»©c Ä‘á»™!');
+                alert('Vui lòng chọn mức độ!');
                 return;
             }
             
@@ -815,25 +814,25 @@
             const seconds = duration % 60;
             
             // Set emoji, title and color based on performance
-            let emoji = 'ðŸŽ‰';
-            let title = 'Xuáº¥t sáº¯c!';
+            let emoji = '🎉';
+            let title = 'Xuất sắc!';
             let colorClass = 'from-green-500 to-emerald-500';
             
             if (percentage >= 90) {
-                emoji = 'ðŸ†';
-                title = 'HoÃ n háº£o!';
+                emoji = '🏆';
+                title = 'Hoàn hảo!';
                 colorClass = 'from-yellow-400 to-amber-500';
             } else if (percentage >= 70) {
-                emoji = 'ðŸŽ‰';
-                title = 'Ráº¥t tá»‘t!';
+                emoji = '🎉';
+                title = 'Rất tốt!';
                 colorClass = 'from-green-500 to-emerald-500';
             } else if (percentage >= 50) {
-                emoji = 'ðŸ‘';
-                title = 'Tá»‘t!';
+                emoji = '👍';
+                title = 'Tốt!';
                 colorClass = 'from-blue-500 to-cyan-500';
             } else {
-                emoji = 'ðŸ’ª';
-                title = 'Cá»‘ gáº¯ng lÃªn!';
+                emoji = '💪';
+                title = 'Cố gắng lên!';
                 colorClass = 'from-orange-500 to-red-500';
             }
             
@@ -887,23 +886,23 @@
             const breakdown = document.getElementById('roundBreakdown');
             breakdown.innerHTML = `
                 <div class="flex justify-between items-center text-sm">
-                    <span class="text-gray-600 dark:text-gray-400">ðŸŽ§ VÃ²ng 1: Nghe</span>
+                    <span class="text-gray-600 dark:text-gray-400">🎧 Vòng 1: Nghe</span>
                     <span class="font-bold text-gray-800 dark:text-white">${roundData.round1.score}/${roundData.round1.total}</span>
                 </div>
                 <div class="flex justify-between items-center text-sm">
-                    <span class="text-gray-600 dark:text-gray-400">ðŸ”— VÃ²ng 2: GhÃ©p tá»«</span>
+                    <span class="text-gray-600 dark:text-gray-400">🔗 Vòng 2: Ghép từ</span>
                     <span class="font-bold text-gray-800 dark:text-white">${roundData.round2.score}/${roundData.round2.total}</span>
                 </div>
                 <div class="flex justify-between items-center text-sm">
-                    <span class="text-gray-600 dark:text-gray-400">ðŸ–¼ï¸ VÃ²ng 3: NhÃ¬n hÃ¬nh</span>
+                    <span class="text-gray-600 dark:text-gray-400">🖼️ Vòng 3: Nhìn hình</span>
                     <span class="font-bold text-gray-800 dark:text-white">${roundData.round3.score}/${roundData.round3.total}</span>
                 </div>
                 <div class="flex justify-between items-center text-sm">
-                    <span class="text-gray-600 dark:text-gray-400">ðŸŽ¤ VÃ²ng 4: PhÃ¡t Ã¢m</span>
+                    <span class="text-gray-600 dark:text-gray-400">🎤 Vòng 4: Phát âm</span>
                     <span class="font-bold text-gray-800 dark:text-white">${roundData.round4.score}/${roundData.round4.total}</span>
                 </div>
                 <div class="flex justify-between items-center text-sm">
-                    <span class="text-gray-600 dark:text-gray-400">âœï¸ VÃ²ng 5: Äiá»n chá»— trá»‘ng</span>
+                    <span class="text-gray-600 dark:text-gray-400">✏️ Vòng 5: Điền chỗ trống</span>
                     <span class="font-bold text-gray-800 dark:text-white">${roundData.round5.score}/${roundData.round5.total}</span>
                 </div>
             `;
@@ -970,8 +969,8 @@
                     // Update streak display
                     if (streak) {
                         const streakText = streak.increased 
-                            ? `${streak.current} ngÃ y ðŸ”¥` 
-                            : `${streak.current} ngÃ y`;
+                            ? `${streak.current} ngày 🔥` 
+                            : `${streak.current} ngày`;
                         document.getElementById('streakDays').textContent = streakText;
                     }
                     
@@ -997,13 +996,13 @@
                         displayNewAchievements(newAchievements);
                     }
                     
-                    console.log('âœ… Activity recorded:', activityResponse.data);
+                    console.log('✅ Activity recorded:', activityResponse.data);
                 }
                 
-                console.log('âœ… Test results submitted successfully');
+                console.log('✅ Test results submitted successfully');
                 
             } catch (error) {
-                console.error('âŒ Error submitting test result:', error);
+                console.error('❌ Error submitting test result:', error);
                 // Don't block the user if submission fails - they can still see their score
             }
         }
@@ -1019,9 +1018,9 @@
                 achievementEl.className = 'p-2 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/30 dark:to-yellow-900/30 rounded-lg border-2 border-amber-300 dark:border-amber-700 animate-pulse';
                 achievementEl.innerHTML = `
                     <div class="flex items-center gap-2">
-                        <div class="text-2xl">${achievement.icon || 'ðŸ†'}</div>
+                        <div class="text-2xl">${achievement.icon || '🏆'}</div>
                         <div class="flex-1">
-                            <div class="text-xs font-black text-amber-700 dark:text-amber-300 uppercase">ThÃ nh tá»±u má»›i!</div>
+                            <div class="text-xs font-black text-amber-700 dark:text-amber-300 uppercase">Thành tựu mới!</div>
                             <div class="text-sm font-bold text-amber-800 dark:text-amber-200">${achievement.title}</div>
                             <div class="text-[10px] text-amber-600 dark:text-amber-400">${achievement.description}</div>
                         </div>
@@ -1054,13 +1053,13 @@
                     roundData.round1.currentIndex = 0;
                     roundData.round1.score = 0;
                 } catch (err) {
-                    alert('Lá»—i khi táº£i Round 1: ' + err.message);
+                    alert('Lỗi khi tải Round 1: ' + err.message);
                 }
             } else {
                 // Legacy: fallback to categoryId if present
                 const categoryId = getCategoryIdFromUrl();
                 if (!categoryId) {
-                    alert('KhÃ´ng tÃ¬m tháº¥y categoryId!');
+                    alert('Không tìm thấy categoryId!');
                     window.location.href = '../user/games_home.html';
                     return;
                 }
@@ -1077,7 +1076,7 @@
                     roundData.round1.currentIndex = 0;
                     roundData.round1.score = 0;
                 } catch (err) {
-                    alert('Lá»—i khi táº£i Round 1: ' + err.message);
+                    alert('Lỗi khi tải Round 1: ' + err.message);
                 }
             }
         }
@@ -1163,7 +1162,7 @@
             const nextBtn = document.getElementById('round1-nextBtn');
             nextBtn.disabled = true;
             nextBtn.className = 'flex items-center justify-center gap-2 bg-slate-300 dark:bg-slate-700 text-slate-500 dark:text-slate-400 font-bold text-lg px-8 py-3 rounded-full shadow-lg transition-all min-w-[160px] disabled:cursor-not-allowed';
-            nextBtn.innerHTML = '<span>Chá»n Ä‘Ã¡p Ã¡n</span>';
+            nextBtn.innerHTML = '<span>Chọn đáp án</span>';
             nextBtn.onclick = null;
         }
 
@@ -1187,7 +1186,7 @@
             const nextBtn = document.getElementById('round1-nextBtn');
             nextBtn.disabled = false;
             nextBtn.className = 'flex items-center justify-center gap-2 bg-primary hover:bg-blue-600 text-white font-bold text-base sm:text-lg px-6 sm:px-8 py-2.5 sm:py-3 rounded-full shadow-lg shadow-primary/30 transition-all hover:translate-y-[-2px] active:translate-y-[0px] min-w-[140px] sm:min-w-[160px] active:scale-95';
-            nextBtn.innerHTML = '<span>Kiá»ƒm tra</span><span class="material-symbols-outlined">check_circle</span>';
+            nextBtn.innerHTML = '<span>Kiểm tra</span><span class="material-symbols-outlined">check_circle</span>';
             nextBtn.onclick = checkRound1Answer;
         }
 
@@ -1242,7 +1241,7 @@
             
             // Update next button
             const nextBtn = document.getElementById('round1-nextBtn');
-            nextBtn.innerHTML = `<span>${isCorrect ? 'ÄÃºng! Tiáº¿p tá»¥c' : 'Sai! Tiáº¿p tá»¥c'}</span><span class="material-symbols-outlined">arrow_forward</span>`;
+            nextBtn.innerHTML = `<span>${isCorrect ? 'Đúng! Tiếp tục' : 'Sai! Tiếp tục'}</span><span class="material-symbols-outlined">arrow_forward</span>`;
             nextBtn.className = `flex items-center justify-center gap-2 ${isCorrect ? 'bg-green-500 hover:bg-green-600' : 'bg-orange-500 hover:bg-orange-600'} text-white font-bold text-base sm:text-lg px-6 sm:px-8 py-2.5 sm:py-3 rounded-full shadow-lg transition-all hover:translate-y-[-2px] active:translate-y-[0px] min-w-[140px] sm:min-w-[160px] active:scale-95`;
             nextBtn.onclick = () => {
                 data.currentIndex++;
@@ -1271,7 +1270,7 @@
                     roundData.round2.matches = new Map();
                     roundData.round2.selectedWord = null;
                 } catch (err) {
-                    alert('Lá»—i khi táº£i Round 2: ' + err.message);
+                    alert('Lỗi khi tải Round 2: ' + err.message);
                 }
             } else {
                 const categoryId = getCategoryIdFromUrl();
@@ -1293,7 +1292,7 @@
                     roundData.round2.matches = new Map();
                     roundData.round2.selectedWord = null;
                 } catch (err) {
-                    alert('Lá»—i khi táº£i Round 2: ' + err.message);
+                    alert('Lỗi khi tải Round 2: ' + err.message);
                 }
             }
         }
@@ -1319,7 +1318,7 @@
                 meaningsColumn.appendChild(cardEl);
             });
             
-            updateRound2Instruction('Nháº¥p vÃ o má»™t tá»« tiáº¿ng Trung Ä‘á»ƒ báº¯t Ä‘áº§u');
+            updateRound2Instruction('Nhấp vào một từ tiếng Trung để bắt đầu');
             updateGameProgress();
         }
 
@@ -1402,13 +1401,13 @@
             cardEl.classList.add('border-primary', 'shadow-lg', 'shadow-primary/20', 'bg-blue-50', 'dark:bg-blue-900/20', 'scale-105');
             
             data.selectedWord = card;
-            updateRound2Instruction('BÃ¢y giá» chá»n nghÄ©a tiáº¿ng Viá»‡t tÆ°Æ¡ng á»©ng');
+            updateRound2Instruction('Bây giờ chọn nghĩa tiếng Việt tương ứng');
         }
 
         function selectRound2Meaning(card) {
             const data = roundData.round2;
             if (!data.selectedWord) {
-                updateRound2Instruction('Vui lÃ²ng chá»n má»™t tá»« tiáº¿ng Trung trÆ°á»›c');
+                updateRound2Instruction('Vui lòng chọn một từ tiếng Trung trước');
                 return;
             }
             
@@ -1472,7 +1471,7 @@
             allAnswers.push(answer);
             updateTestStats();
             
-            updateRound2Instruction(`GhÃ©p Ä‘Ãºng! ${data.matchedPairs}/${data.totalPairs} cáº·p`);
+            updateRound2Instruction(`Ghép đúng! ${data.matchedPairs}/${data.totalPairs} cặp`);
             
             if (data.matchedPairs >= data.totalPairs) {
                 setTimeout(() => {
@@ -1535,7 +1534,7 @@
             allAnswers.push(answer);
             updateTestStats();
             
-            updateRound2Instruction('KhÃ´ng khá»›p! Thá»­ láº¡i.');
+            updateRound2Instruction('Không khớp! Thử lại.');
             
             setTimeout(() => {
                 wordEl.classList.remove('border-red-500', 'bg-red-50', 'dark:bg-red-900/20', 'border-primary', 'shadow-lg', 'shadow-primary/20', 'bg-blue-50', 'dark:bg-blue-900/20', 'scale-105');
@@ -1545,7 +1544,7 @@
                 meaningEl.classList.add('border-slate-200', 'dark:border-slate-700');
                 
                 data.selectedWord = null;
-                updateRound2Instruction('Nháº¥p vÃ o má»™t tá»« tiáº¿ng Trung Ä‘á»ƒ báº¯t Ä‘áº§u');
+                updateRound2Instruction('Nhấp vào một từ tiếng Trung để bắt đầu');
             }, 800);
         }
 
@@ -1573,7 +1572,7 @@
                     roundData.round3.currentIndex = 0;
                     roundData.round3.score = 0;
                 } catch (err) {
-                    alert('Lá»—i khi táº£i Round 3: ' + err.message);
+                    alert('Lỗi khi tải Round 3: ' + err.message);
                 }
             } else {
                 const categoryId = getCategoryIdFromUrl();
@@ -1591,7 +1590,7 @@
                     roundData.round3.currentIndex = 0;
                     roundData.round3.score = 0;
                 } catch (err) {
-                    alert('Lá»—i khi táº£i Round 3: ' + err.message);
+                    alert('Lỗi khi tải Round 3: ' + err.message);
                 }
             }
         }
@@ -1609,20 +1608,18 @@
             // Re-init state for question
             resetRound3Timer();
 
-            // Update Chinese word display
-            const wordTextEl = document.getElementById('round3-word-text');
-            if (wordTextEl) {
-                const word = q.word || {};
-                wordTextEl.textContent = word.traditional || q.traditional || '';
+            // Update image
+            const imagePanel = document.getElementById('round3-image');
+            if (imagePanel) {
+                imagePanel.style.backgroundImage = `url('${q.imageUrl}')`;
             }
             
             // Update hint
             const hintEl = document.getElementById('round3-hint');
             if (hintEl) {
-                const hintPinyin = q.hint || (q.word && q.word.pinyin) || '';
                 hintEl.innerHTML = `
                 <span class="material-symbols-outlined text-primary text-lg">lightbulb</span>
-                Hint: ${hintPinyin}
+                Hint: ${q.hint || q.word.pinyin}
             `;
             }
             
@@ -1637,9 +1634,8 @@
                 // Parse option text: "traditional (pinyin)" format
                 const text = opt.text || '';
                 const match = text.match(/^(.+?)\s*\((.+?)\)$/);
-                const chineseWord = match ? match[1].trim() : (opt.traditional || text);
-                // Show Vietnamese meaning instead of pinyin
-                const meaningText = opt.meaning || '';
+                const chineseWord = match ? match[1].trim() : text;
+                const pinyinText = match ? match[2].trim() : '';
                 
                 // Icon placeholder (simple mapping based on index/random logic or static)
                 const iconName = ['translate', 'school', 'menu_book', 'language'][idx % 4];
@@ -1655,7 +1651,7 @@
                         <span class="material-symbols-outlined text-base sm:text-lg md:text-xl">${iconName}</span>
                     </div>
                     <span class="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors text-center">${chineseWord}</span>
-                    ${meaningText ? `<span class="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 mt-0.5 sm:mt-1 text-center line-clamp-1">${meaningText}</span>` : ''}
+                    <span class="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 mt-0.5 sm:mt-1">${pinyinText}</span>
                     <div class="absolute inset-0 border-2 border-transparent group-hover:border-primary rounded-xl sm:rounded-2xl pointer-events-none transition-colors"></div>
                 `;
                 btn.onclick = () => selectRound3Answer(idx);
@@ -1819,7 +1815,7 @@
                 // Show error message and skip this round
                 const toast = document.createElement('div');
                 toast.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-4 rounded-2xl shadow-xl z-50 flex items-center gap-2 font-bold';
-                toast.innerHTML = '<span class="material-symbols-outlined">error</span> <span>TrÃ¬nh duyá»‡t khÃ´ng há»— trá»£ nháº­n diá»‡n giá»ng nÃ³i. Bá» qua Round 4...</span>';
+                toast.innerHTML = '<span class="material-symbols-outlined">error</span> <span>Trình duyệt không hỗ trợ nhận diện giọng nói. Bỏ qua Round 4...</span>';
                 document.body.appendChild(toast);
                 setTimeout(() => {
                     toast.remove();
@@ -1858,7 +1854,7 @@
                     // Show toast notification
                     const toast = document.createElement('div');
                     toast.className = 'fixed top-4 right-4 bg-orange-500 text-white px-6 py-4 rounded-2xl shadow-xl z-50 flex items-center gap-2 font-bold';
-                    toast.innerHTML = '<span class="material-symbols-outlined">mic_off</span> <span>KhÃ´ng nghe tháº¥y giá»ng nÃ³i. HÃ£y thá»­ láº¡i!</span>';
+                    toast.innerHTML = '<span class="material-symbols-outlined">mic_off</span> <span>Không nghe thấy giọng nói. Hãy thử lại!</span>';
                     document.body.appendChild(toast);
                     setTimeout(() => toast.remove(), 3000);
                 } else if (event.error === 'network' || event.error === 'not-allowed' || event.error === 'service-not-allowed' || event.error === 'aborted') {
@@ -1868,10 +1864,10 @@
                     data.attemptsForCurrentCard++;
                     
                     const errorMessages = {
-                        'network': 'Lá»—i káº¿t ná»‘i máº¡ng',
-                        'not-allowed': 'KhÃ´ng cÃ³ quyá»n truy cáº­p microphone',
-                        'service-not-allowed': 'Dá»‹ch vá»¥ nháº­n diá»‡n giá»ng nÃ³i khÃ´ng kháº£ dá»¥ng',
-                        'aborted': 'Nháº­n diá»‡n bá»‹ há»§y'
+                        'network': 'Lỗi kết nối mạng',
+                        'not-allowed': 'Không có quyền truy cập microphone',
+                        'service-not-allowed': 'Dịch vụ nhận diện giọng nói không khả dụng',
+                        'aborted': 'Nhận diện bị hủy'
                     };
                     
                     // Check if this is the 3rd failed attempt
@@ -1893,7 +1889,7 @@
                         // Show error and auto-skip message
                         const toast = document.createElement('div');
                         toast.className = 'fixed top-4 right-4 bg-orange-500 text-white px-6 py-4 rounded-2xl shadow-xl z-50 flex items-center gap-2 font-bold';
-                        toast.innerHTML = `<span class="material-symbols-outlined">error</span> <span>3 láº§n tháº¥t báº¡i. Chuyá»ƒn cÃ¢u tiáº¿p theo...</span>`;
+                        toast.innerHTML = `<span class="material-symbols-outlined">error</span> <span>3 lần thất bại. Chuyển câu tiếp theo...</span>`;
                         document.body.appendChild(toast);
                         
                         setTimeout(() => {
@@ -1910,7 +1906,7 @@
                         // Show error toast with attempt count
                         const toast = document.createElement('div');
                         toast.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-4 rounded-2xl shadow-xl z-50 flex items-center gap-2 font-bold';
-                        toast.innerHTML = `<span class="material-symbols-outlined">error</span> <span>${errorMessages[event.error] || 'Lá»—i nháº­n diá»‡n giá»ng nÃ³i'}. Thá»­ láº¡i (${data.attemptsForCurrentCard}/3)</span>`;
+                        toast.innerHTML = `<span class="material-symbols-outlined">error</span> <span>${errorMessages[event.error] || 'Lỗi nhận diện giọng nói'}. Thử lại (${data.attemptsForCurrentCard}/3)</span>`;
                         document.body.appendChild(toast);
                         setTimeout(() => toast.remove(), 2500);
                     }
@@ -1953,10 +1949,10 @@
             
             // Emoji/Image Logic (Simple mapping if no image URL)
             const emojiMap = {
-                'å': 'ðŸª‘', 'ç«™': 'ðŸ§', 'èµ°': 'ðŸš¶', 'è·‘': 'ðŸƒ',
-                'åƒ': 'ðŸ½ï¸', 'å–': 'ðŸ¥¤', 'ç¡': 'ðŸ˜´', 'ç¬‘': 'ðŸ˜„',
-                'å“­': 'ðŸ˜¢', 'çœ‹': 'ðŸ‘€', 'å¬': 'ðŸ‘‚', 'è¯´': 'ðŸ’¬',
-                'è‹¹æžœ': 'ðŸŽ', 'é¦™è•‰': 'ðŸŒ', 'çŒ«': 'ðŸ±', 'ç‹—': 'ðŸ¶'
+                '坐': '🪑', '站': '🧍', '走': '🚶', '跑': '🏃',
+                '吃': '🍽️', '喝': '🥤', '睡': '😴', '笑': '😄',
+                '哭': '😢', '看': '👀', '听': '👂', '说': '💬',
+                '苹果': '🍎', '香蕉': '🍌', '猫': '🐱', '狗': '🐶'
             };
             // Use card.image if available, otherwise emoji
             const imgContainer = document.getElementById('round4-imageContainer');
@@ -1964,7 +1960,7 @@
                  imgContainer.innerHTML = `<img src="${card.imageUrl}" class="w-full h-full object-contain rounded-xl" alt="${card.meaning}">`;
                  imgContainer.className = "w-48 h-48 md:w-56 md:h-56"; // Reset size for image
             } else {
-                 imgContainer.textContent = emojiMap[card.traditional] || 'ðŸ“š';
+                 imgContainer.textContent = emojiMap[card.traditional] || '📚';
                  imgContainer.className = "text-7xl md:text-8xl animate-bounce duration-[2000ms]";
             }
             
@@ -2180,16 +2176,16 @@
             const acceptableAnswers = [
                 card.traditional,
                 card.simplified,
-                card.pinyin.toLowerCase().replace(/\s+/g, ''), // "hÄ“i sÃ¨" -> "heise"
-                card.pinyin.toLowerCase().replace(/[ÄÃ¡ÇŽÃ Ä“Ã©Ä›Ã¨Ä«Ã­ÇÃ¬ÅÃ³Ç’Ã²Å«ÃºÇ”Ã¹Ç–Ç˜ÇšÇœ]/g, (m) => {
+                card.pinyin.toLowerCase().replace(/\s+/g, ''), // "hēi sè" -> "heise"
+                card.pinyin.toLowerCase().replace(/[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/g, (m) => {
                     // Convert tones to base letters for easier matching
                     const toneMap = {
-                        'Ä':'a','Ã¡':'a','ÇŽ':'a','Ã ':'a',
-                        'Ä“':'e','Ã©':'e','Ä›':'e','Ã¨':'e',
-                        'Ä«':'i','Ã­':'i','Ç':'i','Ã¬':'i',
-                        'Å':'o','Ã³':'o','Ç’':'o','Ã²':'o',
-                        'Å«':'u','Ãº':'u','Ç”':'u','Ã¹':'u',
-                        'Ç–':'u','Ç˜':'u','Çš':'u','Çœ':'u'
+                        'ā':'a','á':'a','ǎ':'a','à':'a',
+                        'ē':'e','é':'e','ě':'e','è':'e',
+                        'ī':'i','í':'i','ǐ':'i','ì':'i',
+                        'ō':'o','ó':'o','ǒ':'o','ò':'o',
+                        'ū':'u','ú':'u','ǔ':'u','ù':'u',
+                        'ǖ':'u','ǘ':'u','ǚ':'u','ǜ':'u'
                     };
                     return toneMap[m] || m;
                 }).replace(/\s+/g, '') // pinyin without tones: "hei se" -> "heise"
@@ -2270,7 +2266,7 @@
                         // Show toast notification
                         const toast = document.createElement('div');
                         toast.className = 'fixed top-4 right-4 bg-orange-500 text-white px-6 py-4 rounded-2xl shadow-xl z-50 flex items-center gap-2 font-bold';
-                        toast.innerHTML = '<span class="material-symbols-outlined">error</span> <span>3 láº§n tháº¥t báº¡i. Chuyá»ƒn cÃ¢u tiáº¿p theo...</span>';
+                        toast.innerHTML = '<span class="material-symbols-outlined">error</span> <span>3 lần thất bại. Chuyển câu tiếp theo...</span>';
                         document.body.appendChild(toast);
                         
                         // Quick transition to next (consistent with correct flow)
@@ -2292,14 +2288,14 @@
                         // Show remaining attempts with toast
                         const toast = document.createElement('div');
                         toast.className = 'fixed top-4 right-4 bg-yellow-500 text-white px-6 py-4 rounded-2xl shadow-xl z-50 flex items-center gap-2 font-bold';
-                        toast.innerHTML = `<span class="material-symbols-outlined">repeat</span> <span>Thá»­ láº¡i! CÃ²n ${3 - data.attemptsForCurrentCard} láº§n</span>`;
+                        toast.innerHTML = `<span class="material-symbols-outlined">repeat</span> <span>Thử lại! Còn ${3 - data.attemptsForCurrentCard} lần</span>`;
                         document.body.appendChild(toast);
                         setTimeout(() => toast.remove(), 2000);
                         
                         // Also show in badge
                         const badge = document.getElementById('round4-topBadge');
                         const textSpan = badge.querySelector('span:last-child');
-                        textSpan.textContent = `Thá»­ láº¡i! (CÃ²n ${3 - data.attemptsForCurrentCard} láº§n)`;
+                        textSpan.textContent = `Thử lại! (Còn ${3 - data.attemptsForCurrentCard} lần)`;
                         
                         // Ready for immediate retry
                         round4IsPlaying = false;
@@ -2326,7 +2322,7 @@
                     roundData.round5.currentIndex = 0;
                     roundData.round5.score = 0;
                 } catch (err) {
-                    alert('Lá»—i khi táº£i Round 5: ' + err.message);
+                    alert('Lỗi khi tải Round 5: ' + err.message);
                 }
             } else {
                 const categoryId = getCategoryIdFromUrl();
@@ -2344,7 +2340,7 @@
                     roundData.round5.currentIndex = 0;
                     roundData.round5.score = 0;
                 } catch (err) {
-                    alert('Lá»—i khi táº£i Round 5: ' + err.message);
+                    alert('Lỗi khi tải Round 5: ' + err.message);
                 }
             }
         }
@@ -2415,7 +2411,7 @@
             const checkBtnText = document.getElementById('round5-checkButtonText');
             checkBtn.disabled = true;
             checkBtn.className = 'flex items-center justify-center gap-2 bg-slate-300 dark:bg-slate-700 text-slate-500 dark:text-slate-400 font-bold text-base sm:text-lg px-8 sm:px-10 py-3 sm:py-4 rounded-full shadow-lg transition-all disabled:cursor-not-allowed hover:bg-primary hover:text-white disabled:hover:bg-slate-300 disabled:hover:text-slate-500 min-w-[180px] sm:min-w-[200px] active:scale-95';
-            checkBtnText.textContent = 'Chá»n Ä‘Ã¡p Ã¡n';
+            checkBtnText.textContent = 'Chọn đáp án';
             checkBtn.onclick = null;
             
             window.round5SelectedAnswer = null;
@@ -2441,7 +2437,7 @@
             const checkBtnText = document.getElementById('round5-checkButtonText');
             checkBtn.disabled = false;
             checkBtn.className = 'flex items-center justify-center gap-2 bg-primary hover:bg-blue-600 text-white font-bold text-base sm:text-lg px-8 sm:px-10 py-3 sm:py-4 rounded-full shadow-lg transition-all min-w-[180px] sm:min-w-[200px] active:scale-95';
-            checkBtnText.textContent = 'Kiá»ƒm tra Ä‘Ã¡p Ã¡n';
+            checkBtnText.textContent = 'Kiểm tra đáp án';
             checkBtn.onclick = () => checkRound5Answer(idx);
         }
 
@@ -2488,10 +2484,10 @@
             
             if (isCorrect) {
                 checkBtn.className = 'flex items-center justify-center gap-2 bg-green-500 text-white font-bold text-base sm:text-lg px-8 sm:px-10 py-3 sm:py-4 rounded-full shadow-lg transition-all min-w-[180px] sm:min-w-[200px]';
-                checkBtnText.textContent = 'âœ“ ChÃ­nh xÃ¡c!';
+                checkBtnText.textContent = '✓ Chính xác!';
             } else {
                 checkBtn.className = 'flex items-center justify-center gap-2 bg-red-500 text-white font-bold text-base sm:text-lg px-8 sm:px-10 py-3 sm:py-4 rounded-full shadow-lg transition-all min-w-[180px] sm:min-w-[200px]';
-                checkBtnText.textContent = 'âœ— Sai rá»“i!';
+                checkBtnText.textContent = '✗ Sai rồi!';
             }
             
             setTimeout(() => {
@@ -2585,7 +2581,7 @@
             testStartTime = Date.now(); // Start tracking time
             // Check if difficulty is selected (required for test mode)
             if (!selectedDifficulty) {
-                console.log('âš ï¸ No difficulty selected, cannot start game');
+                console.log('⚠️ No difficulty selected, cannot start game');
                 return;
             }
             
@@ -2612,15 +2608,15 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Check authentication first
             if (typeof ApiClient === 'undefined' || typeof window.authAPI === 'undefined') {
-                console.error('âŒ API Client not loaded!');
+                console.error('❌ API Client not loaded!');
                 setTimeout(() => window.location.reload(), 1000);
                 return;
             }
             
             // Check if user is authenticated
             if (!window.authAPI.isAuthenticated()) {
-                console.log('âš ï¸ Not authenticated, redirecting to login...');
-                alert('Vui lÃ²ng Ä‘Äƒng nháº­p Ä‘á»ƒ chÆ¡i game!');
+                console.log('⚠️ Not authenticated, redirecting to login...');
+                alert('Vui lòng đăng nhập để chơi game!');
                 window.location.href = '../login_screen.html';
                 return;
             }
@@ -2628,10 +2624,10 @@
             // Wait for header to load before showing modal
             const waitForHeader = () => {
                 if (window.headerLoaded && window.speakText) {
-                    console.log('ðŸ“‹ Showing difficulty selection modal');
+                    console.log('📋 Showing difficulty selection modal');
                     showDifficultyModal();
                 } else {
-                    console.log('â³ Waiting for game header to load...');
+                    console.log('⏳ Waiting for game header to load...');
                     setTimeout(waitForHeader, 100);
                 }
             };

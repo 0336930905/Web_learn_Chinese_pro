@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 
 <html class="light" lang="en">
 
@@ -6,8 +6,8 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Kids Vocab App - Login</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>ðŸ”</text></svg>">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔐</text></svg>">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
         rel="stylesheet" />
@@ -329,16 +329,16 @@
 
                     // Validate we have both token and user
                     if (!token) {
-                        console.error('âŒ CRITICAL: No token found in response!');
-                        alert('Lá»—i Ä‘Äƒng nháº­p: KhÃ´ng nháº­n Ä‘Æ°á»£c token xÃ¡c thá»±c');
+                        console.error('❌ CRITICAL: No token found in response!');
+                        alert('Lỗi đăng nhập: Không nhận được token xác thực');
                         loginButton.disabled = false;
                         loginButton.innerHTML = originalText;
                         return;
                     }
                     
                     if (!user || !user.role) {
-                        console.error('âŒ CRITICAL: No user or role found in response!');
-                        alert('Lá»—i Ä‘Äƒng nháº­p: KhÃ´ng nháº­n Ä‘Æ°á»£c thÃ´ng tin ngÆ°á»i dÃ¹ng');
+                        console.error('❌ CRITICAL: No user or role found in response!');
+                        alert('Lỗi đăng nhập: Không nhận được thông tin người dùng');
                         loginButton.disabled = false;
                         loginButton.innerHTML = originalText;
                         return;
@@ -368,8 +368,8 @@
                         }
                         
                     } catch (storageError) {
-                        console.error('âŒ localStorage error:', storageError);
-                        alert('Lá»—i lÆ°u thÃ´ng tin Ä‘Äƒng nháº­p: ' + storageError.message + '\n\nVui lÃ²ng thá»­ láº¡i hoáº·c sá»­ dá»¥ng trÃ¬nh duyá»‡t khÃ¡c.');
+                        console.error('❌ localStorage error:', storageError);
+                        alert('Lỗi lưu thông tin đăng nhập: ' + storageError.message + '\n\nVui lòng thử lại hoặc sử dụng trình duyệt khác.');
                         loginButton.disabled = false;
                         loginButton.innerHTML = originalText;
                         return;
@@ -414,7 +414,7 @@
                                 auth: 'success'
                             });
                             redirectUrl = `${redirectUrl}?${params.toString()}`;
-                            console.log('ðŸ“± Mobile: Added auth params to URL (token + role only)');
+                            console.log('📱 Mobile: Added auth params to URL (token + role only)');
                         }
                         
                         console.log('Final redirect URL:', redirectUrl);
@@ -423,7 +423,7 @@
                     }, redirectDelay);
 
                 } catch (error) {
-                    console.error('âŒ Login error:', error);
+                    console.error('❌ Login error:', error);
                     // Show error message
                     if (error instanceof ApiError) {
                         showNotification(error.message, 'error');

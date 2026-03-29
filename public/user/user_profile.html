@@ -1,20 +1,20 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 
 <html lang="vi">
 
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
         rel="stylesheet" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <link
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
         rel="stylesheet" />
-    <link rel="stylesheet" href="/css/user-common.css" />
-    <script src="/js/sidebar.js"></script>
-    <script src="/i18n/translations.js"></script>
+    <link rel="stylesheet" href="../css/user-common.css" />
+    <script src="../js/sidebar.js"></script>
+    <script src="../i18n/translations.js"></script>
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -33,7 +33,7 @@
             },
         }
     </script>
-    <title data-i18n="userProfile.pageTitle">Cáº­p nháº­t TÃ i khoáº£n Quáº£n trá»‹ viÃªn</title>
+    <title data-i18n="userProfile.pageTitle">Cập nhật Tài khoản Quản trị viên</title>
 </head>
 
 <body
@@ -48,16 +48,16 @@
             <div class="p-4 lg:p-12 scroll-smooth">
             <div class="max-w-5xl mx-auto pb-20 space-y-8">
             <header class="mb-8">
-                <h1 class="text-3xl font-bold text-slate-900 dark:text-white" data-i18n="userProfile.pageTitle">Cáº­p nháº­t TÃ i khoáº£n</h1>
-                <p class="text-slate-500 dark:text-slate-400 mt-2" data-i18n="userProfile.pageDescription">Quáº£n lÃ½ thÃ´ng tin há»“ sÆ¡ vÃ  báº£o máº­t tÃ i khoáº£n quáº£n trá»‹
-                    viÃªn cá»§a báº¡n.</p>
+                <h1 class="text-3xl font-bold text-slate-900 dark:text-white" data-i18n="userProfile.pageTitle">Cập nhật Tài khoản</h1>
+                <p class="text-slate-500 dark:text-slate-400 mt-2" data-i18n="userProfile.pageDescription">Quản lý thông tin hồ sơ và bảo mật tài khoản quản trị
+                    viên của bạn.</p>
             </header>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Section 1: Personal Information -->
                 <section class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-primary/5">
                     <div class="mb-6">
-                        <h2 class="text-xl font-semibold text-slate-900 dark:text-white" data-i18n="userProfile.personalInfoSection">ThÃ´ng tin cÃ¡ nhÃ¢n</h2>
-                        <p class="text-sm text-slate-500 mt-1" data-i18n="userProfile.personalInfoDesc">Cáº­p nháº­t áº£nh Ä‘áº¡i diá»‡n vÃ  thÃ´ng tin cÆ¡ báº£n.</p>
+                        <h2 class="text-xl font-semibold text-slate-900 dark:text-white" data-i18n="userProfile.personalInfoSection">Thông tin cá nhân</h2>
+                        <p class="text-sm text-slate-500 mt-1" data-i18n="userProfile.personalInfoDesc">Cập nhật ảnh đại diện và thông tin cơ bản.</p>
                     </div>
                     
                     <!-- Avatar Upload -->
@@ -74,7 +74,7 @@
                             </button>
                         </div>
                         <div class="text-center">
-                            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider" data-i18n="userProfile.avatarLabel">áº¢nh Ä‘áº¡i diá»‡n</span>
+                            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider" data-i18n="userProfile.avatarLabel">Ảnh đại diện</span>
                         </div>
                     </div>
                     
@@ -82,36 +82,36 @@
                     <div class="space-y-4">
                         <div class="space-y-2">
                             <label class="text-sm font-semibold text-slate-700 dark:text-slate-300"
-                                for="full_name" data-i18n="userProfile.fullName">Há» vÃ  tÃªn</label>
+                                for="full_name" data-i18n="userProfile.fullName">Họ và tên</label>
                             <input
                                 class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
-                                id="full_name" type="text" value="Quáº£n trá»‹ viÃªn" />
+                                id="full_name" type="text" value="Quản trị viên" />
                         </div>
                         <div class="space-y-2">
                             <label class="text-sm font-semibold text-slate-700 dark:text-slate-300"
-                                for="email" data-i18n="userProfile.email">Äá»‹a chá»‰ Email</label>
+                                for="email" data-i18n="userProfile.email">Địa chỉ Email</label>
                             <input
                                 class="w-full bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-slate-500 cursor-not-allowed outline-none"
                                 id="email" readonly="" type="email" value="admin@learntaiwanese.com" />
-                            <p class="text-xs text-slate-400" data-i18n="userProfile.emailNote">Email Ä‘Æ°á»£c sá»­ dá»¥ng Ä‘á»ƒ Ä‘Äƒng nháº­p vÃ  khÃ´ng thá»ƒ thay Ä‘á»•i.</p>
+                            <p class="text-xs text-slate-400" data-i18n="userProfile.emailNote">Email được sử dụng để đăng nhập và không thể thay đổi.</p>
                         </div>
                     </div>
                 </section>
                 <!-- Section 2: Change Password -->
                 <section class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-primary/5">
                     <div class="mb-6">
-                        <h2 class="text-xl font-semibold text-slate-900 dark:text-white" data-i18n="userProfile.passwordSection">Äá»•i máº­t kháº©u</h2>
-                        <p class="text-sm text-slate-500 mt-1" data-i18n="userProfile.passwordDescription">Äáº£m báº£o tÃ i khoáº£n cá»§a báº¡n Ä‘ang sá»­ dá»¥ng máº­t kháº©u máº¡nh Ä‘á»ƒ
-                            báº£o máº­t.</p>
+                        <h2 class="text-xl font-semibold text-slate-900 dark:text-white" data-i18n="userProfile.passwordSection">Đổi mật khẩu</h2>
+                        <p class="text-sm text-slate-500 mt-1" data-i18n="userProfile.passwordDescription">Đảm bảo tài khoản của bạn đang sử dụng mật khẩu mạnh để
+                            bảo mật.</p>
                     </div>
                     <div class="space-y-4">
                         <div class="space-y-2">
                             <label class="text-sm font-semibold text-slate-700 dark:text-slate-300"
-                                for="current_password" data-i18n="userProfile.currentPassword">Máº­t kháº©u hiá»‡n táº¡i</label>
+                                for="current_password" data-i18n="userProfile.currentPassword">Mật khẩu hiện tại</label>
                             <div class="relative">
                                 <input
                                     class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
-                                    id="current_password" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" type="password" />
+                                    id="current_password" placeholder="••••••••" type="password" />
                                 <button class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
                                     <span class="material-icons text-[20px]">visibility_off</span>
                                 </button>
@@ -120,20 +120,20 @@
                         <div class="grid grid-cols-1 gap-4">
                             <div class="space-y-2">
                                 <label class="text-sm font-semibold text-slate-700 dark:text-slate-300"
-                                    for="new_password" data-i18n="userProfile.newPassword">Máº­t kháº©u má»›i</label>
+                                    for="new_password" data-i18n="userProfile.newPassword">Mật khẩu mới</label>
                                 <div class="relative">
                                     <input
                                         class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
-                                        id="new_password" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" type="password" />
+                                        id="new_password" placeholder="••••••••" type="password" />
                                 </div>
                             </div>
                             <div class="space-y-2">
                                 <label class="text-sm font-semibold text-slate-700 dark:text-slate-300"
-                                    for="confirm_password" data-i18n="userProfile.confirmPassword">XÃ¡c nháº­n máº­t kháº©u má»›i</label>
+                                    for="confirm_password" data-i18n="userProfile.confirmPassword">Xác nhận mật khẩu mới</label>
                                 <div class="relative">
                                     <input
                                         class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
-                                        id="confirm_password" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" type="password" />
+                                        id="confirm_password" placeholder="••••••••" type="password" />
                                 </div>
                             </div>
                         </div>
@@ -141,7 +141,7 @@
                             <a class="text-primary hover:underline text-sm font-medium flex items-center gap-1"
                                 href="#" onclick="event.preventDefault(); openForgotPasswordModal();">
                                 <span class="material-icons text-sm">help_outline</span>
-                                QuÃªn máº­t kháº©u?
+                                Quên mật khẩu?
                             </a>
                         </div>
                     </div>
@@ -153,11 +153,11 @@
                 <div class="flex items-center justify-end gap-4 pt-4 border-t border-primary/5">
                     <button
                         class="px-8 py-2.5 text-slate-600 dark:text-slate-300 font-semibold hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg transition-all">
-                        <span data-i18n="userProfile.cancel">Há»§y</span>
+                        <span data-i18n="userProfile.cancel">Hủy</span>
                     </button>
                     <button
                         class="px-8 py-2.5 bg-primary hover:bg-primary/90 text-slate-900 font-semibold rounded-lg shadow-lg shadow-primary/25 transition-all">
-                        <span data-i18n="userProfile.saveChanges">LÆ°u thay Ä‘á»•i</span>
+                        <span data-i18n="userProfile.saveChanges">Lưu thay đổi</span>
                     </button>
                 </div>
             </div>
@@ -171,7 +171,7 @@
             <div class="flex items-center justify-between mb-6">
                 <h3 class="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
                     <span class="material-icons text-primary">lock_reset</span>
-                    KhÃ´i phá»¥c máº­t kháº©u
+                    Khôi phục mật khẩu
                 </h3>
                 <button onclick="closeForgotPasswordModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
                     <span class="material-icons">close</span>
@@ -179,7 +179,7 @@
             </div>
             
             <p class="text-slate-600 dark:text-slate-400 mb-6">
-                Nháº­p Ä‘á»‹a chá»‰ email cá»§a báº¡n vÃ  chÃºng tÃ´i sáº½ gá»­i liÃªn káº¿t Ä‘áº·t láº¡i máº­t kháº©u.
+                Nhập địa chỉ email của bạn và chúng tôi sẽ gửi liên kết đặt lại mật khẩu.
             </p>
             
             <div class="space-y-4">
@@ -189,7 +189,7 @@
                         class="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none"
                         id="reset_email"
                         type="email"
-                        placeholder="Email Ä‘Ã£ Ä‘Äƒng kÃ½"
+                        placeholder="Email đã đăng ký"
                         required />
                 </div>
                 
@@ -200,13 +200,13 @@
                     onclick="sendPasswordResetEmail()"
                     class="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 rounded-lg shadow-lg shadow-primary/25 transition-all flex items-center justify-center gap-2">
                     <span class="material-icons text-xl">send</span>
-                    Gá»­i email khÃ´i phá»¥c
+                    Gửi email khôi phục
                 </button>
             </div>
         </div>
     </div>
 
-    <script src="/js/api-client.js"></script>
+    <script src="../js/api-client.js"></script>
     <script>
         // Language initialization
         async function initializeLanguage() {
@@ -238,13 +238,13 @@
             
             // Validate file type
             if (!file.type.startsWith('image/')) {
-                alert('âš ï¸ Vui lÃ²ng chá»n file hÃ¬nh áº£nh');
+                alert('⚠️ Vui lòng chọn file hình ảnh');
                 return;
             }
             
             // Validate file size (max 5MB)
             if (file.size > 5 * 1024 * 1024) {
-                alert('âš ï¸ KÃ­ch thÆ°á»›c file khÃ´ng Ä‘Æ°á»£c vÆ°á»£t quÃ¡ 5MB');
+                alert('⚠️ Kích thước file không được vượt quá 5MB');
                 return;
             }
             
@@ -258,7 +258,7 @@
             };
             reader.readAsDataURL(file);
             
-            console.log('âœ… Avatar selected:', file.name);
+            console.log('✅ Avatar selected:', file.name);
         }
         
         // Load user profile on page load
@@ -269,7 +269,7 @@
             // Check authentication
             const token = localStorage.getItem('authToken');
             if (!token) {
-                alert('âš ï¸ Vui lÃ²ng Ä‘Äƒng nháº­p Ä‘á»ƒ truy cáº­p trang nÃ y');
+                alert('⚠️ Vui lòng đăng nhập để truy cập trang này');
                 window.location.href = '/login_screen.html';
                 return;
             }
@@ -290,15 +290,15 @@
                     document.getElementById('avatar_preview').src = currentUser.avatar;
                 }
                 
-                console.log('âœ… User profile loaded:', currentUser);
+                console.log('✅ User profile loaded:', currentUser);
             } catch (error) {
                 console.error('Failed to load profile:', error);
                 if (error.status === 401) {
-                    alert('ðŸ”’ PhiÃªn Ä‘Äƒng nháº­p Ä‘Ã£ háº¿t háº¡n. Vui lÃ²ng Ä‘Äƒng nháº­p láº¡i.');
+                    alert('🔒 Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
                     localStorage.removeItem('authToken');
                     window.location.href = '/login_screen.html';
                 } else {
-                    alert('âŒ KhÃ´ng thá»ƒ táº£i thÃ´ng tin ngÆ°á»i dÃ¹ng');
+                    alert('❌ Không thể tải thông tin người dùng');
                 }
             }
         });
@@ -337,7 +337,7 @@
             const sendBtn = document.getElementById('sendResetBtn');
             
             if (!email) {
-                messageDiv.textContent = 'âš ï¸ Vui lÃ²ng nháº­p Ä‘á»‹a chá»‰ email';
+                messageDiv.textContent = '⚠️ Vui lòng nhập địa chỉ email';
                 messageDiv.className = 'p-3 rounded-lg text-sm bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300';
                 messageDiv.classList.remove('hidden');
                 return;
@@ -346,7 +346,7 @@
             // Email validation
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
-                messageDiv.textContent = 'âš ï¸ Email khÃ´ng há»£p lá»‡';
+                messageDiv.textContent = '⚠️ Email không hợp lệ';
                 messageDiv.className = 'p-3 rounded-lg text-sm bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300';
                 messageDiv.classList.remove('hidden');
                 return;
@@ -354,14 +354,14 @@
             
             // Disable button and show loading
             sendBtn.disabled = true;
-            sendBtn.innerHTML = '<span class="material-icons animate-spin text-xl">sync</span> Äang gá»­i...';
+            sendBtn.innerHTML = '<span class="material-icons animate-spin text-xl">sync</span> Đang gửi...';
             
             try {
                 const apiClient = new ApiClient();
                 const response = await apiClient.post('/auth/forgot-password', { email });
                 
                 if (response.success) {
-                    messageDiv.textContent = 'âœ… ' + (response.message || 'Email khÃ´i phá»¥c Ä‘Ã£ Ä‘Æ°á»£c gá»­i! Vui lÃ²ng kiá»ƒm tra há»™p thÆ° cá»§a báº¡n.');
+                    messageDiv.textContent = '✅ ' + (response.message || 'Email khôi phục đã được gửi! Vui lòng kiểm tra hộp thư của bạn.');
                     messageDiv.className = 'p-3 rounded-lg text-sm bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300';
                     messageDiv.classList.remove('hidden');
                     
@@ -370,17 +370,17 @@
                         closeForgotPasswordModal();
                     }, 3000);
                 } else {
-                    throw new Error(response.message || 'Gá»­i email tháº¥t báº¡i');
+                    throw new Error(response.message || 'Gửi email thất bại');
                 }
             } catch (error) {
                 console.error('Password reset error:', error);
-                messageDiv.textContent = 'âŒ ' + (error.message || 'CÃ³ lá»—i xáº£y ra. Vui lÃ²ng thá»­ láº¡i.');
+                messageDiv.textContent = '❌ ' + (error.message || 'Có lỗi xảy ra. Vui lòng thử lại.');
                 messageDiv.className = 'p-3 rounded-lg text-sm bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300';
                 messageDiv.classList.remove('hidden');
             } finally {
                 // Re-enable button
                 sendBtn.disabled = false;
-                sendBtn.innerHTML = '<span class="material-icons text-xl">send</span> Gá»­i email khÃ´i phá»¥c';
+                sendBtn.innerHTML = '<span class="material-icons text-xl">send</span> Gửi email khôi phục';
             }
         }
         
@@ -392,17 +392,17 @@
             const confirmPassword = document.getElementById('confirm_password').value;
             
             // Get save button
-            const saveBtn = document.querySelector('button:contains("LÆ°u thay Ä‘á»•i")') || 
-                            Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('LÆ°u thay Ä‘á»•i'));
+            const saveBtn = document.querySelector('button:contains("Lưu thay đổi")') || 
+                            Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Lưu thay đổi'));
             
             if (!saveBtn) {
-                alert('âŒ KhÃ´ng tÃ¬m tháº¥y nÃºt lÆ°u');
+                alert('❌ Không tìm thấy nút lưu');
                 return;
             }
             
             const originalText = saveBtn.innerHTML;
             saveBtn.disabled = true;
-            saveBtn.innerHTML = '<span class="material-icons animate-spin text-xl">sync</span> Äang lÆ°u...';
+            saveBtn.innerHTML = '<span class="material-icons animate-spin text-xl">sync</span> Đang lưu...';
             
             try {
                 const apiClient = new ApiClient();
@@ -418,20 +418,20 @@
                     try {
                         const avatarUrl = await uploadAvatar(selectedAvatarFile);
                         updateData.avatar = avatarUrl;
-                        console.log('âœ… Avatar uploaded:', avatarUrl);
+                        console.log('✅ Avatar uploaded:', avatarUrl);
                     } catch (error) {
                         console.error('Avatar upload failed:', error);
-                        throw new Error('KhÃ´ng thá»ƒ táº£i lÃªn áº£nh Ä‘áº¡i diá»‡n: ' + error.message);
+                        throw new Error('Không thể tải lên ảnh đại diện: ' + error.message);
                     }
                 }
                 
                 // Update password if provided
                 if (currentPassword && newPassword) {
                     if (newPassword !== confirmPassword) {
-                        throw new Error('Máº­t kháº©u xÃ¡c nháº­n khÃ´ng khá»›p');
+                        throw new Error('Mật khẩu xác nhận không khớp');
                     }
                     if (newPassword.length < 8) {
-                        throw new Error('Máº­t kháº©u má»›i pháº£i cÃ³ Ã­t nháº¥t 8 kÃ½ tá»±');
+                        throw new Error('Mật khẩu mới phải có ít nhất 8 ký tự');
                     }
                     
                     updateData.currentPassword = currentPassword;
@@ -439,7 +439,7 @@
                 }
                 
                 if (Object.keys(updateData).length === 0) {
-                    alert('âš ï¸ KhÃ´ng cÃ³ thay Ä‘á»•i nÃ o Ä‘á»ƒ lÆ°u');
+                    alert('⚠️ Không có thay đổi nào để lưu');
                     return;
                 }
                 
@@ -447,7 +447,7 @@
                 const response = await apiClient.put('/auth/profile', updateData);
                 
                 if (response.success) {
-                    alert('âœ… Cáº­p nháº­t thÃ´ng tin thÃ nh cÃ´ng!');
+                    alert('✅ Cập nhật thông tin thành công!');
                     
                     // Clear password fields
                     document.getElementById('current_password').value = '';
@@ -466,11 +466,11 @@
                     selectedAvatarFile = null;
                     document.getElementById('avatar_input').value = '';
                 } else {
-                    throw new Error(response.message || 'Cáº­p nháº­t tháº¥t báº¡i');
+                    throw new Error(response.message || 'Cập nhật thất bại');
                 }
             } catch (error) {
                 console.error('Update profile error:', error);
-                alert('âŒ ' + (error.message || 'CÃ³ lá»—i xáº£y ra khi cáº­p nháº­t'));
+                alert('❌ ' + (error.message || 'Có lỗi xảy ra khi cập nhật'));
             } finally {
                 saveBtn.disabled = false;
                 saveBtn.innerHTML = originalText;
@@ -514,7 +514,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             // Save button
             const saveBtn = Array.from(document.querySelectorAll('button')).find(b => 
-                b.textContent.includes('LÆ°u thay Ä‘á»•i')
+                b.textContent.includes('Lưu thay đổi')
             );
             if (saveBtn) {
                 saveBtn.addEventListener('click', saveProfile);
@@ -522,7 +522,7 @@
             
             // Cancel button
             const cancelBtn = Array.from(document.querySelectorAll('button')).find(b => 
-                b.textContent.includes('Há»§y')
+                b.textContent.includes('Hủy')
             );
             if (cancelBtn) {
                 cancelBtn.addEventListener('click', cancelChanges);

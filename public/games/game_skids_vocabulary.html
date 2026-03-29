@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -6,14 +6,14 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Kids Vocabulary Learning</title>
     <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>ðŸŽ®</text></svg>">
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎮</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&amp;display=swap"
         rel="stylesheet" />
     <link
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
         rel="stylesheet" />
-    <link rel="stylesheet" href="/css/games-common.css" />
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../css/games-common.css" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -150,19 +150,19 @@
                 <div class="flex flex-row items-center justify-center w-full gap-4 sm:gap-6 md:gap-8 mt-2 sm:mt-4">
                     <div id="letterDisplay"
                         class="text-[80px] sm:text-[120px] md:text-[150px] lg:text-[180px] font-black text-primary leading-none select-none drop-shadow-lg">
-                        å
+                        坐
                     </div>
                     <div class="bg-blue-50 p-3 sm:p-4 md:p-6 rounded-2xl sm:rounded-3xl border-2 border-blue-200 shadow-lg">
                         <div id="imageContainer"
                             class="w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-40 lg:h-40 flex items-center justify-center text-4xl sm:text-5xl md:text-6xl">
-                            ðŸª‘
+                            🪑
                         </div>
                     </div>
                 </div>
                 <div class="text-center mt-3 sm:mt-4 md:mt-6">
-                    <h1 id="traditionalText" class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-primary mb-1 sm:mb-2">å</h1>
-                    <p id="pinyinText" class="text-lg sm:text-xl md:text-2xl text-blue-600 font-semibold mb-1 sm:mb-2">zuÃ²</p>
-                    <p id="meaningText" class="text-base sm:text-lg md:text-xl text-slate-600 font-semibold">Ngá»“i</p>
+                    <h1 id="traditionalText" class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-primary mb-1 sm:mb-2">坐</h1>
+                    <p id="pinyinText" class="text-lg sm:text-xl md:text-2xl text-blue-600 font-semibold mb-1 sm:mb-2">zuò</p>
+                    <p id="meaningText" class="text-base sm:text-lg md:text-xl text-slate-600 font-semibold">Ngồi</p>
                 </div>
                 <div class="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 md:bottom-6 md:right-6">
                     <span id="difficultyBadge"
@@ -270,7 +270,7 @@
         async function loadVocabularyCards() {
             const categoryId = getCategoryIdFromUrl();
             if (!categoryId) {
-                alert('KhÃ´ng tÃ¬m tháº¥y categoryId!');
+                alert('Không tìm thấy categoryId!');
                 window.location.href = '../user/games_home.html';
                 return;
             }
@@ -280,7 +280,7 @@
                 const data = await res.json();
 
                 if (!data.success) {
-                    alert('KhÃ´ng thá»ƒ táº£i tá»« vá»±ng: ' + (data.error?.message || 'Lá»—i khÃ´ng xÃ¡c Ä‘á»‹nh'));
+                    alert('Không thể tải từ vựng: ' + (data.error?.message || 'Lỗi không xác định'));
                     window.location.href = '../user/games_home.html';
                     return;
                 }
@@ -295,7 +295,7 @@
                 renderCard();
                 updateHeader();
             } catch (err) {
-                alert('Lá»—i khi gá»i API: ' + err.message);
+                alert('Lỗi khi gọi API: ' + err.message);
                 window.location.href = '../user/games_home.html';
             }
         }
@@ -319,22 +319,22 @@
 
             // Update difficulty badge
             const difficultyMap = {
-                'beginner': 'Dá»…',
-                'intermediate': 'Trung bÃ¬nh',
-                'advanced': 'KhÃ³',
-                'Easy': 'Dá»…',
-                'Medium': 'Trung bÃ¬nh',
-                'Hard': 'KhÃ³'
+                'beginner': 'Dễ',
+                'intermediate': 'Trung bình',
+                'advanced': 'Khó',
+                'Easy': 'Dễ',
+                'Medium': 'Trung bình',
+                'Hard': 'Khó'
             };
             document.getElementById('difficultyText').textContent = difficultyMap[card.difficulty] || card.difficulty;
 
             // Update emoji based on word meaning (simple mapping)
             const emojiMap = {
-                'å': 'ðŸª‘', 'ç«™': 'ðŸ§', 'èµ°': 'ðŸš¶', 'è·‘': 'ðŸƒ',
-                'åƒ': 'ðŸ½ï¸', 'å–': 'ðŸ¥¤', 'ç¡': 'ðŸ˜´', 'ç¬‘': 'ðŸ˜„',
-                'å“­': 'ðŸ˜¢', 'çœ‹': 'ðŸ‘€', 'å¬': 'ðŸ‘‚', 'è¯´': 'ðŸ’¬'
+                '坐': '🪑', '站': '🧍', '走': '🚶', '跑': '🏃',
+                '吃': '🍽️', '喝': '🥤', '睡': '😴', '笑': '😄',
+                '哭': '😢', '看': '👀', '听': '👂', '说': '💬'
             };
-            const emoji = emojiMap[card.traditional] || 'ðŸ“š';
+            const emoji = emojiMap[card.traditional] || '📚';
             document.getElementById('imageContainer').textContent = emoji;
 
             // Update button states
@@ -443,7 +443,7 @@
                 case 'correct':
                     badge.className = 'bg-green-500 text-white px-6 py-2 rounded-full shadow-lg flex items-center space-x-2 text-sm font-bold uppercase tracking-wider animate-bounce border-2 border-white cursor-pointer hover:scale-105 transition-transform';
                     iconSpan.textContent = 'check_circle';
-                    textSpan.textContent = 'Perfect! å¤ªæ£’äº†!';
+                    textSpan.textContent = 'Perfect! 太棒了!';
                     break;
 
                 case 'wrong':
@@ -563,11 +563,11 @@
             if (isRecording) return; // Already recording
             if (isPlaying) {
                 // Prevent recording while audio is playing
-                alert('â¸ï¸ Vui lÃ²ng Ä‘á»£i Ã¢m thanh phÃ¡t xong!');
+                alert('⏸️ Vui lòng đợi âm thanh phát xong!');
                 return;
             }
             if (!recognition) {
-                alert('æŠ±æ­‰ï¼Œæ‚¨çš„ç€è¦½å™¨ä¸æ”¯æŒèªžéŸ³è­˜åˆ¥åŠŸèƒ½ã€‚è«‹ä½¿ç”¨ Chrome æˆ– Edge ç€è¦½å™¨ã€‚');
+                alert('抱歉，您的瀏覽器不支持語音識別功能。請使用 Chrome 或 Edge 瀏覽器。');
                 return;
             }
 
@@ -619,7 +619,7 @@
                             // Last card completed - show success message but let user click Finish
                             updateTopBadge('success');
                             const textSpan = document.querySelector('.absolute.-top-5 > div span:last-child');
-                            if (textSpan) textSpan.textContent = 'Click âœ“ to finish!';
+                            if (textSpan) textSpan.textContent = 'Click ✓ to finish!';
                         }
                     }, 2000);
                 } else {
@@ -636,7 +636,7 @@
                             
                             if (currentIndex === cards.length - 1) {
                                 // Last card - show finish message
-                                if (textSpan) textSpan.textContent = 'Click âœ“ to finish!';
+                                if (textSpan) textSpan.textContent = 'Click ✓ to finish!';
                             } else {
                                 // Not last card - move on
                                 if (textSpan) textSpan.textContent = 'Moving on...';
@@ -656,7 +656,7 @@
                             if (currentIndex === cards.length - 1) {
                                 updateTopBadge('next');
                                 const textSpan = document.querySelector('.absolute.-top-5 > div span:last-child');
-                                if (textSpan) textSpan.textContent = 'Click âœ“ to finish!';
+                                if (textSpan) textSpan.textContent = 'Click ✓ to finish!';
                             } else {
                                 updateTopBadge('listen');
                             }
@@ -680,25 +680,25 @@
             const seconds = duration % 60;
 
             // Determine performance level
-            let performanceEmoji = 'ðŸŽ‰';
-            let performanceText = 'Xuáº¥t sáº¯c!';
+            let performanceEmoji = '🎉';
+            let performanceText = 'Xuất sắc!';
             let performanceColor = 'from-green-500 to-emerald-500';
 
             if (percentage >= 90) {
-                performanceEmoji = 'ðŸ†';
-                performanceText = 'HoÃ n háº£o!';
+                performanceEmoji = '🏆';
+                performanceText = 'Hoàn hảo!';
                 performanceColor = 'from-yellow-400 to-amber-500';
             } else if (percentage >= 70) {
-                performanceEmoji = 'ðŸŽ‰';
-                performanceText = 'Ráº¥t tá»‘t!';
+                performanceEmoji = '🎉';
+                performanceText = 'Rất tốt!';
                 performanceColor = 'from-green-500 to-emerald-500';
             } else if (percentage >= 50) {
-                performanceEmoji = 'ðŸ‘';
-                performanceText = 'Tá»‘t!';
+                performanceEmoji = '👍';
+                performanceText = 'Tốt!';
                 performanceColor = 'from-blue-500 to-cyan-500';
             } else {
-                performanceEmoji = 'ðŸ’ª';
-                performanceText = 'Cá»‘ gáº¯ng lÃªn!';
+                performanceEmoji = '💪';
+                performanceText = 'Cố gắng lên!';
                 performanceColor = 'from-orange-500 to-red-500';
             }
 
@@ -714,7 +714,7 @@
                         
                         <!-- Title -->
                         <h2 class="text-2xl sm:text-4xl font-black bg-gradient-to-r ${performanceColor} bg-clip-text text-transparent mb-2">${performanceText}</h2>
-                        <p class="text-base sm:text-xl text-gray-600 dark:text-gray-300 mb-4 sm:mb-6">æ­å–œå®Œæˆï¼</p>
+                        <p class="text-base sm:text-xl text-gray-600 dark:text-gray-300 mb-4 sm:mb-6">恭喜完成！</p>
                         
                         <!-- Time Badge -->
                         <div class="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 px-4 py-2 rounded-full mb-4">
@@ -727,19 +727,19 @@
                             <div class="grid grid-cols-2 gap-3 sm:gap-4">
                                 <div class="stat-card text-center p-3 sm:p-4 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl border-2 border-green-200 dark:border-green-700 hover:scale-105 transition-transform duration-200">
                                     <div class="text-2xl sm:text-3xl font-black text-green-600 dark:text-green-400" data-value="${correctAnswers}/${cards.length}">0/${cards.length}</div>
-                                    <div class="text-xs sm:text-sm text-green-700 dark:text-green-300 font-semibold mt-1">ÄÃºng</div>
+                                    <div class="text-xs sm:text-sm text-green-700 dark:text-green-300 font-semibold mt-1">Đúng</div>
                                 </div>
                                 <div class="stat-card text-center p-3 sm:p-4 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-xl border-2 border-blue-200 dark:border-blue-700 hover:scale-105 transition-transform duration-200">
                                     <div class="text-2xl sm:text-3xl font-black text-blue-600 dark:text-blue-400" data-value="${percentage}%">0%</div>
-                                    <div class="text-xs sm:text-sm text-blue-700 dark:text-blue-300 font-semibold mt-1">ChÃ­nh xÃ¡c</div>
+                                    <div class="text-xs sm:text-sm text-blue-700 dark:text-blue-300 font-semibold mt-1">Chính xác</div>
                                 </div>
                                 <div class="stat-card text-center p-3 sm:p-4 bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20 rounded-xl border-2 border-purple-200 dark:border-purple-700 hover:scale-105 transition-transform duration-200">
                                     <div class="text-2xl sm:text-3xl font-black text-purple-600 dark:text-purple-400" data-value="${totalPoints}">0</div>
-                                    <div class="text-xs sm:text-sm text-purple-700 dark:text-purple-300 font-semibold mt-1">Äiá»ƒm</div>
+                                    <div class="text-xs sm:text-sm text-purple-700 dark:text-purple-300 font-semibold mt-1">Điểm</div>
                                 </div>
                                 <div class="stat-card text-center p-3 sm:p-4 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl border-2 border-amber-200 dark:border-amber-700 hover:scale-105 transition-transform duration-200">
                                     <div class="text-2xl sm:text-3xl font-black text-amber-600 dark:text-amber-400" data-value="${avgAttempts}">0</div>
-                                    <div class="text-xs sm:text-sm text-amber-700 dark:text-amber-300 font-semibold mt-1">TB Thá»­/Tá»«</div>
+                                    <div class="text-xs sm:text-sm text-amber-700 dark:text-amber-300 font-semibold mt-1">TB Thử/Từ</div>
                                 </div>
                             </div>
                         </div>
@@ -749,12 +749,12 @@
                             <button onclick="location.reload()" 
                                 class="group flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold shadow-lg hover:shadow-xl active:scale-95 transition-all duration-200 flex items-center justify-center gap-2">
                                 <span class="material-symbols-outlined group-hover:rotate-180 transition-transform duration-500">refresh</span>
-                                <span>ChÆ¡i láº¡i</span>
+                                <span>Chơi lại</span>
                             </button>
                             <button onclick="window.location.href='../user/games_home.html'" 
                                 class="group flex-1 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold shadow-lg hover:shadow-xl active:scale-95 transition-all duration-200 flex items-center justify-center gap-2">
                                 <span class="material-symbols-outlined group-hover:scale-110 transition-transform duration-200">home</span>
-                                <span>Vá» trang chá»§</span>
+                                <span>Về trang chủ</span>
                             </button>
                         </div>
                     </div>

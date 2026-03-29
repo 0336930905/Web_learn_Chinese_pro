@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 
 <html class="light" lang="en">
 
@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Vocabulary Adventure - Fun Learning for Kids</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>ðŸ“š</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>📚</text></svg>">
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
@@ -22,14 +22,12 @@
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
         rel="stylesheet" />
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <!-- Landing Common Styles -->
     <link rel="stylesheet" href="/css/landing-common.css" />
     <!-- i18n and API Client -->
     <script src="/i18n/translations.js"></script>
     <script src="/js/api-client.js"></script>
-    <!-- Sidebar Component -->
-    <script src="/js/sidebar.js"></script>
     <!-- Landing Header Component -->
     <script src="/js/landing-header.js"></script>
     <!-- Theme Configuration -->
@@ -85,11 +83,7 @@
 
 <body
     class="bg-background-light dark:bg-background-dark font-display text-text-main antialiased overflow-x-hidden transition-colors duration-300">
-    <!-- Sidebar Container (for logged-in users) -->
-    <div id="sidebar-container"></div>
-    
-    <!-- Landing Page Container (for non-logged-in users) -->
-    <div id="landing-container" class="relative flex min-h-screen flex-col">
+    <div class="relative flex min-h-screen flex-col">
         <!-- Navigation Header -->
         <div id="landing-header-placeholder"></div>
         <main class="flex-grow">
@@ -342,11 +336,10 @@
                     </div>
                 </div>
                 <div class="mt-8 text-center text-xs text-text-main/40 dark:text-white/40" data-i18n="landing.footerCopyright">
-                    Â© 2023 Vocabulary Adventure Inc. All rights reserved.
+                    © 2023 Vocabulary Adventure Inc. All rights reserved.
                 </div>
             </div>
         </footer>
-    </div>
     </div>
     <script>
         // Dark mode handling based on system preference
@@ -389,12 +382,13 @@
 
             // Check if user is already logged in
             if (typeof authAPI !== 'undefined' && authAPI.isAuthenticated()) {
-                // User is logged in, redirect to dashboard
+                // User is logged in, show a different message or redirect
                 const user = authAPI.getCurrentUser();
                 if (user) {
-                    // Redirect to learning dashboard instead of showing landing page
+                    // Optional: Show logged-in state or redirect to dashboard
                     console.log('User is logged in:', user.fullName);
-                    window.location.href = '/user/games_home.html';
+                    // Uncomment to auto-redirect logged-in users:
+                    // window.location.href = '/index.html';
                 }
             }
 
@@ -437,25 +431,6 @@
                 card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
                 observer.observe(card);
             });
-            
-            // Show/hide based on login status
-            const landingContainer = document.getElementById('landing-container');
-            const sidebarContainer = document.getElementById('sidebar-container');
-            
-            if (typeof authAPI !== 'undefined' && authAPI.isAuthenticated()) {
-                // User is logged in - hide landing, show sidebar
-                if (landingContainer) landingContainer.style.display = 'none';
-                if (sidebarContainer) {
-                    sidebarContainer.style.display = 'block';
-                    // Trigger sidebar initialization
-                    const event = new Event('userLoggedIn');
-                    document.dispatchEvent(event);
-                }
-            } else {
-                // User not logged in - show landing, hide sidebar
-                if (landingContainer) landingContainer.style.display = 'block';
-                if (sidebarContainer) sidebarContainer.style.display = 'none';
-            }
         });
     </script>
 </body>
