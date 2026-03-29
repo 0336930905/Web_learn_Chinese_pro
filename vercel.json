@@ -21,49 +21,46 @@
     },
     {
       "src": "/",
-      "dest": "/public/index.html"
+      "dest": "/public/index.html",
+      "headers": {
+        "Content-Type": "text/html; charset=utf-8",
+        "Cache-Control": "public, max-age=3600"
+      }
+    },
+    {
+      "src": "/(.+\\.html?)$",
+      "dest": "/public/$1",
+      "headers": {
+        "Content-Type": "text/html; charset=utf-8",
+        "Cache-Control": "public, max-age=3600"
+      }
+    },
+    {
+      "src": "/(.+\\.js)$",
+      "dest": "/public/$1",
+      "headers": {
+        "Content-Type": "text/javascript; charset=utf-8",
+        "Cache-Control": "public, max-age=86400"
+      }
+    },
+    {
+      "src": "/(.+\\.css)$",
+      "dest": "/public/$1",
+      "headers": {
+        "Content-Type": "text/css; charset=utf-8",
+        "Cache-Control": "public, max-age=86400"
+      }
+    },
+    {
+      "src": "/(.+\\.json)$",
+      "dest": "/public/$1",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8"
+      }
     },
     {
       "src": "/(.*)",
       "dest": "/public/$1"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/public/(.*)\\.html",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "text/html; charset=utf-8"
-        }
-      ]
-    },
-    {
-      "source": "/public/(.*)\\.js",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "text/javascript; charset=utf-8"
-        }
-      ]
-    },
-    {
-      "source": "/public/(.*)\\.css",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "text/css; charset=utf-8"
-        }
-      ]
-    },
-    {
-      "source": "/public/(.*)\\.json",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "application/json; charset=utf-8"
-        }
-      ]
     }
   ]
 }

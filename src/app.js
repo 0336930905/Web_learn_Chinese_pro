@@ -23,8 +23,8 @@ module.exports = async (req, res) => {
     }
     if (!res.json) {
       res.json = function (data) {
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify(data));
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
+        res.end(JSON.stringify(data), 'utf-8');
       };
     }
 

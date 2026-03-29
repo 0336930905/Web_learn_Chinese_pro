@@ -12,12 +12,11 @@ const app = require('./src/app');
 
 const PORT = process.env.PORT || 3000;
 
-// MIME types
 const mimeTypes = {
-  '.html': 'text/html',
-  '.js': 'text/javascript',
-  '.css': 'text/css',
-  '.json': 'application/json',
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
   '.png': 'image/png',
   '.jpg': 'image/jpg',
   '.gif': 'image/gif',
@@ -41,8 +40,8 @@ const server = http.createServer(async (req, res) => {
   };
   
   res.json = function (data) {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(data));
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.end(JSON.stringify(data), 'utf-8');
   };
 
   console.log(`${req.method} ${req.url}`);
@@ -94,10 +93,7 @@ const server = http.createServer(async (req, res) => {
       }
     } else {
       console.log(`✅ Serving: ${filePath} (${contentType})`);
-      const finalContentType = contentType === 'text/html' || contentType === 'text/css' || contentType === 'text/javascript' 
-        ? `${contentType}; charset=utf-8` 
-        : contentType;
-      res.writeHead(200, { 'Content-Type': finalContentType });
+      res.writeHead(200, { 'Content-Type': contentType });
       res.end(content, 'utf-8');
     }
   });
