@@ -1,7 +1,5 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
-  "outputDirectory": "public",
   "builds": [
     {
       "src": "src/app.js",
@@ -10,6 +8,10 @@
         "maxLambdaSize": "50mb",
         "nodeVersion": "18.x"
       }
+    },
+    {
+      "src": "public/**/*",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
@@ -18,26 +20,41 @@
       "dest": "/src/app.js"
     },
     {
-      "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|webp|woff|woff2|ttf|eot|otf))",
+      "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|webp|woff|woff2|ttf|eot|otf|wav|mp3|ogg))",
+      "dest": "/public/$1",
       "headers": {
         "cache-control": "public, max-age=31536000, immutable"
       }
     },
     {
       "src": "/(.*\\.html)",
+      "dest": "/public/$1",
       "headers": {
         "cache-control": "public, max-age=3600, must-revalidate"
       }
     },
     {
       "src": "/(.*).(json|xml|txt)",
+      "dest": "/public/$1.$2",
       "headers": {
         "cache-control": "public, max-age=3600"
       }
     },
     {
+      "src": "^/admin/(.*)",
+      "dest": "/public/admin/$1.html"
+    },
+    {
+      "src": "^/user/(.*)",
+      "dest": "/public/user/$1.html"
+    },
+    {
+      "src": "^/games/(.*)",
+      "dest": "/public/games/$1.html"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/index.html",
+      "dest": "/public/index.html",
       "headers": {
         "cache-control": "public, max-age=3600, must-revalidate"
       }
