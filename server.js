@@ -12,11 +12,12 @@ const app = require('./src/app');
 
 const PORT = process.env.PORT || 3000;
 
+// MIME types
 const mimeTypes = {
-  '.html': 'text/html; charset=utf-8',
-  '.js': 'text/javascript; charset=utf-8',
-  '.css': 'text/css; charset=utf-8',
-  '.json': 'application/json; charset=utf-8',
+  '.html': 'text/html',
+  '.js': 'text/javascript',
+  '.css': 'text/css',
+  '.json': 'application/json',
   '.png': 'image/png',
   '.jpg': 'image/jpg',
   '.gif': 'image/gif',
@@ -40,8 +41,8 @@ const server = http.createServer(async (req, res) => {
   };
   
   res.json = function (data) {
-    res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    res.end(JSON.stringify(data), 'utf-8');
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify(data));
   };
 
   console.log(`${req.method} ${req.url}`);
@@ -70,7 +71,7 @@ const server = http.createServer(async (req, res) => {
         // Don't fallback for static assets (favicon, images, etc.)
         if (req.url.match(/\.(ico|png|jpg|jpeg|gif|svg|css|js|json|woff|woff2|ttf|eot)$/)) {
           console.log(`   Static asset not found, returning 404`);
-          res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+          res.writeHead(404, { 'Content-Type': 'text/plain' });
           res.end('404 - File Not Found', 'utf-8');
           return;
         }
@@ -79,16 +80,16 @@ const server = http.createServer(async (req, res) => {
         // File not found - try index.html for SPA routing (only for HTML requests)
         fs.readFile(path.join(__dirname, 'public', 'index.html'), (err, content) => {
           if (err) {
-            res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
+            res.writeHead(404, { 'Content-Type': 'text/html' });
             res.end('<h1>404 - Page Not Found</h1>', 'utf-8');
           } else {
-            res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+            res.writeHead(200, { 'Content-Type': 'text/html' });
             res.end(content, 'utf-8');
           }
         });
       } else {
         console.log(`❌ Server error reading file: ${error.code}`);
-        res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
+        res.writeHead(500);
         res.end(`Server Error: ${error.code}`, 'utf-8');
       }
     } else {
