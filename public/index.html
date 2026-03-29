@@ -28,6 +28,8 @@
     <!-- i18n and API Client -->
     <script src="/i18n/translations.js"></script>
     <script src="/js/api-client.js"></script>
+    <!-- Sidebar Component -->
+    <script src="/js/sidebar.js"></script>
     <!-- Landing Header Component -->
     <script src="/js/landing-header.js"></script>
     <!-- Theme Configuration -->
@@ -83,7 +85,11 @@
 
 <body
     class="bg-background-light dark:bg-background-dark font-display text-text-main antialiased overflow-x-hidden transition-colors duration-300">
-    <div class="relative flex min-h-screen flex-col">
+    <!-- Sidebar Container (for logged-in users) -->
+    <div id="sidebar-container"></div>
+    
+    <!-- Landing Page Container (for non-logged-in users) -->
+    <div id="landing-container" class="relative flex min-h-screen flex-col">
         <!-- Navigation Header -->
         <div id="landing-header-placeholder"></div>
         <main class="flex-grow">
@@ -341,6 +347,7 @@
             </div>
         </footer>
     </div>
+    </div>
     <script>
         // Dark mode handling based on system preference
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -430,6 +437,25 @@
                 card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
                 observer.observe(card);
             });
+            
+            // Show/hide based on login status
+            const landingContainer = document.getElementById('landing-container');
+            const sidebarContainer = document.getElementById('sidebar-container');
+            
+            if (typeof authAPI !== 'undefined' && authAPI.isAuthenticated()) {
+                // User is logged in - hide landing, show sidebar
+                if (landingContainer) landingContainer.style.display = 'none';
+                if (sidebarContainer) {
+                    sidebarContainer.style.display = 'block';
+                    // Trigger sidebar initialization
+                    const event = new Event('userLoggedIn');
+                    document.dispatchEvent(event);
+                }
+            } else {
+                // User not logged in - show landing, hide sidebar
+                if (landingContainer) landingContainer.style.display = 'block';
+                if (sidebarContainer) sidebarContainer.style.display = 'none';
+            }
         });
     </script>
 </body>
