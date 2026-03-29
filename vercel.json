@@ -20,8 +20,8 @@
       "dest": "/src/app.js"
     },
     {
-      "src": "/(.*)\\.(js|css|png|jpg|jpeg|gif|svg|ico|webp|woff|woff2|ttf|eot|otf|mp3|wav)$",
-      "dest": "/public/$1.$2"
+      "src": "/",
+      "dest": "/public/index.html"
     },
     {
       "src": "/(.*)",
