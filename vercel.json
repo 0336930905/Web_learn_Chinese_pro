@@ -42,21 +42,21 @@
     },
     {
       "src": "^/admin/(.*)$",
-      "dest": "/public/admin/$1.html",
+      "dest": "public/admin/$1.html",
       "headers": {
         "cache-control": "public, max-age=3600, must-revalidate"
       }
     },
     {
       "src": "^/user/(.*)$",
-      "dest": "/public/user/$1.html",
+      "dest": "public/user/$1.html",
       "headers": {
         "cache-control": "public, max-age=3600, must-revalidate"
       }
     },
     {
       "src": "^/games/(.*)$",
-      "dest": "/public/games/$1.html",
+      "dest": "public/games/$1.html",
       "headers": {
         "cache-control": "public, max-age=3600, must-revalidate"
       }
