@@ -140,6 +140,19 @@
                 opacity: 0;
             }
         }
+        
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
     </style>
     <script src="../js/sidebar.js"></script>
 </head>
@@ -167,6 +180,11 @@
                             class="hidden md:flex items-center gap-2 px-6 py-3 bg-white dark:bg-surface-dark border-2 border-primary/20 hover:border-primary text-text-main dark:text-white rounded-full font-bold transition-all shadow-sm hover:shadow-md active:scale-95">
                             <span class="material-symbols-outlined text-primary">smart_toy</span>
                             <span data-i18n="categoryWordList.practiceGames">Luyện Tập Trò Chơi</span>
+                        </button>
+                        <button id="openImportExcelModal"
+                            class="flex items-center gap-2 px-6 py-3 bg-white dark:bg-surface-dark border-2 border-primary/20 hover:border-primary text-text-main dark:text-white rounded-full font-bold transition-all shadow-sm hover:shadow-md active:scale-95">
+                            <span class="material-symbols-outlined">upload_file</span>
+                            <span>Nhập Excel</span>
                         </button>
                         <button id="openAddVocabModal"
                             class="flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-full font-bold transition-all shadow-md shadow-primary/30 hover:shadow-lg hover:shadow-primary/40 active:scale-95">
@@ -398,6 +416,109 @@
         </div>
     </div>
     
+    <!-- Import Excel Modal -->
+    <div id="importExcelModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div class="bg-surface-light dark:bg-surface-dark rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <!-- Modal Header -->
+            <div class="sticky top-0 bg-gradient-to-r from-blue-400/10 to-blue-400/5 dark:from-blue-400/20 dark:to-blue-400/10 px-8 py-6 border-b border-gray-100 dark:border-gray-800 rounded-t-3xl backdrop-blur-sm">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-blue-500 text-white p-3 rounded-2xl">
+                            <span class="material-symbols-outlined text-2xl">upload_file</span>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-black text-text-main dark:text-white">Nhập Từ Từ Excel</h2>
+                            <p class="text-sm text-text-secondary">Tải lên file Excel để thêm nhiều từ cùng lúc</p>
+                        </div>
+                    </div>
+                    <button id="closeImportExcelModal" class="text-gray-400 hover:text-text-main dark:hover:text-white p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
+                        <span class="material-symbols-outlined text-3xl">close</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="p-8 space-y-6">
+                <!-- File Upload Area -->
+                <div class="space-y-2">
+                    <label class="flex items-center gap-2 text-sm font-bold text-text-main dark:text-white mb-4">
+                        <span class="material-symbols-outlined text-blue-500 text-lg">file_open</span>
+                        Chọn File Excel
+                    </label>
+                    <div class="relative">
+                        <input type="file" id="excelFileInput" accept=".xlsx,.xls,.csv" class="hidden">
+                        <button type="button" onclick="document.getElementById('excelFileInput').click()"
+                            class="w-full px-6 py-8 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/10 border-2 border-dashed border-blue-300 dark:border-blue-700 rounded-2xl hover:border-blue-500 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all flex flex-col items-center justify-center gap-3 cursor-pointer">
+                            <span class="material-symbols-outlined text-4xl text-blue-500">cloud_upload</span>
+                            <div class="text-center">
+                                <p class="text-sm font-bold text-text-main dark:text-white">Nhấp để chọn file hoặc kéo thả</p>
+                                <p class="text-xs text-text-secondary mt-1">Hỗ trợ: Excel (XLSX, XLS), CSV</p>
+                            </div>
+                        </button>
+                    </div>
+                    <p id="selectedFileName" class="text-sm text-green-600 dark:text-green-400 flex items-center gap-2 hidden">
+                        <span class="material-symbols-outlined text-base">check_circle</span>
+                        <span id="fileNameText"></span>
+                    </p>
+                </div>
+                
+                <!-- Template Info -->
+                <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 p-4 rounded-lg">
+                    <p class="font-bold text-blue-900 dark:text-blue-100 mb-2">📋 Định dạng file Excel:</p>
+                    <div class="space-y-1 text-sm text-blue-800 dark:text-blue-200">
+                        <p><strong>Cột 1 (Traditional):</strong> Chữ Hán Phồn Thể (bắt buộc)</p>
+                        <p><strong>Cột 2 (Pinyin):</strong> Phiên âm Pinyin (bắt buộc)</p>
+                        <p><strong>Cột 3 (Vietnamese):</strong> Nghĩa tiếng Việt (bắt buộc)</p>
+                        <p class="text-xs mt-2"><em>VD: 狗 | gǒu | Con chó</em></p>
+                    </div>
+                </div>
+                
+                <!-- Preview Table -->
+                <div id="previewContainer" class="hidden space-y-3">
+                    <h3 class="font-bold text-text-main dark:text-white flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">preview</span>
+                        Xem trước dữ liệu
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm border-collapse">
+                            <thead>
+                                <tr class="bg-gray-100 dark:bg-gray-800">
+                                    <th class="border border-gray-300 dark:border-gray-700 px-3 py-2 text-left">Chữ Hán</th>
+                                    <th class="border border-gray-300 dark:border-gray-700 px-3 py-2 text-left">Pinyin</th>
+                                    <th class="border border-gray-300 dark:border-gray-700 px-3 py-2 text-left">Tiếng Việt</th>
+                                </tr>
+                            </thead>
+                            <tbody id="previewTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                    <p id="rowCount" class="text-xs text-text-secondary">Tổng: <span id="totalRows">0</span> từ</p>
+                </div>
+                
+                <!-- Error Messages -->
+                <div id="errorContainer" class="hidden bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4 rounded-lg">
+                    <p class="font-bold text-red-900 dark:text-red-100 mb-2">⚠️ Lỗi:</p>
+                    <ul id="errorList" class="list-disc list-inside text-sm text-red-800 dark:text-red-200 space-y-1">
+                    </ul>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex gap-4 pt-4">
+                    <button type="button" id="cancelImportExcel"
+                        class="flex-1 px-6 py-4 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-text-main dark:text-white rounded-2xl font-bold transition-all">
+                        Hủy
+                    </button>
+                    <button type="button" id="submitImportExcel" disabled
+                        class="flex-1 px-6 py-4 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white rounded-2xl font-bold transition-all shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined">upload_file</span>
+                        <span>Nhập (<span id="importCount">0</span> từ)</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js"></script>
     <script>
         // ========== Language Initialization ==========
         async function initializeLanguage() {
@@ -541,6 +662,330 @@
         window.handleImageFileSelect = handleImageFileSelect;
         window.clearAudioFile = clearAudioFile;
         window.clearImageFile = clearImageFile;
+        
+        // ========== Import Excel Functions ==========
+        let importedVocabularies = [];
+        
+        const importExcelModal = document.getElementById('importExcelModal');
+        const openImportExcelModalBtn = document.getElementById('openImportExcelModal');
+        const closeImportExcelModalBtn = document.getElementById('closeImportExcelModal');
+        const cancelImportExcelBtn = document.getElementById('cancelImportExcel');
+        const excelFileInput = document.getElementById('excelFileInput');
+        const submitImportExcelBtn = document.getElementById('submitImportExcel');
+        const selectedFileNameEl = document.getElementById('selectedFileName');
+        const fileNameTextEl = document.getElementById('fileNameText');
+        const previewContainer = document.getElementById('previewContainer');
+        const previewTableBody = document.getElementById('previewTableBody');
+        const errorContainer = document.getElementById('errorContainer');
+        const errorList = document.getElementById('errorList');
+        const importCountEl = document.getElementById('importCount');
+        
+        // Open Import Excel Modal
+        openImportExcelModalBtn.addEventListener('click', () => {
+            importedVocabularies = [];
+            excelFileInput.value = '';
+            previewTableBody.innerHTML = '';
+            errorList.innerHTML = '';
+            selectedFileNameEl.classList.add('hidden');
+            previewContainer.classList.add('hidden');
+            errorContainer.classList.add('hidden');
+            submitImportExcelBtn.disabled = true;
+            importCountEl.textContent = '0';
+            
+            importExcelModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        });
+        
+        // Close Import Excel Modal
+        const closeImportExcelModal = () => {
+            importExcelModal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            importedVocabularies = [];
+            excelFileInput.value = '';
+        };
+        
+        closeImportExcelModalBtn.addEventListener('click', closeImportExcelModal);
+        cancelImportExcelBtn.addEventListener('click', closeImportExcelModal);
+        
+        importExcelModal.addEventListener('click', (e) => {
+            if (e.target === importExcelModal) {
+                closeImportExcelModal();
+            }
+        });
+        
+        // Handle Excel file selection
+        excelFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            // Validate file type
+            const validTypes = [
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'application/vnd.ms-excel',
+                'text/csv'
+            ];
+            
+            if (!validTypes.includes(file.type) && !file.name.match(/\.(xlsx|xls|csv)$/i)) {
+                showError('Vui lòng chọn file Excel hoặc CSV hợp lệ');
+                return;
+            }
+            
+            // Validate file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                showError('File không được vượt quá 5MB');
+                return;
+            }
+            
+            fileNameTextEl.textContent = file.name;
+            selectedFileNameEl.classList.remove('hidden');
+            
+            // Parse file
+            parseExcelFile(file);
+        });
+        
+        // Drag and drop support
+        const uploadButton = document.querySelector('[onclick="document.getElementById(\'excelFileInput\').click()"]');
+        if (uploadButton) {
+            uploadButton.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                uploadButton.style.borderColor = '#3b82f6';
+                uploadButton.style.backgroundColor = 'rgba(59, 130, 246, 0.1)';
+            });
+            
+            uploadButton.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                uploadButton.style.borderColor = '';
+                uploadButton.style.backgroundColor = '';
+            });
+            
+            uploadButton.addEventListener('drop', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                uploadButton.style.borderColor = '';
+                uploadButton.style.backgroundColor = '';
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    excelFileInput.files = files;
+                    const event = new Event('change', { bubbles: true });
+                    excelFileInput.dispatchEvent(event);
+                }
+            });
+        }
+        
+        // Parse Excel file
+        function parseExcelFile(file) {
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                try {
+                    const data = e.target.result;
+                    let workbook;
+                    
+                    // Handle Excel files
+                    if (file.name.match(/\.(xlsx|xls)$/i)) {
+                        workbook = XLSX.read(data, { type: 'binary' });
+                    } else if (file.name.match(/\.csv$/i)) {
+                        // For CSV, parse as text
+                        const text = new TextDecoder().decode(data);
+                        const rows = text.trim().split('\n');
+                        importedVocabularies = [];
+                        const errors = [];
+                        
+                        rows.forEach((row, index) => {
+                            if (!row.trim()) return;
+                            
+                            const cols = row.split(/[,\t|]/).map(col => col.trim());
+                            if (cols.length < 3) {
+                                errors.push(`Hàng ${index + 1}: Thiếu cột dữ liệu`);
+                                return;
+                            }
+                            
+                            const [traditional, pinyin, meaning] = cols;
+                            
+                            if (!traditional || !pinyin || !meaning) {
+                                errors.push(`Hàng ${index + 1}: Dữ liệu bị thiếu`);
+                                return;
+                            }
+                            
+                            importedVocabularies.push({
+                                traditional: traditional.trim(),
+                                simplified: traditional.trim(),
+                                pinyin: pinyin.trim(),
+                                meaning: meaning.trim()
+                            });
+                        });
+                        
+                        if (errors.length > 0) {
+                            showErrors(errors);
+                        }
+                        
+                        displayPreview();
+                        return;
+                    }
+                    
+                    // Process first worksheet
+                    const worksheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[worksheetName];
+                    const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                    
+                    importedVocabularies = [];
+                    const errors = [];
+                    
+                    // Process rows (skip header if exists)
+                    rows.forEach((row, index) => {
+                        if (!row || row.length < 3) {
+                            if (index > 0) {
+                                errors.push(`Hàng ${index + 1}: Thiếu cột dữ liệu`);
+                            }
+                            return;
+                        }
+                        
+                        const [traditional, pinyin, meaning] = row;
+                        
+                        if (!traditional || !pinyin || !meaning) {
+                            errors.push(`Hàng ${index + 1}: Dữ liệu bị thiếu`);
+                            return;
+                        }
+                        
+                        importedVocabularies.push({
+                            traditional: String(traditional).trim(),
+                            simplified: String(traditional).trim(),
+                            pinyin: String(pinyin).trim(),
+                            meaning: String(meaning).trim()
+                        });
+                    });
+                    
+                    if (errors.length > 0) {
+                        showErrors(errors);
+                    }
+                    
+                    displayPreview();
+                } catch (error) {
+                    console.error('Parse error:', error);
+                    showError('Lỗi khi đọc file: ' + error.message);
+                }
+            };
+            
+            reader.onerror = () => {
+                showError('Lỗi khi đọc file');
+            };
+            
+            reader.readAsBinaryString(file);
+        }
+        
+        // Display preview
+        function displayPreview() {
+            previewTableBody.innerHTML = '';
+            
+            if (importedVocabularies.length === 0) {
+                errorContainer.classList.remove('hidden');
+                previewContainer.classList.add('hidden');
+                submitImportExcelBtn.disabled = true;
+                return;
+            }
+            
+            // Show preview
+            previewContainer.classList.remove('hidden');
+            document.getElementById('totalRows').textContent = importedVocabularies.length;
+            importCountEl.textContent = importedVocabularies.length;
+            
+            // Display first 10 rows in preview
+            importedVocabularies.slice(0, 10).forEach((vocab, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="border border-gray-300 dark:border-gray-700 px-3 py-2">${vocab.traditional}</td>
+                    <td class="border border-gray-300 dark:border-gray-700 px-3 py-2">${vocab.pinyin}</td>
+                    <td class="border border-gray-300 dark:border-gray-700 px-3 py-2">${vocab.meaning}</td>
+                `;
+                previewTableBody.appendChild(row);
+            });
+            
+            if (importedVocabularies.length > 10) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td colspan="3" class="border border-gray-300 dark:border-gray-700 px-3 py-2 text-center text-gray-600 dark:text-gray-400">
+                        ... và ${importedVocabularies.length - 10} từ khác
+                    </td>
+                `;
+                previewTableBody.appendChild(row);
+            }
+            
+            submitImportExcelBtn.disabled = false;
+        }
+        
+        // Show errors
+        function showErrors(errors) {
+            errorContainer.classList.remove('hidden');
+            errorList.innerHTML = '';
+            
+            errors.slice(0, 10).forEach(error => {
+                const li = document.createElement('li');
+                li.textContent = error;
+                errorList.appendChild(li);
+            });
+            
+            if (errors.length > 10) {
+                const li = document.createElement('li');
+                li.textContent = `... và ${errors.length - 10} lỗi khác`;
+                errorList.appendChild(li);
+            }
+        }
+        
+        // Submit import
+        submitImportExcelBtn.addEventListener('click', async () => {
+            if (importedVocabularies.length === 0) {
+                showError('Không có từ để nhập');
+                return;
+            }
+            
+            submitImportExcelBtn.disabled = true;
+            const originalText = submitImportExcelBtn.innerHTML;
+            submitImportExcelBtn.innerHTML = '<span class="material-symbols-outlined animate-spin">autorenew</span> Đang nhập...';
+            
+            try {
+                // Submit all vocabularies
+                let successCount = 0;
+                let failCount = 0;
+                
+                for (const vocab of importedVocabularies) {
+                    try {
+                        const vocabularyData = {
+                            categoryId: categoryId,
+                            traditional: vocab.traditional,
+                            simplified: vocab.simplified,
+                            pinyin: vocab.pinyin,
+                            meaning: vocab.meaning,
+                            difficulty: 'beginner'
+                        };
+                        
+                        await vocabularyAPI.create(vocabularyData);
+                        successCount++;
+                    } catch (error) {
+                        console.error('Failed to add vocabulary:', vocab, error);
+                        failCount++;
+                    }
+                }
+                
+                // Show result
+                if (successCount > 0) {
+                    showSuccess(`Đã nhập thành công ${successCount} từ`);
+                }
+                if (failCount > 0) {
+                    showError(`Nhập thất bại ${failCount} từ`);
+                }
+                
+                closeImportExcelModal();
+                await loadVocabulary();
+            } catch (error) {
+                console.error('Import error:', error);
+                showError('Lỗi nhập dữ liệu: ' + error.message);
+            } finally {
+                submitImportExcelBtn.disabled = false;
+                submitImportExcelBtn.innerHTML = originalText;
+            }
+        });
         
         // ========== Initialization ==========
         async function initApp() {
