@@ -71,7 +71,7 @@ const server = http.createServer(async (req, res) => {
         // Don't fallback for static assets (favicon, images, etc.)
         if (req.url.match(/\.(ico|png|jpg|jpeg|gif|svg|css|js|json|woff|woff2|ttf|eot)$/)) {
           console.log(`   Static asset not found, returning 404`);
-          res.writeHead(404, { 'Content-Type': 'text/plain' });
+          res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
           res.end('404 - File Not Found', 'utf-8');
           return;
         }
@@ -80,21 +80,24 @@ const server = http.createServer(async (req, res) => {
         // File not found - try index.html for SPA routing (only for HTML requests)
         fs.readFile(path.join(__dirname, 'public', 'index.html'), (err, content) => {
           if (err) {
-            res.writeHead(404, { 'Content-Type': 'text/html' });
+            res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
             res.end('<h1>404 - Page Not Found</h1>', 'utf-8');
           } else {
-            res.writeHead(200, { 'Content-Type': 'text/html' });
+            res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
             res.end(content, 'utf-8');
           }
         });
       } else {
         console.log(`❌ Server error reading file: ${error.code}`);
-        res.writeHead(500);
+        res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
         res.end(`Server Error: ${error.code}`, 'utf-8');
       }
     } else {
       console.log(`✅ Serving: ${filePath} (${contentType})`);
-      res.writeHead(200, { 'Content-Type': contentType });
+      const finalContentType = contentType === 'text/html' || contentType === 'text/css' || contentType === 'text/javascript' 
+        ? `${contentType}; charset=utf-8` 
+        : contentType;
+      res.writeHead(200, { 'Content-Type': finalContentType });
       res.end(content, 'utf-8');
     }
   });
