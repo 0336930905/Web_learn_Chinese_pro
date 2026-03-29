@@ -1313,7 +1313,6 @@ const i18n = {
         
         // Set the specified attribute
         element.setAttribute(attributeName, translatedText);
-        console.log(`✅ Set ${attributeName}="${translatedText}" on`, element.tagName);
       } else {
         // Regular text content translation
         element.textContent = this.t(key);
