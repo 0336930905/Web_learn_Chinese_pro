@@ -382,13 +382,12 @@
 
             // Check if user is already logged in
             if (typeof authAPI !== 'undefined' && authAPI.isAuthenticated()) {
-                // User is logged in, show a different message or redirect
+                // User is logged in, redirect to dashboard
                 const user = authAPI.getCurrentUser();
                 if (user) {
-                    // Optional: Show logged-in state or redirect to dashboard
+                    // Redirect to learning dashboard instead of showing landing page
                     console.log('User is logged in:', user.fullName);
-                    // Uncomment to auto-redirect logged-in users:
-                    // window.location.href = '/index.html';
+                    window.location.href = '/user/games_home.html';
                 }
             }
 
