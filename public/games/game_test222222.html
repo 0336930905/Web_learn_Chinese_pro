@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html class="light" lang="vi">
 
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Kiểm tra kiến thức - VocabHero</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>📝</text></svg>">
+    <title>Kiá»ƒm tra kiáº¿n thá»©c - VocabHero</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>ðŸ“</text></svg>">
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
@@ -162,7 +162,7 @@
                     <span id="current-question-type" class="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-bold uppercase tracking-wider">
                         Listening
                     </span>
-                    <span class="text-sm font-semibold text-text-muted">Câu <span id="current-q-num">1</span>/<span id="total-q-num">20</span></span>
+                    <span class="text-sm font-semibold text-text-muted">CÃ¢u <span id="current-q-num">1</span>/<span id="total-q-num">20</span></span>
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined text-yellow-500">bolt</span>
@@ -180,19 +180,19 @@
             <!-- Loading State -->
             <div id="loading-state" class="absolute inset-0 flex flex-col items-center justify-center bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm z-10 hidden">
                 <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-                <p class="text-text-muted font-medium animate-pulse">Đang tải đề thi...</p>
+                <p class="text-text-muted font-medium animate-pulse">Äang táº£i Ä‘á» thi...</p>
             </div>
 
             <!-- Intro / Ready State (Initial View under Modal) -->
             <div id="intro-placeholder" class="text-center opacity-50">
                 <span class="material-symbols-outlined text-8xl text-gray-300 dark:text-gray-700 mb-4">quiz</span>
-                <p class="text-xl text-gray-400">Sẵn sàng để thử thách kiến thức!</p>
+                <p class="text-xl text-gray-400">Sáºµn sÃ ng Ä‘á»ƒ thá»­ thÃ¡ch kiáº¿n thá»©c!</p>
             </div>
 
             <!-- Listening Game Template -->
             <div id="game-listening" class="game-template hidden w-full max-w-3xl animate-in zoom-in-95 duration-300">
                 <div class="flex flex-col items-center text-center gap-4 mb-8">
-                    <h2 class="text-slate-800 dark:text-slate-200 text-lg md:text-xl font-medium">Nghe và chọn đáp án đúng</h2>
+                    <h2 class="text-slate-800 dark:text-slate-200 text-lg md:text-xl font-medium">Nghe vÃ  chá»n Ä‘Ã¡p Ã¡n Ä‘Ãºng</h2>
                     <div class="relative group">
                         <!-- Ripple Effect Layers -->
                         <div class="absolute inset-0 rounded-full bg-primary/20 animate-ping opacity-75"></div>
@@ -203,7 +203,7 @@
                     </div>
                     <button class="replay-audio-btn text-primary hover:text-primary-dark text-sm font-semibold flex items-center gap-1 transition-colors">
                         <span class="material-symbols-outlined text-[18px]">replay</span>
-                        Nhấn để nghe lại
+                        Nháº¥n Ä‘á»ƒ nghe láº¡i
                     </button>
                     <!-- Display Chinese word (hidden initially, shown after first play) -->
                     <div class="word-display hidden mt-4 text-center">
@@ -219,8 +219,8 @@
             <!-- Matching Game Template -->
             <div id="game-matching" class="game-template hidden w-full max-w-5xl animate-in zoom-in-95 duration-300">
                 <div class="text-center mb-8">
-                    <h3 class="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white mb-2">Ghép từ với nghĩa!</h3>
-                    <p class="text-slate-500 dark:text-slate-400 text-lg" id="match-instruction">Nhấn vào từ tiếng Trung, sau đó nhấn vào nghĩa tiếng Việt tương ứng</p>
+                    <h3 class="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white mb-2">GhÃ©p tá»« vá»›i nghÄ©a!</h3>
+                    <p class="text-slate-500 dark:text-slate-400 text-lg" id="match-instruction">Nháº¥n vÃ o tá»« tiáº¿ng Trung, sau Ä‘Ã³ nháº¥n vÃ o nghÄ©a tiáº¿ng Viá»‡t tÆ°Æ¡ng á»©ng</p>
                 </div>
                 <div class="relative flex justify-between items-center gap-8 w-full">
                     <!-- SVG Layer for Connection Lines -->
@@ -245,7 +245,7 @@
                     <div class="flex justify-center mb-6">
                         <div class="bg-primary/10 dark:bg-primary/20 text-primary dark:text-blue-400 px-6 py-2 rounded-full border-2 border-primary/30 flex items-center gap-2">
                             <span class="material-symbols-outlined text-sm">edit_note</span>
-                            <span class="text-sm font-bold uppercase tracking-wider">Chọn từ đúng</span>
+                            <span class="text-sm font-bold uppercase tracking-wider">Chá»n tá»« Ä‘Ãºng</span>
                         </div>
                     </div>
                     
@@ -263,9 +263,9 @@
             <div id="game-reverse" class="game-template hidden w-full max-w-3xl animate-in zoom-in-95 duration-300">
                 <div class="flex flex-col items-center text-center gap-6 mb-8">
                     <div class="p-6 bg-surface-light dark:bg-surface-dark rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 w-full">
-                        <span class="text-sm font-bold text-primary uppercase tracking-wider mb-2 block">Dịch sang tiếng Trung</span>
+                        <span class="text-sm font-bold text-primary uppercase tracking-wider mb-2 block">Dá»‹ch sang tiáº¿ng Trung</span>
                         <h2 class="text-3xl md:text-4xl font-black text-text-main dark:text-white" id="reverse-question">
-                            Xin chào
+                            Xin chÃ o
                         </h2>
                     </div>
                 </div>
@@ -281,7 +281,7 @@
                     <div class="absolute top-6 left-6">
                         <span class="bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 shadow-md px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-1 border-2 border-green-200 dark:border-green-700">
                             <span class="material-symbols-outlined text-sm">school</span>
-                            <span>Học từ vựng</span>
+                            <span>Há»c tá»« vá»±ng</span>
                         </span>
                     </div>
                     
@@ -289,29 +289,29 @@
                     <div class="flex flex-col md:flex-row items-center justify-center gap-8 mt-8">
                         <!-- Large Chinese character -->
                         <div class="text-[120px] md:text-[160px] font-black text-primary dark:text-blue-400 leading-none select-none drop-shadow-lg skids-chinese">
-                            坐
+                            å
                         </div>
                         
                         <!-- Emoji/Image -->
                         <div class="bg-white dark:bg-gray-800 p-8 rounded-3xl border-2 border-blue-200 dark:border-gray-600 shadow-lg">
                             <div class="w-32 h-32 md:w-40 md:h-40 flex items-center justify-center text-7xl md:text-8xl skids-emoji">
-                                🪑
+                                ðŸª‘
                             </div>
                         </div>
                     </div>
                     
                     <!-- Word details -->
                     <div class="text-center mt-8 space-y-3">
-                        <h1 class="text-4xl md:text-5xl font-extrabold text-primary dark:text-blue-400 skids-traditional">坐</h1>
-                        <p class="text-2xl md:text-3xl text-blue-600 dark:text-blue-300 font-semibold skids-pinyin">zuò</p>
-                        <p class="text-xl md:text-2xl text-gray-700 dark:text-gray-300 font-semibold skids-meaning">Ngồi</p>
+                        <h1 class="text-4xl md:text-5xl font-extrabold text-primary dark:text-blue-400 skids-traditional">å</h1>
+                        <p class="text-2xl md:text-3xl text-blue-600 dark:text-blue-300 font-semibold skids-pinyin">zuÃ²</p>
+                        <p class="text-xl md:text-2xl text-gray-700 dark:text-gray-300 font-semibold skids-meaning">Ngá»“i</p>
                     </div>
                     
                     <!-- Listen button -->
                     <div class="flex justify-center mt-8">
                         <button class="skids-listen-btn bg-primary hover:bg-blue-600 text-white px-8 py-4 rounded-full shadow-lg flex items-center gap-3 text-lg font-bold uppercase tracking-wider hover:scale-105 active:scale-95 transition-all border-2 border-white dark:border-gray-700">
                             <span class="material-symbols-outlined text-2xl">volume_up</span>
-                            <span>Nghe phát âm</span>
+                            <span>Nghe phÃ¡t Ã¢m</span>
                         </button>
                     </div>
                 </div>
@@ -322,7 +322,7 @@
         <!-- Next Button Area -->
         <div class="mt-8 flex justify-center h-12">
             <button id="next-btn" class="hidden px-8 py-2 bg-primary text-white font-bold rounded-full shadow-lg shadow-primary/30 hover:scale-105 active:scale-95 transition-all text-lg flex items-center gap-2">
-                Tiếp tục <span class="material-symbols-outlined">arrow_forward</span>
+                Tiáº¿p tá»¥c <span class="material-symbols-outlined">arrow_forward</span>
             </button>
         </div>
     </main>
@@ -334,8 +334,8 @@
                 <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 text-primary">
                     <span class="material-symbols-outlined text-4xl">inventory_2</span>
                 </div>
-                <h2 class="text-2xl font-black mb-2">Chọn Mức Độ Thử Thách</h2>
-                <p class="text-text-muted text-sm">Hãy chọn cấp độ phù hợp với khả năng của bạn để bắt đầu bài kiểm tra.</p>
+                <h2 class="text-2xl font-black mb-2">Chá»n Má»©c Äá»™ Thá»­ ThÃ¡ch</h2>
+                <p class="text-text-muted text-sm">HÃ£y chá»n cáº¥p Ä‘á»™ phÃ¹ há»£p vá»›i kháº£ nÄƒng cá»§a báº¡n Ä‘á»ƒ báº¯t Ä‘áº§u bÃ i kiá»ƒm tra.</p>
             </div>
             
             <div class="space-y-3">
@@ -343,8 +343,8 @@
                 <button type="button" data-diff="Easy" class="diff-btn group w-full p-4 rounded-xl border-2 border-gray-100 dark:border-gray-700 hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/10 transition-all flex items-center gap-4 text-left">
                    
                     <div class="flex-1">
-                        <div class="font-bold text-gray-800 dark:text-white group-hover:text-green-600">Cơ Bản (Easy)</div>
-                        <div class="text-xs text-slate-500">Dành cho người mới bắt đầu</div>
+                        <div class="font-bold text-gray-800 dark:text-white group-hover:text-green-600">CÆ¡ Báº£n (Easy)</div>
+                        <div class="text-xs text-slate-500">DÃ nh cho ngÆ°á»i má»›i báº¯t Ä‘áº§u</div>
                     </div>
                     <div class="text-green-500 opacity-0 group-hover:opacity-100 transition-opacity">
                         <span class="material-symbols-outlined">check_circle</span>
@@ -357,8 +357,8 @@
                         <span class="material-symbols-outlined">hiking</span>
                     </div>
                     <div class="flex-1">
-                        <div class="font-bold text-gray-800 dark:text-white group-hover:text-yellow-600">Trung Bình (Medium)</div>
-                        <div class="text-xs text-slate-500">Yêu cầu Level 3 trở lên</div>
+                        <div class="font-bold text-gray-800 dark:text-white group-hover:text-yellow-600">Trung BÃ¬nh (Medium)</div>
+                        <div class="text-xs text-slate-500">YÃªu cáº§u Level 3 trá»Ÿ lÃªn</div>
                     </div>
                     <!-- Lock Overlay -->
                     <div class="lock-overlay hidden absolute inset-0 bg-gray-100/50 dark:bg-gray-900/50 backdrop-blur-[1px] flex items-center justify-center cursor-not-allowed">
@@ -372,8 +372,8 @@
                         <span class="material-symbols-outlined">mountain_flag</span>
                     </div>
                     <div class="flex-1">
-                        <div class="font-bold text-gray-800 dark:text-white group-hover:text-red-600">Khó (Hard)</div>
-                        <div class="text-xs text-slate-500">Yêu cầu Level 5 trở lên</div>
+                        <div class="font-bold text-gray-800 dark:text-white group-hover:text-red-600">KhÃ³ (Hard)</div>
+                        <div class="text-xs text-slate-500">YÃªu cáº§u Level 5 trá»Ÿ lÃªn</div>
                     </div>
                     <!-- Lock Overlay -->
                     <div class="lock-overlay hidden absolute inset-0 bg-gray-100/50 dark:bg-gray-900/50 backdrop-blur-[1px] flex items-center justify-center cursor-not-allowed">
@@ -383,7 +383,7 @@
             </div>
             
             <div class="mt-6 text-center">
-                 <a href="games_home.html" class="text-sm text-text-muted hover:text-primary transition-colors">Quay lại trang chủ</a>
+                 <a href="games_home.html" class="text-sm text-text-muted hover:text-primary transition-colors">Quay láº¡i trang chá»§</a>
             </div>
         </div>
     </div>
@@ -395,29 +395,29 @@
             <div class="absolute inset-0 pointer-events-none opacity-10" style="background-image: radial-gradient(#4ce64c 2px, transparent 2px); background-size: 20px 20px;"></div>
 
             <div class="w-24 h-24 bg-gradient-to-br from-yellow-300 to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-yellow-500/30 animate-bounce-slow">
-                <span class="text-5xl">🏆</span>
+                <span class="text-5xl">ðŸ†</span>
             </div>
             
-            <h2 class="text-3xl font-black text-text-main dark:text-white mb-2">Kết Thúc!</h2>
-            <p class="text-text-muted mb-6">Bạn đã hoàn thành bài kiểm tra.</p>
+            <h2 class="text-3xl font-black text-text-main dark:text-white mb-2">Káº¿t ThÃºc!</h2>
+            <p class="text-text-muted mb-6">Báº¡n Ä‘Ã£ hoÃ n thÃ nh bÃ i kiá»ƒm tra.</p>
             
             <div class="grid grid-cols-2 gap-4 mb-8">
                 <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl">
-                    <div class="text-xs text-text-muted uppercase font-bold tracking-wider mb-1">Điểm số</div>
+                    <div class="text-xs text-text-muted uppercase font-bold tracking-wider mb-1">Äiá»ƒm sá»‘</div>
                     <div class="text-2xl font-black text-primary" id="result-score">0</div>
                 </div>
                 <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl">
-                    <div class="text-xs text-text-muted uppercase font-bold tracking-wider mb-1">Chính xác</div>
+                    <div class="text-xs text-text-muted uppercase font-bold tracking-wider mb-1">ChÃ­nh xÃ¡c</div>
                     <div class="text-2xl font-black text-blue-500" id="result-accuracy">0%</div>
                 </div>
             </div>
 
             <div class="space-y-3">
                 <button onclick="location.reload()" class="w-full py-3 bg-primary text-white font-bold rounded-xl shadow-lg hover:brightness-110 active:scale-95 transition-all">
-                    Làm lại bài thi
+                    LÃ m láº¡i bÃ i thi
                 </button>
                 <a href="games_home.html" class="block w-full py-3 bg-gray-100 dark:bg-gray-800 text-text-main dark:text-gray-300 font-bold rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-all">
-                    Về trang chủ
+                    Vá» trang chá»§
                 </a>
             </div>
         </div>
@@ -532,7 +532,7 @@
                 const questions = response.data;
                 
                 if (!questions || questions.length === 0) {
-                   alert("Không tìm thấy câu hỏi cho cấp độ này (Admin chưa tạo dữ liệu).");
+                   alert("KhÃ´ng tÃ¬m tháº¥y cÃ¢u há»i cho cáº¥p Ä‘á»™ nÃ y (Admin chÆ°a táº¡o dá»¯ liá»‡u).");
                    location.reload();
                    return;
                 }
@@ -551,7 +551,7 @@
             } catch (err) {
                 console.error(err);
                 const msg = err.data && err.data.error ? err.data.error.message : err.message;
-                alert("Lỗi tải câu hỏi: " + msg);
+                alert("Lá»—i táº£i cÃ¢u há»i: " + msg);
                 location.reload();
             }
         }
@@ -586,11 +586,11 @@
         
         function getTypeName(type) {
             const names = {
-                'listening': 'Nghe hiểu',
-                'matching': 'Ghép từ',
-                'fill_blank': 'Trắc nghiệm', 
-                'reverse': 'Dịch thuật',
-                'skids_vocabulary': 'Học từ vựng'
+                'listening': 'Nghe hiá»ƒu',
+                'matching': 'GhÃ©p tá»«',
+                'fill_blank': 'Tráº¯c nghiá»‡m', 
+                'reverse': 'Dá»‹ch thuáº­t',
+                'skids_vocabulary': 'Há»c tá»« vá»±ng'
             };
             return names[type] || 'Quiz';
         }
@@ -698,7 +698,7 @@
                     
                     // Update instruction
                     const instruction = document.getElementById('match-instruction');
-                    if (instruction) instruction.textContent = 'Bây giờ chọn nghĩa tiếng Việt tương ứng';
+                    if (instruction) instruction.textContent = 'BÃ¢y giá» chá»n nghÄ©a tiáº¿ng Viá»‡t tÆ°Æ¡ng á»©ng';
                 } else {
                     if (!selectedLeft) return; 
                     
@@ -713,7 +713,7 @@
                         
                         // Update instruction
                         const instruction = document.getElementById('match-instruction');
-                        if (instruction) instruction.textContent = 'Tuyệt vời! Tiếp tục ghép những cặp còn lại';
+                        if (instruction) instruction.textContent = 'Tuyá»‡t vá»i! Tiáº¿p tá»¥c ghÃ©p nhá»¯ng cáº·p cÃ²n láº¡i';
                         
                         if (matchesFound === totalPairs) {
                             setTimeout(() => handleAnswer(q, true, null), 500);
@@ -725,7 +725,7 @@
                         
                         // Update instruction
                         const instruction = document.getElementById('match-instruction');
-                        if (instruction) instruction.textContent = 'Không đúng! Thử lại nhé';
+                        if (instruction) instruction.textContent = 'KhÃ´ng Ä‘Ãºng! Thá»­ láº¡i nhÃ©';
                     }
                 }
             };
@@ -870,7 +870,7 @@
                 meaningEl.classList.add('border-slate-200', 'dark:border-slate-700');
                 
                 const instruction = document.getElementById('match-instruction');
-                if (instruction) instruction.textContent = 'Nhấn vào từ tiếng Trung để bắt đầu';
+                if (instruction) instruction.textContent = 'Nháº¥n vÃ o tá»« tiáº¿ng Trung Ä‘á»ƒ báº¯t Ä‘áº§u';
             }, 800);
         }
 
@@ -916,7 +916,7 @@
             
             const hintText = document.createElement('span');
             hintText.className = 'px-4 py-2 bg-gray-100 dark:bg-gray-900/30 text-gray-700 dark:text-gray-300 rounded-full border border-gray-200 dark:border-gray-800 font-semibold';
-            hintText.textContent = 'Chọn nghĩa tiếng Việt';
+            hintText.textContent = 'Chá»n nghÄ©a tiáº¿ng Viá»‡t';
             
             infoContainer.appendChild(pinyinBadge);
             infoContainer.appendChild(hintText);
@@ -996,14 +996,14 @@
             const emojiEl = container.querySelector('.skids-emoji');
             if (emojiEl) {
                 const emojiMap = {
-                    'ngồi': '🪑', 'chạy': '🏃', 'ăn': '🍽️', 'uống': '🥤', 
-                    'ngủ': '😴', 'đi': '🚶', 'nhà': '🏠', 'xe': '🚗',
-                    'sách': '📚', 'bút': '✏️', 'bàn': '🪑', 'ghế': '🪑',
-                    'mèo': '🐱', 'chó': '🐶', 'cây': '🌳', 'hoa': '🌸',
-                    'mưa': '🌧️', 'nắng': '☀️', 'gió': '💨', 'mây': '☁️'
+                    'ngá»“i': 'ðŸª‘', 'cháº¡y': 'ðŸƒ', 'Äƒn': 'ðŸ½ï¸', 'uá»‘ng': 'ðŸ¥¤', 
+                    'ngá»§': 'ðŸ˜´', 'Ä‘i': 'ðŸš¶', 'nhÃ ': 'ðŸ ', 'xe': 'ðŸš—',
+                    'sÃ¡ch': 'ðŸ“š', 'bÃºt': 'âœï¸', 'bÃ n': 'ðŸª‘', 'gháº¿': 'ðŸª‘',
+                    'mÃ¨o': 'ðŸ±', 'chÃ³': 'ðŸ¶', 'cÃ¢y': 'ðŸŒ³', 'hoa': 'ðŸŒ¸',
+                    'mÆ°a': 'ðŸŒ§ï¸', 'náº¯ng': 'â˜€ï¸', 'giÃ³': 'ðŸ’¨', 'mÃ¢y': 'â˜ï¸'
                 };
                 const meaningLower = (word.meaning || '').toLowerCase();
-                let emoji = '📝'; // default
+                let emoji = 'ðŸ“'; // default
                 for (const [key, value] of Object.entries(emojiMap)) {
                     if (meaningLower.includes(key)) {
                         emoji = value;
@@ -1042,7 +1042,7 @@
             // For skids vocabulary, automatically show next button after a delay
             setTimeout(() => {
                 nextBtn.classList.remove('hidden');
-                nextBtn.innerHTML = `Tiếp tục <span class="material-symbols-outlined">arrow_forward</span>`;
+                nextBtn.innerHTML = `Tiáº¿p tá»¥c <span class="material-symbols-outlined">arrow_forward</span>`;
                 nextBtn.className = 'px-8 py-2 bg-primary hover:bg-blue-600 text-white font-bold rounded-full shadow-lg shadow-primary/30 hover:scale-105 active:scale-95 transition-all text-lg flex items-center gap-2';
                 nextBtn.onclick = () => {
                     // For skids, just proceed to next without scoring
@@ -1095,7 +1095,7 @@
                     });
                     
                     // Update next button with feedback - matching game_listen.html style
-                    nextBtn.innerHTML = `<span>${isCorrect ? 'Đúng rồi! Tiếp tục' : 'Sai rồi! Tiếp tục'}</span><span class="material-symbols-outlined">arrow_forward</span>`;
+                    nextBtn.innerHTML = `<span>${isCorrect ? 'ÄÃºng rá»“i! Tiáº¿p tá»¥c' : 'Sai rá»“i! Tiáº¿p tá»¥c'}</span><span class="material-symbols-outlined">arrow_forward</span>`;
                     nextBtn.className = `px-8 py-2 ${isCorrect ? 'bg-green-500 hover:bg-green-600' : 'bg-orange-500 hover:bg-orange-600'} text-white font-bold rounded-full shadow-lg transition-all text-lg flex items-center gap-2`;
                 } else if (q.type === 'fill_blank') {
                     // For fill_blank type, show correct/incorrect similar to listening
@@ -1128,7 +1128,7 @@
                     });
                     
                     // Update next button
-                    nextBtn.innerHTML = `<span>${isCorrect ? '✓ Chính xác!' : '✗ Sai rồi!'}</span><span class="material-symbols-outlined">arrow_forward</span>`;
+                    nextBtn.innerHTML = `<span>${isCorrect ? 'âœ“ ChÃ­nh xÃ¡c!' : 'âœ— Sai rá»“i!'}</span><span class="material-symbols-outlined">arrow_forward</span>`;
                     nextBtn.className = `px-8 py-2 ${isCorrect ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'} text-white font-bold rounded-full shadow-lg transition-all text-lg flex items-center gap-2`;
                 } else {
                     // For other types (reverse), keep original behavior
@@ -1205,7 +1205,7 @@
                    xpEl.innerHTML = `+${result.data.xpGained} XP`;
                    
                    if (result.data.leveledUp) {
-                        xpEl.innerHTML += ` <br> <span class="text-primary text-2xl">LEVEL UP! ⬆️ ${result.data.newLevel}</span>`;
+                        xpEl.innerHTML += ` <br> <span class="text-primary text-2xl">LEVEL UP! â¬†ï¸ ${result.data.newLevel}</span>`;
                    }
                    
                    document.querySelector('#result-modal .p-6').appendChild(xpEl);

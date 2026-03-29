@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Admin User Management
  * Frontend JavaScript for user_ad.html
  */
@@ -24,7 +24,7 @@ function checkAuth() {
     
     if (!token) {
         console.error('No auth token found, redirecting to login');
-        alert('Vui lòng đăng nhập để tiếp tục');
+        alert('Vui lÃ²ng Ä‘Äƒng nháº­p Ä‘á»ƒ tiáº¿p tá»¥c');
         window.location.href = '/login_screen.html';
         return false;
     }
@@ -36,7 +36,7 @@ function checkAuth() {
         
         if (payload.role !== 'admin') {
             console.error('User is not admin:', payload.role);
-            alert('Bạn không có quyền truy cập trang này');
+            alert('Báº¡n khÃ´ng cÃ³ quyá»n truy cáº­p trang nÃ y');
             window.location.href = '/user/home.html';
             return false;
         }
@@ -45,7 +45,7 @@ function checkAuth() {
         return true;
     } catch (error) {
         console.error('Invalid token:', error);
-        alert('Phiên đăng nhập không hợp lệ. Vui lòng đăng nhập lại');
+        alert('PhiÃªn Ä‘Äƒng nháº­p khÃ´ng há»£p lá»‡. Vui lÃ²ng Ä‘Äƒng nháº­p láº¡i');
         localStorage.removeItem('authToken');
         window.location.href = '/login_screen.html';
         return false;
@@ -82,7 +82,7 @@ async function apiRequest(endpoint, options = {}) {
     console.log('API Response Data:', data);
 
     if (!response.ok) {
-        const errorMessage = data.error?.message || data.message || 'Có lỗi xảy ra';
+        const errorMessage = data.error?.message || data.message || 'CÃ³ lá»—i xáº£y ra';
         console.error('API Error:', { status: response.status, error: data });
         throw new Error(errorMessage);
     }
@@ -134,7 +134,7 @@ async function loadUsers(page = 1, role = '', search = '') {
                         <div class="text-red-500 dark:text-red-400">
                             <span class="material-symbols-outlined text-4xl mb-2">error</span>
                             <p class="font-semibold">${error.message}</p>
-                            <p class="text-sm mt-2">Vui lòng kiểm tra Console để biết thêm chi tiết</p>
+                            <p class="text-sm mt-2">Vui lÃ²ng kiá»ƒm tra Console Ä‘á»ƒ biáº¿t thÃªm chi tiáº¿t</p>
                         </div>
                     </td>
                 </tr>
@@ -157,7 +157,7 @@ function renderUsers(users) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="6" class="px-6 py-8 text-center text-gray-500">
-                    Không tìm thấy người dùng nào
+                    KhÃ´ng tÃ¬m tháº¥y ngÆ°á»i dÃ¹ng nÃ o
                 </td>
             </tr>
         `;
@@ -174,21 +174,21 @@ function renderUsers(users) {
             : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300';
 
         const statusDotClass = user.status === 'active' ? 'bg-green-500' : 'bg-red-500';
-        const statusText = user.status === 'active' ? 'Hoạt động' : 'Khóa';
+        const statusText = user.status === 'active' ? 'Hoáº¡t Ä‘á»™ng' : 'KhÃ³a';
 
         const roleClass = user.role === 'admin'
             ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
             : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
 
-        const roleText = user.role === 'admin' ? 'Admin' : 'Học sinh';
+        const roleText = user.role === 'admin' ? 'Admin' : 'Há»c sinh';
 
         const createdDate = new Date(user.createdAt).toLocaleDateString('vi-VN');
 
         const lockButton = user.status === 'active'
-            ? `<button onclick="lockUser('${user._id}')" class="text-gray-400 hover:text-red-600 p-1 rounded hover:bg-gray-100" title="Khóa tài khoản">
+            ? `<button onclick="lockUser('${user._id}')" class="text-gray-400 hover:text-red-600 p-1 rounded hover:bg-gray-100" title="KhÃ³a tÃ i khoáº£n">
                 <span class="material-symbols-outlined text-[20px]">lock</span>
                </button>`
-            : `<button onclick="unlockUser('${user._id}')" class="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 bg-red-50" title="Mở khóa tài khoản">
+            : `<button onclick="unlockUser('${user._id}')" class="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 bg-red-50" title="Má»Ÿ khÃ³a tÃ i khoáº£n">
                 <span class="material-symbols-outlined text-[20px]">lock_open</span>
                </button>`;
 
@@ -199,7 +199,7 @@ function renderUsers(users) {
                         <div class="size-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-sm mr-3">
                             ${initials}
                         </div>
-                        <div class="text-sm font-medium text-gray-900 dark:text-white">${user.fullName || 'Chưa cập nhật'}</div>
+                        <div class="text-sm font-medium text-gray-900 dark:text-white">${user.fullName || 'ChÆ°a cáº­p nháº­t'}</div>
                     </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
@@ -221,7 +221,7 @@ function renderUsers(users) {
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div class="flex items-center justify-end gap-2">
-                        <button onclick="editUser('${user._id}')" class="text-gray-400 hover:text-admin-primary p-1 rounded hover:bg-gray-100" title="Chỉnh sửa">
+                        <button onclick="editUser('${user._id}')" class="text-gray-400 hover:text-admin-primary p-1 rounded hover:bg-gray-100" title="Chá»‰nh sá»­a">
                             <span class="material-symbols-outlined text-[20px]">edit</span>
                         </button>
                         ${lockButton}
@@ -241,7 +241,7 @@ function renderPagination(pagination) {
         const start = (pagination.page - 1) * pagination.limit + 1;
         const end = Math.min(pagination.page * pagination.limit, pagination.total);
         paginationInfo.innerHTML = `
-            Hiển thị <span class="font-medium">${start}</span> đến <span class="font-medium">${end}</span> trong tổng số <span class="font-medium">${pagination.total}</span> người dùng
+            Hiá»ƒn thá»‹ <span class="font-medium">${start}</span> Ä‘áº¿n <span class="font-medium">${end}</span> trong tá»•ng sá»‘ <span class="font-medium">${pagination.total}</span> ngÆ°á»i dÃ¹ng
         `;
     }
 
@@ -297,7 +297,7 @@ function changePage(page) {
  * Lock user account
  */
 async function lockUser(userId) {
-    if (!confirm('Bạn có chắc chắn muốn khóa tài khoản này?')) {
+    if (!confirm('Báº¡n cÃ³ cháº¯c cháº¯n muá»‘n khÃ³a tÃ i khoáº£n nÃ y?')) {
         return;
     }
 
@@ -307,7 +307,7 @@ async function lockUser(userId) {
             method: 'PATCH'
         });
 
-        showSuccess('Khóa tài khoản thành công');
+        showSuccess('KhÃ³a tÃ i khoáº£n thÃ nh cÃ´ng');
         loadUsers(currentPage, currentRole, currentSearch);
     } catch (error) {
         showError(error.message);
@@ -325,7 +325,7 @@ async function unlockUser(userId) {
             method: 'PATCH'
         });
 
-        showSuccess('Mở khóa tài khoản thành công');
+        showSuccess('Má»Ÿ khÃ³a tÃ i khoáº£n thÃ nh cÃ´ng');
         loadUsers(currentPage, currentRole, currentSearch);
     } catch (error) {
         showError(error.message);
@@ -337,8 +337,8 @@ async function unlockUser(userId) {
  * Open modal to add new user
  */
 function openAddUserModal() {
-    document.getElementById('modalTitle').textContent = 'Thêm người dùng mới';
-    document.getElementById('submitButtonText').textContent = 'Thêm người dùng';
+    document.getElementById('modalTitle').textContent = 'ThÃªm ngÆ°á»i dÃ¹ng má»›i';
+    document.getElementById('submitButtonText').textContent = 'ThÃªm ngÆ°á»i dÃ¹ng';
     document.getElementById('userId').value = '';
     document.getElementById('userForm').reset();
     document.getElementById('password').required = true;
@@ -355,8 +355,8 @@ async function editUser(userId) {
         const data = await apiRequest(`/api/admin/users/${userId}`);
         const user = data.data;
 
-        document.getElementById('modalTitle').textContent = 'Chỉnh sửa người dùng';
-        document.getElementById('submitButtonText').textContent = 'Cập nhật';
+        document.getElementById('modalTitle').textContent = 'Chá»‰nh sá»­a ngÆ°á»i dÃ¹ng';
+        document.getElementById('submitButtonText').textContent = 'Cáº­p nháº­t';
         document.getElementById('userId').value = user._id;
         document.getElementById('fullName').value = user.fullName || '';
         document.getElementById('email').value = user.email;
@@ -412,11 +412,11 @@ async function handleUserFormSubmit(event) {
                 method: 'PUT',
                 body: JSON.stringify(formData)
             });
-            showSuccess('Cập nhật người dùng thành công');
+            showSuccess('Cáº­p nháº­t ngÆ°á»i dÃ¹ng thÃ nh cÃ´ng');
         } else {
             // Create new user
             if (!password) {
-                showError('Vui lòng nhập mật khẩu');
+                showError('Vui lÃ²ng nháº­p máº­t kháº©u');
                 hideLoading();
                 return;
             }
@@ -424,7 +424,7 @@ async function handleUserFormSubmit(event) {
                 method: 'POST',
                 body: JSON.stringify(formData)
             });
-            showSuccess('Thêm người dùng thành công');
+            showSuccess('ThÃªm ngÆ°á»i dÃ¹ng thÃ nh cÃ´ng');
         }
 
         closeUserModal();
@@ -524,7 +524,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadUsers();
 
     // Setup search
-    const searchInput = document.querySelector('input[placeholder*="Tìm kiếm"]');
+    const searchInput = document.querySelector('input[placeholder*="TÃ¬m kiáº¿m"]');
     if (searchInput) {
         let searchTimeout;
         searchInput.addEventListener('input', (e) => {
@@ -542,11 +542,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (roleSelect) {
         roleSelect.addEventListener('change', (e) => {
             const value = e.target.value;
-            if (value === 'Tất cả') {
+            if (value === 'Táº¥t cáº£') {
                 currentRole = '';
             } else if (value.includes('Admin')) {
                 currentRole = 'admin';
-            } else if (value.includes('Học sinh')) {
+            } else if (value.includes('Há»c sinh')) {
                 currentRole = 'student';
             }
             currentPage = 1;

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 
 <html class="light" lang="en">
 
@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Reverse Quiz Game</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎮</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>ðŸŽ®</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
         rel="stylesheet" />
@@ -140,18 +140,18 @@
         <main class="flex-1 flex flex-col items-center justify-start py-4 px-3 sm:px-4 md:px-6 lg:px-8 w-full max-w-6xl mx-auto relative z-10">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 w-full lg:items-center">
 
-                <!-- ══════════════════════════════════════
+                <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
                      Left Column: Word Stage
-                ══════════════════════════════════════ -->
+                â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
                 <div class="lg:col-span-7 flex flex-col w-full">
 
                     <!-- Question Prompt -->
                     <div class="mb-4 sm:mb-5">
-                        <p class="text-xs sm:text-sm font-bold uppercase tracking-widest text-primary/60 mb-1">Nhận diện từ vựng</p>
+                        <p class="text-xs sm:text-sm font-bold uppercase tracking-widest text-primary/60 mb-1">Nháº­n diá»‡n tá»« vá»±ng</p>
                         <h1 id="questionPromptHeading"
                             class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 dark:text-gray-100 leading-tight">
-                            Nhìn từ tiếng Trung —
-                            <span class="text-primary">Nghĩa là gì?</span>
+                            NhÃ¬n tá»« tiáº¿ng Trung â€”
+                            <span class="text-primary">NghÄ©a lÃ  gÃ¬?</span>
                         </h1>
                     </div>
 
@@ -161,7 +161,7 @@
                         <!-- Colored top accent bar -->
                         <div class="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-primary via-blue-400 to-indigo-500 z-30"></div>
 
-                        <!-- Timer — top right -->
+                        <!-- Timer â€” top right -->
                         <div class="absolute top-4 right-4 z-20">
                             <div class="relative flex items-center justify-center size-16 sm:size-18 md:size-20 rounded-full bg-white/90 dark:bg-gray-900/80 shadow-lg backdrop-blur-sm border border-white dark:border-gray-700">
                                 <svg class="transform -rotate-90 size-16 sm:size-18 md:size-20" viewBox="0 0 100 100">
@@ -185,11 +185,11 @@
                                 class="text-[80px] sm:text-[100px] md:text-[120px] lg:text-[140px] font-black text-primary leading-none select-none drop-shadow-md"></span>
                         </div>
 
-                        <!-- Hint pill — bottom left -->
+                        <!-- Hint pill â€” bottom left -->
                         <div class="absolute bottom-0 inset-x-0 z-20 flex items-center gap-2 px-4 sm:px-5 py-2.5 bg-white/80 dark:bg-gray-900/70 backdrop-blur-sm border-t border-white/60 dark:border-gray-700">
                             <span class="material-symbols-outlined text-primary text-base" style="font-size:18px">lightbulb</span>
                             <span class="text-[11px] sm:text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Pinyin:&nbsp;</span>
-                            <span id="hintPinyin" class="text-xs sm:text-sm font-bold text-gray-700 dark:text-gray-200">—</span>
+                            <span id="hintPinyin" class="text-xs sm:text-sm font-bold text-gray-700 dark:text-gray-200">â€”</span>
                         </div>
                     </div>
 
@@ -198,9 +198,9 @@
                         <button id="listenBtn"
                             class="flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 text-slate-500 dark:text-slate-400 hover:border-primary hover:text-primary dark:hover:text-primary active:scale-95 transition-all shadow-sm text-xs sm:text-sm font-bold">
                             <span class="material-symbols-outlined text-[18px]">volume_up</span>
-                            Nghe phát âm
+                            Nghe phÃ¡t Ã¢m
                         </button>
-                        <span class="text-[11px] text-slate-400 dark:text-slate-500">Nhấn để nghe từ</span>
+                        <span class="text-[11px] text-slate-400 dark:text-slate-500">Nháº¥n Ä‘á»ƒ nghe tá»«</span>
                     </div>
 
                     <!-- Quit Game Button -->
@@ -208,23 +208,23 @@
                         <button id="quitGameBtn" 
                             class="w-full px-4 py-2.5 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white rounded-lg font-bold transition-all duration-150 shadow-md hover:shadow-lg hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
                             <span class="material-symbols-outlined text-lg">exit_to_app</span>
-                            <span>Kết thúc trò chơi</span>
+                            <span>Káº¿t thÃºc trÃ² chÆ¡i</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- ══════════════════════════════════════
+                <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
                      Right Column: Answer Options
-                ══════════════════════════════════════ -->
+                â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
                 <div class="lg:col-span-5 flex flex-col gap-3 sm:gap-4 lg:pl-6">
 
                     <!-- Section label -->
                     <div class="flex items-center justify-between">
-                        <p class="text-xs sm:text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">Chọn đáp án</p>
-                        <span class="text-[11px] text-slate-400 bg-slate-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">4 lựa chọn</span>
+                        <p class="text-xs sm:text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">Chá»n Ä‘Ã¡p Ã¡n</p>
+                        <span class="text-[11px] text-slate-400 bg-slate-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">4 lá»±a chá»n</span>
                     </div>
 
-                    <!-- 2×2 answer grid -->
+                    <!-- 2Ã—2 answer grid -->
                     <div id="optionsGrid" class="grid grid-cols-2 gap-3 sm:gap-4 w-full">
 
                         <!-- Option A -->
@@ -271,11 +271,11 @@
                     <!-- Keyboard hint -->
                     <p class="hidden lg:flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-600">
                         <span class="material-symbols-outlined text-sm">keyboard</span>
-                        Nhấn <kbd class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-gray-800 font-mono text-[11px] border border-slate-200 dark:border-gray-700">A</kbd>
+                        Nháº¥n <kbd class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-gray-800 font-mono text-[11px] border border-slate-200 dark:border-gray-700">A</kbd>
                         <kbd class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-gray-800 font-mono text-[11px] border border-slate-200 dark:border-gray-700">B</kbd>
                         <kbd class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-gray-800 font-mono text-[11px] border border-slate-200 dark:border-gray-700">C</kbd>
                         <kbd class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-gray-800 font-mono text-[11px] border border-slate-200 dark:border-gray-700">D</kbd>
-                        để trả lời nhanh
+                        Ä‘á»ƒ tráº£ lá»i nhanh
                     </p>
                 </div>
 
@@ -313,7 +313,7 @@ let gameStartTime = Date.now();
 async function loadQuestions() {
     const categoryId = getCategoryIdFromUrl();
     if (!categoryId) {
-        alert('Không tìm thấy categoryId!');
+        alert('KhÃ´ng tÃ¬m tháº¥y categoryId!');
         window.location.href = '../user/games_home.html';
         return;
     }
@@ -324,7 +324,7 @@ async function loadQuestions() {
         const res = await fetch(`/api/games/reverse-quiz?categoryId=${categoryId}`);
         const data = await res.json();
         if (!data.success) {
-            alert('Không thể tải câu hỏi: ' + (data.error?.message || 'Lỗi không xác định'));
+            alert('KhÃ´ng thá»ƒ táº£i cÃ¢u há»i: ' + (data.error?.message || 'Lá»—i khÃ´ng xÃ¡c Ä‘á»‹nh'));
             window.location.href = '../user/games_home.html';
             return;
         }
@@ -345,7 +345,7 @@ async function loadQuestions() {
         
         renderQuestion();
     } catch (err) {
-        alert('Lỗi khi gọi API: ' + err.message);
+        alert('Lá»—i khi gá»i API: ' + err.message);
         window.location.href = '../user/games_home.html';
     }
 }
@@ -546,25 +546,25 @@ function renderResult() {
     const seconds = duration % 60;
     
     // Determine performance level
-    let performanceEmoji = '🎉';
-    let performanceText = 'Xuất sắc!';
+    let performanceEmoji = 'ðŸŽ‰';
+    let performanceText = 'Xuáº¥t sáº¯c!';
     let performanceColor = 'from-green-500 to-emerald-500';
     
     if (percentage >= 90) {
-        performanceEmoji = '🏆';
-        performanceText = 'Hoàn hảo!';
+        performanceEmoji = 'ðŸ†';
+        performanceText = 'HoÃ n háº£o!';
         performanceColor = 'from-yellow-400 to-amber-500';
     } else if (percentage >= 70) {
-        performanceEmoji = '🎉';
-        performanceText = 'Rất tốt!';
+        performanceEmoji = 'ðŸŽ‰';
+        performanceText = 'Ráº¥t tá»‘t!';
         performanceColor = 'from-green-500 to-emerald-500';
     } else if (percentage >= 50) {
-        performanceEmoji = '👍';
-        performanceText = 'Tốt!';
+        performanceEmoji = 'ðŸ‘';
+        performanceText = 'Tá»‘t!';
         performanceColor = 'from-blue-500 to-cyan-500';
     } else {
-        performanceEmoji = '💪';
-        performanceText = 'Cố gắng lên!';
+        performanceEmoji = 'ðŸ’ª';
+        performanceText = 'Cá»‘ gáº¯ng lÃªn!';
         performanceColor = 'from-orange-500 to-red-500';
     }
     
@@ -580,7 +580,7 @@ function renderResult() {
                 
                 <!-- Title -->
                 <h2 class="text-2xl sm:text-4xl font-black bg-gradient-to-r ${performanceColor} bg-clip-text text-transparent mb-2">${performanceText}</h2>
-                <p class="text-base sm:text-xl text-gray-600 dark:text-gray-300 mb-4 sm:mb-6">Hoàn thành Quiz!</p>
+                <p class="text-base sm:text-xl text-gray-600 dark:text-gray-300 mb-4 sm:mb-6">HoÃ n thÃ nh Quiz!</p>
                 
                 <!-- Time Badge -->
                 <div class="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 px-4 py-2 rounded-full mb-4">
@@ -593,19 +593,19 @@ function renderResult() {
                     <div class="grid grid-cols-2 gap-2 sm:gap-4">
                         <div class="stat-card text-center p-3 sm:p-4 bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-xl transform hover:scale-105 transition-transform duration-200">
                             <div class="text-2xl sm:text-3xl font-black text-green-600 dark:text-green-400" data-value="${score}/${questions.length}">0/${questions.length}</div>
-                            <div class="text-xs sm:text-sm text-green-700 dark:text-green-300 font-semibold">Đúng</div>
+                            <div class="text-xs sm:text-sm text-green-700 dark:text-green-300 font-semibold">ÄÃºng</div>
                         </div>
                         <div class="stat-card text-center p-3 sm:p-4 bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/30 dark:to-cyan-900/30 rounded-xl transform hover:scale-105 transition-transform duration-200">
                             <div class="text-2xl sm:text-3xl font-black text-blue-600 dark:text-blue-400" data-value="${percentage}">0%</div>
-                            <div class="text-xs sm:text-sm text-blue-700 dark:text-blue-300 font-semibold">Chính xác</div>
+                            <div class="text-xs sm:text-sm text-blue-700 dark:text-blue-300 font-semibold">ChÃ­nh xÃ¡c</div>
                         </div>
                         <div class="stat-card text-center p-3 sm:p-4 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-xl transform hover:scale-105 transition-transform duration-200">
                             <div class="text-2xl sm:text-3xl font-black text-purple-600 dark:text-purple-400" data-value="${totalPoints}">0</div>
-                            <div class="text-xs sm:text-sm text-purple-700 dark:text-purple-300 font-semibold">Điểm</div>
+                            <div class="text-xs sm:text-sm text-purple-700 dark:text-purple-300 font-semibold">Äiá»ƒm</div>
                         </div>
                         <div class="stat-card text-center p-3 sm:p-4 bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30 rounded-xl transform hover:scale-105 transition-transform duration-200">
                             <div class="text-2xl sm:text-3xl font-black text-amber-600 dark:text-amber-400" data-value="${wrongAnswers}">0</div>
-                            <div class="text-xs sm:text-sm text-amber-700 dark:text-amber-300 font-semibold">Câu sai</div>
+                            <div class="text-xs sm:text-sm text-amber-700 dark:text-amber-300 font-semibold">CÃ¢u sai</div>
                         </div>
                     </div>
                 </div>
@@ -613,12 +613,12 @@ function renderResult() {
                 <!-- Action Buttons -->
                 <div class="flex flex-col sm:flex-row gap-3">
                     <button onclick="location.reload()" class="group flex-1 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white px-6 py-3 rounded-full font-bold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
-                        <span class="transform group-hover:rotate-180 transition-transform duration-500">🔄</span>
-                        <span>Chơi lại</span>
+                        <span class="transform group-hover:rotate-180 transition-transform duration-500">ðŸ”„</span>
+                        <span>ChÆ¡i láº¡i</span>
                     </button>
                     <button onclick="window.location.href='../user/games_home.html'" class="group flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-6 py-3 rounded-full font-bold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
-                        <span class="transform group-hover:scale-110 transition-transform duration-200">🏠</span>
-                        <span>Về trang chủ</span>
+                        <span class="transform group-hover:scale-110 transition-transform duration-200">ðŸ </span>
+                        <span>Vá» trang chá»§</span>
                     </button>
                 </div>
             </div>
@@ -748,7 +748,7 @@ function createConfetti() {
 // ========== Quit Game Handler ==========
 function quitGame() {
     // Show confirmation dialog
-    const confirmed = confirm('Bạn có chắc chắn muốn kết thúc trò chơi?\n\nQuá trình tiến hành sẽ không được lưu.');
+    const confirmed = confirm('Báº¡n cÃ³ cháº¯c cháº¯n muá»‘n káº¿t thÃºc trÃ² chÆ¡i?\n\nQuÃ¡ trÃ¬nh tiáº¿n hÃ nh sáº½ khÃ´ng Ä‘Æ°á»£c lÆ°u.');
     
     if (!confirmed) return;
     
@@ -767,24 +767,24 @@ function quitGame() {
         <div class="bg-gradient-to-br from-white via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-2xl md:rounded-3xl shadow-2xl p-6 sm:p-8 max-w-md w-full border-4 border-gradient-to-r from-orange-200 via-red-200 to-rose-200 dark:border-gray-700">
             <div class="text-center">
                 <!-- Icon -->
-                <div class="text-6xl mb-4 inline-block">⏸️</div>
+                <div class="text-6xl mb-4 inline-block">â¸ï¸</div>
                 
                 <!-- Title -->
-                <h2 class="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white mb-2">Trò chơi bị dừng</h2>
-                <p class="text-gray-600 dark:text-gray-300 mb-6">Dữ liệu tiến hành sẽ không được lưu</p>
+                <h2 class="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white mb-2">TrÃ² chÆ¡i bá»‹ dá»«ng</h2>
+                <p class="text-gray-600 dark:text-gray-300 mb-6">Dá»¯ liá»‡u tiáº¿n hÃ nh sáº½ khÃ´ng Ä‘Æ°á»£c lÆ°u</p>
                 
                 <!-- Quick Stats -->
                 <div class="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 mb-6 space-y-2">
                     <div class="flex justify-between text-sm">
-                        <span class="text-gray-600 dark:text-gray-400">Câu trả lời đúng:</span>
+                        <span class="text-gray-600 dark:text-gray-400">CÃ¢u tráº£ lá»i Ä‘Ãºng:</span>
                         <span class="font-bold text-gray-900 dark:text-white">${score}/${questions.length}</span>
                     </div>
                     <div class="flex justify-between text-sm">
-                        <span class="text-gray-600 dark:text-gray-400">Tỷ lệ:</span>
+                        <span class="text-gray-600 dark:text-gray-400">Tá»· lá»‡:</span>
                         <span class="font-bold text-gray-900 dark:text-white">${percentage}%</span>
                     </div>
                     <div class="flex justify-between text-sm">
-                        <span class="text-gray-600 dark:text-gray-400">Thời gian:</span>
+                        <span class="text-gray-600 dark:text-gray-400">Thá»i gian:</span>
                         <span class="font-bold text-gray-900 dark:text-white">${minutes}:${seconds.toString().padStart(2, '0')}</span>
                     </div>
                 </div>
@@ -793,11 +793,11 @@ function quitGame() {
                 <div class="flex flex-col gap-3">
                     <button onclick="window.location.href='../user/games_home.html'" class="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white px-6 py-3 rounded-lg font-bold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
                         <span class="material-symbols-outlined text-lg">home</span>
-                        Về trang chủ
+                        Vá» trang chá»§
                     </button>
                     <button onclick="window.location.reload()" class="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-6 py-3 rounded-lg font-bold transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
                         <span class="material-symbols-outlined text-lg">refresh</span>
-                        Chơi lại
+                        ChÆ¡i láº¡i
                     </button>
                 </div>
             </div>
