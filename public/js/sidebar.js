@@ -560,7 +560,6 @@ function initializeChatbot() {
     // Register callback for language changes
     if (typeof i18n !== 'undefined' && typeof i18n.onLanguageChange === 'function') {
         i18n.onLanguageChange(() => {
-            console.log('🌐 Language changed, reinitializing chatbot...');
             // Remove old chatbot
             const oldChatbot = document.getElementById('chatbot-toggle');
             if (oldChatbot && oldChatbot.parentElement) {
@@ -630,7 +629,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Register callback for language changes
         if (typeof i18n !== 'undefined' && typeof i18n.onLanguageChange === 'function') {
             i18n.onLanguageChange(() => {
-                console.log('🌐 Language changed, updating sidebar...');
                 // Get current profile data from sidebar
                 const currentProfileData = window.sidebarProfileData || null;
                 sidebarContainer.innerHTML = renderSidebar(activePage, currentProfileData);

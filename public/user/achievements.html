@@ -17,7 +17,7 @@
     <!-- Translations -->
     <script src="/i18n/translations.js"></script>
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <!-- Theme Config -->
     <script id="tailwind-config">
         tailwind.config = {
@@ -858,7 +858,6 @@
             // Register callback for language changes
             if (typeof i18n !== 'undefined' && typeof i18n.onLanguageChange === 'function') {
                 i18n.onLanguageChange(() => {
-                    console.log('🌐 Language changed, updating achievements...');
                     // Re-display achievements with new language
                     if (achievementsData) {
                         displayAchievements(achievementsData);
