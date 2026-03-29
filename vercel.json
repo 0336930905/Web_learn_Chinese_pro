@@ -1,35 +1,7 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "src/app.js",
-      "use": "@vercel/node",
-      "config": {
-        "maxLambdaSize": "50mb",
-        "nodeVersion": "18.x"
-      }
-    },
-    {
-      "src": "public/**/*",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/src/app.js"
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html",
-      "headers": {
-        "cache-control": "public, max-age=3600, must-revalidate"
-      }
-    }
-  ],
+  "buildCommand": "echo 'No build step needed for static content'",
+  "outputDirectory": "public",
   "env": {
     "NODE_ENV": "production"
   },
