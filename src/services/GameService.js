@@ -864,12 +864,16 @@ class GameService {
             id: word._id.toString(), 
             meaning: word.meaning,
             pinyin: word.pinyin,
+            traditional: word.traditional,
+            simplified: word.simplified,
             isCorrect: true 
           },
           ...wrongAnswers.map(w => ({ 
             id: w._id.toString(), 
             meaning: w.meaning,
             pinyin: w.pinyin,
+            traditional: w.traditional,
+            simplified: w.simplified,
             isCorrect: false 
           }))
         ];

@@ -90,6 +90,13 @@ async function createIndexes(db) {
       { key: { status: 1 } },
     ]);
 
+    // Practice Bookmarks indexes
+    await db.collection(COLLECTIONS.PRACTICE_BOOKMARKS).createIndexes([
+      { key: { userId: 1 } },
+      { key: { userId: 1, hanzi: 1 }, unique: true },
+      { key: { createdAt: -1 } },
+    ]);
+
     // Practice Custom Sets indexes
     await db.collection(COLLECTIONS.PRACTICE_CUSTOM_SETS).createIndexes([
       { key: { userId: 1 } },

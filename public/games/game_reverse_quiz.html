@@ -50,6 +50,34 @@
             background-size: 24px 24px;
             opacity: 0.1;
         }
+
+        .mode-btn {
+            background: rgba(255, 255, 255, 0.75);
+            color: #6b7280;
+            border: 2px solid #e5e7eb;
+            backdrop-filter: blur(6px);
+        }
+        .dark .mode-btn {
+            background: rgba(255, 255, 255, 0.08);
+            color: #9ca3af;
+            border-color: #374151;
+        }
+        .mode-btn.active-mode {
+            background: #f49d25;
+            color: white;
+            border-color: #f49d25;
+            box-shadow: 0 4px 14px rgba(244, 157, 37, 0.35);
+        }
+        .mode-btn:hover:not(.active-mode) {
+            border-color: #f49d25;
+            color: #f49d25;
+        }
+        .dark .mode-btn:hover:not(.active-mode) {
+            border-color: #f49d25;
+            color: #f49d25;
+        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 
@@ -79,16 +107,47 @@
       })
       .catch(err => console.error('Failed to load game header:', err));
     </script>
+
+    <!-- Quiz Mode Selector -->
+    <div class="w-full max-w-6xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 pt-3 pb-1 relative z-10">
+        <div class="flex gap-2 overflow-x-auto scrollbar-hide justify-center flex-wrap">
+            <button onclick="setMode('han-viet')" id="mode-han-viet"
+                class="mode-btn active-mode flex items-center gap-1 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200">
+                <span class="text-base font-bold">漢</span>
+                <span class="material-symbols-outlined text-sm leading-none">arrow_forward</span>
+                <span>Việt</span>
+            </button>
+            <button onclick="setMode('han-pinyin')" id="mode-han-pinyin"
+                class="mode-btn flex items-center gap-1 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200">
+                <span class="text-base font-bold">漢</span>
+                <span class="material-symbols-outlined text-sm leading-none">arrow_forward</span>
+                <span>Pinyin</span>
+            </button>
+            <button onclick="setMode('viet-pinyin')" id="mode-viet-pinyin"
+                class="mode-btn flex items-center gap-1 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200">
+                <span>Việt</span>
+                <span class="material-symbols-outlined text-sm leading-none">arrow_forward</span>
+                <span>Pinyin</span>
+            </button>
+            <button onclick="setMode('viet-han')" id="mode-viet-han"
+                class="mode-btn flex items-center gap-1 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200">
+                <span>Việt</span>
+                <span class="material-symbols-outlined text-sm leading-none">arrow_forward</span>
+                <span class="text-base font-bold">漢</span>
+            </button>
+        </div>
+    </div>
+
         <!-- Main Game Content -->
         <main class="flex-1 flex flex-col items-center justify-center p-3 sm:p-4 md:p-6 lg:p-8 w-full max-w-6xl mx-auto">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 md:gap-8 w-full h-full lg:h-auto items-center">
                 <!-- Left Column: The Stage (Image & Prompt) -->
                 <div class="lg:col-span-7 flex flex-col w-full h-full justify-center">
                     <!-- Question Prompt -->
-                    <h1
+                    <h1 id="question-prompt"
                         class="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-center lg:text-left mb-4 sm:mb-6 md:mb-8 text-gray-800 dark:text-gray-100 drop-shadow-sm leading-tight">
                         Nhìn chữ Hán và đoán<br />
-                        <span class="text-primary">nghĩa tiếng Việt</span>
+                        <span id="question-prompt-highlight" class="text-primary">nghĩa tiếng Việt</span>
                     </h1>
                     <!-- Chinese Character Card -->
                     <div
@@ -111,13 +170,14 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Main Chinese Character Display -->
-                        <div class="w-full h-full flex items-center justify-center transition-transform duration-700 group-hover:scale-105 flex-col gap-4">
-                            <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400 font-medium">Chữ Hán:</p>
+                        <!-- Main Question Display -->
+                        <div class="w-full h-full flex items-center justify-center transition-transform duration-700 group-hover:scale-105 flex-col gap-3 px-4">
+                            <p id="question-label" class="text-sm sm:text-base text-gray-600 dark:text-gray-400 font-medium">Chữ Hán:</p>
                             <div id="chinese-char" class="text-6xl sm:text-8xl md:text-9xl font-bold text-primary drop-shadow-lg">學</div>
+                            <div id="viet-question" class="hidden text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 dark:text-white text-center leading-tight"></div>
                         </div>
                         <!-- Pinyin Hint -->
-                        <div class="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 md:bottom-6 md:left-6 z-20">
+                        <div id="pinyin-hint-container" class="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 md:bottom-6 md:left-6 z-20">
                             <div class="px-3 py-1.5 sm:px-4 sm:py-2 bg-white/90 dark:bg-black/60 backdrop-blur-sm rounded-lg shadow-sm">
                                 <p class="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300 flex items-center gap-1.5 sm:gap-2">
                                     <span class="material-symbols-outlined text-primary text-base sm:text-lg">lightbulb</span>
@@ -220,6 +280,24 @@ let score = 0;
 let timer = null;
 let timeLeft = 15;
 let gameStartTime = Date.now();
+let quizMode = 'han-viet'; // 'han-viet' | 'han-pinyin' | 'viet-pinyin' | 'viet-han'
+
+// ========== Mode Config ==========
+const MODE_CONFIG = {
+    'han-viet':    { prompt: 'Nhìn chữ Hán và đoán', highlight: 'nghĩa tiếng Việt',    label: 'Chữ Hán:',           showHan: true,  showViet: false, showPinyinHint: true  },
+    'han-pinyin':  { prompt: 'Nhìn chữ Hán và đoán', highlight: 'Phiên âm (Pinyin)',   label: 'Chữ Hán:',           showHan: true,  showViet: false, showPinyinHint: false },
+    'viet-pinyin': { prompt: 'Nhìn nghĩa Việt và đoán', highlight: 'Phiên âm (Pinyin)',label: 'Nghĩa tiếng Việt:',  showHan: false, showViet: true,  showPinyinHint: false },
+    'viet-han':    { prompt: 'Nhìn nghĩa Việt và đoán', highlight: 'Chữ Hán',          label: 'Nghĩa tiếng Việt:',  showHan: false, showViet: true,  showPinyinHint: false },
+};
+
+// ========== Set Mode ==========
+function setMode(mode) {
+    quizMode = mode;
+    document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active-mode'));
+    const activeBtn = document.getElementById('mode-' + mode);
+    if (activeBtn) activeBtn.classList.add('active-mode');
+    if (questions.length > 0) renderQuestion();
+}
 
 // ========== Load Questions ==========
 async function loadQuestions() {
@@ -276,15 +354,33 @@ function renderQuestion() {
     // Reset timer
     resetTimer();
 
-    // Update Chinese character
+    // Update question card based on mode
+    const cfg = MODE_CONFIG[quizMode] || MODE_CONFIG['han-viet'];
+
+    const promptEl = document.getElementById('question-prompt');
+    const highlightEl = document.getElementById('question-prompt-highlight');
+    const labelEl = document.getElementById('question-label');
     const charDiv = document.getElementById('chinese-char');
+    const vietDiv = document.getElementById('viet-question');
+    const pinyinHintContainer = document.getElementById('pinyin-hint-container');
+    const hintDiv = document.getElementById('pinyin-hint');
+
+    if (promptEl) promptEl.childNodes[0].textContent = cfg.prompt + '\n';
+    if (highlightEl) highlightEl.textContent = cfg.highlight;
+    if (labelEl) labelEl.textContent = cfg.label;
+
     if (charDiv) {
         charDiv.textContent = q.traditional || q.simplified;
+        charDiv.classList.toggle('hidden', !cfg.showHan);
     }
-
-    // Update pinyin hint
-    const hintDiv = document.getElementById('pinyin-hint');
-    if (hintDiv) {
+    if (vietDiv) {
+        vietDiv.textContent = q.meaning || '';
+        vietDiv.classList.toggle('hidden', !cfg.showViet);
+    }
+    if (pinyinHintContainer) {
+        pinyinHintContainer.classList.toggle('hidden', !cfg.showPinyinHint);
+    }
+    if (hintDiv && cfg.showPinyinHint) {
         hintDiv.textContent = `Phát âm: ${q.pinyin || 'N/A'}`;
     }
 
@@ -298,22 +394,35 @@ function renderQuestion() {
     
     q.options.forEach((opt, idx) => {
         const btn = document.createElement('button');
-        btn.className = 'group relative flex flex-col items-center justify-center p-3 sm:p-4 md:p-6 lg:p-8 h-24 sm:h-28 md:h-32 lg:h-40 rounded-xl bg-white dark:bg-surface-dark border-b-4 border-gray-200 dark:border-gray-700 hover:border-primary active:border-primary active:translate-y-1 active:scale-95 transition-all duration-200 shadow-sm hover:shadow-xl hover:shadow-primary/10';
+        btn.className = 'group relative flex flex-col items-center justify-center p-2 sm:p-3 md:p-4 h-32 sm:h-36 md:h-40 lg:h-44 rounded-xl bg-white dark:bg-surface-dark border-b-4 border-gray-200 dark:border-gray-700 hover:border-primary active:border-primary active:translate-y-1 active:scale-95 transition-all duration-200 shadow-sm hover:shadow-xl hover:shadow-primary/10 gap-0.5';
         btn.onclick = () => selectAnswer(idx);
-        
-        // Icon placeholder
-        const iconDiv = document.createElement('div');
-        iconDiv.className = 'size-8 sm:size-9 md:size-10 mb-1.5 sm:mb-2 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-500 dark:text-blue-300 flex items-center justify-center group-hover:scale-110 transition-transform';
-        iconDiv.innerHTML = '<span class="material-symbols-outlined text-lg sm:text-xl md:text-2xl">translate</span>';
-        
-        // Meaning text (Vietnamese)
+
+        // === Always show all 3 components ===
+
+        // 1. Chinese character
+        const hanSpan = document.createElement('span');
+        hanSpan.className = 'text-xl sm:text-2xl md:text-3xl font-bold text-primary group-hover:scale-110 transition-transform leading-tight';
+        hanSpan.textContent = opt.traditional || opt.simplified || '';
+
+        // 2. Pinyin
+        const pinyinSpan = document.createElement('span');
+        pinyinSpan.className = 'text-xs sm:text-sm font-medium text-blue-500 dark:text-blue-300 leading-tight';
+        pinyinSpan.textContent = opt.pinyin || '';
+
+        // Divider
+        const divider = document.createElement('div');
+        divider.className = 'w-8 h-px bg-gray-200 dark:bg-gray-600 my-0.5';
+
+        // 3. Vietnamese meaning
         const meaningSpan = document.createElement('span');
-        meaningSpan.className = 'text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors text-center';
-        meaningSpan.textContent = opt.meaning;
-        
-        btn.appendChild(iconDiv);
+        meaningSpan.className = 'text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors text-center leading-tight px-1';
+        meaningSpan.textContent = opt.meaning || '';
+
+        btn.appendChild(hanSpan);
+        btn.appendChild(pinyinSpan);
+        btn.appendChild(divider);
         btn.appendChild(meaningSpan);
-        
+
         optionsContainer.appendChild(btn);
     });
 

@@ -50,6 +50,8 @@
     .practice-card {
       transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
     .practice-card:hover {
       transform: translateY(-2px);
       box-shadow: 0 12px 24px 0 rgba(76,230,76,0.14);
@@ -213,54 +215,55 @@
 
         <!--  TAB 1: CUSTOM SET  -->
         <div id="panelCustom" class="">
-          <div class="flex gap-4 items-start">
 
-          <!-- ====== FOLDER PANEL (left sidebar) ====== -->
-          <div id="folderPanel" class="hidden flex-col w-52 shrink-0 bg-white dark:bg-card-dark rounded-3xl border border-gray-100 dark:border-green-900/30 shadow-soft overflow-hidden">
-            <!-- Header -->
-            <div class="flex items-center justify-between px-4 py-3.5 border-b border-gray-100 dark:border-green-900/20 bg-gradient-to-br from-primary/10 to-transparent dark:from-primary/15 dark:to-transparent">
-              <div class="flex items-center gap-1.5">
-                <span class="material-symbols-outlined text-primary text-base" style="font-variation-settings:'FILL' 1">folder</span>
-                <span class="font-extrabold text-sm text-text-main dark:text-white">Thư mục</span>
+          <!-- ====== FOLDER BAR (horizontal, above grid) ====== -->
+          <div id="folderPanel" class="hidden mb-3 bg-white dark:bg-card-dark rounded-2xl border border-gray-100 dark:border-green-900/30 shadow-soft px-3 py-2.5">
+            <div class="flex items-center gap-3">
+              <!-- Label -->
+              <div class="flex items-center gap-1 shrink-0">
+                <span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings:'FILL' 1">folder</span>
+                <span class="text-[11px] font-extrabold text-text-secondary dark:text-primary/60 uppercase tracking-wider hidden sm:inline">Thư mục</span>
               </div>
+              <!-- Scrollable pill row -->
+              <div class="flex-1 overflow-x-auto scrollbar-hide">
+                <div class="flex gap-1.5 items-center" style="min-width:max-content">
+                  <!-- "Tất cả" pill -->
+                  <button id="folderBtn_all" onclick="selectFolder(null)"
+                    class="folder-item flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all
+                    bg-primary/10 text-primary">
+                    <span class="material-symbols-outlined text-xs" style="font-variation-settings:'FILL' 1">layers</span>
+                    Tất cả
+                    <span id="folderCount_all" class="font-black bg-primary/20 px-1.5 py-0.5 rounded-full text-[10px]">0</span>
+                  </button>
+                  <!-- "Chưa phân loại" pill -->
+                  <button id="folderBtn_unfiled" onclick="selectFolder('unfiled')"
+                    ondragover="folderDragOver(event, this)" ondragleave="folderDragLeave(event, this)" ondrop="folderDrop(event, null)"
+                    class="folder-item flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all
+                    text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-green-900/20 hover:bg-gray-200 dark:hover:bg-green-900/40">
+                    <span class="material-symbols-outlined text-xs">folder_off</span>
+                    Chưa phân loại
+                    <span id="folderCount_unfiled" class="font-black bg-gray-200 dark:bg-zinc-700 px-1.5 py-0.5 rounded-full text-[10px]">0</span>
+                  </button>
+                  <!-- Divider -->
+                  <div class="w-px h-4 bg-gray-200 dark:bg-green-900/40 shrink-0 mx-0.5"></div>
+                  <!-- Dynamic folder pills -->
+                  <div id="folderItemsContainer" class="flex gap-1.5 items-center">
+                    <!-- Populated by renderFolderPanel() -->
+                  </div>
+                  <div id="folderEmpty" class="hidden text-xs text-gray-400 dark:text-zinc-500 italic px-1">Chưa có thư mục nào</div>
+                </div>
+              </div>
+              <!-- Create folder button -->
               <button onclick="createFolderUI()" title="Tạo thư mục mới"
-                class="w-7 h-7 flex items-center justify-center rounded-lg bg-primary/15 hover:bg-primary/30 text-primary transition-all">
-                <span class="material-symbols-outlined text-base">add</span>
+                class="shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-bold
+                bg-primary/15 hover:bg-primary/30 text-primary transition-all">
+                <span class="material-symbols-outlined text-xs">add</span>
+                <span class="hidden sm:inline">Tạo</span>
               </button>
-            </div>
-            <!-- Folder list -->
-            <div class="py-2 overflow-y-auto flex-1" id="folderList">
-              <!-- Populated by renderFolderPanel() -->
-              <div class="px-2 py-1">
-                <button id="folderBtn_all" onclick="selectFolder(null)"
-                  class="folder-item w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left text-sm font-semibold
-                  bg-primary/10 text-primary transition-all">
-                  <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1">layers</span>
-                  <span class="flex-1 truncate">Tất cả</span>
-                  <span id="folderCount_all" class="text-xs font-bold text-primary/70 bg-primary/10 px-1.5 py-0.5 rounded-full">0</span>
-                </button>
-              </div>
-              <div class="px-2 py-1">
-                <button id="folderBtn_unfiled" onclick="selectFolder('unfiled')"
-                  ondragover="folderDragOver(event, this)" ondragleave="folderDragLeave(event, this)" ondrop="folderDrop(event, null)"
-                  class="folder-item w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left text-sm font-semibold
-                  text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-green-900/20 transition-all">
-                  <span class="material-symbols-outlined text-base">folder_off</span>
-                  <span class="flex-1 truncate">Chưa phân loại</span>
-                  <span id="folderCount_unfiled" class="text-xs font-bold text-gray-400 bg-gray-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded-full">0</span>
-                </button>
-              </div>
-              <div class="mx-3 my-1 border-t border-gray-100 dark:border-green-900/20"></div>
-              <div id="folderItemsContainer" class="px-2 space-y-0.5">
-                <!-- Dynamic folder items -->
-              </div>
-              <div id="folderEmpty" class="hidden px-4 py-3 text-xs text-gray-400 dark:text-zinc-500 text-center">
-                Chưa có thư mục nào
-              </div>
             </div>
           </div>
 
-          <div class="flex-1 min-w-0 practice-card bg-white dark:bg-card-dark rounded-3xl border border-gray-100 dark:border-green-900/30 shadow-soft overflow-hidden">
+          <div class="practice-card bg-white dark:bg-card-dark rounded-3xl border border-gray-100 dark:border-green-900/30 shadow-soft overflow-hidden">
 
             <!-- -- Dynamic Card Header -- -->
             <div id="customPanelHeader"
@@ -453,7 +456,6 @@
 
           </div>
 
-          </div><!-- /flex gap-4 -->
         </div>
 
         <!-- -- TAB 2: EXISTING SET -- -->
@@ -856,11 +858,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   await Promise.all([loadCategories(), loadBookmarksSet(), loadFolders()]);
 
-  // Show folder panel on desktop after data is ready
-  if (window.innerWidth >= 768) {
-    const folderPanel = document.getElementById('folderPanel');
-    if (folderPanel) { folderPanel.classList.remove('hidden'); folderPanel.classList.add('flex'); }
-  }
+  // Show folder panel after data is ready
+  const folderPanel = document.getElementById('folderPanel');
+  if (folderPanel) { folderPanel.classList.remove('hidden'); }
 });
 
 // ==================== TABS ====================
@@ -870,12 +870,10 @@ function switchTab(tab) {
   document.getElementById('panelExisting').classList.toggle('hidden', tab !== 'existing');
   document.getElementById('tabCustom').className = (tab === 'custom' ? 'tab-active' : 'tab-inactive') + ' px-6 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-1.5';
   document.getElementById('tabExisting').className = (tab === 'existing' ? 'tab-active' : 'tab-inactive') + ' px-6 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-1.5';
-  // Show folder panel only on custom tab list view (desktop only)
+  // Show folder panel only on custom tab list view
   const folderPanel = document.getElementById('folderPanel');
   if (folderPanel) {
-    const isDesktop = window.innerWidth >= 768;
-    folderPanel.classList.toggle('hidden', tab !== 'custom' || !isDesktop);
-    folderPanel.classList.toggle('flex', tab === 'custom' && isDesktop);
+    folderPanel.classList.toggle('hidden', tab !== 'custom');
   }
   if (tab === 'custom') loadSavedSets();
 }
@@ -1088,7 +1086,7 @@ function openCustomForm(setData = null) {
 
   // Hide folder panel while form is open
   const folderPanel = document.getElementById('folderPanel');
-  if (folderPanel) { folderPanel.classList.add('hidden'); folderPanel.classList.remove('flex'); }
+  if (folderPanel) { folderPanel.classList.add('hidden'); }
 
   // Populate folder dropdown
   const sel = document.getElementById('customSetFolder');
@@ -1122,12 +1120,9 @@ function backToCustomList() {
   document.getElementById('customListView').classList.remove('hidden');
   document.getElementById('customHeaderForm').classList.add('hidden');
   document.getElementById('customHeaderList').classList.remove('hidden');
-  // Show folder panel again (desktop only)
+  // Show folder panel again
   const folderPanel = document.getElementById('folderPanel');
-  if (folderPanel && window.innerWidth >= 768) {
-    folderPanel.classList.remove('hidden');
-    folderPanel.classList.add('flex');
-  }
+  if (folderPanel) { folderPanel.classList.remove('hidden'); }
   _currentEditSetId = null;
   loadSavedSets();
 }
@@ -1964,42 +1959,30 @@ async function loadFolders() {
 }
 
 async function renderFolderPanel() {
-  const container   = document.getElementById('folderItemsContainer');
-  const emptyEl     = document.getElementById('folderEmpty');
+  const container = document.getElementById('folderItemsContainer');
+  const emptyEl   = document.getElementById('folderEmpty');
   if (!container) return;
 
-  // Fetch counts: all sets (no filter) to compute per-folder counts
   let allSets = [];
   try {
     const res = await authAPI.get('/practice/custom-sets');
     allSets = res.data || [];
   } catch {}
 
-  const totalCount    = allSets.length;
-  const unfiledCount  = allSets.filter(s => !s.folderId).length;
-
+  const totalCount   = allSets.length;
+  const unfiledCount = allSets.filter(s => !s.folderId).length;
   document.getElementById('folderCount_all').textContent     = totalCount;
   document.getElementById('folderCount_unfiled').textContent = unfiledCount;
 
-  // Highlight active folder button
-  const allBtn      = document.getElementById('folderBtn_all');
-  const unfiledBtn  = document.getElementById('folderBtn_unfiled');
-  const activeClass = ['bg-primary/10', 'text-primary', 'font-extrabold'];
-  const inactiveClass = ['text-gray-500', 'dark:text-gray-400', 'hover:bg-gray-100', 'dark:hover:bg-green-900/20'];
+  // Reset pill active-state (reassign full className for simplicity)
+  const pillBase = 'folder-item flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all';
+  const pillActive   = pillBase + ' bg-primary/10 text-primary';
+  const pillInactive = pillBase + ' text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-green-900/20 hover:bg-gray-200 dark:hover:bg-green-900/40';
 
-  [allBtn, unfiledBtn].forEach(btn => {
-    if (!btn) return;
-    btn.classList.remove(...activeClass, ...inactiveClass);
-    btn.classList.add(...inactiveClass);
-  });
-
-  if (currentFolderId === null) {
-    allBtn?.classList.remove(...inactiveClass);
-    allBtn?.classList.add(...activeClass);
-  } else if (currentFolderId === 'unfiled') {
-    unfiledBtn?.classList.remove(...inactiveClass);
-    unfiledBtn?.classList.add(...activeClass);
-  }
+  const allBtn     = document.getElementById('folderBtn_all');
+  const unfiledBtn = document.getElementById('folderBtn_unfiled');
+  if (allBtn)     allBtn.className     = currentFolderId === null      ? pillActive : pillInactive;
+  if (unfiledBtn) unfiledBtn.className = currentFolderId === 'unfiled' ? pillActive : pillInactive;
 
   if (!folders.length) {
     container.innerHTML = '';
@@ -2009,27 +1992,29 @@ async function renderFolderPanel() {
   emptyEl?.classList.add('hidden');
 
   container.innerHTML = folders.map(f => {
-    const count = allSets.filter(s => s.folderId && String(s.folderId) === String(f._id)).length;
+    const count    = allSets.filter(s => s.folderId && String(s.folderId) === String(f._id)).length;
     const isActive = currentFolderId === String(f._id);
+    const nameSafe = esc(f.name).replace(/'/g, "\\'");
     return `
-    <div class="group/f relative flex items-center gap-2 px-3 py-2 rounded-xl cursor-pointer transition-all
-      ${isActive ? 'bg-primary/10 text-primary font-extrabold' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-green-900/20'}"
-      onclick="selectFolder('${f._id}')"
+    <div class="group/f relative"
       ondragover="folderDragOver(event, this)" ondragleave="folderDragLeave(event, this)" ondrop="folderDrop(event, '${f._id}')">
-      <span class="material-symbols-outlined text-base shrink-0" style="font-variation-settings:'FILL' ${isActive ? '1' : '0'}">folder</span>
-      <span class="flex-1 text-sm truncate">${esc(f.name)}</span>
-      <span class="text-xs font-bold ${isActive ? 'text-primary/70 bg-primary/10' : 'text-gray-400 bg-gray-100 dark:bg-zinc-800'} px-1.5 py-0.5 rounded-full shrink-0">${count}</span>
-      <!-- Hover action buttons -->
-      <div class="hidden group-hover/f:flex absolute right-2 top-1/2 -translate-y-1/2 gap-0.5 bg-white dark:bg-card-dark rounded-lg shadow-soft border border-gray-100 dark:border-green-900/30 p-0.5 z-10">
-        <button onclick="event.stopPropagation(); renameFolderUI('${f._id}', '${esc(f.name).replace(/'/g, "\\'")}')"
-          class="w-6 h-6 flex items-center justify-center rounded-md text-gray-400 hover:text-primary hover:bg-primary/10 transition-all"
-          title="Đổi tên">
-          <span class="material-symbols-outlined" style="font-size:14px">edit</span>
+      <button onclick="selectFolder('${f._id}')"
+        class="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all
+        ${isActive ? 'bg-primary/10 text-primary' : 'text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-green-900/20 hover:bg-gray-200 dark:hover:bg-green-900/40'}">
+        <span class="material-symbols-outlined text-xs" style="font-variation-settings:'FILL' ${isActive ? '1' : '0'}">folder</span>
+        ${esc(f.name)}
+        <span class="font-black px-1.5 py-0.5 rounded-full text-[10px]
+          ${isActive ? 'bg-primary/20 text-primary/70' : 'bg-gray-200 dark:bg-zinc-700 text-gray-500'}">${count}</span>
+      </button>
+      <!-- Hover action dropdown -->
+      <div class="hidden group-hover/f:flex absolute left-0 top-full mt-1 bg-white dark:bg-card-dark rounded-xl shadow-soft border border-gray-100 dark:border-green-900/30 p-0.5 gap-0.5 z-20">
+        <button onclick="event.stopPropagation(); renameFolderUI('${f._id}', '${nameSafe}')"
+          class="w-6 h-6 flex items-center justify-center rounded-lg text-gray-400 hover:text-primary hover:bg-primary/10 transition-all" title="Đổi tên">
+          <span class="material-symbols-outlined" style="font-size:13px">edit</span>
         </button>
-        <button onclick="event.stopPropagation(); deleteFolderUI('${f._id}', '${esc(f.name).replace(/'/g, "\\'")}')"
-          class="w-6 h-6 flex items-center justify-center rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 transition-all"
-          title="Xóa thư mục">
-          <span class="material-symbols-outlined" style="font-size:14px">delete</span>
+        <button onclick="event.stopPropagation(); deleteFolderUI('${f._id}', '${nameSafe}')"
+          class="w-6 h-6 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 transition-all" title="Xóa">
+          <span class="material-symbols-outlined" style="font-size:13px">delete</span>
         </button>
       </div>
     </div>`;
