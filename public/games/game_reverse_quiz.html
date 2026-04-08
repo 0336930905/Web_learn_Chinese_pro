@@ -108,36 +108,6 @@
       .catch(err => console.error('Failed to load game header:', err));
     </script>
 
-    <!-- Quiz Mode Selector -->
-    <div class="w-full max-w-6xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 pt-3 pb-1 relative z-10">
-        <div class="flex gap-2 overflow-x-auto scrollbar-hide justify-center flex-wrap">
-            <button onclick="setMode('han-viet')" id="mode-han-viet"
-                class="mode-btn active-mode flex items-center gap-1 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200">
-                <span class="text-base font-bold">漢</span>
-                <span class="material-symbols-outlined text-sm leading-none">arrow_forward</span>
-                <span>Việt</span>
-            </button>
-            <button onclick="setMode('han-pinyin')" id="mode-han-pinyin"
-                class="mode-btn flex items-center gap-1 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200">
-                <span class="text-base font-bold">漢</span>
-                <span class="material-symbols-outlined text-sm leading-none">arrow_forward</span>
-                <span>Pinyin</span>
-            </button>
-            <button onclick="setMode('viet-pinyin')" id="mode-viet-pinyin"
-                class="mode-btn flex items-center gap-1 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200">
-                <span>Việt</span>
-                <span class="material-symbols-outlined text-sm leading-none">arrow_forward</span>
-                <span>Pinyin</span>
-            </button>
-            <button onclick="setMode('viet-han')" id="mode-viet-han"
-                class="mode-btn flex items-center gap-1 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200">
-                <span>Việt</span>
-                <span class="material-symbols-outlined text-sm leading-none">arrow_forward</span>
-                <span class="text-base font-bold">漢</span>
-            </button>
-        </div>
-    </div>
-
         <!-- Main Game Content -->
         <main class="flex-1 flex flex-col items-center justify-center p-3 sm:p-4 md:p-6 lg:p-8 w-full max-w-6xl mx-auto">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 md:gap-8 w-full h-full lg:h-auto items-center">
@@ -399,12 +369,7 @@ function renderQuestion() {
 
         // === Always show all 3 components ===
 
-        // 1. Chinese character
-        const hanSpan = document.createElement('span');
-        hanSpan.className = 'text-xl sm:text-2xl md:text-3xl font-bold text-primary group-hover:scale-110 transition-transform leading-tight';
-        hanSpan.textContent = opt.traditional || opt.simplified || '';
-
-        // 2. Pinyin
+        // 1. Pinyin
         const pinyinSpan = document.createElement('span');
         pinyinSpan.className = 'text-xs sm:text-sm font-medium text-blue-500 dark:text-blue-300 leading-tight';
         pinyinSpan.textContent = opt.pinyin || '';
@@ -418,7 +383,6 @@ function renderQuestion() {
         meaningSpan.className = 'text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors text-center leading-tight px-1';
         meaningSpan.textContent = opt.meaning || '';
 
-        btn.appendChild(hanSpan);
         btn.appendChild(pinyinSpan);
         btn.appendChild(divider);
         btn.appendChild(meaningSpan);
