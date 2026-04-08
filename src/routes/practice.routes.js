@@ -23,6 +23,18 @@ const practiceRoutes = (router, db) => {
   router.put('/custom-sets/:id', verifyToken, practiceController.updateCustomSet);
   router.delete('/custom-sets/:id', verifyToken, practiceController.deleteCustomSet);
 
+  // Bookmarks (words flagged for review)
+  router.get('/bookmarks', verifyToken, practiceController.getBookmarks);
+  router.post('/bookmarks', verifyToken, practiceController.addBookmark);
+  router.delete('/bookmarks', verifyToken, practiceController.clearBookmarks);
+  router.delete('/bookmarks/:id', verifyToken, practiceController.deleteBookmark);
+
+  // Folders (for organizing custom sets)
+  router.get('/folders', verifyToken, practiceController.getFolders);
+  router.post('/folders', verifyToken, practiceController.createFolder);
+  router.put('/folders/:id', verifyToken, practiceController.updateFolder);
+  router.delete('/folders/:id', verifyToken, practiceController.deleteFolder);
+
   return router;
 };
 

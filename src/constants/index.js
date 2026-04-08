@@ -162,6 +162,8 @@ const COLLECTIONS = {
   RESTORE_LOGS: 'restore_logs',
   PRACTICE_SESSIONS: 'practice_sessions',
   PRACTICE_CUSTOM_SETS: 'practice_custom_sets',
+  PRACTICE_BOOKMARKS: 'practice_bookmarks',
+  PRACTICE_FOLDERS: 'practice_folders',
 };
 
 // Sort Orders

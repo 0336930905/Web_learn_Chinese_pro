@@ -117,8 +117,18 @@ const getCustomSets = asyncHandler(async (req, res) => {
     return res.status(HTTP_STATUS.UNAUTHORIZED).json({ success: false, error: { message: 'Vui lòng đăng nhập' } });
   }
 
+  const filter = { userId: new ObjectId(req.user._id) };
+
+  // Optional folder filter: ?folderId=unfiled | ?folderId=<id>
+  const { folderId } = req.query;
+  if (folderId === 'unfiled') {
+    filter.$or = [{ folderId: { $exists: false } }, { folderId: null }];
+  } else if (folderId) {
+    try { filter.folderId = new ObjectId(folderId); } catch { /* ignore invalid id */ }
+  }
+
   const sets = await req.db.collection(COLLECTIONS.PRACTICE_CUSTOM_SETS)
-    .find({ userId: new ObjectId(req.user._id) })
+    .find(filter)
     .sort({ createdAt: -1 })
     .toArray();
 
@@ -164,11 +174,13 @@ const createCustomSet = asyncHandler(async (req, res) => {
     };
   });
 
+  const { folderId } = req.body;
   const customSet = {
     userId: new ObjectId(req.user._id),
     name: name.trim(),
     words: sanitizedWords,
     wordCount: sanitizedWords.length,
+    folderId: folderId ? (() => { try { return new ObjectId(folderId); } catch { return null; } })() : null,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -194,7 +206,7 @@ const updateCustomSet = asyncHandler(async (req, res) => {
     return res.status(HTTP_STATUS.BAD_REQUEST).json({ success: false, error: { message: 'ID không hợp lệ' } });
   }
 
-  const { name, words } = req.body;
+  const { name, words, folderId } = req.body;
   const $set = { updatedAt: new Date() };
 
   if (name !== undefined) {
@@ -214,6 +226,11 @@ const updateCustomSet = asyncHandler(async (req, res) => {
       return { hanzi: w.hanzi.trim(), pinyin: (w.pinyin || '').trim(), meaning: w.meaning.trim() };
     });
     $set.wordCount = $set.words.length;
+  }
+
+  // Allow explicitly setting folderId (null to un-assign, or a folder ObjectId)
+  if ('folderId' in req.body) {
+    $set.folderId = folderId ? (() => { try { return new ObjectId(folderId); } catch { return null; } })() : null;
   }
 
   const result = await req.db.collection(COLLECTIONS.PRACTICE_CUSTOM_SETS).findOneAndUpdate(
@@ -259,6 +276,219 @@ const deleteCustomSet = asyncHandler(async (req, res) => {
   return deletedResponse(res, 'Xóa bộ từ vựng thành công');
 });
 
+/**
+ * GET /api/practice/bookmarks
+ * Returns all bookmarked words for the authenticated user
+ */
+const getBookmarks = asyncHandler(async (req, res) => {
+  if (!req.user?._id) {
+    return res.status(HTTP_STATUS.UNAUTHORIZED).json({ success: false, error: { message: 'Vui lòng đăng nhập' } });
+  }
+
+  const bookmarks = await req.db.collection(COLLECTIONS.PRACTICE_BOOKMARKS)
+    .find({ userId: new ObjectId(req.user._id) })
+    .sort({ createdAt: -1 })
+    .toArray();
+
+  return successResponse(res, bookmarks, 'Lấy danh sách ghi nhớ thành công');
+});
+
+/**
+ * POST /api/practice/bookmarks
+ * Toggle-add a word to the user's bookmark list.
+ * If the word (by hanzi) already exists it is REMOVED (toggle).
+ * Body: { hanzi, pinyin?, meaning }
+ */
+const addBookmark = asyncHandler(async (req, res) => {
+  if (!req.user?._id) {
+    return res.status(HTTP_STATUS.UNAUTHORIZED).json({ success: false, error: { message: 'Vui lòng đăng nhập' } });
+  }
+
+  const { hanzi, pinyin, meaning } = req.body;
+  if (!hanzi || !String(hanzi).trim() || !meaning || !String(meaning).trim()) {
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({
+      success: false, error: { message: 'Thiếu thông tin từ vựng (hanzi, meaning)' },
+    });
+  }
+
+  const userId = new ObjectId(req.user._id);
+  const hanziTrimmed = String(hanzi).trim();
+
+  const existing = await req.db.collection(COLLECTIONS.PRACTICE_BOOKMARKS).findOne({ userId, hanzi: hanziTrimmed });
+  if (existing) {
+    await req.db.collection(COLLECTIONS.PRACTICE_BOOKMARKS).deleteOne({ _id: existing._id });
+    return successResponse(res, { removed: true, hanzi: hanziTrimmed }, 'Đã bỏ ghi nhớ');
+  }
+
+  const bookmark = {
+    userId,
+    hanzi: hanziTrimmed,
+    pinyin: String(pinyin || '').trim(),
+    meaning: String(meaning).trim(),
+    createdAt: new Date(),
+  };
+  const result = await req.db.collection(COLLECTIONS.PRACTICE_BOOKMARKS).insertOne(bookmark);
+
+  return createdResponse(res, { ...bookmark, _id: result.insertedId }, 'Đã ghi nhớ từ vựng');
+});
+
+/**
+ * DELETE /api/practice/bookmarks/:id
+ * Remove a single bookmark by its _id (owner only)
+ */
+const deleteBookmark = asyncHandler(async (req, res) => {
+  if (!req.user?._id) {
+    return res.status(HTTP_STATUS.UNAUTHORIZED).json({ success: false, error: { message: 'Vui lòng đăng nhập' } });
+  }
+
+  const { id } = req.params;
+  let objId;
+  try { objId = new ObjectId(id); } catch {
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({ success: false, error: { message: 'ID không hợp lệ' } });
+  }
+
+  const result = await req.db.collection(COLLECTIONS.PRACTICE_BOOKMARKS).deleteOne({
+    _id: objId,
+    userId: new ObjectId(req.user._id),
+  });
+
+  if (result.deletedCount === 0) {
+    return res.status(HTTP_STATUS.NOT_FOUND).json({
+      success: false, error: { message: 'Không tìm thấy mục ghi nhớ' },
+    });
+  }
+
+  return deletedResponse(res, 'Đã xóa ghi nhớ thành công');
+});
+
+/**
+ * DELETE /api/practice/bookmarks
+ * Clear ALL bookmarks for the authenticated user
+ */
+const clearBookmarks = asyncHandler(async (req, res) => {
+  if (!req.user?._id) {
+    return res.status(HTTP_STATUS.UNAUTHORIZED).json({ success: false, error: { message: 'Vui lòng đăng nhập' } });
+  }
+
+  await req.db.collection(COLLECTIONS.PRACTICE_BOOKMARKS).deleteMany({
+    userId: new ObjectId(req.user._id),
+  });
+
+  return deletedResponse(res, 'Đã xóa tất cả ghi nhớ');
+});
+
+// ==================== FOLDER CRUD ====================
+
+/**
+ * GET /api/practice/folders
+ * Returns all custom set folders for the authenticated user
+ */
+const getFolders = asyncHandler(async (req, res) => {
+  if (!req.user?._id) {
+    return res.status(HTTP_STATUS.UNAUTHORIZED).json({ success: false, error: { message: 'Vui lòng đăng nhập' } });
+  }
+
+  const folders = await req.db.collection(COLLECTIONS.PRACTICE_FOLDERS)
+    .find({ userId: new ObjectId(req.user._id) })
+    .sort({ createdAt: 1 })
+    .toArray();
+
+  return successResponse(res, folders, 'Lấy danh sách thư mục thành công');
+});
+
+/**
+ * POST /api/practice/folders
+ * Create a new folder
+ * Body: { name }
+ */
+const createFolder = asyncHandler(async (req, res) => {
+  if (!req.user?._id) {
+    return res.status(HTTP_STATUS.UNAUTHORIZED).json({ success: false, error: { message: 'Vui lòng đăng nhập' } });
+  }
+
+  const { name } = req.body;
+  if (!name || !name.trim()) {
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({ success: false, error: { message: 'Vui lòng nhập tên thư mục' } });
+  }
+
+  const folder = {
+    userId: new ObjectId(req.user._id),
+    name: name.trim(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
+  const result = await req.db.collection(COLLECTIONS.PRACTICE_FOLDERS).insertOne(folder);
+  return createdResponse(res, { ...folder, _id: result.insertedId }, 'Tạo thư mục thành công');
+});
+
+/**
+ * PUT /api/practice/folders/:id
+ * Rename an existing folder (owner only)
+ * Body: { name }
+ */
+const updateFolder = asyncHandler(async (req, res) => {
+  if (!req.user?._id) {
+    return res.status(HTTP_STATUS.UNAUTHORIZED).json({ success: false, error: { message: 'Vui lòng đăng nhập' } });
+  }
+
+  const { id } = req.params;
+  let objId;
+  try { objId = new ObjectId(id); } catch {
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({ success: false, error: { message: 'ID không hợp lệ' } });
+  }
+
+  const { name } = req.body;
+  if (!name || !name.trim()) {
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({ success: false, error: { message: 'Tên thư mục không được trống' } });
+  }
+
+  const result = await req.db.collection(COLLECTIONS.PRACTICE_FOLDERS).findOneAndUpdate(
+    { _id: objId, userId: new ObjectId(req.user._id) },
+    { $set: { name: name.trim(), updatedAt: new Date() } },
+    { returnDocument: 'after' },
+  );
+
+  if (!result) {
+    return res.status(HTTP_STATUS.NOT_FOUND).json({ success: false, error: { message: 'Không tìm thấy thư mục' } });
+  }
+
+  return successResponse(res, result, 'Đổi tên thư mục thành công');
+});
+
+/**
+ * DELETE /api/practice/folders/:id
+ * Delete a folder and unassign all sets inside it
+ */
+const deleteFolder = asyncHandler(async (req, res) => {
+  if (!req.user?._id) {
+    return res.status(HTTP_STATUS.UNAUTHORIZED).json({ success: false, error: { message: 'Vui lòng đăng nhập' } });
+  }
+
+  const { id } = req.params;
+  let objId;
+  try { objId = new ObjectId(id); } catch {
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({ success: false, error: { message: 'ID không hợp lệ' } });
+  }
+
+  const folderResult = await req.db.collection(COLLECTIONS.PRACTICE_FOLDERS).deleteOne({
+    _id: objId,
+    userId: new ObjectId(req.user._id),
+  });
+
+  if (folderResult.deletedCount === 0) {
+    return res.status(HTTP_STATUS.NOT_FOUND).json({ success: false, error: { message: 'Không tìm thấy thư mục' } });
+  }
+
+  // Un-assign all sets that belonged to this folder
+  await req.db.collection(COLLECTIONS.PRACTICE_CUSTOM_SETS).updateMany(
+    { userId: new ObjectId(req.user._id), folderId: objId },
+    { $set: { folderId: null, updatedAt: new Date() } },
+  );
+
+  return deletedResponse(res, 'Đã xóa thư mục');
+});
+
 module.exports = {
   getSessions,
   createSession,
@@ -267,4 +497,12 @@ module.exports = {
   createCustomSet,
   updateCustomSet,
   deleteCustomSet,
+  getBookmarks,
+  addBookmark,
+  deleteBookmark,
+  clearBookmarks,
+  getFolders,
+  createFolder,
+  updateFolder,
+  deleteFolder,
 };
