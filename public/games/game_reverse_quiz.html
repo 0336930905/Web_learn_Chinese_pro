@@ -251,6 +251,7 @@ let timer = null;
 let timeLeft = 15;
 let gameStartTime = Date.now();
 let quizMode = 'han-viet'; // 'han-viet' | 'han-pinyin' | 'viet-pinyin' | 'viet-han'
+let answerLog = []; // { q, selectedMeaning, correctMeaning, isCorrect, isTimeout }
 
 // ========== Mode Config ==========
 const MODE_CONFIG = {
@@ -291,6 +292,7 @@ async function loadQuestions() {
         questions = data.data;
         currentIndex = 0;
         score = 0;
+        answerLog = [];
         
         // Initialize header with unified function
         if (window.updateGameHeaderProgress) {
@@ -398,6 +400,17 @@ function resetTimer() {
         
         if (timeLeft <= 0) {
             clearInterval(timer);
+            // Record timeout
+            const tq = questions[currentIndex];
+            if (tq) {
+                answerLog.push({
+                    q: tq,
+                    selectedMeaning: null,
+                    correctMeaning: tq.options.find(o => o.isCorrect)?.meaning || '',
+                    isCorrect: false,
+                    isTimeout: true
+                });
+            }
             // Auto move to next question when time's up
             setTimeout(() => {
                 currentIndex++;
@@ -443,6 +456,15 @@ function selectAnswer(idx) {
         }
     });
     
+    // Record answer
+    answerLog.push({
+        q,
+        selectedMeaning: q.options[idx].meaning,
+        correctMeaning: q.options.find(o => o.isCorrect).meaning,
+        isCorrect,
+        isTimeout: false
+    });
+
     // Update score
     if (isCorrect) {
         score++;
@@ -537,9 +559,40 @@ function renderResult() {
         performanceColor = 'from-orange-500 to-red-500';
     }
     
+    // Build answer review HTML
+    const reviewCfg = MODE_CONFIG[quizMode] || MODE_CONFIG['han-viet'];
+    const reviewHTML = answerLog.map((entry) => {
+        const q = entry.q;
+        const questionDisplay = reviewCfg.showHan ? (q.traditional || q.simplified || '') : (q.meaning || '');
+        const questionFontSize = reviewCfg.showHan ? '1.2rem' : '0.85rem';
+        const questionColor = reviewCfg.showHan ? '#0d7ff2' : '#374151';
+        let statusIcon, rowStyle, answerDisplay;
+        if (entry.isTimeout) {
+            statusIcon = '⏱️';
+            rowStyle = 'background:rgba(251,146,60,0.1);border-color:rgba(251,146,60,0.35)';
+            answerDisplay = '<span style="color:#f97316;font-size:0.75rem;font-weight:600">— Hết giờ —</span>';
+        } else if (entry.isCorrect) {
+            statusIcon = '✅';
+            rowStyle = 'background:rgba(34,197,94,0.08);border-color:rgba(34,197,94,0.3)';
+            answerDisplay = `<span style="color:#16a34a;font-weight:600;font-size:0.85rem">${entry.selectedMeaning || ''}</span>`;
+        } else {
+            statusIcon = '❌';
+            rowStyle = 'background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.3)';
+            answerDisplay = `<span style="text-decoration:line-through;color:#f87171;font-size:0.8rem">${entry.selectedMeaning || ''}</span> <span style="color:#9ca3af;font-size:0.75rem">→</span> <span style="color:#16a34a;font-weight:600;font-size:0.85rem">${entry.correctMeaning || ''}</span>`;
+        }
+        return `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;border:1px solid;${rowStyle};margin-bottom:6px">
+            <div style="font-size:1.1rem;flex-shrink:0">${statusIcon}</div>
+            <div style="flex:1;min-width:0">
+                <div style="font-size:${questionFontSize};font-weight:700;color:${questionColor};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${questionDisplay}</div>
+                <div style="font-size:0.7rem;color:#9ca3af;margin-top:2px">${q.pinyin || ''}</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;max-width:45%">${answerDisplay}</div>
+        </div>`;
+    }).join('');
+
     // Create overlay
     const overlay = document.createElement('div');
-    overlay.className = 'fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 px-4';
+    overlay.className = 'fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-start justify-center z-50 px-4 py-8 overflow-y-auto';
     overlay.innerHTML = `
         <div id="confetti-container" class="fixed inset-0 pointer-events-none z-50"></div>
         <div class="bg-gradient-to-br from-white via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-2xl md:rounded-3xl shadow-2xl p-5 sm:p-8 max-w-lg w-full border-4 border-gradient-to-r from-cyan-200 via-blue-200 to-purple-200 dark:border-gray-700 transform result-card">
@@ -589,6 +642,15 @@ function renderResult() {
                         <span class="transform group-hover:scale-110 transition-transform duration-200">🏠</span>
                         <span>Về trang chủ</span>
                     </button>
+                </div>
+
+                <!-- Answer Review -->
+                <div style="margin-top:16px;text-align:left">
+                    <button onclick="var s=this.nextElementSibling;var ic=this.querySelector('.rv-icon');var open=s.style.display!=='none';s.style.display=open?'none':'block';ic.textContent=open?'▶':'▼';" style="display:flex;align-items:center;gap:8px;width:100%;background:none;border:1px solid rgba(107,114,128,0.3);border-radius:10px;cursor:pointer;padding:9px 12px;font-weight:700;font-size:0.825rem;color:#6b7280">
+                        <span class="rv-icon" style="font-size:0.7rem">▶</span>
+                        📋 Xem lại tất cả câu trả lời (${answerLog.length})
+                    </button>
+                    <div style="display:none;max-height:320px;overflow-y:auto;padding-right:4px;margin-top:8px">${reviewHTML}</div>
                 </div>
             </div>
         </div>
