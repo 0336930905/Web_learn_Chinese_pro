@@ -760,7 +760,7 @@
           <p id="writePromptLabel" class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Nhập nghĩa tiếng Việt</p>
 
           <!-- Pinyin IME suggestion bar (shown only in vietnamese_to_hanzi mode) -->
-          <div id="pinyinSuggestBar" class="hidden flex gap-1 flex-wrap mb-2 max-h-24 overflow-y-auto -mx-1 px-1"></div>
+          <div id="pinyinSuggestBar" class="hidden gap-1 flex-wrap mb-2 max-h-24 overflow-y-auto -mx-1 px-1"></div>
 
           <!-- Underline-style input -->
           <div class="border-b-2 border-primary pb-1 mb-2">
@@ -2514,6 +2514,7 @@ function _updatePinyinBar(inputEl) {
   const chars = PINYIN_DICT[pinyinBuffer] || [];
   if (!chars.length) { _clearPinyinBar(); return; }
   bar.classList.remove('hidden');
+  bar.classList.add('flex');
   bar.innerHTML = chars.slice(0, 30).map(c =>
     `<button type="button" onclick="insertPinyinChar('${c}')"
       class="shrink-0 px-2.5 py-1.5 bg-white dark:bg-card-dark border border-gray-200 dark:border-green-900/30 rounded-xl text-xl font-semibold text-text-main dark:text-white hover:bg-primary/10 hover:border-primary transition-all shadow-sm active:scale-95">${c}</button>`
@@ -2532,7 +2533,7 @@ function insertPinyinChar(char) {
 function _clearPinyinBar() {
   pinyinBuffer = '';
   const bar = document.getElementById('pinyinSuggestBar');
-  if (bar) { bar.classList.add('hidden'); bar.innerHTML = ''; }
+  if (bar) { bar.classList.add('hidden'); bar.classList.remove('flex'); bar.innerHTML = ''; }
 }
 </script>
 </body>
