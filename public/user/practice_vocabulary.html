@@ -637,6 +637,23 @@
                   <span id="pinyinSupportDot" class="inline-block h-4 w-4 translate-x-1 rounded-full bg-white transition-transform duration-200 shadow"></span>
                 </button>
               </div>
+
+              <!-- Auto-speak toggle -->
+              <div class="flex items-center justify-between px-4 py-3 bg-sky-50 dark:bg-sky-900/20 rounded-2xl border-2 border-sky-200/60 dark:border-sky-800/40 mt-1">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-sky-500 text-white flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-xl">volume_up</span>
+                  </div>
+                  <div>
+                    <div class="font-extrabold text-text-main dark:text-white text-sm">Tự động nghe phát âm</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Đọc chữ Hán mỗi khi sang từ mới</div>
+                  </div>
+                </div>
+                <button id="autoSpeakTrack" onclick="toggleAutoSpeak()"
+                  class="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-gray-700 transition-colors duration-200 shrink-0">
+                  <span id="autoSpeakDot" class="inline-block h-4 w-4 translate-x-1 rounded-full bg-white transition-transform duration-200 shadow"></span>
+                </button>
+              </div>
             </div>
             <div class="mt-4 flex justify-end">
               <button
@@ -663,6 +680,11 @@
           </div>
           <span id="progressPct"
             class="text-sm font-extrabold text-gray-500 dark:text-gray-400 w-10 text-right shrink-0">0%</span>
+          <!-- Voice picker button -->
+          <button onclick="openVoicePicker()" title="Chọn giọng đọc"
+            class="p-1.5 rounded-full text-sky-400 hover:text-sky-600 hover:bg-sky-50 dark:hover:bg-sky-900/30 transition-all shrink-0">
+            <span class="material-symbols-outlined text-xl">record_voice_over</span>
+          </button>
         </div>
 
         <!-- Game area -->
@@ -705,6 +727,15 @@
                 transition-all active:scale-95 shadow-soft">
                 <span id="bookmarkBtnIcon" class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 0">star</span>
                 <span id="bookmarkBtnLabel">Ghi nhớ</span>
+              </button>
+              <!-- Speak button -->
+              <button id="speakBtn" onclick="speakCurrentWord()"
+                class="flex items-center gap-1.5 px-3 py-2 rounded-xl border-2 border-sky-200 dark:border-sky-800/50
+                text-sm font-bold text-sky-500 dark:text-sky-400 bg-sky-50 dark:bg-sky-900/20
+                hover:border-sky-400 hover:bg-sky-100 dark:hover:bg-sky-900/40
+                transition-all active:scale-95 shadow-soft">
+                <span class="material-symbols-outlined text-base">volume_up</span>
+                Nghe
               </button>
               <!-- Skip button -->
               <button onclick="skipWrite()"
@@ -826,6 +857,27 @@
 
     </div>
   </main>
+</div>
+
+<!-- ====== VOICE PICKER MODAL ====== -->
+<div id="voicePickerModal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center px-4 pb-0 sm:pb-4 bg-black/50 backdrop-blur-sm">
+  <div class="bg-white dark:bg-card-dark rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-md">
+    <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100 dark:border-gray-700/30">
+      <h2 class="text-base font-extrabold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+        <span class="material-symbols-outlined text-sky-500">record_voice_over</span>
+        Chọn giọng đọc tiếng Trung
+      </h2>
+      <button onclick="closeVoicePicker()" class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-all">
+        <span class="material-symbols-outlined text-gray-400">close</span>
+      </button>
+    </div>
+    <div id="voicePickerList" class="px-4 py-3 flex flex-col gap-2 max-h-[60vh] overflow-y-auto pb-safe">
+      <div class="text-center text-gray-400 text-sm py-6">Đang tải danh sách giọng đọc...</div>
+    </div>
+    <div class="px-4 pb-5 pt-2 border-t border-gray-100 dark:border-gray-700/30">
+      <p class="text-xs text-gray-400 dark:text-gray-500 text-center">Giọng đọc được lưu và dùng chung cho toàn bộ ứng dụng</p>
+    </div>
+  </div>
 </div>
 
 <!-- ====== DETAIL REVIEW MODAL ====== -->
@@ -1503,7 +1555,10 @@ function renderCurrentCard() {
   input.disabled = false;
   fb.className   = 'hidden rounded-2xl p-3 text-sm font-bold text-center mb-5 transition-all';
 
-  setTimeout(() => input.focus(), 120);
+  setTimeout(() => {
+    input.focus();
+    if (ttsAutoSpeak) speakCurrentWord();
+  }, 120);
 }
 
 function updateProgress() {
@@ -1740,11 +1795,154 @@ function backToSetup() {
   document.getElementById('setupPanel').classList.remove('hidden');
 }
 
-function backToSetup() {
-  cancelInputModePicker();
-  document.getElementById('resultsPanel').classList.add('hidden');
-  document.body.classList.remove('overflow-hidden');
-  document.getElementById('setupPanel').classList.remove('hidden');
+// ==================== TTS (TEXT-TO-SPEECH) ====================
+let ttsAutoSpeak = localStorage.getItem('practiceAutoSpeak') === 'true';
+
+// Initialize auto-speak toggle state on DOMContentLoaded
+document.addEventListener('DOMContentLoaded', () => {
+  const track = document.getElementById('autoSpeakTrack');
+  const dot   = document.getElementById('autoSpeakDot');
+  if (ttsAutoSpeak && track && dot) {
+    track.classList.replace('bg-gray-200', 'bg-sky-500');
+    track.classList.replace('dark:bg-gray-700', 'dark:bg-sky-500');
+    dot.classList.replace('translate-x-1', 'translate-x-6');
+  }
+}, { once: true });
+
+function ttsSpeak(text, onEnd) {
+  if (!text || !window.speechSynthesis) { if (onEnd) onEnd(); return; }
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  const savedVoiceName = localStorage.getItem('selectedVoiceName');
+  const savedLang      = localStorage.getItem('selectedVoice') || 'zh-TW';
+  utter.lang  = savedLang;
+  utter.rate  = 0.85;
+  utter.pitch = 1;
+  utter.volume = 1;
+  const voices = window.speechSynthesis.getVoices();
+  if (voices.length) {
+    const v = (savedVoiceName && voices.find(v => v.name === savedVoiceName))
+           || voices.find(v => v.lang === savedLang)
+           || voices.find(v => v.lang && v.lang.startsWith('zh'));
+    if (v) { utter.voice = v; utter.lang = v.lang; }
+  }
+  const btn = document.getElementById('speakBtn');
+  if (btn) btn.classList.add('opacity-50', 'pointer-events-none');
+  const done = () => {
+    if (btn) btn.classList.remove('opacity-50', 'pointer-events-none');
+    if (onEnd) onEnd();
+  };
+  utter.onend   = done;
+  utter.onerror = done;
+  window.speechSynthesis.speak(utter);
+}
+
+function speakCurrentWord() {
+  if (currentIdx >= practiceWords.length) return;
+  ttsSpeak(practiceWords[currentIdx].hanzi);
+}
+
+function toggleAutoSpeak() {
+  ttsAutoSpeak = !ttsAutoSpeak;
+  localStorage.setItem('practiceAutoSpeak', ttsAutoSpeak);
+  const track = document.getElementById('autoSpeakTrack');
+  const dot   = document.getElementById('autoSpeakDot');
+  if (ttsAutoSpeak) {
+    track?.classList.replace('bg-gray-200', 'bg-sky-500');
+    track?.classList.replace('dark:bg-gray-700', 'dark:bg-sky-500');
+    dot?.classList.replace('translate-x-1', 'translate-x-6');
+  } else {
+    track?.classList.replace('bg-sky-500', 'bg-gray-200');
+    track?.classList.replace('dark:bg-sky-500', 'dark:bg-gray-700');
+    dot?.classList.replace('translate-x-6', 'translate-x-1');
+  }
+}
+
+// ==================== VOICE PICKER ====================
+function openVoicePicker() {
+  const modal = document.getElementById('voicePickerModal');
+  modal.classList.remove('hidden');
+  _populateVoicePicker();
+}
+
+function closeVoicePicker() {
+  document.getElementById('voicePickerModal').classList.add('hidden');
+}
+
+function _populateVoicePicker() {
+  const list = document.getElementById('voicePickerList');
+  const savedVoiceName = localStorage.getItem('selectedVoiceName') || '';
+
+  function render(voices) {
+    const zhVoices = voices.filter(v => v.lang && v.lang.startsWith('zh'));
+    if (!zhVoices.length) {
+      list.innerHTML = '<div class="text-center text-gray-400 text-sm py-6">Không tìm thấy giọng đọc tiếng Trung trên thiết bị này</div>';
+      return;
+    }
+    list.innerHTML = zhVoices.map(v => {
+      const isSelected = v.name === savedVoiceName;
+      const flag = v.lang.startsWith('zh-TW') || v.lang.startsWith('zh-HK') ? '🇹🇼' : '🇨🇳';
+      const safeName = v.name.replace(/'/g, '\\&#39;');
+      return `
+        <div class="flex items-center gap-2 px-3 py-2.5 rounded-2xl border-2 transition-all
+          ${isSelected
+            ? 'bg-sky-50 dark:bg-sky-900/20 border-sky-400 dark:border-sky-600'
+            : 'bg-gray-50 dark:bg-green-900/10 border-transparent hover:border-sky-200 dark:hover:border-sky-800/40'}">
+          <button onclick="selectTtsVoice(${JSON.stringify(v.name)}, ${JSON.stringify(v.lang)})"
+            class="flex items-center gap-3 flex-1 text-left">
+            <span class="text-xl">${flag}</span>
+            <div class="flex-1 min-w-0">
+              <div class="text-sm font-semibold ${isSelected ? 'text-sky-600 dark:text-sky-400' : 'text-gray-700 dark:text-gray-300'} truncate">${esc(v.name)}</div>
+              <div class="text-xs text-gray-400">${v.lang}${v.localService ? ' · Local' : ''}</div>
+            </div>
+            ${isSelected ? '<span class="material-symbols-outlined text-sky-500 text-lg">check_circle</span>' : ''}
+          </button>
+          <button onclick="testTtsVoice(${JSON.stringify(v.name)})" title="Nghe thử"
+            class="p-2 rounded-xl text-gray-400 hover:text-sky-500 hover:bg-sky-50 dark:hover:bg-sky-900/20 transition-all shrink-0">
+            <span class="material-symbols-outlined text-base">play_circle</span>
+          </button>
+        </div>`;
+    }).join('');
+  }
+
+  const voices = window.speechSynthesis.getVoices();
+  if (voices.length) {
+    render(voices);
+  } else {
+    list.innerHTML = '<div class="text-center text-gray-400 text-sm py-6">Đang tải giọng đọc...</div>';
+    const prev = window.speechSynthesis.onvoiceschanged;
+    window.speechSynthesis.onvoiceschanged = () => {
+      window.speechSynthesis.onvoiceschanged = prev || null;
+      render(window.speechSynthesis.getVoices());
+    };
+    // Kick voice loading
+    window.speechSynthesis.getVoices();
+    setTimeout(() => {
+      const v = window.speechSynthesis.getVoices();
+      if (v.length) { window.speechSynthesis.onvoiceschanged = prev || null; render(v); }
+    }, 800);
+  }
+}
+
+function selectTtsVoice(name, lang) {
+  localStorage.setItem('selectedVoiceName', name);
+  localStorage.setItem('selectedVoice', lang);
+  _populateVoicePicker(); // refresh highlight
+  testTtsVoice(name);
+}
+
+function testTtsVoice(name) {
+  const voices = window.speechSynthesis.getVoices();
+  const v = voices.find(voice => voice.name === name);
+  if (!v) return;
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance('你好，歡迎学習中文！');
+  utter.voice  = v;
+  utter.lang   = v.lang;
+  utter.rate   = 0.85;
+  utter.pitch  = 1;
+  utter.volume = 1;
+  window.speechSynthesis.speak(utter);
 }
 
 // ==================== DETAIL REVIEW MODAL ====================
