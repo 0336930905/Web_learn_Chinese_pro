@@ -1555,10 +1555,8 @@ function renderCurrentCard() {
   input.disabled = false;
   fb.className   = 'hidden rounded-2xl p-3 text-sm font-bold text-center mb-5 transition-all';
 
-  setTimeout(() => {
-    input.focus();
-    if (ttsAutoSpeak) speakCurrentWord();
-  }, 120);
+  setTimeout(() => input.focus(), 120);
+  if (ttsAutoSpeak) setTimeout(() => speakCurrentWord(), 1000);
 }
 
 function updateProgress() {
@@ -1957,17 +1955,15 @@ async function _populateVoicePicker() {
   const langLabel = { 'zh-TW': '🇹🇼 Đài Loan', 'zh-CN': '🇨🇳 Trung Quốc', 'zh-HK': '🇭🇰 Hồng Kông' };
   const getFlag = lang => lang.startsWith('zh-TW') ? '🇹🇼' : lang.startsWith('zh-HK') ? '🇭🇰' : '🇨🇳';
 
-  list.innerHTML = zhVoices.map(v => {
-    const isSelected = v.name === savedVoiceName || (!savedVoiceName && v.lang === savedLang && zhVoices.indexOf(v) === 0);
+  list.innerHTML = zhVoices.map((v, idx) => {
+    const isSelected = v.name === savedVoiceName || (!savedVoiceName && v.lang === savedLang && idx === 0);
     const flag = getFlag(v.lang);
-    const nameJSON = JSON.stringify(v.name);
-    const langJSON = JSON.stringify(v.lang);
     return `
       <div class="flex items-center gap-1 px-3 py-2.5 rounded-2xl border-2 transition-all cursor-pointer
         ${isSelected
           ? 'bg-sky-50 dark:bg-sky-900/20 border-sky-400 dark:border-sky-600'
           : 'bg-gray-50 dark:bg-white/5 border-transparent hover:border-sky-200 dark:hover:border-sky-800/50'}"
-        onclick="selectTtsVoice(${nameJSON}, ${langJSON})">
+        data-vi="${idx}" onclick="_voiceRowClick(this)">
         <span class="text-xl shrink-0">${flag}</span>
         <div class="flex-1 min-w-0 mx-2">
           <div class="text-sm font-semibold truncate ${isSelected ? 'text-sky-600 dark:text-sky-400' : 'text-gray-700 dark:text-gray-300'}">${esc(v.name)}</div>
@@ -1975,13 +1971,31 @@ async function _populateVoicePicker() {
         </div>
         <div class="flex items-center gap-1 shrink-0">
           ${isSelected ? '<span class="material-symbols-outlined text-sky-500 text-lg">check_circle</span>' : ''}
-          <button onclick="event.stopPropagation();testTtsVoice(${nameJSON})" title="Nghe thử"
+          <button data-vi="${idx}" onclick="event.stopPropagation();_voiceTestClick(this)" title="Nghe thử"
             class="p-1.5 rounded-xl text-gray-400 hover:text-sky-500 hover:bg-sky-100 dark:hover:bg-sky-900/30 transition-all">
             <span class="material-symbols-outlined text-base">play_circle</span>
           </button>
         </div>
       </div>`;
   }).join('');
+
+  list._voiceList = zhVoices;
+}
+
+function _voiceRowClick(el) {
+  const list = document.getElementById('voicePickerList');
+  const voices = list._voiceList;
+  if (!voices) return;
+  const v = voices[parseInt(el.dataset.vi)];
+  if (v) selectTtsVoice(v.name, v.lang);
+}
+
+function _voiceTestClick(el) {
+  const list = document.getElementById('voicePickerList');
+  const voices = list._voiceList;
+  if (!voices) return;
+  const v = voices[parseInt(el.dataset.vi)];
+  if (v) testTtsVoice(v.name);
 }
 
 function selectTtsVoice(name, lang) {
