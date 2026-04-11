@@ -1798,6 +1798,19 @@ function backToSetup() {
 // ==================== TTS (TEXT-TO-SPEECH) ====================
 let ttsAutoSpeak = localStorage.getItem('practiceAutoSpeak') === 'true';
 
+// ---- Pre-warm voice loading (run immediately on script parse) ----
+(function preWarmVoices() {
+  if (!window.speechSynthesis) return;
+  // Trigger voice list loading in background
+  window.speechSynthesis.getVoices();
+  if (window.speechSynthesis.onvoiceschanged !== undefined) {
+    window.speechSynthesis.addEventListener('voiceschanged', function _vch() {
+      window.speechSynthesis.removeEventListener('voiceschanged', _vch);
+      window.speechSynthesis.getVoices(); // cache them
+    });
+  }
+})();
+
 // Initialize auto-speak toggle state on DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
   const track = document.getElementById('autoSpeakTrack');
@@ -1809,23 +1822,68 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 }, { once: true });
 
-function ttsSpeak(text, onEnd) {
+// ---- Get all voices, retrying until they load ----
+function _getVoicesAsync(timeout = 3000) {
+  return new Promise(resolve => {
+    const now = window.speechSynthesis.getVoices();
+    if (now.length) { resolve(now); return; }
+
+    let done = false;
+    const finish = voices => { if (!done) { done = true; resolve(voices); } };
+
+    const handler = () => finish(window.speechSynthesis.getVoices());
+    window.speechSynthesis.addEventListener('voiceschanged', handler);
+
+    // Poll fallback every 250ms
+    let elapsed = 0;
+    const poll = setInterval(() => {
+      const v = window.speechSynthesis.getVoices();
+      if (v.length) { clearInterval(poll); window.speechSynthesis.removeEventListener('voiceschanged', handler); finish(v); return; }
+      elapsed += 250;
+      if (elapsed >= timeout) { clearInterval(poll); window.speechSynthesis.removeEventListener('voiceschanged', handler); finish([]); }
+    }, 250);
+  });
+}
+
+// ---- Pick best Chinese voice from loaded list ----
+function _pickChineseVoice(voices) {
+  const savedName = localStorage.getItem('selectedVoiceName');
+  const savedLang = localStorage.getItem('selectedVoice') || 'zh-TW';
+  const zh = voices.filter(v => v.lang && v.lang.startsWith('zh'));
+  if (!zh.length) return null;
+  // 1. Exact saved voice name
+  if (savedName) {
+    const exact = zh.find(v => v.name === savedName);
+    if (exact) return exact;
+  }
+  // 2. Saved lang exact
+  const byLang = zh.find(v => v.lang === savedLang);
+  if (byLang) return byLang;
+  // 3. Saved lang prefix
+  const byPrefix = zh.find(v => v.lang.startsWith(savedLang.substring(0, 5)));
+  if (byPrefix) return byPrefix;
+  // 4. Any local zh voice
+  const local = zh.find(v => v.localService);
+  if (local) return local;
+  // 5. Any zh voice
+  return zh[0];
+}
+
+async function ttsSpeak(text, onEnd) {
   if (!text || !window.speechSynthesis) { if (onEnd) onEnd(); return; }
   window.speechSynthesis.cancel();
+
+  const voices = await _getVoicesAsync(2000);
+  const chosen = _pickChineseVoice(voices);
+  const savedLang = localStorage.getItem('selectedVoice') || 'zh-TW';
+
   const utter = new SpeechSynthesisUtterance(text);
-  const savedVoiceName = localStorage.getItem('selectedVoiceName');
-  const savedLang      = localStorage.getItem('selectedVoice') || 'zh-TW';
-  utter.lang  = savedLang;
-  utter.rate  = 0.85;
-  utter.pitch = 1;
+  utter.rate   = 0.85;
+  utter.pitch  = 1;
   utter.volume = 1;
-  const voices = window.speechSynthesis.getVoices();
-  if (voices.length) {
-    const v = (savedVoiceName && voices.find(v => v.name === savedVoiceName))
-           || voices.find(v => v.lang === savedLang)
-           || voices.find(v => v.lang && v.lang.startsWith('zh'));
-    if (v) { utter.voice = v; utter.lang = v.lang; }
-  }
+  if (chosen) { utter.voice = chosen; utter.lang = chosen.lang; }
+  else        { utter.lang = savedLang; }
+
   const btn = document.getElementById('speakBtn');
   if (btn) btn.classList.add('opacity-50', 'pointer-events-none');
   const done = () => {
@@ -1860,8 +1918,7 @@ function toggleAutoSpeak() {
 
 // ==================== VOICE PICKER ====================
 function openVoicePicker() {
-  const modal = document.getElementById('voicePickerModal');
-  modal.classList.remove('hidden');
+  document.getElementById('voicePickerModal').classList.remove('hidden');
   _populateVoicePicker();
 }
 
@@ -1869,74 +1926,77 @@ function closeVoicePicker() {
   document.getElementById('voicePickerModal').classList.add('hidden');
 }
 
-function _populateVoicePicker() {
+async function _populateVoicePicker() {
   const list = document.getElementById('voicePickerList');
-  const savedVoiceName = localStorage.getItem('selectedVoiceName') || '';
+  list.innerHTML = '<div class="flex items-center justify-center gap-2 py-6 text-gray-400 text-sm"><div class="w-4 h-4 border-2 border-sky-400 border-t-transparent rounded-full animate-spin"></div>Đang tải giọng đọc...</div>';
 
-  function render(voices) {
-    const zhVoices = voices.filter(v => v.lang && v.lang.startsWith('zh'));
-    if (!zhVoices.length) {
-      list.innerHTML = '<div class="text-center text-gray-400 text-sm py-6">Không tìm thấy giọng đọc tiếng Trung trên thiết bị này</div>';
-      return;
-    }
-    list.innerHTML = zhVoices.map(v => {
-      const isSelected = v.name === savedVoiceName;
-      const flag = v.lang.startsWith('zh-TW') || v.lang.startsWith('zh-HK') ? '🇹🇼' : '🇨🇳';
-      const safeName = v.name.replace(/'/g, '\\&#39;');
-      return `
-        <div class="flex items-center gap-2 px-3 py-2.5 rounded-2xl border-2 transition-all
-          ${isSelected
-            ? 'bg-sky-50 dark:bg-sky-900/20 border-sky-400 dark:border-sky-600'
-            : 'bg-gray-50 dark:bg-green-900/10 border-transparent hover:border-sky-200 dark:hover:border-sky-800/40'}">
-          <button onclick="selectTtsVoice(${JSON.stringify(v.name)}, ${JSON.stringify(v.lang)})"
-            class="flex items-center gap-3 flex-1 text-left">
-            <span class="text-xl">${flag}</span>
-            <div class="flex-1 min-w-0">
-              <div class="text-sm font-semibold ${isSelected ? 'text-sky-600 dark:text-sky-400' : 'text-gray-700 dark:text-gray-300'} truncate">${esc(v.name)}</div>
-              <div class="text-xs text-gray-400">${v.lang}${v.localService ? ' · Local' : ''}</div>
-            </div>
-            ${isSelected ? '<span class="material-symbols-outlined text-sky-500 text-lg">check_circle</span>' : ''}
-          </button>
-          <button onclick="testTtsVoice(${JSON.stringify(v.name)})" title="Nghe thử"
-            class="p-2 rounded-xl text-gray-400 hover:text-sky-500 hover:bg-sky-50 dark:hover:bg-sky-900/20 transition-all shrink-0">
+  const voices = await _getVoicesAsync(4000);
+  const savedVoiceName = localStorage.getItem('selectedVoiceName') || '';
+  const savedLang = localStorage.getItem('selectedVoice') || 'zh-TW';
+
+  // Filter: all zh-* voices, deduplicate by name
+  const seen = new Set();
+  const zhVoices = voices.filter(v => {
+    if (!v.lang || !v.lang.startsWith('zh')) return false;
+    if (seen.has(v.name)) return false;
+    seen.add(v.name);
+    return true;
+  });
+
+  if (!zhVoices.length) {
+    list.innerHTML = `
+      <div class="text-center py-6 px-4">
+        <div class="text-3xl mb-2">😔</div>
+        <div class="text-gray-600 dark:text-gray-400 text-sm font-semibold mb-1">Không tìm thấy giọng tiếng Trung</div>
+        <div class="text-gray-400 text-xs">Thiết bị cần cài đặt giọng đọc zh-TW / zh-CN để sử dụng tính năng này</div>
+      </div>`;
+    return;
+  }
+
+  // Group by lang for display
+  const langLabel = { 'zh-TW': '🇹🇼 Đài Loan', 'zh-CN': '🇨🇳 Trung Quốc', 'zh-HK': '🇭🇰 Hồng Kông' };
+  const getFlag = lang => lang.startsWith('zh-TW') ? '🇹🇼' : lang.startsWith('zh-HK') ? '🇭🇰' : '🇨🇳';
+
+  list.innerHTML = zhVoices.map(v => {
+    const isSelected = v.name === savedVoiceName || (!savedVoiceName && v.lang === savedLang && zhVoices.indexOf(v) === 0);
+    const flag = getFlag(v.lang);
+    const nameJSON = JSON.stringify(v.name);
+    const langJSON = JSON.stringify(v.lang);
+    return `
+      <div class="flex items-center gap-1 px-3 py-2.5 rounded-2xl border-2 transition-all cursor-pointer
+        ${isSelected
+          ? 'bg-sky-50 dark:bg-sky-900/20 border-sky-400 dark:border-sky-600'
+          : 'bg-gray-50 dark:bg-white/5 border-transparent hover:border-sky-200 dark:hover:border-sky-800/50'}"
+        onclick="selectTtsVoice(${nameJSON}, ${langJSON})">
+        <span class="text-xl shrink-0">${flag}</span>
+        <div class="flex-1 min-w-0 mx-2">
+          <div class="text-sm font-semibold truncate ${isSelected ? 'text-sky-600 dark:text-sky-400' : 'text-gray-700 dark:text-gray-300'}">${esc(v.name)}</div>
+          <div class="text-xs text-gray-400 mt-0.5">${v.lang}${v.localService ? ' · Offline' : ' · Online'}</div>
+        </div>
+        <div class="flex items-center gap-1 shrink-0">
+          ${isSelected ? '<span class="material-symbols-outlined text-sky-500 text-lg">check_circle</span>' : ''}
+          <button onclick="event.stopPropagation();testTtsVoice(${nameJSON})" title="Nghe thử"
+            class="p-1.5 rounded-xl text-gray-400 hover:text-sky-500 hover:bg-sky-100 dark:hover:bg-sky-900/30 transition-all">
             <span class="material-symbols-outlined text-base">play_circle</span>
           </button>
-        </div>`;
-    }).join('');
-  }
-
-  const voices = window.speechSynthesis.getVoices();
-  if (voices.length) {
-    render(voices);
-  } else {
-    list.innerHTML = '<div class="text-center text-gray-400 text-sm py-6">Đang tải giọng đọc...</div>';
-    const prev = window.speechSynthesis.onvoiceschanged;
-    window.speechSynthesis.onvoiceschanged = () => {
-      window.speechSynthesis.onvoiceschanged = prev || null;
-      render(window.speechSynthesis.getVoices());
-    };
-    // Kick voice loading
-    window.speechSynthesis.getVoices();
-    setTimeout(() => {
-      const v = window.speechSynthesis.getVoices();
-      if (v.length) { window.speechSynthesis.onvoiceschanged = prev || null; render(v); }
-    }, 800);
-  }
+        </div>
+      </div>`;
+  }).join('');
 }
 
 function selectTtsVoice(name, lang) {
   localStorage.setItem('selectedVoiceName', name);
   localStorage.setItem('selectedVoice', lang);
-  _populateVoicePicker(); // refresh highlight
+  _populateVoicePicker();
   testTtsVoice(name);
 }
 
-function testTtsVoice(name) {
-  const voices = window.speechSynthesis.getVoices();
+async function testTtsVoice(name) {
+  const voices = await _getVoicesAsync(2000);
   const v = voices.find(voice => voice.name === name);
   if (!v) return;
   window.speechSynthesis.cancel();
-  const utter = new SpeechSynthesisUtterance('你好，歡迎学習中文！');
+  const utter = new SpeechSynthesisUtterance('你好，歡迎學習中文！');
   utter.voice  = v;
   utter.lang   = v.lang;
   utter.rate   = 0.85;
