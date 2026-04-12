@@ -1895,7 +1895,10 @@ async function ttsSpeak(text, onEnd) {
   };
   utter.onend   = done;
   utter.onerror = done;
-  window.speechSynthesis.speak(utter);
+
+  // Chrome bug: cancel() causes the next speak() to clip the start.
+  // A short pause after cancel() fixes the missing first character.
+  setTimeout(() => window.speechSynthesis.speak(utter), 150);
 }
 
 function speakCurrentWord() {
