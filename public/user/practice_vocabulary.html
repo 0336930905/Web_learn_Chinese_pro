@@ -917,7 +917,7 @@ let wrongCount = 0;
 let categories = [];
 let selectedCategory = null;
 let customWordRowCount = 0;
-let inputMode = null; // hanzi_to_pinyin | hanzi_to_meaning | vietnamese_to_pinyin | vietnamese_to_hanzi
+let inputMode = null; // hanzi_to_pinyin | hanzi_to_meaning | vietnamese_to_pinyin | vietnamese_to_hanzi | listen_to_meaning
 let inputModeResolve = null;
 let bookmarkedHanziSet = new Set(); // hanzi of currently-bookmarked words
 let showHint = false;         // current hint visibility state
@@ -1461,6 +1461,9 @@ function filterWordsForInputMode(words, mode) {
   if (mode === 'vietnamese_to_hanzi') {
     return words.filter(w => hasText(w.hanzi) && hasText(w.meaning));
   }
+  if (mode === 'listen_to_meaning') {
+    return words.filter(w => hasText(w.hanzi) && hasText(w.meaning));
+  }
   // hanzi_to_meaning
   return words.filter(w => hasText(w.meaning));
 }
@@ -1505,6 +1508,16 @@ function applyInputModeUI() {
     return;
   }
 
+  if (inputMode === 'listen_to_meaning') {
+    if (titleEl) titleEl.textContent = 'Nghe tiếng Trung';
+    if (hanziEl) hanziEl.classList.add('hidden');
+    if (pinyinEl) pinyinEl.classList.add('hidden');
+    if (meaningEl) meaningEl.classList.add('hidden');
+    if (labelEl) labelEl.textContent = 'Nhập nghĩa tiếng Việt';
+    if (inputEl) inputEl.placeholder = 'Nhập nghĩa tiếng Việt ...';
+    return;
+  }
+
   // vietnamese_to_pinyin
   if (titleEl) titleEl.textContent = 'Nghĩa tiếng Việt';
   if (hanziEl) hanziEl.classList.add('hidden');
@@ -1530,6 +1543,15 @@ function renderCurrentCard() {
 
   if (inputMode === 'vietnamese_to_pinyin' || inputMode === 'vietnamese_to_hanzi') {
     meaningEl.textContent = w.meaning || '';
+  } else if (inputMode === 'listen_to_meaning') {
+    // Show a large speaker button as the "question"
+    hanziEl.innerHTML = `<button onclick="speakCurrentWord()"
+      class="flex items-center gap-3 px-6 py-4 rounded-2xl bg-teal-50 dark:bg-teal-900/20 border-2 border-teal-300 dark:border-teal-700
+      text-teal-600 dark:text-teal-400 hover:bg-teal-100 transition-all active:scale-95 shadow-sm mt-2">
+      <span class="material-symbols-outlined text-4xl" style="font-variation-settings:'FILL' 1">volume_up</span>
+      <span class="text-2xl font-extrabold">Nghe l\u1ea1i</span>
+    </button>`;
+    hanziEl.classList.remove('hidden');
   } else {
     hanziEl.textContent = w.hanzi || '';
   }
@@ -1542,6 +1564,7 @@ function renderCurrentCard() {
     'hanzi_to_meaning':  { label: 'Phiên âm Pinyin',  value: w.pinyin  },
     'vietnamese_to_pinyin': { label: 'Chữ Hán',       value: w.hanzi   },
     'vietnamese_to_hanzi':  { label: 'Phiên âm Pinyin', value: w.pinyin },
+    'listen_to_meaning':    { label: 'Chữ Hán + Pinyin', value: (w.hanzi || '') + (w.pinyin ? '  ' + w.pinyin : '') },
   };
   const hintData = HINT_MAP[inputMode] || { label: 'Gợi ý', value: '' };
   if (hintLabel) hintLabel.textContent = `Gợi ý: ${hintData.label}`;
@@ -1561,7 +1584,7 @@ function renderCurrentCard() {
   _clearPinyinBar();
 
   setTimeout(() => input.focus(), 120);
-  if (ttsAutoSpeak) setTimeout(() => speakCurrentWord(), 1000);
+  if (ttsAutoSpeak || inputMode === 'listen_to_meaning') setTimeout(() => speakCurrentWord(), 1000);
 }
 
 function updateProgress() {
@@ -1630,7 +1653,7 @@ function checkWrite() {
   if (!answer) return;
 
   const norm = s => String(s || '').normalize('NFC').toLowerCase().replace(/\s+/g, ' ').trim();
-  const expected = inputMode === 'hanzi_to_meaning' ? w.meaning
+  const expected = inputMode === 'hanzi_to_meaning' || inputMode === 'listen_to_meaning' ? w.meaning
                  : inputMode === 'vietnamese_to_hanzi' ? w.hanzi
                  : w.pinyin;
   const isCorrect = norm(answer) === norm(expected);
@@ -1664,7 +1687,7 @@ function skipWrite() {
   revealFullWord(w);
 
   const fb = document.getElementById('writeFeedback');
-  const expected = inputMode === 'hanzi_to_meaning' ? w.meaning
+  const expected = inputMode === 'hanzi_to_meaning' || inputMode === 'listen_to_meaning' ? w.meaning
                  : inputMode === 'vietnamese_to_hanzi' ? w.hanzi
                  : w.pinyin;
   fb.className = 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 rounded-2xl p-3 text-sm font-bold text-center mb-5 transition-all';
@@ -2035,7 +2058,7 @@ function openDetailReview() {
   list.innerHTML = sessionResults.map((r, i) => {
     const w = r.word;
     let expected = '';
-    if (inputMode === 'hanzi_to_meaning')     expected = w.meaning;
+    if (inputMode === 'hanzi_to_meaning' || inputMode === 'listen_to_meaning') expected = w.meaning;
     else if (inputMode === 'vietnamese_to_hanzi') expected = w.hanzi;
     else                                      expected = w.pinyin;
 
