@@ -47,6 +47,11 @@ function renderSidebar(activePage = 'home', profileData = null) {
                     <span class="material-symbols-outlined ${activePage === 'practice' ? 'text-primary' : ''}">school</span>
                     <span class="${activePage === 'practice' ? 'font-semibold' : 'font-medium'}">${t('sidebar.practice', 'Luyện từ vựng tổng hợp')}</span>
                 </a>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-full ${activePage === 'pinyin' ? 'bg-primary/20 text-slate-900 dark:text-white active-fill' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors'}"
+                    href="pinyin_learning.html">
+                    <span class="material-symbols-outlined ${activePage === 'pinyin' ? 'text-primary' : ''}">language</span>
+                    <span class="${activePage === 'pinyin' ? 'font-semibold' : 'font-medium'}">${t('sidebar.pinyin', 'Học Pinyin')}</span>
+                </a>
                 <a class="flex items-center gap-3 px-4 py-3 rounded-full ${activePage === 'categories' ? 'bg-primary/20 text-slate-900 dark:text-white active-fill' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors'}"
                     href="personal_vocabulary_categories_screen.html">
                     <span class="material-symbols-outlined ${activePage === 'categories' ? 'text-primary' : ''}">grid_view</span>

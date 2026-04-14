@@ -568,103 +568,123 @@
 
         <!-- ====== INPUT MODE PICKER ====== -->
         <div id="inputModePicker"
-          class="hidden flex fixed inset-0 z-[60] bg-black/40 backdrop-blur-sm items-center justify-center px-5">
-          <div class="w-full max-w-md bg-white dark:bg-card-dark rounded-3xl border border-gray-100 dark:border-green-900/30 p-6 shadow-soft">
-            <div class="flex items-center gap-3 mb-4">
-              <div class="w-10 h-10 rounded-2xl bg-primary/20 flex items-center justify-center text-xl shrink-0">🎯</div>
-              <div>
-                <h3 class="text-lg font-extrabold text-text-main dark:text-white">Chọn phương thức luyện tập</h3>
-                <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Chọn cách bạn muốn luyện tập từ vựng</p>
+          class="hidden flex fixed inset-0 z-[60] bg-black/60 backdrop-blur-md items-end sm:items-center justify-center px-3 pb-3 sm:pb-0">
+          <div id="inputModePickerCard" class="w-full max-w-sm bg-white dark:bg-card-dark rounded-3xl border border-white/60 dark:border-gray-700/60 shadow-2xl overflow-hidden imp-pop">
+
+            <!-- Header -->
+            <div class="relative px-5 pt-4 pb-3 flex items-center gap-3">
+              <div class="imp-icon-bounce w-9 h-9 rounded-2xl bg-gradient-to-br from-primary to-blue-500 flex items-center justify-center text-xl shadow-lg shrink-0">🎯</div>
+              <div class="flex-1 min-w-0">
+                <h3 class="text-sm font-black text-gray-800 dark:text-white leading-tight">Chọn chế độ luyện tập</h3>
+                <p class="text-[10px] font-semibold text-gray-400 dark:text-gray-500">Nhấn vào một chế độ để bắt đầu</p>
               </div>
+              <button onclick="quitPractice()" class="w-7 h-7 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 hover:rotate-90 transition-all duration-200 active:scale-90 shrink-0">
+                <span class="material-symbols-outlined text-[17px]">close</span>
+              </button>
             </div>
-            <div class="space-y-3">
-              <button
-                onclick="selectInputMode('hanzi_to_pinyin')"
-                class="w-full flex items-center gap-4 px-4 py-3.5 bg-primary/10 hover:bg-primary/20 dark:bg-primary/10 dark:hover:bg-primary/20
-                border-2 border-primary/30 hover:border-primary rounded-2xl transition-all active:scale-[0.99] group text-left">
-                <div class="w-10 h-10 rounded-xl bg-primary text-text-main flex items-center justify-center text-lg font-black shrink-0 shadow-fun">漢</div>
-                <div>
-                  <div class="font-extrabold text-text-main dark:text-white text-sm">Nhìn chữ Hán → Nhập Pinyin</div>
-                  <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Xem chữ Hán, gõ phiên âm Pinyin</div>
-                </div>
-                <span class="material-symbols-outlined ml-auto text-primary opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
-              </button>
-              <button
-                onclick="selectInputMode('hanzi_to_meaning')"
-                class="w-full flex items-center gap-4 px-4 py-3.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/30
-                border-2 border-blue-200/60 hover:border-blue-400 dark:border-blue-800/40 dark:hover:border-blue-600 rounded-2xl transition-all active:scale-[0.99] group text-left">
-                <div class="w-10 h-10 rounded-xl bg-blue-500 text-white flex items-center justify-center text-lg font-black shrink-0">漢</div>
-                <div>
-                  <div class="font-extrabold text-text-main dark:text-white text-sm">Nhìn chữ Hán → Nhập nghĩa</div>
-                  <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Xem chữ Hán, gõ nghĩa tiếng Việt</div>
-                </div>
-                <span class="material-symbols-outlined ml-auto text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
-              </button>
-              <button
-                onclick="selectInputMode('vietnamese_to_pinyin')"
-                class="w-full flex items-center gap-4 px-4 py-3.5 bg-purple-50 hover:bg-purple-100 dark:bg-purple-900/20 dark:hover:bg-purple-900/30
-                border-2 border-purple-200/60 hover:border-purple-400 dark:border-purple-800/40 dark:hover:border-purple-600 rounded-2xl transition-all active:scale-[0.99] group text-left">
-                <div class="w-10 h-10 rounded-xl bg-purple-500 text-white flex items-center justify-center text-sm font-black shrink-0">VN</div>
-                <div>
-                  <div class="font-extrabold text-text-main dark:text-white text-sm">Nhìn tiếng Việt → Nhập Pinyin</div>
-                  <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Xem nghĩa tiếng Việt, gõ phiên âm Pinyin</div>
-                </div>
-                <span class="material-symbols-outlined ml-auto text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
-              </button>
-              <button
-                onclick="selectInputMode('vietnamese_to_hanzi')"
-                class="w-full flex items-center gap-4 px-4 py-3.5 bg-rose-50 hover:bg-rose-100 dark:bg-rose-900/20 dark:hover:bg-rose-900/30
-                border-2 border-rose-200/60 hover:border-rose-400 dark:border-rose-800/40 dark:hover:border-rose-600 rounded-2xl transition-all active:scale-[0.99] group text-left">
-                <div class="w-10 h-10 rounded-xl bg-rose-500 text-white flex items-center justify-center text-sm font-black shrink-0">VN</div>
-                <div>
-                  <div class="font-extrabold text-text-main dark:text-white text-sm">Nhìn tiếng Việt → Nhập chữ Hán</div>
-                  <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Xem nghĩa tiếng Việt, gõ chữ Hán tương ứng</div>
-                </div>
-                <span class="material-symbols-outlined ml-auto text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+
+            <!-- Mode Grid (2x2 + 1 full) -->
+            <div class="px-4 pb-1 grid grid-cols-2 gap-2">
+              <button onclick="selectInputMode('hanzi_to_pinyin')"
+                class="imp-btn group relative overflow-hidden flex flex-col items-center gap-1.5 py-3.5 px-2 rounded-2xl border-2 border-teal-100 dark:border-teal-900/40 bg-gradient-to-b from-teal-50 to-white dark:from-teal-900/20 dark:to-transparent hover:border-teal-400 hover:from-teal-100 hover:shadow-lg hover:-translate-y-1 active:scale-95 active:shadow-none transition-all duration-200 text-center"
+                style="animation-delay:.04s">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-400 to-emerald-500 text-white flex items-center justify-center text-lg font-black shadow-md group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-teal-300/50 group-hover:shadow-lg transition-all duration-200">漢</div>
+                <div class="text-[10px] font-black text-gray-700 dark:text-gray-200 leading-tight">Chữ Hán</div>
+                <div class="text-[9px] text-teal-600 dark:text-teal-400 font-bold">→ Pinyin</div>
+                <span class="absolute inset-0 rounded-2xl ring-2 ring-teal-400 ring-offset-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></span>
               </button>
 
-              <!-- Pinyin support toggle -->
-              <div class="flex items-center justify-between px-4 py-3 bg-amber-50 dark:bg-amber-900/20 rounded-2xl border-2 border-amber-200/60 dark:border-amber-800/40 mt-1">
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded-xl bg-amber-400 text-white flex items-center justify-center text-xs font-black shrink-0 shadow-fun">pīn</div>
-                  <div>
-                    <div class="font-extrabold text-text-main dark:text-white text-sm">Hiện Pinyin hỗ trợ mặc định</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Hiện gợi ý ngay từ đầu mỗi câu</div>
-                  </div>
+              <button onclick="selectInputMode('hanzi_to_meaning')"
+                class="imp-btn group relative overflow-hidden flex flex-col items-center gap-1.5 py-3.5 px-2 rounded-2xl border-2 border-blue-100 dark:border-blue-900/40 bg-gradient-to-b from-blue-50 to-white dark:from-blue-900/20 dark:to-transparent hover:border-blue-400 hover:from-blue-100 hover:shadow-lg hover:-translate-y-1 active:scale-95 active:shadow-none transition-all duration-200 text-center"
+                style="animation-delay:.08s">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-400 to-indigo-500 text-white flex items-center justify-center text-lg font-black shadow-md group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-blue-300/50 group-hover:shadow-lg transition-all duration-200">💡</div>
+                <div class="text-[10px] font-black text-gray-700 dark:text-gray-200 leading-tight">Chữ Hán</div>
+                <div class="text-[9px] text-blue-600 dark:text-blue-400 font-bold">→ Nghĩa</div>
+                <span class="absolute inset-0 rounded-2xl ring-2 ring-blue-400 ring-offset-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></span>
+              </button>
+
+              <button onclick="selectInputMode('vietnamese_to_pinyin')"
+                class="imp-btn group relative overflow-hidden flex flex-col items-center gap-1.5 py-3.5 px-2 rounded-2xl border-2 border-purple-100 dark:border-purple-900/40 bg-gradient-to-b from-purple-50 to-white dark:from-purple-900/20 dark:to-transparent hover:border-purple-400 hover:from-purple-100 hover:shadow-lg hover:-translate-y-1 active:scale-95 active:shadow-none transition-all duration-200 text-center"
+                style="animation-delay:.12s">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-400 to-fuchsia-500 text-white flex items-center justify-center text-xs font-black shadow-md group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-purple-300/50 group-hover:shadow-lg transition-all duration-200">VN</div>
+                <div class="text-[10px] font-black text-gray-700 dark:text-gray-200 leading-tight">Tiếng Việt</div>
+                <div class="text-[9px] text-purple-600 dark:text-purple-400 font-bold">→ Pinyin</div>
+                <span class="absolute inset-0 rounded-2xl ring-2 ring-purple-400 ring-offset-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></span>
+              </button>
+
+              <button onclick="selectInputMode('vietnamese_to_hanzi')"
+                class="imp-btn group relative overflow-hidden flex flex-col items-center gap-1.5 py-3.5 px-2 rounded-2xl border-2 border-rose-100 dark:border-rose-900/40 bg-gradient-to-b from-rose-50 to-white dark:from-rose-900/20 dark:to-transparent hover:border-rose-400 hover:from-rose-100 hover:shadow-lg hover:-translate-y-1 active:scale-95 active:shadow-none transition-all duration-200 text-center"
+                style="animation-delay:.16s">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-400 to-pink-500 text-white flex items-center justify-center text-lg font-black shadow-md group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-rose-300/50 group-hover:shadow-lg transition-all duration-200">✍️</div>
+                <div class="text-[10px] font-black text-gray-700 dark:text-gray-200 leading-tight">Tiếng Việt</div>
+                <div class="text-[9px] text-rose-600 dark:text-rose-400 font-bold">→ Chữ Hán</div>
+                <span class="absolute inset-0 rounded-2xl ring-2 ring-rose-400 ring-offset-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></span>
+              </button>
+
+              <!-- Listen: full width -->
+              <button onclick="selectInputMode('listen_to_meaning')"
+                class="imp-btn col-span-2 group relative overflow-hidden flex items-center gap-3 py-3 px-3.5 rounded-2xl border-2 border-amber-100 dark:border-amber-900/40 bg-gradient-to-r from-amber-50 to-orange-50/60 dark:from-amber-900/20 dark:to-orange-900/10 hover:border-amber-400 hover:from-amber-100 hover:to-orange-100/60 hover:shadow-lg hover:-translate-y-0.5 active:scale-95 active:shadow-none transition-all duration-200"
+                style="animation-delay:.20s">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-white flex items-center justify-center text-xl shadow-md group-hover:scale-110 group-hover:animate-[wiggle_.4s_ease] group-hover:shadow-amber-300/50 group-hover:shadow-lg transition-all duration-200 shrink-0">🎧</div>
+                <div class="text-left min-w-0">
+                  <div class="text-[11px] font-black text-gray-700 dark:text-gray-200 leading-tight">Nghe tiếng Trung</div>
+                  <div class="text-[9px] text-amber-600 dark:text-amber-400 font-bold">→ Nhập nghĩa tiếng Việt</div>
+                </div>
+                <span class="material-symbols-outlined ml-auto text-amber-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200 text-base shrink-0">arrow_forward</span>
+                <span class="absolute inset-0 rounded-2xl ring-2 ring-amber-400 ring-offset-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></span>
+              </button>
+            </div>
+
+            <!-- Toggles row -->
+            <div class="px-4 py-3 flex items-center gap-2">
+              <div class="flex-1 flex items-center justify-between px-2.5 py-2 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200/60 dark:border-amber-800/30">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-sm leading-none" style="font-family:sans-serif">拼</span>
+                  <span class="text-[10px] font-black text-gray-600 dark:text-gray-300">Pinyin gợi ý</span>
                 </div>
                 <button id="pinyinSupportToggle" onclick="toggleDefaultPinyin()"
-                  class="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-gray-700 transition-colors duration-200 shrink-0">
-                  <span id="pinyinSupportDot" class="inline-block h-4 w-4 translate-x-1 rounded-full bg-white transition-transform duration-200 shadow"></span>
+                  class="relative inline-flex h-5 w-9 items-center rounded-full bg-gray-200 dark:bg-gray-700 transition-colors duration-300 shrink-0">
+                  <span id="pinyinSupportDot" class="inline-block h-3.5 w-3.5 translate-x-0.5 rounded-full bg-white transition-transform duration-300 shadow"></span>
                 </button>
               </div>
-
-              <!-- Auto-speak toggle -->
-              <div class="flex items-center justify-between px-4 py-3 bg-sky-50 dark:bg-sky-900/20 rounded-2xl border-2 border-sky-200/60 dark:border-sky-800/40 mt-1">
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded-xl bg-sky-500 text-white flex items-center justify-center shrink-0">
-                    <span class="material-symbols-outlined text-xl">volume_up</span>
-                  </div>
-                  <div>
-                    <div class="font-extrabold text-text-main dark:text-white text-sm">Tự động nghe phát âm</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Đọc chữ Hán mỗi khi sang từ mới</div>
-                  </div>
+              <div class="flex-1 flex items-center justify-between px-2.5 py-2 bg-sky-50 dark:bg-sky-900/20 rounded-xl border border-sky-200/60 dark:border-sky-800/30">
+                <div class="flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-sky-500 text-[15px]">volume_up</span>
+                  <span class="text-[10px] font-black text-gray-600 dark:text-gray-300">Tự đọc</span>
                 </div>
                 <button id="autoSpeakTrack" onclick="toggleAutoSpeak()"
-                  class="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-gray-700 transition-colors duration-200 shrink-0">
-                  <span id="autoSpeakDot" class="inline-block h-4 w-4 translate-x-1 rounded-full bg-white transition-transform duration-200 shadow"></span>
+                  class="relative inline-flex h-5 w-9 items-center rounded-full bg-sky-400 transition-colors duration-300 shrink-0">
+                  <span id="autoSpeakDot" class="inline-block h-3.5 w-3.5 translate-x-4 rounded-full bg-white transition-transform duration-300 shadow"></span>
                 </button>
               </div>
-            </div>
-            <div class="mt-4 flex justify-end">
-              <button
-                onclick="quitPractice()"
-                class="px-4 py-2 rounded-xl text-sm font-bold text-gray-500 dark:text-gray-400
-                hover:bg-gray-100 dark:hover:bg-green-900/30 transition-all flex items-center gap-1">
-                <span class="material-symbols-outlined text-base">close</span> Hủy
-              </button>
             </div>
           </div>
         </div>
+        <style>
+          @keyframes impPop {
+            0%   { opacity:0; transform: scale(0.88) translateY(20px); }
+            70%  { opacity:1; transform: scale(1.03) translateY(-3px); }
+            100% { transform: scale(1) translateY(0); }
+          }
+          @keyframes impBtnIn {
+            from { opacity:0; transform: translateY(10px) scale(0.94); }
+            to   { opacity:1; transform: none; }
+          }
+          @keyframes impIconBounce {
+            0%,100% { transform: scale(1) rotate(0deg); }
+            30%     { transform: scale(1.18) rotate(-8deg); }
+            60%     { transform: scale(1.1) rotate(6deg); }
+          }
+          @keyframes wiggle {
+            0%,100% { transform: rotate(0); }
+            25%     { transform: rotate(-12deg) scale(1.1); }
+            75%     { transform: rotate(10deg) scale(1.1); }
+          }
+          .imp-pop { animation: impPop 0.36s cubic-bezier(.34,1.56,.64,1) both; }
+          .imp-btn { animation: impBtnIn 0.3s cubic-bezier(.22,1,.36,1) both; }
+          .imp-icon-bounce { animation: impIconBounce 0.7s 0.3s ease both; }
+          @keyframes slideUp { from { opacity:0; transform: translateY(24px) scale(0.97); } to { opacity:1; transform: none; } }
+        </style>
 
         <!-- Top bar -->
         <div class="flex items-center gap-3 px-4 sm:px-6 pt-5 pb-3 shrink-0 border-b border-gray-100 dark:border-green-900/30 bg-white/80 dark:bg-card-dark/80 backdrop-blur-sm">
@@ -680,6 +700,11 @@
           </div>
           <span id="progressPct"
             class="text-sm font-extrabold text-gray-500 dark:text-gray-400 w-10 text-right shrink-0">0%</span>
+          <!-- End early button -->
+          <button onclick="endPracticeEarly()" title="Kết thúc & xem kết quả"
+            class="p-1.5 rounded-full text-orange-400 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/30 transition-all shrink-0">
+            <span class="material-symbols-outlined text-xl">flag</span>
+          </button>
           <!-- Voice picker button -->
           <button onclick="openVoicePicker()" title="Chọn giọng đọc"
             class="p-1.5 rounded-full text-sky-400 hover:text-sky-600 hover:bg-sky-50 dark:hover:bg-sky-900/30 transition-all shrink-0">
@@ -763,7 +788,7 @@
           <div id="pinyinSuggestBar" style="display:none" class="gap-1 flex-wrap mb-2 max-h-24 overflow-y-auto -mx-1 px-1 border border-primary/20 rounded-2xl p-2 bg-primary/5"></div>
 
           <!-- Underline-style input -->
-          <div class="border-b-2 border-primary pb-1 mb-2">
+          <div class="border-b-2 border-primary pb-1 mb-2 flex items-center gap-2">
             <input id="writeInput"
               type="text"
               autocomplete="off"
@@ -772,10 +797,24 @@
               placeholder="Nhập bằng định nghĩa"
               oninput="_updatePinyinBar(this)"
               onkeydown="if(event.key==='Enter')checkWrite()"
-              class="w-full bg-transparent border-none outline-none shadow-none ring-0 focus:ring-0 text-xl font-semibold
+              class="flex-1 bg-transparent border-none outline-none shadow-none ring-0 focus:ring-0 text-xl font-semibold
               text-text-main dark:text-white placeholder-gray-300 dark:placeholder-green-900/60 py-2 rounded-none" />
+            <button id="micBtn" type="button" onclick="toggleSpeechInput()"
+              title="Nhập bằng giọng nói"
+              class="shrink-0 w-10 h-10 flex items-center justify-center rounded-xl transition-all
+              text-gray-400 hover:text-teal-500 hover:bg-teal-50 dark:hover:bg-teal-900/20
+              active:scale-95">
+              <span id="micIcon" class="material-symbols-outlined text-2xl">mic</span>
+            </button>
+            <button type="button" onclick="checkWrite()"
+              title="Kiểm tra"
+              class="shrink-0 w-10 h-10 flex items-center justify-center rounded-xl transition-all
+              text-gray-400 hover:text-primary hover:bg-primary/10 dark:hover:bg-primary/20
+              active:scale-95">
+              <span class="material-symbols-outlined text-2xl">keyboard_return</span>
+            </button>
           </div>
-          <p class="text-xs text-gray-300 dark:text-zinc-700">Nhấn Enter để kiểm tra</p>
+          <p class="text-xs text-gray-300 dark:text-zinc-700">Nhấn Enter hoặc <span class="material-symbols-outlined text-xs align-middle" style="font-size:14px">keyboard_return</span> để kiểm tra</p>
 
           <!-- Progress label -->
           <p id="progressLabel" class="text-xs text-gray-300 dark:text-zinc-700 text-right mt-4">0 / 0</p>
@@ -1423,6 +1462,12 @@ async function startPractice() {
 function openInputModePicker() {
   const picker = document.getElementById('inputModePicker');
   picker.classList.remove('hidden');
+  // Re-trigger entry animations
+  const card = document.getElementById('inputModePickerCard');
+  if (card) { card.classList.remove('imp-pop'); void card.offsetWidth; card.classList.add('imp-pop'); }
+  document.querySelectorAll('#inputModePicker .imp-btn').forEach((el, i) => {
+    el.classList.remove('imp-btn'); void el.offsetWidth; el.classList.add('imp-btn');
+  });
   const input = document.getElementById('writeInput');
   if (input) input.disabled = true;
 
@@ -1578,6 +1623,7 @@ function renderCurrentCard() {
 
   const input = document.getElementById('writeInput');
   const fb    = document.getElementById('writeFeedback');
+  _stopSpeech();
   input.value    = '';
   input.disabled = false;
   fb.className   = 'hidden rounded-2xl p-3 text-sm font-bold text-center mb-5 transition-all';
@@ -1812,6 +1858,16 @@ function quitPractice() {
   cancelInputModePicker();
   document.getElementById('practicePanel').classList.add('hidden');
   document.getElementById('setupPanel').classList.remove('hidden');
+}
+
+async function endPracticeEarly() {
+  if (!sessionResults.length && currentIdx === 0) {
+    showToast('Chưa có câu nào được trả lời', 'info');
+    return;
+  }
+  _stopSpeech();
+  cancelInputModePicker();
+  await endPractice();
 }
 
 function backToSetup() {
@@ -2522,6 +2578,62 @@ async function moveSetToFolder(setId, folderId) {
       showToast(res.error?.message || 'Chuyển thất bại', 'error');
     }
   } catch (e) { showToast('Lỗi: ' + e.message, 'error'); }
+}
+
+// ==================== SPEECH INPUT ====================
+let _speechRecognition = null;
+let _speechActive = false;
+
+function toggleSpeechInput() {
+  if (_speechActive) {
+    _stopSpeech();
+    return;
+  }
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    showToast('Trình duyệt không hỗ trợ nhận giọng nói', 'error');
+    return;
+  }
+  const input = document.getElementById('writeInput');
+  if (input && input.disabled) return;
+
+  _speechRecognition = new SpeechRecognition();
+  _speechRecognition.lang = (inputMode === 'hanzi_to_pinyin' || inputMode === 'vietnamese_to_pinyin') ? 'zh-CN' : 'vi-VN';
+  _speechRecognition.interimResults = true;
+  _speechRecognition.continuous = false;
+  _speechRecognition.maxAlternatives = 1;
+
+  _speechRecognition.onstart = () => {
+    _speechActive = true;
+    const btn = document.getElementById('micBtn');
+    const icon = document.getElementById('micIcon');
+    if (btn) btn.classList.add('text-red-500', '!text-red-500', 'bg-red-50', 'dark:bg-red-900/20');
+    if (icon) icon.textContent = 'mic_off';
+  };
+
+  _speechRecognition.onresult = (e) => {
+    const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
+    const input = document.getElementById('writeInput');
+    if (input) { input.value = transcript; _updatePinyinBar(input); }
+  };
+
+  _speechRecognition.onerror = (e) => {
+    if (e.error !== 'aborted') showToast('Lỗi giọng nói: ' + e.error, 'error');
+    _stopSpeech();
+  };
+
+  _speechRecognition.onend = () => { _stopSpeech(); };
+
+  _speechRecognition.start();
+}
+
+function _stopSpeech() {
+  _speechActive = false;
+  if (_speechRecognition) { try { _speechRecognition.stop(); } catch(_) {} _speechRecognition = null; }
+  const btn = document.getElementById('micBtn');
+  const icon = document.getElementById('micIcon');
+  if (btn) btn.classList.remove('text-red-500', '!text-red-500', 'bg-red-50', 'dark:bg-red-900/20');
+  if (icon) icon.textContent = 'mic';
 }
 
 // ==================== PINYIN IME ====================
