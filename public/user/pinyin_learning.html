@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>VocabHero - Học Pinyin</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#d8dad9",
+                        "inverse-primary": "#48e349",
+                        "primary-fixed": "#74ff6c",
+                        "surface-variant": "#e1e3e1",
+                        "surface-bright": "#f8faf8",
+                        "tertiary-fixed": "#ffdad4",
+                        "on-secondary-fixed-variant": "#005309",
+                        "surface-container-highest": "#e1e3e1",
+                        "primary-container": "#4ce64c",
+                        "primary": "#006e10",
+                        "on-primary": "#ffffff",
+                        "background": "#f8faf8",
+                        "on-tertiary-fixed-variant": "#6a3932",
+                        "secondary": "#226c20",
+                        "on-secondary-fixed": "#002202",
+                        "on-tertiary-fixed": "#350f0a",
+                        "on-primary-container": "#00630d",
+                        "on-primary-fixed": "#002202",
+                        "surface": "#f8faf8",
+                        "surface-tint": "#006e10",
+                        "error-container": "#ffdad6",
+                        "outline": "#6d7b67",
+                        "tertiary-container": "#ffb8ad",
+                        "surface-container-high": "#e6e9e7",
+                        "secondary-fixed-dim": "#8bd97f",
+                        "secondary-container": "#a6f698",
+                        "surface-container-low": "#f1f4f0",
+                        "surface-container": "#ebede9",
+                        "on-surface-variant": "#6d7b67",
+                        "on-surface": "#1a1c19",
+                        "on-error": "#ffffff",
+                        "error": "#b3261e",
+                        "on-error-container": "#410e0b",
+                        "on-tertiary-container": "#370b05",
+                        "tertiary": "#8f4a3f",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-container": "#001c00",
+                        "on-secondary-fixed": "#002202",
+                        "on-primary-fixed-variant": "#005309"
+                    },
+                    "borderRadius": {
+                        "xs": "0.25rem",
+                        "sm": "0.5rem",
+                        "3xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "lexend": ["Lexend", "sans-serif"],
+                        "body": ["Lexend", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+    <script src="../i18n/translations.js"></script>
+    <script src="../js/sidebar.js"></script>
+</head>
+<body class="bg-surface font-body text-on-surface">
+<div class="flex min-h-screen">
+    <div id="sidebar-container" data-active-page="pinyin"></div>
+    <main class="flex-1 ml-0 md:ml-64 min-h-screen transition-all duration-300">
+        <div class="p-4 md:p-8 @container max-w-5xl mx-auto">
+            <div class="grid grid-cols-12 gap-x-4 gap-y-6">
+                <!-- Header Section -->
+                <section class="col-span-12">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-2">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-primary-container text-on-primary-container rounded-2xl flex items-center justify-center shadow-sm shrink-0">
+                                <span class="material-symbols-outlined text-2xl">translate</span>
+                            </div>
+                            <div>
+                                <h1 class="text-3xl font-bold text-on-surface tracking-tight">Học Pinyin</h1>
+                                <p class="text-on-surface-variant text-sm font-medium mt-0.5">Nền tảng phát âm chuẩn Tiếng Trung</p>
+                            </div>
+                        </div>
+                        <!-- Compact Stats Inline Bar -->
+                        <div class="flex items-center bg-surface-container-low p-1.5 rounded-2xl border border-outline-variant/30 shadow-sm shrink-0 w-full md:w-auto">
+                            <div class="flex-1 px-4 md:px-5 py-1 text-center border-r border-outline-variant/20">
+                                <p class="text-[9px] text-on-surface-variant uppercase font-bold tracking-wider mb-0.5">Đã học</p>
+                                <p class="text-lg font-bold text-primary leading-none" id="learned-count">24</p>
+                            </div>
+                            <div class="flex-1 px-4 md:px-5 py-1 text-center border-r border-outline-variant/20">
+                                <p class="text-[9px] text-on-surface-variant uppercase font-bold tracking-wider mb-0.5">Tiến độ</p>
+                                <p class="text-lg font-bold text-secondary leading-none" id="progress-count">8</p>
+                            </div>
+                            <div class="flex-1 px-4 md:px-5 py-1 text-center">
+                                <p class="text-[9px] text-on-surface-variant uppercase font-bold tracking-wider mb-0.5">Chính xác</p>
+                                <p class="text-lg font-bold text-tertiary leading-none" id="success-rate">78%</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Segmented Tab Actions -->
+                <section class="col-span-12 border-b border-outline-variant/20 pb-6 mb-2">
+                    <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center sm:justify-between">
+                        <div class="inline-flex w-full sm:w-auto flex-wrap gap-1 bg-surface-container p-1 rounded-2xl shadow-sm border border-outline-variant/10">
+                            <button class="tab-btn flex-1 sm:flex-none px-5 py-2 rounded-xl font-bold bg-primary text-on-primary shadow-sm transition-all text-sm whitespace-nowrap" id="tab-initials" data-tab="initials">Thanh mẫu</button>
+                            <button class="tab-btn flex-1 sm:flex-none px-5 py-2 rounded-xl font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all text-sm whitespace-nowrap" id="tab-finals" data-tab="finals">Vần mẫu</button>
+                            <button class="tab-btn flex-1 sm:flex-none px-5 py-2 rounded-xl font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all text-sm whitespace-nowrap" id="tab-tones" data-tab="tones">Thanh điệu</button>
+                            <button class="tab-btn flex-1 sm:flex-none px-5 py-2 rounded-xl font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all text-sm whitespace-nowrap" id="tab-quiz" data-tab="quiz">Quiz</button>
+                        </div>
+                        <div class="flex gap-2 w-full sm:w-auto flex-wrap sm:flex-nowrap">
+                            <div class="flex gap-1.5 bg-surface-container-low p-2 rounded-xl border border-outline-variant/10 flex-1 sm:flex-none">
+                                <button onclick="setSpeechRate(1)" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all border-2" id="speedBtn1">1x</button>
+                                <button onclick="setSpeechRate(0.5)" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all border-2" id="speedBtn05">0.5x</button>
+                                <button onclick="setSpeechRate(0.25)" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all border-2" id="speedBtn025">0.25x</button>
+                            </div>
+                            <button onclick="openVoicePicker()" class="flex items-center justify-center gap-1.5 bg-primary/10 hover:bg-primary/20 text-primary font-bold py-1.5 px-3 rounded-xl border border-primary/30 transition-all text-xs whitespace-nowrap flex-1 sm:flex-none">
+                                <span class="material-symbols-outlined text-[16px]">mic</span>
+                                <span>Giọng</span>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+                <!-- Initials -->
+                <section class="col-span-12" id="content-initials">
+                    <div id="initials-grid" class="space-y-6"></div>
+                </section>
+                <!-- Finals -->
+                <section class="col-span-12 hidden" id="content-finals">
+                    <div id="finals-grid" class="space-y-6"></div>
+                </section>
+                <!-- Tones -->
+                <section class="col-span-12 hidden" id="content-tones">
+                    <div id="tones-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+                </section>
+                <!-- Quiz -->
+                <section class="col-span-12 hidden" id="content-quiz">
+                    <div class="max-w-xl mx-auto bg-surface-container-low rounded-3xl p-8 text-center border border-outline-variant/20 shadow-sm mt-4">
+                        <div class="w-16 h-16 bg-primary-container text-on-primary-container rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+                            <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">sports_esports</span>
+                        </div>
+                        <h2 class="text-2xl font-bold text-on-surface mb-2">Kiểm tra kiến thức</h2>
+                        <p class="text-on-surface-variant mb-8 text-sm">Đánh giá khả năng nhận diện âm thanh, chọn thanh điệu và ghép vần.</p>
+                        <button onclick="startQuiz()" class="px-8 py-3 bg-primary text-on-primary font-bold rounded-xl shadow-sm hover:shadow-md hover:bg-primary/90 hover:-translate-y-0.5 transition-all text-sm tracking-wide">
+                            BẮT ĐẦU NGAY
+                        </button>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+<!-- Initial Detail Modal -->
+<div id="initial-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+    <div class="absolute inset-0 bg-on-surface/40 backdrop-blur-sm transition-opacity" onclick="closeInitialModal()"></div>
+    <div class="relative bg-surface w-[90%] max-w-lg rounded-[2rem] shadow-2xl border border-outline-variant/20 overflow-hidden transform scale-95 transition-transform flex flex-col max-h-[85vh]">
+        <!-- Header -->
+        <div class="px-6 py-5 border-b border-outline-variant/20 bg-surface/80 backdrop-blur-md">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-primary-container text-on-primary-container rounded-xl flex items-center justify-center font-bold text-2xl" id="modal-initial-title">b</div>
+                    <div>
+                        <h3 class="font-bold text-on-surface text-lg">Phát âm kết hợp</h3>
+                        <p class="text-xs text-on-surface-variant font-medium">5 Thanh điệu cơ bản</p>
+                    </div>
+                </div>
+                <button onclick="closeInitialModal()" class="w-8 h-8 flex items-center justify-center rounded-xl bg-surface-container hover:bg-surface-container-highest text-on-surface-variant transition-colors border border-outline-variant/20">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+        </div>
+        <!-- Body -->
+        <div class="px-6 py-5 overflow-y-auto space-y-4" id="modal-initial-content">
+            <!-- Examples will be populated here -->
+        </div>
+    </div>
+</div>
+</div>
+<script>
+let currentSpeechRate = parseFloat(localStorage.getItem('pinyinSpeechRate')) || 1;
+let ttsAutoSpeak = localStorage.getItem('pinyinAutoSpeak') === 'true';
+
+async function _getVoicesAsync(timeout = 3000) {
+    return new Promise(resolve => {
+        const now = window.speechSynthesis.getVoices();
+        if (now.length) { resolve(now); return; }
+        
+        let done = false;
+        const finish = voices => { if (!done) { done = true; resolve(voices); } };
+        const handler = () => finish(window.speechSynthesis.getVoices());
+        window.speechSynthesis.addEventListener('voiceschanged', handler);
+        
+        let elapsed = 0;
+        const poll = setInterval(() => {
+            const v = window.speechSynthesis.getVoices();
+            if (v.length) { clearInterval(poll); window.speechSynthesis.removeEventListener('voiceschanged', handler); finish(v); return; }
+            elapsed += 250;
+            if (elapsed >= timeout) { clearInterval(poll); window.speechSynthesis.removeEventListener('voiceschanged', handler); finish([]); }
+        }, 250);
+    });
+}
+
+function _pickChineseVoice(voices) {
+    const savedName = localStorage.getItem('selectedVoiceName');
+    const savedLang = localStorage.getItem('selectedVoice') || 'zh-TW';
+    const zh = voices.filter(v => v.lang && v.lang.startsWith('zh'));
+    if (!zh.length) return null;
+    if (savedName) {
+        const exact = zh.find(v => v.name === savedName);
+        if (exact) return exact;
+    }
+    const byLang = zh.find(v => v.lang === savedLang);
+    if (byLang) return byLang;
+    const byPrefix = zh.find(v => v.lang.startsWith(savedLang.substring(0, 5)));
+    if (byPrefix) return byPrefix;
+    const local = zh.find(v => v.localService);
+    if (local) return local;
+    return zh[0];
+}
+
+async function ttsSpeak(text, onEnd) {
+    if (!text || !window.speechSynthesis) { if (onEnd) onEnd(); return; }
+    window.speechSynthesis.cancel();
+    
+    const voices = await _getVoicesAsync(2000);
+    const chosen = _pickChineseVoice(voices);
+    const savedLang = localStorage.getItem('selectedVoice') || 'zh-TW';
+    
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.rate = currentSpeechRate;
+    utter.pitch = 1;
+    utter.volume = 1;
+    if (chosen) { utter.voice = chosen; utter.lang = chosen.lang; }
+    else { utter.lang = savedLang; }
+    
+    if (onEnd) { utter.onend = onEnd; utter.onerror = onEnd; }
+    setTimeout(() => window.speechSynthesis.speak(utter), 150);
+}
+
+async function openVoicePicker() {
+    document.getElementById('voicePickerModal').classList.remove('hidden');
+    await _populateVoicePicker();
+}
+
+function closeVoicePicker() {
+    document.getElementById('voicePickerModal').classList.add('hidden');
+}
+
+async function _populateVoicePicker() {
+    const list = document.getElementById('voicePickerList');
+    list.innerHTML = '<div class="flex items-center justify-center gap-2 py-6 text-on-surface-variant text-sm"><div class="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>Đang tải giọng đọc...</div>';
+    
+    const voices = await _getVoicesAsync(4000);
+    const savedVoiceName = localStorage.getItem('selectedVoiceName') || '';
+    const savedLang = localStorage.getItem('selectedVoice') || 'zh-TW';
+    
+    const seen = new Set();
+    const zhVoices = voices.filter(v => {
+        if (!v.lang || !v.lang.startsWith('zh')) return false;
+        if (seen.has(v.name)) return false;
+        seen.add(v.name);
+        return true;
+    });
+    
+    if (!zhVoices.length) {
+        list.innerHTML = `<div class="text-center py-6 px-4"><div class="text-3xl mb-2">😔</div><div class="text-on-surface font-semibold text-sm mb-1">Không tìm thấy giọng tiếng Trung</div></div>`;
+        return;
+    }
+    
+    const getFlag = lang => lang.startsWith('zh-TW') ? '🇹🇼' : lang.startsWith('zh-HK') ? '🇭🇰' : '🇨🇳';
+    
+    list.innerHTML = zhVoices.map((v, idx) => {
+        const isSelected = v.name === savedVoiceName || (!savedVoiceName && v.lang === savedLang && idx === 0);
+        const flag = getFlag(v.lang);
+        return `
+            <div class="flex items-center gap-1 px-3 py-2.5 rounded-2xl border-2 transition-all cursor-pointer
+                ${isSelected ? 'bg-primary/10 border-primary' : 'border-outline-variant/10 hover:border-outline-variant/30'}"
+                data-vi="${idx}" onclick="_voiceRowClick(this)">
+                <span class="text-xl shrink-0">${flag}</span>
+                <div class="flex-1 min-w-0 mx-2">
+                    <div class="text-sm font-semibold truncate ${isSelected ? 'text-primary' : 'text-on-surface'}">${v.name}</div>
+                    <div class="text-xs text-on-surface-variant mt-0.5">${v.lang}${v.localService ? ' · Offline' : ' · Online'}</div>
+                </div>
+                <div class="flex items-center gap-1 shrink-0">
+                    ${isSelected ? '<span class="material-symbols-outlined text-primary">check_circle</span>' : ''}
+                    <button data-vi="${idx}" onclick="event.stopPropagation();_voiceTestClick(this)" class="p-1.5 rounded-xl text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all">
+                        <span class="material-symbols-outlined text-base">play_circle</span>
+                    </button>
+                </div>
+            </div>`;
+    }).join('');
+    
+    list._voiceList = zhVoices;
+}
+
+function _voiceRowClick(el) {
+    const list = document.getElementById('voicePickerList');
+    const voices = list._voiceList;
+    if (!voices) return;
+    const v = voices[parseInt(el.dataset.vi)];
+    if (v) selectTtsVoice(v.name, v.lang);
+}
+
+function _voiceTestClick(el) {
+    const list = document.getElementById('voicePickerList');
+    const voices = list._voiceList;
+    if (!voices) return;
+    const v = voices[parseInt(el.dataset.vi)];
+    if (v) testTtsVoice(v.name);
+}
+
+function selectTtsVoice(name, lang) {
+    localStorage.setItem('selectedVoiceName', name);
+    localStorage.setItem('selectedVoice', lang);
+    _populateVoicePicker();
+    testTtsVoice(name);
+}
+
+async function testTtsVoice(name) {
+    const voices = await _getVoicesAsync(2000);
+    const v = voices.find(voice => voice.name === name);
+    if (!v) return;
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance('你好，歡迎學習中文！');
+    utter.voice = v;
+    utter.lang = v.lang;
+    utter.rate = currentSpeechRate;
+    utter.pitch = 1;
+    utter.volume = 1;
+    window.speechSynthesis.speak(utter);
+}
+
+function setSpeechRate(rate) {
+    currentSpeechRate = rate;
+    localStorage.setItem('pinyinSpeechRate', rate);
+    _updateSpeedButtonStates();
+}
+
+function _updateSpeedButtonStates() {
+    const btnConfigs = [
+        {id: 'speedBtn1', rate: 1},
+        {id: 'speedBtn05', rate: 0.5},
+        {id: 'speedBtn025', rate: 0.25}
+    ];
+    
+    btnConfigs.forEach(config => {
+        const btn = document.getElementById(config.id);
+        if (!btn) return;
+        
+        const isActive = Math.abs(currentSpeechRate - config.rate) < 0.01;
+        if (isActive) {
+            btn.className = 'flex-1 py-1.5 px-2 rounded-lg text-xs font-semibold transition-all border-2 bg-primary/20 border-primary text-primary';
+        } else {
+            btn.className = 'flex-1 py-1.5 px-2 rounded-lg text-xs font-semibold transition-all border-2 bg-surface hover:bg-surface-container border-outline-variant/20 text-on-surface';
+        }
+    });
+    
+    const displayEl = document.getElementById('speedDisplay');
+    if (displayEl) {
+        displayEl.textContent = currentSpeechRate.toFixed(2) + 'x';
+    }
+}
+
+const pinyinData = {
+    initialGroups: [
+        { name: "Thanh mẫu môi", description: "Phát âm bằng môi", initials: [{ pinyin: 'b', example: '爸 bà', note: 'không bật hơi' }, { pinyin: 'p', example: '怕 pà', note: 'bật hơi' }, { pinyin: 'm', example: '妈 mā', note: '' }, { pinyin: 'f', example: '方 fāng', note: '' }] },
+        { name: "Thanh mẫu đầu lưỡi giữa", description: "Lưỡi giữa chạm ngạc", initials: [{ pinyin: 'd', example: '的 de', note: 'như chữ T' }, { pinyin: 't', example: '他 tā', note: 'như chữ Th' }, { pinyin: 'n', example: '你 nǐ', note: '' }, { pinyin: 'l', example: '了 le', note: '' }] },
+        { name: "Thanh mẫu cuống lưỡi", description: "Lưỡi cuốn lên", initials: [{ pinyin: 'g', example: '给 gěi', note: 'như chữ C' }, { pinyin: 'k', example: '可 kě', note: 'như chữ Kh' }, { pinyin: 'h', example: '好 hǎo', note: '' }] },
+        { name: "Thanh mẫu đầu lưỡi sau", description: "Lưỡi chạm ngạc mềm", initials: [{ pinyin: 'zh', example: '这 zhè', note: 'TR (không bật hơi)' }, { pinyin: 'ch', example: '吃 chī', note: 'TR (bật hơi)' }, { pinyin: 'sh', example: '是 shì', note: 'như chữ X' }, { pinyin: 'r', example: '日 rì', note: 'mềm hơn ZH' }] },
+        { name: "Thanh mẫu đầu lưỡi trước", description: "Lưỡi chạm răng", initials: [{ pinyin: 'z', example: '在 zài', note: 'không bật hơi' }, { pinyin: 'c', example: '从 cóng', note: 'bật hơi' }, { pinyin: 's', example: '三 sān', note: '' }] },
+        { name: "Thanh mẫu mặt lưỡi", description: "Lưỡi dẹt", initials: [{ pinyin: 'j', example: 'ji', note: '' }, { pinyin: 'q', example: 'qi', note: '' }, { pinyin: 'x', example: '西 xī', note: '' }] },
+        { name: "Thanh mẫu bán nguyên âm", description: "Hỗn hợp", initials: [{ pinyin: 'y', example: '一 yī', note: 'như chữ D' }, { pinyin: 'w', example: '我 wǒ', note: 'như QU' }] }
+    ],
+    finalGroups: [
+        { name: "Vần a", pronunciation: "Mở miệng to", finals: [{ pinyin: 'a', meaning: 'a' }, { pinyin: 'ai', meaning: 'ai' }, { pinyin: 'ao', meaning: 'ao' }, { pinyin: 'an', meaning: 'an' }, { pinyin: 'ang', meaning: 'ang' }], features: "Dễ phát âm nhất" },
+        { name: "Vần o", pronunciation: "Tròn môi", finals: [{ pinyin: 'o', meaning: 'o' }, { pinyin: 'ou', meaning: 'âu' }, { pinyin: 'ong', meaning: 'ung' }], features: "Môi tròn" },
+        { name: "Vần e", pronunciation: "Miệng mở vừa", finals: [{ pinyin: 'e', meaning: 'ơ' }, { pinyin: 'ei', meaning: 'ây' }, { pinyin: 'en', meaning: 'ân' }, { pinyin: 'eng', meaning: 'âng' }], features: "Âm trung gian" },
+        { name: "Vần i", pronunciation: "I", finals: [{ pinyin: 'i', meaning: 'i' }, { pinyin: 'ia', meaning: 'ia' }, { pinyin: 'ie', meaning: 'iê' }, { pinyin: 'iao', meaning: 'iao' }, { pinyin: 'iu', meaning: 'iu' }, { pinyin: 'ian', meaning: 'ien' }, { pinyin: 'in', meaning: 'in' }, { pinyin: 'iang', meaning: 'iang' }, { pinyin: 'ing', meaning: 'ing' }, { pinyin: 'iong', meaning: 'i-ông' }], features: "Biến âm" },
+        { name: "Vần u", pronunciation: "U", finals: [{ pinyin: 'u', meaning: 'u' }, { pinyin: 'ua', meaning: 'ua' }, { pinyin: 'uo', meaning: 'uô' }, { pinyin: 'uai', meaning: 'uai' }, { pinyin: 'ui', meaning: 'ui' }, { pinyin: 'uan', meaning: 'uan' }, { pinyin: 'un', meaning: 'uân' }, { pinyin: 'uang', meaning: 'uang' }], features: "Âm tròn môi" },
+        { name: "Vần ü", pronunciation: "Chu môi", finals: [{ pinyin: 'ü', meaning: 'ü' }, { pinyin: 'üe', meaning: 'uê' }, { pinyin: 'üan', meaning: 'uên' }, { pinyin: 'ün', meaning: 'uyn' }], features: "Chỉ với j, q, x, y" }
+    ],
+    tones: [
+        { number: 1, name: "Thanh ngang (ˉ)", symbol: "ā", direction: "→", pronunciation: "Cao, đều", examples: [{ character: '妈', pinyin: 'mā', meaning: 'mẹ' }] },
+        { number: 2, name: "Thanh lên (ˊ)", symbol: "á", direction: "↗", pronunciation: "Đi lên", examples: [{ character: '麻', pinyin: 'má', meaning: 'gai' }] },
+        { number: 3, name: "Thanh xuống-lên (ˇ)", symbol: "ǎ", direction: "∨", pronunciation: "Xuống rồi lên", examples: [{ character: '马', pinyin: 'mǎ', meaning: 'ngựa' }] },
+        { number: 4, name: "Thanh đi xuống (ˋ)", symbol: "à", direction: "↘", pronunciation: "Rớt mạnh", examples: [{ character: '骂', pinyin: 'mà', meaning: 'mắng' }] },
+        { number: 5, name: "Khinh thanh (·)", symbol: "a", direction: "•", pronunciation: "Nhẹ", examples: [{ character: '吗', pinyin: 'ma', meaning: 'hỏi' }] }
+    ]
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    setupTabs();
+    renderInitialGroups();
+    renderFinals();
+    renderTones();
+    updateStats();
+    _updateSpeedButtonStates();
+    if(typeof initMobileMenu === 'function') initMobileMenu();
+});
+
+function setupTabs() {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tab = btn.getAttribute('data-tab');
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.className = 'tab-btn flex-1 sm:flex-none px-5 py-2 rounded-xl font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all text-sm whitespace-nowrap';
+            });
+            btn.className = 'tab-btn flex-1 sm:flex-none px-5 py-2 rounded-xl font-bold bg-primary text-on-primary shadow-sm transition-all text-sm whitespace-nowrap';
+            
+            document.querySelectorAll('[id^="content-"]').forEach(c => c.classList.add('hidden'));
+            const content = document.getElementById('content-' + tab);
+            if (content) content.classList.remove('hidden');
+        });
+    });
+}
+
+function renderInitialGroups() {
+    const grid = document.getElementById('initials-grid');
+    grid.innerHTML = pinyinData.initialGroups.map((group, idx) => `
+        <div class="mb-5">
+            <h3 class="text-sm font-bold text-on-surface mb-3 flex items-center gap-2">
+                <span class="w-1.5 h-1.5 bg-primary rounded-full"></span>
+                Nhóm ${idx + 1}: ${group.name} <span class="text-xs font-normal text-on-surface-variant ml-2">(${group.description})</span>
+            </h3>
+            <div class="flex flex-wrap gap-2.5">
+                ${group.initials.map(item => `
+                    <div onclick="openInitialModal('${item.pinyin}')" class="bg-surface-container-low w-[85px] h-[85px] rounded-2xl border border-outline-variant/10 hover:border-primary/40 hover:bg-surface-container-highest transition-all flex flex-col items-center justify-center cursor-pointer shadow-sm hover:shadow-md group/item">
+                        <span class="text-3xl font-bold text-primary mb-1 group-hover/item:scale-110 transition-transform">${item.pinyin}</span>
+                        <span class="text-[10px] text-on-surface-variant uppercase font-bold tracking-wider">${item.example}</span>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderFinals() {
+    const grid = document.getElementById('finals-grid');
+    grid.innerHTML = pinyinData.finalGroups.map((group) => `
+        <div class="mb-5">
+            <h3 class="text-sm font-bold text-on-surface mb-3 flex items-center gap-2">
+                <span class="w-1.5 h-1.5 bg-secondary rounded-full"></span>
+                ${group.name} <span class="text-xs font-normal text-on-surface-variant ml-2">(${group.pronunciation})</span>
+            </h3>
+            <div class="flex flex-wrap gap-2.5">
+                ${group.finals.map(item => `
+                    <div class="relative">
+                        <div onclick="ttsSpeak('${item.pinyin}')" class="bg-surface-container-low w-[75px] h-[75px] rounded-2xl border border-outline-variant/10 hover:border-secondary/40 hover:bg-surface-container-highest transition-all flex flex-col items-center justify-center cursor-pointer shadow-sm hover:shadow-md group/item">
+                            <span class="text-2xl font-bold text-secondary mb-1 group-hover/item:scale-110 transition-transform">${item.pinyin}</span>
+                            <span class="text-[9px] text-on-surface-variant font-bold">${item.meaning}</span>
+                        </div>
+                        <button onclick="openFinalCombineModal('${item.pinyin}'); event.stopPropagation();" class="absolute -bottom-2 -right-2 w-6 h-6 bg-secondary text-on-secondary rounded-full flex items-center justify-center shadow-md hover:shadow-lg hover:scale-110 transition-all border border-on-secondary/20 active:scale-95">
+                            <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">add</span>
+                        </button>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderTones() {
+    const grid = document.getElementById('tones-grid');
+    grid.innerHTML = pinyinData.tones.map((tone) => `
+        <div class="bg-surface-container-low p-5 rounded-2xl border border-outline-variant/10 shadow-sm flex flex-col hover:shadow-md transition-all gap-4">
+            <div class="flex items-center justify-between">
+                <div class="flex gap-4 items-center">
+                    <span class="text-5xl font-black text-emerald-600 w-12 text-center">${tone.symbol}</span>
+                    <div>
+                        <h4 class="text-sm font-bold text-on-surface">${tone.name}</h4>
+                        <p class="text-[11px] text-on-surface-variant">${tone.pronunciation}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="space-y-1.5">
+                ${tone.examples.map(ex => `
+                    <div class="bg-surface-container px-3 py-2 rounded-xl text-xs flex items-center justify-between">
+                        <span class="font-bold">${ex.character} <span class="text-emerald-700 ml-1">${ex.pinyin}</span></span>
+                        <span class="text-on-surface-variant">${ex.meaning}</span>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `).join('');
+}
+
+function updateStats() {
+    document.getElementById('learned-count').textContent = "24";
+    document.getElementById('progress-count').textContent = "8";
+    document.getElementById('success-rate').textContent = "78%";
+}
+function startQuiz() {}
+
+const initialToneExamples = {
+    'b': [{ t: 1, p: 'bū', c: '布', m: 'vải' }, { t: 2, p: 'bú', c: '哺', m: 'cho bú' }, { t: 3, p: 'bǔ', c: '补', m: 'dựa lưng' }, { t: 4, p: 'bù', c: '不', m: 'không' }, { t: 5, p: 'bu', c: '埠', m: 'bến cảng' }],
+    'p': [{ t: 1, p: 'pū', c: '铺', m: 'cửa hàng' }, { t: 2, p: 'pú', c: '匍', m: 'bò' }, { t: 3, p: 'pǔ', c: '普', m: 'phổ biến' }, { t: 4, p: 'pù', c: '曝', m: 'phơi' }, { t: 5, p: 'pu', c: '扑', m: '扑' }],
+    'm': [{ t: 1, p: 'mū', c: '姆', m: 'bà, mẹ' }, { t: 2, p: 'mú', c: '牧', m: 'chăn nuôi' }, { t: 3, p: 'mǔ', c: '母', m: 'mẹ, cái' }, { t: 4, p: 'mù', c: '木', m: 'gỗ' }, { t: 5, p: 'mu', c: '亩', m: 'mẫu' }],
+    'f': [{ t: 1, p: 'fū', c: '夫', m: 'chồng' }, { t: 2, p: 'fú', c: '服', m: 'quần áo' }, { t: 3, p: 'fǔ', c: '辅', m: 'phụ trợ' }, { t: 4, p: 'fù', c: '父', m: 'bố' }, { t: 5, p: 'fu', c: '福', m: 'phúc' }],
+    'd': [{ t: 1, p: 'dū', c: '都', m: 'đô thị' }, { t: 2, p: 'dú', c: '督', m: 'giám sát' }, { t: 3, p: 'dǔ', c: '堵', m: 'chặn' }, { t: 4, p: 'dù', c: '度', m: 'độ, cơn' }, { t: 5, p: 'du', c: '杜', m: 'tên sắc' }],
+    't': [{ t: 1, p: 'tū', c: '图', m: 'bức tranh' }, { t: 2, p: 'tú', c: '突', m: 'đột nhiên' }, { t: 3, p: 'tǔ', c: '土', m: 'đất' }, { t: 4, p: 'tù', c: '徒', m: 'theo, rủi' }, { t: 5, p: 'tu', c: '吐', m: 'nhả' }],
+    'n': [{ t: 1, p: 'nū', c: '奴', m: 'nô lệ' }, { t: 2, p: 'nú', c: '努', m: 'cố gắng' }, { t: 3, p: 'nǔ', c: '怒', m: 'tức giận' }, { t: 4, p: 'nù', c: '虐', m: 'hành hạ' }, { t: 5, p: 'nu', c: '女', m: 'phụ nữ' }],
+    'l': [{ t: 1, p: 'lū', c: '卢', m: 'tên' }, { t: 2, p: 'lú', c: '鲁', m: 'Lư' }, { t: 3, p: 'lǔ', c: '路', m: 'đường' }, { t: 4, p: 'lù', c: '陆', m: 'đất, liên tục' }, { t: 5, p: 'lu', c: '撸', m: 'kéo' }],
+    'g': [{ t: 1, p: 'gū', c: '孤', m: 'cô độc' }, { t: 2, p: 'gú', c: '谷', m: 'thung lũng' }, { t: 3, p: 'gǔ', c: '古', m: 'cổ đại' }, { t: 4, p: 'gù', c: '顾', m: 'chăm sóc' }, { t: 5, p: 'gu', c: '固', m: 'vững chắc' }],
+    'k': [{ t: 1, p: 'kū', c: '枯', m: 'khô héo' }, { t: 2, p: 'kú', c: '库', m: 'kho' }, { t: 3, p: 'kǔ', c: '骷', m: 'hộp sọ' }, { t: 4, p: 'kù', c: '裤', m: 'quần' }, { t: 5, p: 'ku', c: '酷', m: 'lạnh lùng' }],
+    'h': [{ t: 1, p: 'hū', c: '呼', m: 'gọi' }, { t: 2, p: 'hú', c: '胡', m: 'tùy tiện' }, { t: 3, p: 'hǔ', c: '虎', m: 'chú hổ' }, { t: 4, p: 'hù', c: '护', m: 'bảo vệ' }, { t: 5, p: 'hu', c: '糊', m: 'mơ hồ' }],
+    'zh': [{ t: 1, p: 'zhū', c: '猪', m: 'con lợn' }, { t: 2, p: 'zhú', c: '竹', m: 'cây tre' }, { t: 3, p: 'zhǔ', c: '主', m: 'chủ nhân' }, { t: 4, p: 'zhù', c: '住', m: 'sống, ở' }, { t: 5, p: 'zhu', c: '朱', m: 'đỏ' }],
+    'ch': [{ t: 1, p: 'chū', c: '初', m: 'đầu tiên' }, { t: 2, p: 'chú', c: '除', m: 'trừ' }, { t: 3, p: 'chǔ', c: '处', m: 'chỗ, xử' }, { t: 4, p: 'chù', c: '畜', m: 'súc vật' }, { t: 5, p: 'chu', c: '刍', m: 'cỏ khô' }],
+    'sh': [{ t: 1, p: 'shū', c: '书', m: 'sách' }, { t: 2, p: 'shú', c: '书', m: 'quen thuộc' }, { t: 3, p: 'shǔ', c: '鼠', m: 'con chuột' }, { t: 4, p: 'shù', c: '树', m: 'cây' }, { t: 5, p: 'shu', c: '蟀', m: 'dế' }],
+    'r': [{ t: 1, p: 'rū', c: '如', m: 'như' }, { t: 2, p: 'rú', c: '乳', m: 'vú' }, { t: 3, p: 'rǔ', c: '辱', m: 'bẽ mặt' }, { t: 4, p: 'rù', c: '入', m: 'vào' }, { t: 5, p: 'ru', c: '孺', m: 'tính tình' }],
+    'z': [{ t: 1, p: 'zū', c: '租', m: 'thuê mướn' }, { t: 2, p: 'zú', c: '足', m: 'chân, đầy đủ' }, { t: 3, p: 'zǔ', c: '组', m: 'tổ, nhóm' }, { t: 4, p: 'zù', c: '族', m: 'dân tộc' }, { t: 5, p: 'zu', c: '辈', m: 'thế hệ' }],
+    'c': [{ t: 1, p: 'cū', c: '粗', m: 'thô lỗ' }, { t: 2, p: 'cú', c: '窟', m: 'hang động' }, { t: 3, p: 'cǔ', c: '措', m: 'cnó biết' }, { t: 4, p: 'cù', c: '促', m: 'thúc giục' }, { t: 5, p: 'cu', c: '卒', m: 'lính' }],
+    's': [{ t: 1, p: 'sū', c: '苏', m: 'tỉnh Tô' }, { t: 2, p: 'sú', c: '俗', m: 'phong tục' }, { t: 3, p: 'sǔ', c: '素', m: 'chân chất' }, { t: 4, p: 'sù', c: '诉', m: 'trình báo' }, { t: 5, p: 'su', c: '速', m: 'tốc độ' }],
+    'j': [{ t: 1, p: 'jū', c: '居', m: 'cư ngụ' }, { t: 2, p: 'jú', c: '据', m: 'theo' }, { t: 3, p: 'jǔ', c: '举', m: 'nâng' }, { t: 4, p: 'jù', c: '具', m: 'dụng cụ' }, { t: 5, p: 'ju', c: '鞠', m: 'cúi' }],
+    'q': [{ t: 1, p: 'qū', c: '区', m: 'khu vực' }, { t: 2, p: 'qú', c: '屈', m: 'uốn cong' }, { t: 3, p: 'qǔ', c: '取', m: 'lấy' }, { t: 4, p: 'qù', c: '去', m: 'đi' }, { t: 5, p: 'qu', c: '趣', m: 'hứng thú' }],
+    'x': [{ t: 1, p: 'xū', c: '虚', m: 'rỗng tuếch' }, { t: 2, p: 'xú', c: '需', m: 'cần' }, { t: 3, p: 'xǔ', c: '许', m: 'cho phép' }, { t: 4, p: 'xù', c: '续', m: 'tiếp tục' }, { t: 5, p: 'xu', c: '旭', m: 'sáng' }],
+    'y': [{ t: 1, p: 'yū', c: '于', m: 'tại' }, { t: 2, p: 'yú', c: '鱼', m: 'cá' }, { t: 3, p: 'yǔ', c: '雨', m: 'mưa' }, { t: 4, p: 'yù', c: '语', m: 'ngôn ngữ' }, { t: 5, p: 'yu', c: '育', m: 'nuôi dạy' }],
+    'w': [{ t: 1, p: 'wū', c: '屋', m: 'ngôi nhà' }, { t: 2, p: 'wú', c: '无', m: 'không có' }, { t: 3, p: 'wǔ', c: '五', m: 'số 5' }, { t: 4, p: 'wù', c: '物', m: 'sự vật' }, { t: 5, p: 'wu', c: '污', m: 'ô nhiễm' }]
+};
+
+function openInitialModal(pinyin) {
+    const modal = document.getElementById('initial-modal');
+    const title = document.getElementById('modal-initial-title');
+    const content = document.getElementById('modal-initial-content');
+    
+    title.textContent = pinyin;
+    
+    const examples = initialToneExamples[pinyin] || initialToneExamples['b']; 
+    const toneNames = ['Thanh ngang (1)', 'Thanh sắc (2)', 'Thanh hỏi (3)', 'Thanh huyền (4)', 'Khinh thanh (5)'];
+    
+    content.innerHTML = examples.map((ex, index) => `
+        <div class="bg-surface-container-low p-4 rounded-3xl border border-outline-variant/20 hover:border-primary/40 hover:bg-surface-container-highest transition-all flex items-center justify-between group/tone cursor-pointer hover:shadow-md">
+            <div class="flex items-center gap-4 w-3/4">
+                <div class="w-10 h-10 rounded-2xl bg-surface-container-highest text-primary font-black flex items-center justify-center text-sm shrink-0 border border-outline-variant/10 shadow-inner group-hover/tone:bg-primary/20 transition-colors">
+                    ${index + 1}
+                </div>
+                <div class="truncate">
+                    <div class="text-sm font-bold text-on-surface flex items-end gap-3 truncate mb-0.5">
+                        <span class="text-3xl leading-none text-primary group-hover/tone:scale-110 transition-transform origin-bottom-left block drop-shadow-sm">${ex.c}</span>
+                        <span class="text-on-surface-variant font-bold tracking-wider text-lg truncate">${ex.p}</span>
+                    </div>
+                    <div class="text-xs text-on-surface-variant/80 font-medium">${toneNames[index]}</div>
+                </div>
+            </div>
+            <div class="text-right flex items-center gap-3 shrink-0">
+                <div class="hidden sm:block text-xs font-bold text-on-surface bg-surface-container px-3 py-1.5 rounded-xl max-w-[110px] truncate border border-outline-variant/10" title="${ex.m}">${ex.m}</div>
+                <button onclick="ttsSpeak('${ex.c}'); event.stopPropagation();" class="w-10 h-10 rounded-full bg-surface-container text-primary flex items-center justify-center shrink-0 group-hover/tone:bg-primary group-hover/tone:text-on-primary transition-all shadow-sm group-hover/tone:shadow-md border border-outline-variant/10 hover:scale-110 active:scale-95">
+                    <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">volume_up</span>
+                </button>
+            </div>
+        </div>
+    `).join('');
+    
+    modal.classList.remove('hidden');
+    void modal.offsetWidth;
+    modal.querySelector('.relative').classList.remove('scale-95');
+    modal.querySelector('.relative').classList.add('scale-100');
+}
+
+function closeInitialModal() {
+    const modal = document.getElementById('initial-modal');
+    modal.querySelector('.relative').classList.remove('scale-100');
+    modal.querySelector('.relative').classList.add('scale-95');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 150); 
+}
+
+function addToneMark(final, toneIndex) {
+    const toneMarks = {
+        'a': ['ā', 'á', 'ǎ', 'à', 'a'],
+        'e': ['ē', 'é', 'ě', 'è', 'e'],
+        'i': ['ī', 'í', 'ǐ', 'ì', 'i'],
+        'o': ['ō', 'ó', 'ǒ', 'ò', 'o'],
+        'u': ['ū', 'ú', 'ǔ', 'ù', 'u'],
+        'ü': ['ǖ', 'ǘ', 'ǚ', 'ǜ', 'ü'],
+        'v': ['ǖ', 'ǘ', 'ǚ', 'ǜ', 'ü']
+    };
+    
+    let vowelToMark = '';
+    if (final.includes('a')) vowelToMark = 'a';
+    else if (final.includes('e')) vowelToMark = 'e';
+    else if (final.includes('o')) vowelToMark = 'o';
+    else if (final.includes('u')) vowelToMark = 'u';
+    else if (final.includes('ü') || final.includes('v')) vowelToMark = 'ü';
+    else if (final.includes('i')) vowelToMark = 'i';
+    
+    if (!vowelToMark) return final;
+    
+    const marks = toneMarks[vowelToMark];
+    if (!marks || toneIndex >= marks.length) return final;
+    
+    return final.replace(vowelToMark, marks[toneIndex]);
+}
+
+function openFinalCombineModal(final) {
+    const modal = document.getElementById('finalCombineModal');
+    const title = document.getElementById('modal-final-title');
+    const content = document.getElementById('modal-final-content');
+    
+    title.textContent = final;
+    
+    const allInitials = [
+        { pinyin: 'b', name: 'b' },
+        { pinyin: 'p', name: 'p' },
+        { pinyin: 'm', name: 'm' },
+        { pinyin: 'f', name: 'f' },
+        { pinyin: 'd', name: 'd' },
+        { pinyin: 't', name: 't' },
+        { pinyin: 'n', name: 'n' },
+        { pinyin: 'l', name: 'l' },
+        { pinyin: 'g', name: 'g' },
+        { pinyin: 'k', name: 'k' },
+        { pinyin: 'h', name: 'h' },
+        { pinyin: 'zh', name: 'zh' },
+        { pinyin: 'ch', name: 'ch' },
+        { pinyin: 'sh', name: 'sh' },
+        { pinyin: 'r', name: 'r' },
+        { pinyin: 'z', name: 'z' },
+        { pinyin: 'c', name: 'c' },
+        { pinyin: 's', name: 's' },
+        { pinyin: 'j', name: 'j' },
+        { pinyin: 'q', name: 'q' },
+        { pinyin: 'x', name: 'x' },
+        { pinyin: 'y', name: 'y' },
+        { pinyin: 'w', name: 'w' }
+    ];
+    
+    const tones = [
+        { index: 0, name: 'Thanh ngang (1)', mark: 'ˉ' },
+        { index: 1, name: 'Thanh sắc (2)', mark: 'ˊ' },
+        { index: 2, name: 'Thanh hỏi (3)', mark: 'ˇ' },
+        { index: 3, name: 'Thanh huyền (4)', mark: 'ˋ' },
+        { index: 4, name: 'Khinh thanh (5)', mark: '·' }
+    ];
+    
+    content.innerHTML = `
+        <div class="space-y-4">
+            <div>
+                <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest block mb-2">Chọn thanh điệu</label>
+                <select id="toneSelect" class="w-full px-3 py-2.5 bg-surface-container border border-outline-variant/20 rounded-xl text-sm font-semibold text-on-surface focus:outline-none focus:border-secondary/40" onchange="updateInitialButtonsWithTone('${final}')">
+                    ${tones.map(t => `<option value="${t.index}">${t.name}</option>`).join('')}
+                </select>
+            </div>
+            <div class="grid grid-cols-4 gap-2">
+                ${allInitials.map(initial => `
+                    <button onclick="_speakCombinedFinal('${initial.pinyin}', '${final}', 0)" class="final-button-0 bg-surface-container-low hover:bg-secondary/20 text-on-surface hover:text-secondary border border-outline-variant/20 hover:border-secondary/40 rounded-xl py-2 px-1.5 font-bold text-sm transition-all active:scale-95 shadow-sm hover:shadow-md" data-initial="${initial.pinyin}" data-final="${final}">
+                        ${initial.name}${addToneMark(final, 0)}
+                    </button>
+                `).join('')}
+            </div>
+        </div>
+    `;
+    
+    modal.classList.remove('hidden');
+    void modal.offsetWidth;
+    modal.querySelector('.relative').classList.remove('scale-95');
+    modal.querySelector('.relative').classList.add('scale-100');
+    
+    // Set current tone display
+    document.getElementById('toneSelect').addEventListener('change', () => {
+        updateInitialButtonsWithTone(final);
+    });
+}
+
+function closeFinalCombineModal() {
+    const modal = document.getElementById('finalCombineModal');
+    modal.querySelector('.relative').classList.remove('scale-100');
+    modal.querySelector('.relative').classList.add('scale-95');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 150); 
+}
+
+function updateInitialButtonsWithTone(final) {
+    const toneSelect = document.getElementById('toneSelect');
+    const toneIndex = parseInt(toneSelect.value);
+    const buttons = document.querySelectorAll(`[data-final="${final}"]`);
+    
+    buttons.forEach(button => {
+        const initial = button.getAttribute('data-initial');
+        const toneMarkedFinal = addToneMark(final, toneIndex);
+        const displayText = initial + toneMarkedFinal;
+        button.textContent = displayText;
+        button.onclick = function() {
+            _speakCombinedFinal(initial, final, toneIndex);
+        };
+    });
+}
+
+async function _speakCombinedFinal(initial, final, toneIndex = 0) {
+    const toneMarkedFinal = addToneMark(final, toneIndex);
+    const combined = initial + toneMarkedFinal;
+    await ttsSpeak(combined);
+}
+
+</script>
+
+<!-- Voice Picker Modal -->
+<div id="voicePickerModal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center px-4 pb-0 sm:pb-4 bg-black/50 backdrop-blur-sm">
+    <div class="bg-surface rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-md">
+        <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant/20">
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-primary text-[28px]">mic</span>
+                <div>
+                    <h3 class="font-bold text-on-surface text-lg">Chọn giọng đọc</h3>
+                    <p class="text-xs text-on-surface-variant font-medium mt-0.5">Đài Loan, Trung Quốc, Hồng Kông</p>
+                </div>
+            </div>
+            <button onclick="closeVoicePicker()" class="w-8 h-8 flex items-center justify-center rounded-xl bg-surface-container hover:bg-surface-container-highest text-on-surface-variant transition-colors border border-outline-variant/20">
+                <span class="material-symbols-outlined text-[20px]">close</span>
+            </button>
+        </div>
+        <div id="voicePickerList" class="px-4 py-4 max-h-[60vh] overflow-y-auto space-y-2">
+            <!-- Voice list will be populated here -->
+        </div>
+    </div>
+</div>
+
+<!-- Final Combine Modal -->
+<div id="finalCombineModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+    <div class="absolute inset-0 bg-on-surface/40 backdrop-blur-sm transition-opacity" onclick="closeFinalCombineModal()"></div>
+    <div class="relative bg-surface w-[90%] max-w-lg rounded-[2rem] shadow-2xl border border-outline-variant/20 overflow-hidden transform scale-95 transition-transform flex flex-col max-h-[85vh]">
+        <!-- Header -->
+        <div class="px-6 py-5 border-b border-outline-variant/20 bg-surface/80 backdrop-blur-md">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-secondary-container text-on-secondary-container rounded-xl flex items-center justify-center font-bold text-2xl" id="modal-final-title">a</div>
+                    <div>
+                        <h3 class="font-bold text-on-surface text-lg">Ghép âm</h3>
+                        <p class="text-xs text-on-surface-variant font-medium">Chọn thanh mẫu để ghép</p>
+                    </div>
+                </div>
+                <button onclick="closeFinalCombineModal()" class="w-8 h-8 flex items-center justify-center rounded-xl bg-surface-container hover:bg-surface-container-highest text-on-surface-variant transition-colors border border-outline-variant/20">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+        </div>
+        <!-- Body -->
+        <div class="px-6 py-5 overflow-y-auto space-y-4" id="modal-final-content">
+            <!-- Initials will be populated here -->
+        </div>
+    </div>
+</div>
+</body>
+</html>
