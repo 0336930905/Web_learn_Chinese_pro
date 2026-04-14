@@ -604,6 +604,48 @@ function addToneMark(final, toneIndex) {
     return final.replace(vowelToMark, marks[toneIndex]);
 }
 
+function isValidPinyinCombination(initial, final) {
+    // Quy tắc kết hợp pinyin chuẩn
+    const validCombinations = {
+        'a': ['b', 'p', 'm', 'f', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'zh', 'ch', 'sh', 'r', 'z', 'c', 's', 'j', 'q', 'x', 'y'],
+        'ai': ['b', 'p', 'm', 'f', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'zh', 'ch', 'sh', 'r', 'z', 'c', 's', 'j', 'q', 'x', 'y'],
+        'ao': ['b', 'p', 'm', 'f', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'zh', 'ch', 'sh', 'r', 'z', 'c', 's', 'y'],
+        'an': ['b', 'p', 'm', 'f', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'zh', 'ch', 'sh', 'r', 'z', 'c', 's', 'j', 'q', 'x', 'y'],
+        'ang': ['b', 'p', 'm', 'f', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'zh', 'ch', 'sh', 'r', 'z', 'c', 's', 'y'],
+        'o': ['b', 'p', 'm', 'f', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'z', 'c', 's', 'r'],
+        'ou': ['b', 'p', 'm', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'z', 'c', 's', 'y'],
+        'ong': ['b', 'p', 'm', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'ch', 'r', 'z', 'c', 's', 'j', 'q', 'x', 'y'],
+        'e': ['b', 'p', 'm', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'z', 'c', 's', 'r', 'y'],
+        'ei': ['b', 'p', 'm', 'f', 'd', 't', 'g', 'k', 'h', 'z', 'c', 's', 'r', 'w'],
+        'en': ['b', 'p', 'm', 'f', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'z', 'c', 's', 'r', 'w', 'y'],
+        'eng': ['b', 'p', 'm', 'f', 'd', 't', 'l', 'g', 'k', 'h', 'z', 'c', 's', 'r', 'y'],
+        'i': ['b', 'p', 'm', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'j', 'q', 'x', 'y', 'z', 'c', 's', 'r', 'ch', 'sh', 'zh'],
+        'ia': ['b', 'd', 'l', 'n', 'q', 'j', 'x'],
+        'ie': ['b', 'p', 'm', 'd', 't', 'n', 'l', 'z', 'c', 's', 'j', 'q', 'x', 'y'],
+        'iao': ['b', 'd', 'l', 'n', 'z', 'c', 's', 'j', 'q', 'x', 'y'],
+        'iu': ['d', 'l', 'n', 'z', 'c', 's', 'j', 'q', 'x', 'y'],
+        'ian': ['b', 'd', 'l', 'n', 'z', 'c', 's', 'j', 'q', 'x', 'y'],
+        'in': ['b', 'p', 'm', 'd', 't', 'n', 'l', 'z', 'c', 's', 'j', 'q', 'x', 'y'],
+        'iang': ['b', 'd', 'l', 'n', 'z', 'c', 's', 'j', 'q', 'x', 'y'],
+        'ing': ['b', 'p', 'm', 'd', 't', 'n', 'l', 'z', 'c', 's', 'j', 'q', 'x', 'y'],
+        'iong': ['j', 'q', 'x', 'y'],
+        'u': ['b', 'p', 'm', 'f', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'zh', 'ch', 'sh', 'r', 'z', 'c', 's', 'j', 'q', 'x', 'y'],
+        'ua': ['zh', 'ch', 'sh', 'r', 'z', 'c', 's', 'g', 'k', 'h', 'w'],
+        'uo': ['b', 'p', 'm', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'z', 'c', 's', 'r', 'w'],
+        'uai': ['zh', 'ch', 'sh', 'r', 'z', 'c', 's', 'g', 'k', 'h', 'w'],
+        'ui': ['d', 't', 'g', 'k', 'h', 'z', 'c', 's', 'r', 'zh', 'ch', 'sh', 'w'],
+        'uan': ['zh', 'ch', 'sh', 'r', 'z', 'c', 's', 'b', 'd', 't', 'g', 'k', 'h', 'l', 'n', 'j', 'q', 'x', 'w'],
+        'un': ['z', 'c', 's', 'g', 'k', 'h', 'j', 'q', 'x', 'zh', 'ch', 'sh', 'r', 'w'],
+        'uang': ['zh', 'ch', 'sh', 'r', 'z', 'c', 's', 'g', 'k', 'h', 'w'],
+        'ü': ['j', 'q', 'x', 'y', 'n', 'l'],
+        'üe': ['j', 'q', 'x', 'y', 'n', 'l'],
+        'üan': ['j', 'q', 'x', 'y'],
+        'ün': ['j', 'q', 'x', 'y', 'n', 'l']
+    };
+    
+    return validCombinations[final]?.includes(initial) || false;
+}
+
 function openFinalCombineModal(final) {
     const modal = document.getElementById('finalCombineModal');
     const title = document.getElementById('modal-final-title');
@@ -645,6 +687,9 @@ function openFinalCombineModal(final) {
         { index: 4, name: 'Khinh thanh (5)', mark: '·' }
     ];
     
+    // Lọc chỉ các initials hợp lệ với final này
+    const validInitials = allInitials.filter(initial => isValidPinyinCombination(initial.pinyin, final));
+    
     content.innerHTML = `
         <div class="space-y-4">
             <div>
@@ -654,7 +699,7 @@ function openFinalCombineModal(final) {
                 </select>
             </div>
             <div class="grid grid-cols-4 gap-2">
-                ${allInitials.map(initial => `
+                ${validInitials.map(initial => `
                     <button onclick="_speakCombinedFinal('${initial.pinyin}', '${final}', 0)" class="final-button-0 bg-surface-container-low hover:bg-secondary/20 text-on-surface hover:text-secondary border border-outline-variant/20 hover:border-secondary/40 rounded-xl py-2 px-1.5 font-bold text-sm transition-all active:scale-95 shadow-sm hover:shadow-md" data-initial="${initial.pinyin}" data-final="${final}">
                         ${initial.name}${addToneMark(final, 0)}
                     </button>
