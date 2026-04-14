@@ -605,22 +605,31 @@ function addToneMark(final, toneIndex) {
 }
 
 function isValidPinyinCombination(initial, final) {
-    // Quy tắc kết hợp pinyin chuẩn
+    // Quy tắc kết hợp pinyin chuẩn theo Tiếng Trung Quốc
     const validCombinations = {
-        'a': ['b', 'p', 'm', 'f', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'zh', 'ch', 'sh', 'r', 'z', 'c', 's', 'j', 'q', 'x', 'y'],
-        'ai': ['b', 'p', 'm', 'f', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'zh', 'ch', 'sh', 'r', 'z', 'c', 's', 'j', 'q', 'x', 'y'],
-        'ao': ['b', 'p', 'm', 'f', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'zh', 'ch', 'sh', 'r', 'z', 'c', 's', 'y'],
-        'an': ['b', 'p', 'm', 'f', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'zh', 'ch', 'sh', 'r', 'z', 'c', 's', 'j', 'q', 'x', 'y'],
-        'ang': ['b', 'p', 'm', 'f', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'zh', 'ch', 'sh', 'r', 'z', 'c', 's', 'y'],
+        // Vần a, ai, ao, an, ang - kết hợp với hầu hết initials (trừ w, f chỉ kết hợp với a)
+        'a': ['b', 'p', 'm', 'f', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'z', 'c', 's', 'y'],
+        'ai': ['b', 'p', 'm', 'd', 't', 'n', 'l', 'z', 'c', 's', 'g', 'k', 'h', 'y'],
+        'ao': ['b', 'p', 'm', 'd', 't', 'n', 'l', 'z', 'c', 's', 'g', 'k', 'h', 'y'],
+        'an': ['b', 'p', 'm', 'd', 't', 'n', 'l', 'z', 'c', 's', 'g', 'k', 'h', 'y', 'j', 'q', 'x'],
+        'ang': ['b', 'p', 'm', 'd', 't', 'n', 'l', 'z', 'c', 's', 'g', 'k', 'h', 'y'],
+        
+        // Vần o, ou, ong - kết hợp hạn chế
         'o': ['b', 'p', 'm', 'f', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'z', 'c', 's', 'r'],
         'ou': ['b', 'p', 'm', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'z', 'c', 's', 'y'],
-        'ong': ['b', 'p', 'm', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'ch', 'r', 'z', 'c', 's', 'j', 'q', 'x', 'y'],
+        'ong': ['b', 'p', 'm', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'z', 'c', 's', 'r', 'y'],
+        
+        // Vần e, ei, en, eng
         'e': ['b', 'p', 'm', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'z', 'c', 's', 'r', 'y'],
         'ei': ['b', 'p', 'm', 'f', 'd', 't', 'g', 'k', 'h', 'z', 'c', 's', 'r', 'w'],
         'en': ['b', 'p', 'm', 'f', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'z', 'c', 's', 'r', 'w', 'y'],
         'eng': ['b', 'p', 'm', 'f', 'd', 't', 'l', 'g', 'k', 'h', 'z', 'c', 's', 'r', 'y'],
+        
+        // Vần i - kết hợp với nhiều initials, riêng với z,c,s,zh,ch,sh,r có phát âm đặc biệt
         'i': ['b', 'p', 'm', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'j', 'q', 'x', 'y', 'z', 'c', 's', 'r', 'ch', 'sh', 'zh'],
-        'ia': ['b', 'd', 'l', 'n', 'q', 'j', 'x'],
+        
+        // Vần ia, ie, iao, iu, ian, in, iang, ing, iong - chủ yếu với palatal (j, q, x) và apical (z, c, s)
+        'ia': ['b', 'd', 'l', 'n', 'z', 'c', 's', 'q', 'j', 'x'],
         'ie': ['b', 'p', 'm', 'd', 't', 'n', 'l', 'z', 'c', 's', 'j', 'q', 'x', 'y'],
         'iao': ['b', 'd', 'l', 'n', 'z', 'c', 's', 'j', 'q', 'x', 'y'],
         'iu': ['d', 'l', 'n', 'z', 'c', 's', 'j', 'q', 'x', 'y'],
@@ -629,7 +638,11 @@ function isValidPinyinCombination(initial, final) {
         'iang': ['b', 'd', 'l', 'n', 'z', 'c', 's', 'j', 'q', 'x', 'y'],
         'ing': ['b', 'p', 'm', 'd', 't', 'n', 'l', 'z', 'c', 's', 'j', 'q', 'x', 'y'],
         'iong': ['j', 'q', 'x', 'y'],
-        'u': ['b', 'p', 'm', 'f', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'zh', 'ch', 'sh', 'r', 'z', 'c', 's', 'j', 'q', 'x', 'y'],
+        
+        // Vần u - kết hợp với hầu hết initials
+        'u': ['b', 'p', 'm', 'f', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'z', 'c', 's', 'y', 'j', 'q', 'x', 'zh', 'ch', 'sh', 'r', 'w'],
+        
+        // Vần ua, uai, uo, ui, uan, un, uang - chủ yếu với retroflex (zh, ch, sh, r) + apical (z, c, s) + w
         'ua': ['zh', 'ch', 'sh', 'r', 'z', 'c', 's', 'g', 'k', 'h', 'w'],
         'uo': ['b', 'p', 'm', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'z', 'c', 's', 'r', 'w'],
         'uai': ['zh', 'ch', 'sh', 'r', 'z', 'c', 's', 'g', 'k', 'h', 'w'],
@@ -637,6 +650,8 @@ function isValidPinyinCombination(initial, final) {
         'uan': ['zh', 'ch', 'sh', 'r', 'z', 'c', 's', 'b', 'd', 't', 'g', 'k', 'h', 'l', 'n', 'j', 'q', 'x', 'w'],
         'un': ['z', 'c', 's', 'g', 'k', 'h', 'j', 'q', 'x', 'zh', 'ch', 'sh', 'r', 'w'],
         'uang': ['zh', 'ch', 'sh', 'r', 'z', 'c', 's', 'g', 'k', 'h', 'w'],
+        
+        // Vần ü, üe, üan, ün - chỉ kết hợp với j, q, x, y, n, l
         'ü': ['j', 'q', 'x', 'y', 'n', 'l'],
         'üe': ['j', 'q', 'x', 'y', 'n', 'l'],
         'üan': ['j', 'q', 'x', 'y'],
