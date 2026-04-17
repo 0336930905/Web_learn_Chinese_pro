@@ -101,14 +101,14 @@
             border-color: var(--primary-container, #4ce64c);
         }
         
-        #radicalsGrid {
+        .radicals-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
             gap: 12px;
         }
         
         @media (min-width: 768px) {
-            #radicalsGrid {
+            .radicals-grid {
                 grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
                 gap: 16px;
             }
@@ -129,6 +129,16 @@
         .transition-smooth {
             transition: all 0.3s ease;
         }
+
+        .stroke-group {
+            border-bottom: 1px solid #e1e3e1;
+            padding-bottom: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stroke-group:last-child {
+            border-bottom: none;
+        }
     </style>
     <script src="../i18n/translations.js"></script>
     <script src="../js/sidebar.js"></script>
@@ -144,27 +154,27 @@
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-2 animate-slideDown">
                         <div class="flex items-center gap-4">
                             <div class="w-12 h-12 bg-primary-container text-on-primary-container rounded-2xl flex items-center justify-center shadow-sm shrink-0">
-                                <span class="material-symbols-outlined text-2xl">category</span>
+                                <span class="material-symbols-outlined text-xl">category</span>
                             </div>
                             <div>
-                                <h1 class="text-3xl font-bold text-on-surface tracking-tight">214 Bộ Thủ</h1>
-                                <p class="text-on-surface-variant text-sm font-medium mt-0.5">Các yếu tố cơ bản trong chữ Hán</p>
+                                <h1 class="text-2xl md:text-3xl font-black text-on-surface">214 Bộ Thủ</h1>
+                                <p class="text-xs text-on-surface-variant font-semibold tracking-wider">Bộ thủ tiêu chuẩn</p>
                             </div>
                         </div>
                         
                         <!-- Compact Stats Inline Bar -->
                         <div class="flex items-center bg-surface-container-low p-1.5 rounded-2xl border border-outline-variant/30 shadow-sm shrink-0 w-full md:w-auto">
                             <div class="flex-1 px-4 md:px-5 py-1 text-center border-r border-outline-variant/20">
-                                <p class="text-[9px] text-on-surface-variant uppercase font-bold tracking-wider mb-0.5">Tổng số</p>
-                                <p class="text-lg font-bold text-primary leading-none" id="totalCount">214</p>
+                                <p class="text-xs text-on-surface-variant font-bold">Tổng số</p>
+                                <p class="text-sm font-black text-primary">214</p>
                             </div>
                             <div class="flex-1 px-4 md:px-5 py-1 text-center border-r border-outline-variant/20">
-                                <p class="text-[9px] text-on-surface-variant uppercase font-bold tracking-wider mb-0.5">Tìm thấy</p>
-                                <p class="text-lg font-bold text-primary leading-none" id="resultCount">0</p>
+                                <p class="text-xs text-on-surface-variant font-bold">Tìm thấy</p>
+                                <p id="resultCount" class="text-sm font-black text-primary">214</p>
                             </div>
                             <div class="flex-1 px-4 md:px-5 py-1 text-center hidden md:block">
-                                <p class="text-[9px] text-on-surface-variant uppercase font-bold tracking-wider mb-0.5">Đã xem</p>
-                                <p class="text-lg font-bold text-tertiary leading-none">1</p>
+                                <p class="text-xs text-on-surface-variant font-bold">Nét</p>
+                                <p class="text-sm font-black text-primary">1-17</p>
                             </div>
                         </div>
                     </div>
@@ -177,37 +187,24 @@
                             <input
                                 id="searchInput"
                                 type="text"
-                                placeholder="Tìm kiếm bộ thủ (ký tự, pinyin)..."
+                                placeholder="Tìm kiếm chữ, pinyin, ý nghĩa..."
                                 class="w-full bg-surface-container border border-outline-variant/20 focus:ring-2 focus:ring-primary py-2.5 px-10 rounded-2xl shadow-sm text-on-surface transition-all text-sm font-medium"
                             />
                             <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant text-lg">search</span>
                         </div>
                         <div class="flex gap-2 w-full sm:w-auto flex-wrap sm:flex-nowrap">
-                            <select
-                                id="filterSelect"
-                                class="w-full sm:w-auto bg-surface-container border border-outline-variant/20 focus:ring-2 focus:ring-primary py-2.5 px-4 pr-10 rounded-2xl shadow-sm text-on-surface transition-all text-sm font-medium">
-                                <option value="">Tất cả phân loại</option>
-                                <option value="common">Thường dùng</option>
-                                <option value="uncommon">Ít dùng</option>
+                            <select id="filterSelect" class="px-4 py-2.5 bg-surface-container border border-outline-variant/20 rounded-2xl text-on-surface text-sm font-medium focus:ring-2 focus:ring-primary transition-all">
+                                <option value="">Tất cả bộ thủ</option>
+                                <option value="common">⭐ Thường dùng</option>
+                                <option value="uncommon">📌 Ít dùng</option>
                             </select>
                         </div>
                     </div>
                 </section>
 
-                <!-- Description & Loading -->
-                <div class="col-span-12 flex justify-between items-center -mt-2">
-                    <p class="text-on-surface-variant text-sm pl-1 font-medium">
-                        Khám phá tất cả 214 bộ thủ chuẩn và hiểu rõ cấu trúc của chữ Trung Quốc.
-                    </p>
-                    <div id="loadingSpinner" class="hidden items-center gap-2 text-on-surface-variant">
-                        <div class="w-4 h-4 border-2 border-outline-variant border-t-primary rounded-full animate-spin"></div>
-                        <span class="text-xs font-bold tracking-wide">Đang tải...</span>
-                    </div>
-                </div>
-
-                <!-- Radicals Grid -->
+                <!-- Radicals Grouped by Strokes -->
                 <section class="col-span-12">
-                    <div id="radicalsGrid" class="animate-fadeIn">
+                    <div id="radicalsContainer" class="space-y-8">
                         <!-- Will be populated by JavaScript -->
                     </div>
                 </section>
@@ -222,11 +219,11 @@
                     <!-- Header -->
                     <div class="px-6 py-5 border-b border-outline-variant/20 flex items-center justify-between bg-surface-container-lowest sticky top-0 z-10">
                         <h3 class="text-lg font-bold text-on-surface-variant flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary">category</span>
-                            Chi tiết bộ thủ
+                            <span id="detailNumber" class="text-2xl text-primary font-black">#1</span>
+                            <span id="detailCharacter" class="text-3xl text-primary font-black">一</span>
                         </h3>
                         <button onclick="closeDetail()" class="p-2 hover:bg-surface-container-low rounded-full transition-colors flex-shrink-0 text-on-surface-variant hover:text-error transition-smooth">
-                            <span class="material-symbols-outlined text-xl">close</span>
+                            <span class="material-symbols-outlined">close</span>
                         </button>
                     </div>
 
@@ -234,26 +231,23 @@
                     <div class="p-6 md:p-8 overflow-y-auto space-y-6">
                         <!-- Main Char Info -->
                         <div class="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
-                            <div class="w-32 h-32 md:w-40 md:h-40 flex items-center justify-center bg-primary-container/30 rounded-3xl border-2 border-primary/20 flex-shrink-0">
-                                <span id="detailCharacter" class="text-7xl md:text-8xl font-black text-primary drop-shadow-sm">字</span>
+                            <div class="text-center">
+                                <div class="text-6xl md:text-7xl font-black text-primary mb-4">一</div>
+                                <p id="detailPinyin" class="text-xl font-bold text-on-surface-variant">yī</p>
                             </div>
-                            <div class="flex-1 space-y-3 text-center md:text-left">
-                                <div>
-                                    <p id="detailPinyin" class="text-3xl md:text-4xl font-black text-on-surface mb-1">pīnyīn</p>
-                                    <p id="detailMeaning" class="text-primary text-lg md:text-xl font-bold">Ý nghĩa</p>
+                            <div class="flex-1 space-y-4">
+                                <div class="bg-surface-container-low p-4 rounded-2xl border border-outline-variant/20">
+                                    <p class="text-xs text-on-surface-variant font-bold mb-1">Ý nghĩa</p>
+                                    <p id="detailMeaning" class="text-sm font-bold text-on-surface">Số một</p>
                                 </div>
-                                <div class="grid grid-cols-3 gap-3 pt-3">
-                                    <div class="bg-surface-container-low p-3 rounded-xl border border-outline-variant/10 text-center">
-                                        <p class="text-[10px] md:text-xs text-on-surface-variant font-bold uppercase mb-1">Số nét</p>
-                                        <p id="detailStrokes" class="text-xl md:text-2xl font-black text-on-surface">-</p>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div class="bg-surface-container-low p-3 rounded-2xl border border-outline-variant/20">
+                                        <p class="text-xs text-on-surface-variant font-bold mb-1">Số nét</p>
+                                        <p id="detailStrokes" class="text-lg font-black text-primary">1</p>
                                     </div>
-                                    <div class="bg-surface-container-low p-3 rounded-xl border border-outline-variant/10 text-center">
-                                        <p class="text-[10px] md:text-xs text-on-surface-variant font-bold uppercase mb-1">Bộ thủ #</p>
-                                        <p id="detailNumber" class="text-xl md:text-2xl font-black text-on-surface">-</p>
-                                    </div>
-                                    <div class="bg-surface-container-low p-3 rounded-xl border border-outline-variant/10 text-center">
-                                        <p class="text-[10px] md:text-xs text-on-surface-variant font-bold uppercase mb-1">Phân loại</p>
-                                        <p id="detailCategory" class="text-sm font-bold text-on-surface truncate capitalize">-</p>
+                                    <div class="bg-surface-container-low p-3 rounded-2xl border border-outline-variant/20">
+                                        <p class="text-xs text-on-surface-variant font-bold mb-1">Loại</p>
+                                        <p id="detailCategory" class="text-sm font-bold">⭐ Thường dùng</p>
                                     </div>
                                 </div>
                             </div>
@@ -261,12 +255,9 @@
 
                         <!-- Examples Section -->
                         <div class="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-5">
-                            <h4 class="font-bold text-on-surface mb-4 uppercase tracking-wider text-sm flex items-center gap-2">
-                                <span class="material-symbols-outlined text-primary text-lg">hotel_class</span>
-                                Ví dụ từ vựng
-                            </h4>
-                            <div id="detailExamples" class="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                                <!-- Examples will be populated -->
+                            <h4 class="text-sm font-bold text-on-surface mb-4">Ví dụ từ vựng</h4>
+                            <div id="detailExamples" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                <!-- Populated by JS -->
                             </div>
                         </div>
                     </div>
@@ -289,63 +280,268 @@
 
 <script>
     let allRadicals = [];
+    let filteredRadicals = [];
+
     const radicalsData = [
+        // 1 nét
+        { number: 1, char: '一', pinyin: 'yī', meaning: 'Số một', strokes: 1, category: 'common', examples: ['二', '三', '上', '下'] },
+        { number: 2, char: '丨', pinyin: 'gǔn', meaning: 'Nét sổ (đường thẳng đứng)', strokes: 1, category: 'uncommon', examples: ['中', '十', '王', '日'] },
+        { number: 3, char: '丶', pinyin: 'zhǔ', meaning: 'Dấu chấm, điểm', strokes: 1, category: 'uncommon', examples: ['为', '讯', '个', '点'] },
+        { number: 4, char: '丿', pinyin: 'piě', meaning: 'Nét phẩy (xiên trái)', strokes: 1, category: 'uncommon', examples: ['八', '人', '刀', '力'] },
+        { number: 5, char: '乙', pinyin: 'yǐ', meaning: 'Thiên can thứ 2', strokes: 1, category: 'uncommon', examples: ['乱', '乙', '乽'] },
+        { number: 6, char: '亅', pinyin: 'jué', meaning: 'Nét sổ có móc', strokes: 1, category: 'uncommon', examples: ['了', '交', '亜'] },
+
+        // 2 nét
+        { number: 7, char: '二', pinyin: 'èr', meaning: 'Số hai', strokes: 2, category: 'common', examples: ['三', '四', '五', '六'] },
+        { number: 8, char: '亠', pinyin: 'tóu', meaning: 'Đầu, nét chấm trên', strokes: 2, category: 'uncommon', examples: ['亡', '亢', '京', '章'] },
+        { number: 9, char: '人', pinyin: 'rén', meaning: 'Người', strokes: 2, category: 'common', examples: ['人', '他', '什', '从'] },
+        { number: 10, char: '儿', pinyin: 'ér', meaning: 'Người (hình chân)', strokes: 2, category: 'common', examples: ['先', '克', '八', '九'] },
+        { number: 11, char: '入', pinyin: 'rù', meaning: 'Đi vào', strokes: 2, category: 'common', examples: ['入', '全', '会', '内'] },
+        { number: 12, char: '八', pinyin: 'bā', meaning: 'Số tám', strokes: 2, category: 'common', examples: ['八', '公', '分', '半'] },
+        { number: 13, char: '冂', pinyin: 'jiōng', meaning: 'Vùng xa, biên giới', strokes: 2, category: 'uncommon', examples: ['冂', '冈', '冉', '冒'] },
+        { number: 14, char: '冖', pinyin: 'mì', meaning: 'Khăn trùm, che phủ', strokes: 2, category: 'uncommon', examples: ['冖', '冗', '冘'] },
+        { number: 15, char: '冫', pinyin: 'bīng', meaning: 'Nước đá', strokes: 2, category: 'uncommon', examples: ['冰', '冱', '冲', '决'] },
+        { number: 16, char: '几', pinyin: 'jī', meaning: 'Bàn nhỏ', strokes: 2, category: 'uncommon', examples: ['机', '凡', '凬'] },
+        { number: 17, char: '凵', pinyin: 'kǎn', meaning: 'Há miệng', strokes: 2, category: 'uncommon', examples: ['凵', '凶'] },
+        { number: 18, char: '刀', pinyin: 'dāo', meaning: 'Con dao', strokes: 2, category: 'common', examples: ['刀', '刁', '分', '初'] },
+        { number: 19, char: '力', pinyin: 'lì', meaning: 'Sức mạnh', strokes: 2, category: 'common', examples: ['力', '办', '加', '边'] },
+        { number: 20, char: '勹', pinyin: 'bāo', meaning: 'Bao bọc', strokes: 2, category: 'uncommon', examples: ['勹', '勺', '勾', '勿'] },
+        { number: 21, char: '匕', pinyin: 'bǐ', meaning: 'Cái thìa', strokes: 2, category: 'uncommon', examples: ['匕', '化', '匚', '匸'] },
+        { number: 22, char: '匚', pinyin: 'fāng', meaning: 'Hộp, tủ', strokes: 2, category: 'uncommon', examples: ['匚', '匝', '匡'] },
+        { number: 23, char: '匸', pinyin: 'xì', meaning: 'Che đậy', strokes: 2, category: 'uncommon', examples: ['匸', '匼'] },
+        { number: 24, char: '十', pinyin: 'shí', meaning: 'Số mười', strokes: 2, category: 'common', examples: ['十', '千', '万', '南'] },
+        { number: 25, char: '卜', pinyin: 'bǔ', meaning: 'Xem bói', strokes: 2, category: 'uncommon', examples: ['卜', '占', '卢'] },
+        { number: 26, char: '卩', pinyin: 'jié', meaning: 'Đốt tre', strokes: 2, category: 'uncommon', examples: ['卩', '卪', '卫'] },
+        { number: 27, char: '厂', pinyin: 'hàn', meaning: 'Vách núi', strokes: 2, category: 'uncommon', examples: ['厂', '厅', '厃', '厈'] },
+        { number: 28, char: '厶', pinyin: 'sī', meaning: 'Riêng tư', strokes: 2, category: 'uncommon', examples: ['厶', '去', '参'] },
+        { number: 29, char: '又', pinyin: 'yòu', meaning: 'Lại nữa', strokes: 2, category: 'common', examples: ['又', '及', '友', '对'] },
+
+        // 3 nét
+        { number: 30, char: '口', pinyin: 'kǒu', meaning: 'Miệng', strokes: 3, category: 'common', examples: ['口', '四', '只', '国'] },
+        { number: 31, char: '囗', pinyin: 'wéi', meaning: 'Bao quanh', strokes: 3, category: 'uncommon', examples: ['囗', '囔', '囕'] },
+        { number: 32, char: '土', pinyin: 'tǔ', meaning: 'Đất', strokes: 3, category: 'common', examples: ['土', '地', '城', '堂'] },
+        { number: 33, char: '士', pinyin: 'shì', meaning: 'Kẻ sĩ', strokes: 3, category: 'common', examples: ['士', '女', '好', '字'] },
+        { number: 34, char: '夂', pinyin: 'zhǐ', meaning: 'Đi chậm, đến sau', strokes: 3, category: 'uncommon', examples: ['夂', '各', '条'] },
+        { number: 35, char: '夊', pinyin: 'suī', meaning: 'Đi chậm', strokes: 3, category: 'uncommon', examples: ['夊', '夋'] },
+        { number: 36, char: '夕', pinyin: 'xī', meaning: 'Buổi tối', strokes: 3, category: 'common', examples: ['夕', '多', '外', '夜'] },
+        { number: 37, char: '大', pinyin: 'dà', meaning: 'To lớn', strokes: 3, category: 'common', examples: ['大', '天', '太', '头'] },
+        { number: 38, char: '女', pinyin: 'nǚ', meaning: 'Phụ nữ', strokes: 3, category: 'common', examples: ['女', '子', '好', '她'] },
+        { number: 39, char: '子', pinyin: 'zǐ', meaning: 'Con cái', strokes: 3, category: 'common', examples: ['子', '学', '孙', '字'] },
+        { number: 40, char: '宀', pinyin: 'mián', meaning: 'Mái nhà', strokes: 3, category: 'common', examples: ['家', '宝', '宫', '室'] },
+        { number: 41, char: '寸', pinyin: 'cùn', meaning: 'Đơn vị đo', strokes: 3, category: 'uncommon', examples: ['寸', '寻', '寿', '对'] },
+        { number: 42, char: '小', pinyin: 'xiǎo', meaning: 'Nhỏ bé', strokes: 3, category: 'common', examples: ['小', '少', '尖', '尤'] },
+        { number: 43, char: '尢', pinyin: 'yóu', meaning: 'Yếu, què', strokes: 3, category: 'uncommon', examples: ['尢', '尣', '尤'] },
+        { number: 44, char: '尸', pinyin: 'shī', meaning: 'Xác chết', strokes: 3, category: 'uncommon', examples: ['尸', '尹', '尺', '尻'] },
+        { number: 45, char: '屮', pinyin: 'chè', meaning: 'Mầm non', strokes: 3, category: 'uncommon', examples: ['屮', '屯', '屰'] },
+        { number: 46, char: '山', pinyin: 'shān', meaning: 'Núi', strokes: 3, category: 'common', examples: ['山', '岳', '岭', '岸'] },
+        { number: 47, char: '川', pinyin: 'chuān', meaning: 'Sông', strokes: 3, category: 'common', examples: ['川', '工', '左', '州'] },
+        { number: 48, char: '工', pinyin: 'gōng', meaning: 'Công việc', strokes: 3, category: 'common', examples: ['工', '巧', '巩', '巫'] },
+        { number: 49, char: '己', pinyin: 'jǐ', meaning: 'Bản thân', strokes: 3, category: 'uncommon', examples: ['己', '已', '巳'] },
+        { number: 50, char: '巾', pinyin: 'jīn', meaning: 'Khăn', strokes: 3, category: 'uncommon', examples: ['巾', '布', '巼', '巿'] },
+        { number: 51, char: '干', pinyin: 'gān', meaning: 'Can (thiên can)', strokes: 3, category: 'uncommon', examples: ['干', '杆', '刚'] },
+        { number: 52, char: '幺', pinyin: 'yāo', meaning: 'Nhỏ, mảnh', strokes: 3, category: 'uncommon', examples: ['幺', '幼', '幻'] },
+        { number: 53, char: '广', pinyin: 'yǎn', meaning: 'Mái nhà, che', strokes: 3, category: 'uncommon', examples: ['广', '廃', '廄', '廆'] },
+        { number: 54, char: '廴', pinyin: 'yǐn', meaning: 'Bước dài', strokes: 3, category: 'uncommon', examples: ['廴', '廵', '廷'] },
+        { number: 55, char: '廾', pinyin: 'gǒng', meaning: 'Chắp tay', strokes: 3, category: 'uncommon', examples: ['廾', '廿'] },
+        { number: 56, char: '弋', pinyin: 'yì', meaning: 'Bắn, chiếm', strokes: 3, category: 'uncommon', examples: ['弋', '弈', '弑'] },
+        { number: 57, char: '弓', pinyin: 'gōng', meaning: 'Cái cung', strokes: 3, category: 'common', examples: ['弓', '弘', '弟', '张'] },
+        { number: 58, char: '彐', pinyin: 'jì', meaning: 'Đầu con nhím', strokes: 3, category: 'uncommon', examples: ['彐', '彑'] },
+        { number: 59, char: '彡', pinyin: 'shān', meaning: 'Lông tóc', strokes: 3, category: 'uncommon', examples: ['彡', '彤', '彧'] },
+        { number: 60, char: '彳', pinyin: 'chì', meaning: 'Bước chân trái', strokes: 3, category: 'uncommon', examples: ['彳', '行', '衍', '复'] },
+
+        // 4 nét
+        { number: 61, char: '心', pinyin: 'xīn', meaning: 'Tim, tâm trí', strokes: 4, category: 'common', examples: ['心', '思', '恩', '惊'] },
+        { number: 62, char: '戈', pinyin: 'gē', meaning: 'Binh khí dài', strokes: 4, category: 'uncommon', examples: ['戈', '战', '戊', '戋'] },
+        { number: 63, char: '户', pinyin: 'hù', meaning: 'Cửa một cánh', strokes: 4, category: 'uncommon', examples: ['户', '扇', '房', '所'] },
+        { number: 64, char: '手', pinyin: 'shǒu', meaning: 'Tay', strokes: 4, category: 'common', examples: ['手', '拿', '打', '握'] },
+        { number: 65, char: '支', pinyin: 'zhī', meaning: 'Cành nhánh', strokes: 4, category: 'uncommon', examples: ['支', '枝', '支', '技'] },
+        { number: 66, char: '攴', pinyin: 'pū', meaning: 'Đánh nhẹ', strokes: 4, category: 'uncommon', examples: ['攴', '教', '救', '敌'] },
+        { number: 67, char: '文', pinyin: 'wén', meaning: 'Văn chương', strokes: 4, category: 'common', examples: ['文', '文', '斌', '章'] },
+        { number: 68, char: '斗', pinyin: 'dǒu', meaning: 'Cái đấu (đong)', strokes: 4, category: 'uncommon', examples: ['斗', '斜', '斝'] },
+        { number: 69, char: '斤', pinyin: 'jīn', meaning: 'Rìu, búa', strokes: 4, category: 'uncommon', examples: ['斤', '斥', '斧', '断'] },
+        { number: 70, char: '方', pinyin: 'fāng', meaning: 'Vuông', strokes: 4, category: 'common', examples: ['方', '旁', '旋', '族'] },
+        { number: 71, char: '无', pinyin: 'wú', meaning: 'Không', strokes: 4, category: 'uncommon', examples: ['无', '旡'] },
+        { number: 72, char: '日', pinyin: 'rì', meaning: 'Mặt trời', strokes: 4, category: 'common', examples: ['日', '早', '明', '晚'] },
+        { number: 73, char: '曰', pinyin: 'yuē', meaning: 'Nói rằng', strokes: 4, category: 'uncommon', examples: ['曰', '曰'] },
+        { number: 74, char: '月', pinyin: 'yuè', meaning: 'Mặt trăng', strokes: 4, category: 'common', examples: ['月', '朋', '肉', '能'] },
+        { number: 75, char: '木', pinyin: 'mù', meaning: 'Cây, gỗ', strokes: 4, category: 'common', examples: ['木', '林', '森', '树'] },
+        { number: 76, char: '欠', pinyin: 'qiàn', meaning: 'Thiếu', strokes: 4, category: 'uncommon', examples: ['欠', '欧', '歌', '歇'] },
+        { number: 77, char: '止', pinyin: 'zhǐ', meaning: 'Dừng lại', strokes: 4, category: 'common', examples: ['止', '正', '步', '止'] },
+        { number: 78, char: '歹', pinyin: 'dǎi', meaning: 'Xấu, chết', strokes: 4, category: 'uncommon', examples: ['歹', '殊', '殆'] },
+        { number: 79, char: '殳', pinyin: 'shū', meaning: 'Binh khí', strokes: 4, category: 'uncommon', examples: ['殳', '殷'] },
+        { number: 80, char: '毋', pinyin: 'wú', meaning: 'Chớ, đừng', strokes: 4, category: 'uncommon', examples: ['毋', '母'] },
+        { number: 81, char: '比', pinyin: 'bǐ', meaning: 'So sánh', strokes: 4, category: 'uncommon', examples: ['比', '毕', '毛'] },
+        { number: 82, char: '毛', pinyin: 'máo', meaning: 'Lông', strokes: 4, category: 'common', examples: ['毛', '毫', '毯'] },
+        { number: 83, char: '氏', pinyin: 'shì', meaning: 'Họ', strokes: 4, category: 'uncommon', examples: ['氏', '民'] },
+        { number: 84, char: '气', pinyin: 'qì', meaning: 'Hơi', strokes: 4, category: 'common', examples: ['气', '氧', '氮', '氢'] },
+        { number: 85, char: '水', pinyin: 'shuǐ', meaning: 'Nước', strokes: 4, category: 'common', examples: ['水', '河', '海', '波'] },
+        { number: 86, char: '火', pinyin: 'huǒ', meaning: 'Lửa', strokes: 4, category: 'common', examples: ['火', '灭', '灾', '炉'] },
+        { number: 87, char: '爪', pinyin: 'zhǎo', meaning: 'Móng vuốt', strokes: 4, category: 'uncommon', examples: ['爪', '爱', '爰'] },
+        { number: 88, char: '父', pinyin: 'fù', meaning: 'Cha', strokes: 4, category: 'common', examples: ['父', '爷', '爸', '爹'] },
+        { number: 89, char: '爻', pinyin: 'yáo', meaning: 'Âm dương', strokes: 4, category: 'uncommon', examples: ['爻', '爼'] },
+        { number: 90, char: '爿', pinyin: 'qiáng', meaning: 'Mảnh gỗ', strokes: 4, category: 'uncommon', examples: ['爿'] },
+        { number: 91, char: '片', pinyin: 'piàn', meaning: 'Miếng', strokes: 4, category: 'common', examples: ['片', '牌', '牒'] },
+        { number: 92, char: '牙', pinyin: 'yá', meaning: 'Răng', strokes: 4, category: 'common', examples: ['牙', '牛', '牧', '牢'] },
+        { number: 93, char: '牛', pinyin: 'niú', meaning: 'Trâu', strokes: 4, category: 'common', examples: ['牛', '牧', '牵', '牲'] },
+        { number: 94, char: '犬', pinyin: 'quǎn', meaning: 'Chó', strokes: 4, category: 'common', examples: ['犬', '犯', '状', '独'] },
+
+        // 5 nét
+        { number: 95, char: '玄', pinyin: 'xuán', meaning: 'Đen huyền, huyền bí', strokes: 5, category: 'uncommon', examples: ['玄', '玅', '玆'] },
+        { number: 96, char: '玉', pinyin: 'yù', meaning: 'Đá quý', strokes: 5, category: 'common', examples: ['玉', '王', '环', '瑜'] },
+        { number: 97, char: '瓜', pinyin: 'guā', meaning: 'Quả dưa', strokes: 5, category: 'common', examples: ['瓜', '瓞', '瓢'] },
+        { number: 98, char: '瓦', pinyin: 'wǎ', meaning: 'Ngói', strokes: 5, category: 'uncommon', examples: ['瓦', '瓫', '瓮'] },
+        { number: 99, char: '甘', pinyin: 'gān', meaning: 'Ngọt', strokes: 5, category: 'common', examples: ['甘', '甜', '甚', '甲'] },
+        { number: 100, char: '生', pinyin: 'shēng', meaning: 'Sinh sống', strokes: 5, category: 'common', examples: ['生', '学', '先', '性'] },
+        { number: 101, char: '用', pinyin: 'yòng', meaning: 'Dùng', strokes: 5, category: 'common', examples: ['用', '甩', '甬', '甭'] },
+        { number: 102, char: '田', pinyin: 'tián', meaning: 'Ruộng', strokes: 5, category: 'common', examples: ['田', '男', '界', '畜'] },
+        { number: 103, char: '疋', pinyin: 'pǐ', meaning: 'Tấm, đơn vị đo', strokes: 5, category: 'uncommon', examples: ['疋', '疌', '疍'] },
+        { number: 104, char: '疒', pinyin: 'nè', meaning: 'Bệnh tật', strokes: 5, category: 'uncommon', examples: ['疒', '疔', '疖'] },
+        { number: 105, char: '癶', pinyin: 'bō', meaning: 'Gạt ngược', strokes: 5, category: 'uncommon', examples: ['癶', '疟'] },
+        { number: 106, char: '白', pinyin: 'bái', meaning: 'Màu trắng', strokes: 5, category: 'common', examples: ['白', '百', '皆', '皇'] },
+        { number: 107, char: '皮', pinyin: 'pí', meaning: 'Da', strokes: 5, category: 'common', examples: ['皮', '皮', '皱'] },
+        { number: 108, char: '皿', pinyin: 'mǐn', meaning: 'Bát đĩa', strokes: 5, category: 'uncommon', examples: ['皿', '皻', '盂'] },
+        { number: 109, char: '目', pinyin: 'mù', meaning: 'Mắt', strokes: 5, category: 'common', examples: ['目', '看', '眼', '睛'] },
+        { number: 110, char: '矛', pinyin: 'máo', meaning: 'Cây giáo', strokes: 5, category: 'uncommon', examples: ['矛', '矜', '矝'] },
+        { number: 111, char: '矢', pinyin: 'shǐ', meaning: 'Mũi tên', strokes: 5, category: 'uncommon', examples: ['矢', '矣', '矨'] },
+        { number: 112, char: '石', pinyin: 'shí', meaning: 'Đá', strokes: 5, category: 'common', examples: ['石', '砂', '砖', '砰'] },
+        { number: 113, char: '示', pinyin: 'shì', meaning: 'Thần linh, chỉ thị', strokes: 5, category: 'common', examples: ['示', '祉', '祈', '祝'] },
+        { number: 114, char: '禸', pinyin: 'róu', meaning: 'Dấu vết', strokes: 5, category: 'uncommon', examples: ['禸', '禹'] },
+        { number: 115, char: '禾', pinyin: 'hé', meaning: 'Lúa', strokes: 5, category: 'common', examples: ['禾', '利', '秋', '秒'] },
+        { number: 116, char: '穴', pinyin: 'xué', meaning: 'Hang, lỗ', strokes: 5, category: 'uncommon', examples: ['穴', '究', '穹'] },
+        { number: 117, char: '立', pinyin: 'lì', meaning: 'Đứng, thành lập', strokes: 5, category: 'common', examples: ['立', '站', '端', '章'] },
+
+        // 6 nét
+        { number: 118, char: '竹', pinyin: 'zhú', meaning: 'Tre trúc', strokes: 6, category: 'common', examples: ['竹', '竿', '笑', '笔'] },
+        { number: 119, char: '米', pinyin: 'mǐ', meaning: 'Gạo', strokes: 6, category: 'common', examples: ['米', '粉', '粒', '粥'] },
+        { number: 120, char: '糸', pinyin: 'mì', meaning: 'Sợi tơ', strokes: 6, category: 'uncommon', examples: ['糸', '紀', '紅'] },
+        { number: 121, char: '缶', pinyin: 'fǒu', meaning: 'Đồ sành', strokes: 6, category: 'uncommon', examples: ['缶', '罂', '罐'] },
+        { number: 122, char: '网', pinyin: 'wǎng', meaning: 'Cái lưới', strokes: 6, category: 'uncommon', examples: ['网', '罗', '罢'] },
+        { number: 123, char: '羊', pinyin: 'yáng', meaning: 'Con dê', strokes: 6, category: 'common', examples: ['羊', '群', '美', '羲'] },
+        { number: 124, char: '羽', pinyin: 'yǔ', meaning: 'Lông vũ', strokes: 6, category: 'common', examples: ['羽', '翅', '翎', '翔'] },
+        { number: 125, char: '老', pinyin: 'lǎo', meaning: 'Già', strokes: 6, category: 'common', examples: ['老', '考', '劳', '耀'] },
+        { number: 126, char: '而', pinyin: 'ér', meaning: 'Mà, và', strokes: 6, category: 'uncommon', examples: ['而', '耒', '耕'] },
+        { number: 127, char: '耒', pinyin: 'lěi', meaning: 'Cái cày', strokes: 6, category: 'uncommon', examples: ['耒', '耕', '耖'] },
+        { number: 128, char: '耳', pinyin: 'ěr', meaning: 'Tai', strokes: 6, category: 'common', examples: ['耳', '聂', '聋', '聞'] },
+        { number: 129, char: '聿', pinyin: 'yù', meaning: 'Cây bút', strokes: 6, category: 'uncommon', examples: ['聿', '肆', '肃'] },
+        { number: 130, char: '肉', pinyin: 'ròu', meaning: 'Thịt', strokes: 6, category: 'common', examples: ['肉', '肌', '肝', '肺'] },
+        { number: 131, char: '臣', pinyin: 'chén', meaning: 'Bề tôi', strokes: 6, category: 'uncommon', examples: ['臣', '臥', '臨'] },
+        { number: 132, char: '自', pinyin: 'zì', meaning: 'Bản thân', strokes: 6, category: 'common', examples: ['自', '自', '臭'] },
+        { number: 133, char: '至', pinyin: 'zhì', meaning: 'Đến', strokes: 6, category: 'uncommon', examples: ['至', '臶'] },
+        { number: 134, char: '臼', pinyin: 'jiù', meaning: 'Cối giã gạo', strokes: 6, category: 'uncommon', examples: ['臼', '舀', '舁'] },
+        { number: 135, char: '舌', pinyin: 'shé', meaning: 'Lưỡi', strokes: 6, category: 'common', examples: ['舌', '舍', '舎'] },
+        { number: 136, char: '舛', pinyin: 'chuǎn', meaning: 'Sai lệch', strokes: 6, category: 'uncommon', examples: ['舛', '舜'] },
+        { number: 137, char: '舟', pinyin: 'zhōu', meaning: 'Thuyền', strokes: 6, category: 'common', examples: ['舟', '航', '舰', '舳'] },
+        { number: 138, char: '艮', pinyin: 'gèn', meaning: 'Dừng, cứng', strokes: 6, category: 'uncommon', examples: ['艮', '艰', '艱'] },
+        { number: 139, char: '色', pinyin: 'sè', meaning: 'Màu sắc', strokes: 6, category: 'common', examples: ['色', '艳', '艷'] },
+        { number: 140, char: '艸', pinyin: 'cǎo', meaning: 'Cỏ', strokes: 6, category: 'common', examples: ['艸', '花', '草', '药'] },
+        { number: 141, char: '虍', pinyin: 'hū', meaning: 'Vằn hổ', strokes: 6, category: 'uncommon', examples: ['虍', '虎', '虐'] },
+        { number: 142, char: '虫', pinyin: 'chóng', meaning: 'Sâu bọ', strokes: 6, category: 'common', examples: ['虫', '虾', '蛇', '蛙'] },
+        { number: 143, char: '血', pinyin: 'xuè', meaning: 'Máu', strokes: 6, category: 'common', examples: ['血', '衂', '衄'] },
+        { number: 144, char: '行', pinyin: 'xíng', meaning: 'Đi, làm', strokes: 6, category: 'common', examples: ['行', '街', '衍', '衎'] },
+        { number: 145, char: '衣', pinyin: 'yī', meaning: 'Áo', strokes: 6, category: 'common', examples: ['衣', '衫', '衬', '衮'] },
+        { number: 146, char: '襾', pinyin: 'yà', meaning: 'Che phủ', strokes: 6, category: 'uncommon', examples: ['襾', '西', '要'] },
+
+        // 7 nét
+        { number: 147, char: '見', pinyin: 'jiàn', meaning: 'Trông thấy', strokes: 7, category: 'common', examples: ['見', '观', '視'] },
+        { number: 148, char: '角', pinyin: 'jiǎo', meaning: 'Sừng, góc', strokes: 7, category: 'common', examples: ['角', '解', '皆'] },
+        { number: 149, char: '言', pinyin: 'yán', meaning: 'Nói', strokes: 7, category: 'common', examples: ['言', '讲', '语', '记'] },
+        { number: 150, char: '谷', pinyin: 'gǔ', meaning: 'Khe núi', strokes: 7, category: 'common', examples: ['谷', '谷', '谻'] },
+        { number: 151, char: '豆', pinyin: 'dòu', meaning: 'Hạt đậu', strokes: 7, category: 'common', examples: ['豆', '豌', '豊'] },
+        { number: 152, char: '豕', pinyin: 'shǐ', meaning: 'Con heo', strokes: 7, category: 'uncommon', examples: ['豕', '豖', '豗'] },
+        { number: 153, char: '豸', pinyin: 'zhì', meaning: 'Thú có chân', strokes: 7, category: 'uncommon', examples: ['豸', '豹', '豺'] },
+        { number: 154, char: '貝', pinyin: 'bèi', meaning: 'Vỏ sò, tiền', strokes: 7, category: 'common', examples: ['貝', '贝', '财', '贡'] },
+        { number: 155, char: '赤', pinyin: 'chì', meaning: 'Màu đỏ', strokes: 7, category: 'uncommon', examples: ['赤', '赦', '赧'] },
+        { number: 156, char: '走', pinyin: 'zǒu', meaning: 'Đi, chạy', strokes: 7, category: 'common', examples: ['走', '赶', '起', '趋'] },
+        { number: 157, char: '足', pinyin: 'zú', meaning: 'Chân', strokes: 7, category: 'common', examples: ['足', '跑', '踩', '趾'] },
+        { number: 158, char: '身', pinyin: 'shēn', meaning: 'Cơ thể', strokes: 7, category: 'common', examples: ['身', '躯', '躲', '躺'] },
+        { number: 159, char: '車', pinyin: 'chē', meaning: 'Xe', strokes: 7, category: 'common', examples: ['車', '轻', '载', '轮'] },
+        { number: 160, char: '辛', pinyin: 'xīn', meaning: 'Cay, vất vả', strokes: 7, category: 'uncommon', examples: ['辛', '辞', '辤'] },
+        { number: 161, char: '辰', pinyin: 'chén', meaning: 'Địa chi thứ 5', strokes: 7, category: 'uncommon', examples: ['辰', '辱', '農'] },
+        { number: 162, char: '辵', pinyin: 'chuò', meaning: 'Đi, di chuyển', strokes: 7, category: 'uncommon', examples: ['辵', '迁', '迎'] },
+        { number: 163, char: '邑', pinyin: 'yì', meaning: 'Vùng đất', strokes: 7, category: 'uncommon', examples: ['邑', '邒', '邙'] },
+        { number: 164, char: '酉', pinyin: 'yǒu', meaning: 'Rượu, địa chi', strokes: 7, category: 'uncommon', examples: ['酉', '酒', '醒'] },
+        { number: 165, char: '釆', pinyin: 'biàn', meaning: 'Phân biệt', strokes: 7, category: 'uncommon', examples: ['釆', '采'] },
+        { number: 166, char: '里', pinyin: 'lǐ', meaning: 'Làng, dặm', strokes: 7, category: 'common', examples: ['里', '野', '重'] },
+
         // 8 nét
-        { number: 167, char: '金', pinyin: 'jīn', meaning: 'Kim loại, vàng', strokes: 8, category: 'common', examples: ['钱', '钟', '银', '铜'] },
-        { number: 168, char: '长', pinyin: 'cháng', meaning: 'Dài, trưởng', strokes: 8, category: 'common', examples: ['长', '常', '张', '胀'] },
-        { number: 169, char: '门', pinyin: 'mén', meaning: 'Cửa hai cánh', strokes: 8, category: 'common', examples: ['闭', '闻', '闲', '间'] },
-        { number: 170, char: '阜', pinyin: 'fù', meaning: 'Gò đất, đống đất', strokes: 8, category: 'uncommon', examples: ['阶', '陆', '陰', '陳'] },
+        { number: 167, char: '金', pinyin: 'jīn', meaning: 'Kim loại, vàng', strokes: 8, category: 'common', examples: ['金', '钱', '钟', '银'] },
+        { number: 168, char: '長', pinyin: 'cháng', meaning: 'Dài, trưởng', strokes: 8, category: 'common', examples: ['長', '常', '张', '胀'] },
+        { number: 169, char: '門', pinyin: 'mén', meaning: 'Cửa hai cánh', strokes: 8, category: 'common', examples: ['門', '闭', '闻', '闲'] },
+        { number: 170, char: '阜', pinyin: 'fù', meaning: 'Gò đất, đống đất', strokes: 8, category: 'uncommon', examples: ['阜', '阶', '陆', '陰'] },
         { number: 171, char: '隶', pinyin: 'lì', meaning: 'Kịp, theo kịp', strokes: 8, category: 'uncommon', examples: ['隶', '隷'] },
-        { number: 172, char: '隹', pinyin: 'zhuī', meaning: 'Chim đuôi ngắn', strokes: 8, category: 'uncommon', examples: ['雄', '雉', '雊'] },
-        { number: 173, char: '雨', pinyin: 'yǔ', meaning: 'Mưa', strokes: 8, category: 'common', examples: ['雲', '雪', '雷', '霸'] },
-        { number: 174, char: '青', pinyin: 'qīng', meaning: 'Màu xanh', strokes: 8, category: 'common', examples: ['清', '靖', '静', '请'] },
-        { number: 175, char: '非', pinyin: 'fēi', meaning: 'Sai, không', strokes: 8, category: 'uncommon', examples: ['飞', '非'] },
-        
+        { number: 172, char: '隹', pinyin: 'zhuī', meaning: 'Chim đuôi ngắn', strokes: 8, category: 'uncommon', examples: ['隹', '雄', '雉'] },
+        { number: 173, char: '雨', pinyin: 'yǔ', meaning: 'Mưa', strokes: 8, category: 'common', examples: ['雨', '雲', '雪', '雷'] },
+        { number: 174, char: '青', pinyin: 'qīng', meaning: 'Màu xanh', strokes: 8, category: 'common', examples: ['青', '清', '靖', '静'] },
+        { number: 175, char: '非', pinyin: 'fēi', meaning: 'Sai, không', strokes: 8, category: 'uncommon', examples: ['非', '飞'] },
+
         // 9 nét
         { number: 176, char: '面', pinyin: 'miàn', meaning: 'Mặt, bề mặt', strokes: 9, category: 'common', examples: ['面', '膜', '霸'] },
-        { number: 177, char: '革', pinyin: 'gé', meaning: 'Da thú, thay đổi', strokes: 9, category: 'common', examples: ['皮', '靴', '靳', '靶'] },
-        { number: 178, char: '韦', pinyin: 'wéi', meaning: 'Da đã thuộc', strokes: 9, category: 'uncommon', examples: ['韦'] },
+        { number: 177, char: '革', pinyin: 'gé', meaning: 'Da thú, thay đổi', strokes: 9, category: 'common', examples: ['革', '皮', '靴', '靳'] },
+        { number: 178, char: '韋', pinyin: 'wéi', meaning: 'Da đã thuộc', strokes: 9, category: 'uncommon', examples: ['韋'] },
         { number: 179, char: '韭', pinyin: 'jiǔ', meaning: 'Rau hẹ', strokes: 9, category: 'uncommon', examples: ['韭'] },
         { number: 180, char: '音', pinyin: 'yīn', meaning: 'Âm thanh', strokes: 9, category: 'common', examples: ['音', '韵', '蔦', '暗'] },
-        { number: 181, char: '页', pinyin: 'yè', meaning: 'Đầu, trang giấy', strokes: 9, category: 'common', examples: ['頭', '頡', '頤', '顏'] },
-        { number: 182, char: '风', pinyin: 'fēng', meaning: 'Gió', strokes: 9, category: 'common', examples: ['风', '飘', '飞', '飞'] },
-        { number: 183, char: '飞', pinyin: 'fēi', meaning: 'Bay', strokes: 9, category: 'common', examples: ['飞', '飘', '飞'] },
+        { number: 181, char: '頁', pinyin: 'yè', meaning: 'Đầu, trang giấy', strokes: 9, category: 'common', examples: ['頁', '頡', '頤', '顏'] },
+        { number: 182, char: '風', pinyin: 'fēng', meaning: 'Gió', strokes: 9, category: 'common', examples: ['風', '飘', '飞'] },
+        { number: 183, char: '飛', pinyin: 'fēi', meaning: 'Bay', strokes: 9, category: 'common', examples: ['飛', '飘'] },
         { number: 184, char: '食', pinyin: 'shí', meaning: 'Ăn', strokes: 9, category: 'common', examples: ['食', '饭', '餐', '飧'] },
         { number: 185, char: '首', pinyin: 'shǒu', meaning: 'Đầu', strokes: 9, category: 'common', examples: ['首', '香', '马'] },
         { number: 186, char: '香', pinyin: 'xiāng', meaning: 'Mùi thơm', strokes: 9, category: 'common', examples: ['香', '馨', '馥'] },
-        
+
         // 10 nét
-        { number: 187, char: '马', pinyin: 'mǎ', meaning: 'Con ngựa', strokes: 10, category: 'common', examples: ['马', '驾', '驯', '驰'] },
+        { number: 187, char: '馬', pinyin: 'mǎ', meaning: 'Con ngựa', strokes: 10, category: 'common', examples: ['馬', '驾', '驯', '驰'] },
         { number: 188, char: '骨', pinyin: 'gǔ', meaning: 'Xương', strokes: 10, category: 'common', examples: ['骨', '骼'] },
         { number: 189, char: '高', pinyin: 'gāo', meaning: 'Cao', strokes: 10, category: 'common', examples: ['高', '膏', '糕'] },
-        { number: 190, char: '髟', pinyin: 'biāo', meaning: 'Tóc dài', strokes: 10, category: 'uncommon', examples: ['髦', '髭', '髮'] },
+        { number: 190, char: '髟', pinyin: 'biāo', meaning: 'Tóc dài', strokes: 10, category: 'uncommon', examples: ['髟', '髦', '髭'] },
         { number: 191, char: '鬥', pinyin: 'dòu', meaning: 'Chiến đấu', strokes: 10, category: 'uncommon', examples: ['鬥'] },
         { number: 192, char: '鬯', pinyin: 'chàng', meaning: 'Rượu nếp', strokes: 10, category: 'uncommon', examples: ['鬯'] },
         { number: 193, char: '鬲', pinyin: 'gé', meaning: 'Cái đỉnh, nồi cổ', strokes: 10, category: 'uncommon', examples: ['鬲'] },
         { number: 194, char: '鬼', pinyin: 'guǐ', meaning: 'Con quỷ', strokes: 10, category: 'common', examples: ['鬼', '魃', '魅'] },
-        
+
         // 11 nét
-        { number: 195, char: '鱼', pinyin: 'yú', meaning: 'Con cá', strokes: 11, category: 'common', examples: ['鱼', '鲁', '鲔'] },
-        { number: 196, char: '鸟', pinyin: 'niǎo', meaning: 'Con chim', strokes: 11, category: 'common', examples: ['鸟', '鹅', '鹦', '鹫'] },
-        { number: 197, char: '卤', pinyin: 'lǔ', meaning: 'Đất mặn', strokes: 11, category: 'uncommon', examples: ['卤'] },
+        { number: 195, char: '魚', pinyin: 'yú', meaning: 'Con cá', strokes: 11, category: 'common', examples: ['魚', '鲁', '鲔'] },
+        { number: 196, char: '鳥', pinyin: 'niǎo', meaning: 'Con chim', strokes: 11, category: 'common', examples: ['鳥', '鹅', '鹦', '鹫'] },
+        { number: 197, char: '鹵', pinyin: 'lǔ', meaning: 'Đất mặn', strokes: 11, category: 'uncommon', examples: ['鹵'] },
         { number: 198, char: '鹿', pinyin: 'lù', meaning: 'Con hươu', strokes: 11, category: 'uncommon', examples: ['鹿'] },
-        { number: 199, char: '麦', pinyin: 'mài', meaning: 'Lúa mạch', strokes: 11, category: 'common', examples: ['麦', '麸'] },
+        { number: 199, char: '麥', pinyin: 'mài', meaning: 'Lúa mạch', strokes: 11, category: 'common', examples: ['麥', '麸'] },
         { number: 200, char: '麻', pinyin: 'má', meaning: 'Cây gai', strokes: 11, category: 'uncommon', examples: ['麻', '麽'] },
+
+        // 12 nét
+        { number: 201, char: '黃', pinyin: 'huáng', meaning: 'Màu vàng', strokes: 12, category: 'common', examples: ['黃', '皇'] },
+        { number: 202, char: '黍', pinyin: 'shǔ', meaning: 'Lúa nếp', strokes: 12, category: 'uncommon', examples: ['黍'] },
+        { number: 203, char: '黑', pinyin: 'hēi', meaning: 'Màu đen', strokes: 12, category: 'common', examples: ['黑', '默'] },
+        { number: 204, char: '黹', pinyin: 'zhǐ', meaning: 'May vá', strokes: 12, category: 'uncommon', examples: ['黹'] },
+
+        // 13 nét
+        { number: 205, char: '黽', pinyin: 'mǐn', meaning: 'Ếch', strokes: 13, category: 'uncommon', examples: ['黽'] },
+        { number: 206, char: '鼎', pinyin: 'dǐng', meaning: 'Cái đỉnh', strokes: 13, category: 'common', examples: ['鼎', '鼏'] },
+        { number: 207, char: '鼓', pinyin: 'gǔ', meaning: 'Cái trống', strokes: 13, category: 'common', examples: ['鼓', '鼔'] },
+        { number: 208, char: '鼠', pinyin: 'shǔ', meaning: 'Con chuột', strokes: 13, category: 'common', examples: ['鼠', '鼡'] },
+
+        // 14 nét
+        { number: 209, char: '鼻', pinyin: 'bí', meaning: 'Cái mũi', strokes: 14, category: 'common', examples: ['鼻'] },
+        { number: 210, char: '齊', pinyin: 'qí', meaning: 'Ngang bằng', strokes: 14, category: 'uncommon', examples: ['齊'] },
+
+        // 15 nét
+        { number: 211, char: '齒', pinyin: 'chǐ', meaning: 'Răng', strokes: 15, category: 'uncommon', examples: ['齒'] },
+
+        // 16 nét
+        { number: 212, char: '龍', pinyin: 'lóng', meaning: 'Con rồng', strokes: 16, category: 'common', examples: ['龍', '龙'] },
+        { number: 213, char: '龜', pinyin: 'guī', meaning: 'Con rùa', strokes: 16, category: 'uncommon', examples: ['龜'] },
+
+        // 17 nét
+        { number: 214, char: '龠', pinyin: 'yuè', meaning: 'Ống sáo (nhạc khí)', strokes: 17, category: 'uncommon', examples: ['龠'] }
     ];
 
     function loadRadicals() {
-        showLoading(true);
-        setTimeout(() => {
-            allRadicals = radicalsData;
-            renderRadicals(allRadicals);
-            updateResultCount(allRadicals.length);
-            showLoading(false);
-        }, 500);
+        allRadicals = radicalsData;
+        filteredRadicals = allRadicals;
+        renderRadicalsByStrokes(filteredRadicals);
+        updateResultCount(filteredRadicals.length);
     }
 
-    function renderRadicals(radicals) {
-        const grid = document.getElementById('radicalsGrid');
-        grid.innerHTML = '';
+    function renderRadicalsByStrokes(radicals) {
+        const container = document.getElementById('radicalsContainer');
+        container.innerHTML = '';
         
         if (radicals.length === 0) {
             document.getElementById('emptyState').classList.remove('hidden');
@@ -353,17 +549,58 @@
         }
         
         document.getElementById('emptyState').classList.add('hidden');
-        
+
+        // Group radicals by strokes
+        const groupedByStrokes = {};
         radicals.forEach(radical => {
-            const card = document.createElement('button');
-            card.className = 'radical-card p-4 md:p-6 rounded-[1.25rem] hover:shadow-lg transition-smooth text-center flex flex-col items-center justify-center h-28 md:h-32 bg-surface-container-lowest';
-            card.onclick = () => showDetail(radical);
-            card.innerHTML = `
-                <div class="text-4xl md:text-5xl font-black text-primary mb-2">${radical.char}</div>
-                <div class="text-xs text-on-surface-variant font-bold">#${radical.number}</div>
-            `;
-            grid.appendChild(card);
+            if (!groupedByStrokes[radical.strokes]) {
+                groupedByStrokes[radical.strokes] = [];
+            }
+            groupedByStrokes[radical.strokes].push(radical);
         });
+
+        // Render each stroke group
+        Object.keys(groupedByStrokes)
+            .sort((a, b) => parseInt(a) - parseInt(b))
+            .forEach(strokes => {
+                const group = groupedByStrokes[strokes];
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'stroke-group animate-slideDown';
+                
+                // Group header
+                const header = document.createElement('div');
+                header.className = 'mb-4';
+                header.innerHTML = `
+                    <div class="flex items-center gap-3 pb-4">
+                        <h2 class="text-lg font-bold text-on-surface flex items-center gap-2">
+                            <span class="text-2xl text-primary font-black">${strokes}</span>
+                            <span>nét</span>
+                        </h2>
+                        <span class="text-xs font-bold text-on-surface-variant bg-surface-container-low px-3 py-1 rounded-full">
+                            ${group.length} bộ
+                        </span>
+                    </div>
+                `;
+                
+                // Radicals grid
+                const gridDiv = document.createElement('div');
+                gridDiv.className = 'radicals-grid';
+                
+                group.forEach(radical => {
+                    const card = document.createElement('button');
+                    card.className = 'radical-card p-4 md:p-6 rounded-[1.25rem] hover:shadow-lg transition-smooth text-center flex flex-col items-center justify-center h-28 md:h-32 bg-surface-container-lowest';
+                    card.onclick = () => showDetail(radical);
+                    card.innerHTML = `
+                        <div class="text-4xl md:text-5xl font-black text-primary mb-2">${radical.char}</div>
+                        <div class="text-xs text-on-surface-variant font-bold">#${radical.number}</div>
+                    `;
+                    gridDiv.appendChild(card);
+                });
+                
+                groupDiv.appendChild(header);
+                groupDiv.appendChild(gridDiv);
+                container.appendChild(groupDiv);
+            });
     }
 
     function showDetail(radical) {
@@ -393,38 +630,42 @@
 
     document.getElementById('searchInput').addEventListener('input', (e) => {
         const query = e.target.value.toLowerCase();
-        const filtered = allRadicals.filter(r => 
-            r.char.includes(query) || 
-            r.pinyin.toLowerCase().includes(query) || 
-            r.meaning.toLowerCase().includes(query)
-        );
-        renderRadicals(filtered);
-        updateResultCount(filtered.length);
+        const filterValue = document.getElementById('filterSelect').value;
+        
+        filteredRadicals = allRadicals.filter(r => {
+            const matchesSearch = r.char.includes(query) || 
+                r.pinyin.toLowerCase().includes(query) || 
+                r.meaning.toLowerCase().includes(query);
+            
+            const matchesFilter = !filterValue || r.category === filterValue;
+            
+            return matchesSearch && matchesFilter;
+        });
+        
+        renderRadicalsByStrokes(filteredRadicals);
+        updateResultCount(filteredRadicals.length);
     });
 
     document.getElementById('filterSelect').addEventListener('change', (e) => {
-        const category = e.target.value;
-        if (!category) {
-            renderRadicals(allRadicals);
-            updateResultCount(allRadicals.length);
-        } else {
-            const filtered = allRadicals.filter(r => r.category === category);
-            renderRadicals(filtered);
-            updateResultCount(filtered.length);
-        }
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        const filterValue = e.target.value;
+        
+        filteredRadicals = allRadicals.filter(r => {
+            const matchesSearch = !query || r.char.includes(query) || 
+                r.pinyin.toLowerCase().includes(query) || 
+                r.meaning.toLowerCase().includes(query);
+            
+            const matchesFilter = !filterValue || r.category === filterValue;
+            
+            return matchesSearch && matchesFilter;
+        });
+        
+        renderRadicalsByStrokes(filteredRadicals);
+        updateResultCount(filteredRadicals.length);
     });
 
     function updateResultCount(count) {
         document.getElementById('resultCount').textContent = count;
-    }
-
-    function showLoading(show) {
-        const spinner = document.getElementById('loadingSpinner');
-        if (show) {
-            spinner.classList.remove('hidden');
-        } else {
-            spinner.classList.add('hidden');
-        }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
