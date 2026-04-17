@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>214 Bộ Thủ - Học Chữ Hán</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape-dagre/2.5.0/cytoscape-dagre.min.js"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#006a28",
+              "primary-container": "#5cfd80",
+              "on-primary": "#cfffce",
+              "on-primary-container": "#005d22",
+              "secondary": "#8a4c00",
+              "secondary-container": "#ffc697",
+              "on-secondary-container": "#6d3b00",
+              "tertiary": "#0055c4",
+              "tertiary-container": "#8eafff",
+              "on-tertiary": "#f0f2ff",
+              "surface": "#dcffe5",
+              "surface-container": "#bbf6ce",
+              "surface-container-low": "#c7fdd8",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-high": "#b2f1c7",
+              "on-surface": "#06361f",
+              "on-surface-variant": "#39644a",
+              "outline": "#548064",
+              "outline-variant": "#89b898",
+              "background": "#dcffe5",
+              "error": "#b02500",
+              "error-dim": "#b92902",
+            },
+            fontFamily: {
+              headline: ["Lexend"],
+              body: ["Lexend"],
+              label: ["Lexend"]
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .animate-slideDown {
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        .radical-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .radical-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 106, 40, 0.15);
+        }
+        
+        .radical-card.active {
+            background: linear-gradient(135deg, #5cfd80 0%, #4bee74 100%);
+            color: white;
+            box-shadow: 0 8px 20px rgba(0, 106, 40, 0.3);
+        }
+        
+        #radicalsGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 8px;
+        }
+        
+        @media (min-width: 768px) {
+            #radicalsGrid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 12px;
+            }
+        }
+        
+        .toast {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            z-index: 9999;
+            padding: 1rem 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .loading {
+            display: flex !important;
+        }
+        
+        .loading.hidden {
+            display: none !important;
+        }
+    </style>
+    <script src="../i18n/translations.js"></script>
+    <script src="../js/sidebar.js"></script>
+</head>
+<body class="text-on-background min-h-screen bg-background">
+<div class="flex min-h-screen">
+    <div id="sidebar-container" data-active-page="radicals"></div>
+    <main class="flex-1 ml-0 md:ml-64 min-h-screen transition-all duration-300">
+        <div class="max-w-6xl mx-auto p-8 space-y-12">
+            <!-- Header -->
+            <section class="space-y-8 animate-slideDown">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-primary-container rounded-lg flex items-center justify-center">
+                        <span class="material-symbols-outlined text-on-primary-container text-3xl" data-icon="category">category</span>
+                    </div>
+                    <h2 class="text-3xl font-black text-on-surface tracking-tight uppercase">214 Bộ Thủ</h2>
+                </div>
+                <div class="bg-surface-container-low p-6 rounded-xl shadow-sm">
+                    <p class="text-on-surface-variant leading-relaxed">
+                        Khám phá 214 bộ thủ (radical) cơ bản trong tiếng Trung Quốc. Bộ thủ là các yếu tố cơ bản được sử dụng để xây dựng các chữ Hán phức tạp hơn.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Search & Filter -->
+            <section class="bg-surface-container-low p-6 rounded-xl shadow-sm space-y-4">
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="relative flex-1">
+                        <input
+                            id="searchInput"
+                            type="text"
+                            placeholder="Tìm kiếm bộ thủ..."
+                            class="w-full bg-surface-container-lowest border-none focus:ring-2 focus:ring-primary h-12 px-6 rounded-full text-on-surface transition-all"
+                        />
+                        <span class="absolute right-6 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline">search</span>
+                    </div>
+                    <select
+                        id="filterSelect"
+                        class="bg-surface-container-lowest border-none focus:ring-2 focus:ring-primary h-12 px-6 rounded-full text-on-surface transition-all md:w-48">
+                        <option value="">Tất cả bộ thủ</option>
+                        <option value="common">Thường dùng</option>
+                        <option value="uncommon">Ít dùng</option>
+                    </select>
+                </div>
+                <div class="text-sm text-on-surface-variant">
+                    Tìm thấy <span id="resultCount">0</span> bộ thủ
+                </div>
+            </section>
+
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" class="loading hidden bg-surface-container-low p-4 rounded-xl border border-outline-variant/20 shadow-sm items-center justify-center gap-3 text-on-surface-variant">
+                <div class="w-5 h-5 border-2 border-outline-variant border-t-primary rounded-full animate-spin"></div>
+                <span class="text-sm font-bold tracking-wide">Đang tải bộ thủ...</span>
+            </div>
+
+            <!-- Radicals Grid -->
+            <section class="space-y-6">
+                <div id="radicalsGrid" class="animate-fadeIn">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </section>
+
+            <!-- Detail Card -->
+            <section id="detailCard" class="hidden bg-white rounded-2xl shadow-lg p-8 space-y-6 border-2 border-primary/20">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="text-2xl font-bold text-on-surface mb-2">
+                            <span id="detailCharacter" class="text-5xl text-primary mr-4">字</span>
+                            <span id="detailPinyin" class="text-xl text-on-surface-variant">pīnyīn</span>
+                        </h3>
+                        <p id="detailMeaning" class="text-on-surface-variant text-lg">Ý nghĩa</p>
+                    </div>
+                    <button onclick="closeDetail()" class="p-2 hover:bg-surface-container-low rounded-lg transition-colors">
+                        <span class="material-symbols-outlined text-on-surface-variant">close</span>
+                    </button>
+                </div>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-bold text-on-surface mb-2">Thông tin</h4>
+                        <dl class="space-y-2 text-sm">
+                            <dt class="text-on-surface-variant">Số nét:</dt>
+                            <dd id="detailStrokes" class="text-on-surface font-medium">-</dd>
+                            <dt class="text-on-surface-variant mt-3">Bộ thủ #:</dt>
+                            <dd id="detailNumber" class="text-on-surface font-medium">-</dd>
+                        </dl>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-on-surface mb-2">Ví dụ từ vựng</h4>
+                        <div id="detailExamples" class="space-y-2 text-sm">
+                            <!-- Examples will be populated -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Message Alert -->
+            <div id="messageAlert" class="hidden p-4 rounded-lg text-sm text-center"></div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="p-12 text-center text-on-surface-variant opacity-40">
+            <p class="text-sm font-medium tracking-widest uppercase">The Living Scroll • © 2024</p>
+        </footer>
+    </main>
+</div>
+
+<script>
+    let allRadicals = [];
+    const radialsData = [
+        { number: 1, char: '一', pinyin: 'yī', meaning: 'Một', strokes: 1, category: 'common', examples: ['二', '三', '万'] },
+        { number: 2, char: '丨', pinyin: 'shù', meaning: 'Dọc', strokes: 1, category: 'common', examples: ['中', '长', '高'] },
+        { number: 3, char: '丶', pinyin: 'zhǔ', meaning: 'Chấm', strokes: 1, category: 'common', examples: ['衣', '小', '亡'] },
+        { number: 4, char: '丿', pinyin: 'piě', meaning: 'Ngoặc lệch trái', strokes: 1, category: 'common', examples: ['八', '人', '力'] },
+        { number: 5, char: '乙', pinyin: 'yǐ', meaning: 'Cong', strokes: 1, category: 'common', examples: ['乛', '乜', '乞'] },
+        { number: 10, char: '儿', pinyin: 'ér', meaning: 'Con trai, em bé', strokes: 2, category: 'common', examples: ['先', '光', '党'] },
+        { number: 39, char: '子', pinyin: 'zǐ', meaning: 'Con trai, em bé', strokes: 3, category: 'common', examples: ['孙', '孩', '孕'] },
+        { number: 60, char: '彳', pinyin: 'chì', meaning: 'Bước đi', strokes: 3, category: 'common', examples: ['行', '衍', '很'] },
+        { number: 85, char: '水', pinyin: 'shuǐ', meaning: 'Nước', strokes: 4, category: 'common', examples: ['泳', '泪', '海'] },
+        { number: 129, char: '言', pinyin: 'yán', meaning: 'Nói, lời', strokes: 7, category: 'common', examples: ['谈', '语', '说'] },
+    ];
+
+    // Load radicals
+    async function loadRadicals() {
+        showLoading(true);
+        try {
+            // In a real app, fetch from API
+            // const response = await fetch('/api/radicals');
+            // const result = await response.json();
+            // allRadicals = result.data;
+            
+            allRadicals = radialsData;
+            renderRadicals(allRadicals);
+            updateResultCount(allRadicals.length);
+        } catch (error) {
+            console.error('Error loading radicals:', error);
+            showMessage('Lỗi khi tải dữ liệu', 'error');
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    // Render radicals grid
+    function renderRadicals(radicals) {
+        const grid = document.getElementById('radicalsGrid');
+        grid.innerHTML = '';
+        
+        if (radicals.length === 0) {
+            grid.innerHTML = '<div class="col-span-full text-center py-8 text-on-surface-variant">Không tìm thấy kết quả nào</div>';
+            return;
+        }
+        
+        radicals.forEach(radical => {
+            const card = document.createElement('button');
+            card.className = 'radical-card p-4 rounded-lg border-2 border-outline-variant/30 bg-surface-container-lowest hover:border-primary';
+            card.onclick = () => showDetail(radical);
+            card.innerHTML = `
+                <div class="text-2xl font-bold text-center text-primary mb-1">${radical.char}</div>
+                <div class="text-xs text-on-surface-variant text-center">#${radical.number}</div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    // Show radical detail
+    function showDetail(radical) {
+        const detailCard = document.getElementById('detailCard');
+        document.getElementById('detailCharacter').textContent = radical.char;
+        document.getElementById('detailPinyin').textContent = radical.pinyin;
+        document.getElementById('detailMeaning').textContent = radical.meaning;
+        document.getElementById('detailStrokes').textContent = radical.strokes;
+        document.getElementById('detailNumber').textContent = `#${radical.number}`;
+        
+        const examplesDiv = document.getElementById('detailExamples');
+        examplesDiv.innerHTML = (radical.examples || []).map(ex => `<div class="text-on-surface"><strong>${ex}</strong></div>`).join('');
+        
+        detailCard.classList.remove('hidden');
+        detailCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // Close detail card
+    function closeDetail() {
+        document.getElementById('detailCard').classList.add('hidden');
+    }
+
+    // Search filter
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase();
+        const filtered = allRadicals.filter(r => 
+            r.char.includes(query) || 
+            r.pinyin.toLowerCase().includes(query) || 
+            r.meaning.toLowerCase().includes(query)
+        );
+        renderRadicals(filtered);
+        updateResultCount(filtered.length);
+    });
+
+    // Category filter
+    document.getElementById('filterSelect').addEventListener('change', (e) => {
+        const category = e.target.value;
+        if (!category) {
+            renderRadicals(allRadicals);
+            updateResultCount(allRadicals.length);
+        } else {
+            const filtered = allRadicals.filter(r => r.category === category);
+            renderRadicals(filtered);
+            updateResultCount(filtered.length);
+        }
+    });
+
+    // Update result count
+    function updateResultCount(count) {
+        document.getElementById('resultCount').textContent = count;
+    }
+
+    // Show/hide loading
+    function showLoading(show) {
+        const spinner = document.getElementById('loadingSpinner');
+        if (show) {
+            spinner.classList.remove('hidden');
+        } else {
+            spinner.classList.add('hidden');
+        }
+    }
+
+    // Show message
+    function showMessage(message, type = 'info') {
+        const alert = document.getElementById('messageAlert');
+        const colors = {
+            success: 'bg-emerald-100 text-emerald-700 border border-emerald-300',
+            error: 'bg-red-100 text-red-700 border border-red-300',
+            info: 'bg-blue-100 text-blue-700 border border-blue-300'
+        };
+        alert.className = `${colors[type]} rounded-lg p-4 text-center`;
+        alert.textContent = message;
+        alert.classList.remove('hidden');
+        setTimeout(() => alert.classList.add('hidden'), 3000);
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+        loadRadicals();
+    });
+</script>
+</body>
+</html>

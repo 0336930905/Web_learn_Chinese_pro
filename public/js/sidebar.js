@@ -72,6 +72,11 @@ function renderSidebar(activePage = 'home', profileData = null) {
                     <span class="material-symbols-outlined ${activePage === 'charAnalysis' ? 'text-primary' : ''}">translate</span>
                     <span class="${activePage === 'charAnalysis' ? 'font-semibold' : 'font-medium'}">${t('sidebar.vietnameseToChineseAnalysis', 'Phân tích ký tự')}</span>
                 </a>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-full ${activePage === 'radicals' ? 'bg-primary/20 text-slate-900 dark:text-white active-fill' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors'}"
+                    href="radicals-214.html">
+                    <span class="material-symbols-outlined ${activePage === 'radicals' ? 'text-primary' : ''}">category</span>
+                    <span class="${activePage === 'radicals' ? 'font-semibold' : 'font-medium'}">${t('sidebar.radicals214', '214 bộ thủ')}</span>
+                </a>
             </nav>
             <div class="p-6 border-t border-slate-100 dark:border-slate-800">
                 <div class="bg-background-light dark:bg-slate-800 p-4 rounded-xl">
