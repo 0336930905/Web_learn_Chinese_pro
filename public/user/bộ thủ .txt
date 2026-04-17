@@ -1,0 +1,240 @@
+| STT | Bộ thủ | Pinyin | Tên gọi VN | Ý nghĩa                   | Số nét |
+| --- | ------ | ------ | ---------- | ------------------------- | ------ |
+| 1   | 一      | yī     | NHẤT       | Số một                    | 1      |
+| 2   | 丨      | gǔn    | CỔN        | Nét sổ (đường thẳng đứng) | 1      |
+| 3   | 丶      | zhǔ    | CHỦ        | Dấu chấm, điểm            | 1      |
+| 4   | 丿      | piě    | PHIỆT      | Nét phẩy (xiên trái)      | 1      |
+| 5   | 乙      | yǐ     | ẤT         | Thiên can thứ 2           | 1      |
+| 6   | 亅      | jué    | QUYẾT      | Nét sổ có móc             | 1      |
+| STT | Bộ thủ | Pinyin | Tên gọi VN | Ý nghĩa            | Số nét |
+| --- | ------ | ------ | ---------- | ------------------ | ------ |
+| 7   | 二      | èr     | NHỊ        | Số hai             | 2      |
+| 8   | 亠      | tóu    | ĐẦU        | Đầu, nét chấm trên | 2      |
+| 9   | 人      | rén    | NHÂN       | Người              | 2      |
+| 10  | 儿      | ér     | NHI        | Người (hình chân)  | 2      |
+| 11  | 入      | rù     | NHẬP       | Đi vào             | 2      |
+| 12  | 八      | bā     | BÁT        | Số tám             | 2      |
+| 13  | 冂      | jiōng  | QUYNH      | Vùng xa, biên giới | 2      |
+| 14  | 冖      | mì     | MỊCH       | Khăn trùm, che phủ | 2      |
+| 15  | 冫      | bīng   | BĂNG       | Nước đá            | 2      |
+| 16  | 几      | jī     | KỶ         | Bàn nhỏ            | 2      |
+| 17  | 凵      | kǎn    | KHẢM       | Há miệng           | 2      |
+| 18  | 刀      | dāo    | ĐAO        | Con dao            | 2      |
+| 19  | 力      | lì     | LỰC        | Sức mạnh           | 2      |
+| 20  | 勹      | bāo    | BAO        | Bao bọc            | 2      |
+| 21  | 匕      | bǐ     | CHỦY       | Cái thìa           | 2      |
+| 22  | 匚      | fāng   | PHƯƠNG     | Hộp, tủ            | 2      |
+| 23  | 匸      | xì     | HỆ         | Che đậy            | 2      |
+| 24  | 十      | shí    | THẬP       | Số mười            | 2      |
+| 25  | 卜      | bǔ     | BỐC        | Xem bói            | 2      |
+| 26  | 卩      | jié    | TIẾT       | Đốt tre            | 2      |
+| 27  | 厂      | hàn    | HÁN        | Vách núi           | 2      |
+| 28  | 厶      | sī     | TƯ         | Riêng tư           | 2      |
+| 29  | 又      | yòu    | HỰU        | Lại nữa            | 2      |
+| STT | Bộ thủ | Pinyin | Tên gọi VN | Ý nghĩa          | Số nét |
+| --- | ------ | ------ | ---------- | ---------------- | ------ |
+| 30  | 口      | kǒu    | KHẨU       | Miệng            | 3      |
+| 31  | 囗      | wéi    | VI         | Bao quanh        | 3      |
+| 32  | 土      | tǔ     | THỔ        | Đất              | 3      |
+| 33  | 士      | shì    | SĨ         | Kẻ sĩ            | 3      |
+| 34  | 夂      | zhǐ    | TRĨ        | Đi chậm, đến sau | 3      |
+| 35  | 夊      | suī    | TUY        | Đi chậm          | 3      |
+| 36  | 夕      | xī     | TỊCH       | Buổi tối         | 3      |
+| 37  | 大      | dà     | ĐẠI        | To lớn           | 3      |
+| 38  | 女      | nǚ     | NỮ         | Phụ nữ           | 3      |
+| 39  | 子      | zǐ     | TỬ         | Con cái          | 3      |
+| 40  | 宀      | mián   | MIÊN       | Mái nhà          | 3      |
+| 41  | 寸      | cùn    | THỐN       | Đơn vị đo        | 3      |
+| 42  | 小      | xiǎo   | TIỂU       | Nhỏ bé           | 3      |
+| 43  | 尢      | yóu    | UÔNG       | Yếu, què         | 3      |
+| 44  | 尸      | shī    | THI        | Xác chết         | 3      |
+| 45  | 屮      | chè    | TRIỆT      | Mầm non          | 3      |
+| 46  | 山      | shān   | SƠN        | Núi              | 3      |
+| 47  | 川      | chuān  | XUYÊN      | Sông             | 3      |
+| 48  | 工      | gōng   | CÔNG       | Công việc        | 3      |
+| 49  | 己      | jǐ     | KỶ         | Bản thân         | 3      |
+| 50  | 巾      | jīn    | CÂN        | Khăn             | 3      |
+| 51  | 干      | gān    | CAN        | Can (thiên can)  | 3      |
+| 52  | 幺      | yāo    | YÊU        | Nhỏ, mảnh        | 3      |
+| 53  | 广      | yǎn    | NGHIỄM     | Mái nhà, che     | 3      |
+| 54  | 廴      | yǐn    | DẪN        | Bước dài         | 3      |
+| 55  | 廾      | gǒng   | CỦNG       | Chắp tay         | 3      |
+| 56  | 弋      | yì     | DẶC        | Bắn, chiếm       | 3      |
+| 57  | 弓      | gōng   | CUNG       | Cái cung         | 3      |
+| 58  | 彐      | jì     | KỆ         | Đầu con nhím     | 3      |
+| 59  | 彡      | shān   | SAM        | Lông tóc         | 3      |
+| 60  | 彳      | chì    | XÍCH       | Bước chân trái   | 3      |
+| STT | Bộ thủ | Pinyin | Tên gọi VN | Ý nghĩa        | Số nét |
+| --- | ------ | ------ | ---------- | -------------- | ------ |
+| 61  | 心      | xīn    | TÂM        | Tim, tâm trí   | 4      |
+| 62  | 戈      | gē     | QUA        | Binh khí dài   | 4      |
+| 63  | 户      | hù     | HỘ         | Cửa một cánh   | 4      |
+| 64  | 手      | shǒu   | THỦ        | Tay            | 4      |
+| 65  | 支      | zhī    | CHI        | Cành nhánh     | 4      |
+| 66  | 攴 (攵)  | pū     | PHỘC       | Đánh nhẹ       | 4      |
+| 67  | 文      | wén    | VĂN        | Văn chương     | 4      |
+| 68  | 斗      | dǒu    | ĐẨU        | Cái đấu (đong) | 4      |
+| 69  | 斤      | jīn    | CÂN        | Rìu, búa       | 4      |
+| 70  | 方      | fāng   | PHƯƠNG     | Vuông          | 4      |
+| 71  | 无      | wú     | VÔ         | Không          | 4      |
+| 72  | 日      | rì     | NHẬT       | Mặt trời       | 4      |
+| 73  | 曰      | yuē    | VIẾT       | Nói rằng       | 4      |
+| 74  | 月      | yuè    | NGUYỆT     | Mặt trăng      | 4      |
+| 75  | 木      | mù     | MỘC        | Cây, gỗ        | 4      |
+| 76  | 欠      | qiàn   | KHIẾM      | Thiếu          | 4      |
+| 77  | 止      | zhǐ    | CHỈ        | Dừng lại       | 4      |
+| 78  | 歹      | dǎi    | ĐÃI        | Xấu, chết      | 4      |
+| 79  | 殳      | shū    | THÙ        | Binh khí       | 4      |
+| 80  | 毋      | wú     | VÔ         | Chớ, đừng      | 4      |
+| 81  | 比      | bǐ     | TỶ         | So sánh        | 4      |
+| 82  | 毛      | máo    | MAO        | Lông           | 4      |
+| 83  | 氏      | shì    | THỊ        | Họ             | 4      |
+| 84  | 气      | qì     | KHÍ        | Hơi            | 4      |
+| 85  | 水      | shuǐ   | THỦY       | Nước           | 4      |
+| 86  | 火      | huǒ    | HỎA        | Lửa            | 4      |
+| 87  | 爪      | zhǎo   | TRẢO       | Móng vuốt      | 4      |
+| 88  | 父      | fù     | PHỤ        | Cha            | 4      |
+| 89  | 爻      | yáo    | HÀO        | Âm dương       | 4      |
+| 90  | 爿      | qiáng  | TƯỜNG      | Mảnh gỗ        | 4      |
+| 91  | 片      | piàn   | PHIẾN      | Miếng          | 4      |
+| 92  | 牙      | yá     | NHA        | Răng           | 4      |
+| 93  | 牛      | niú    | NGƯU       | Trâu           | 4      |
+| 94  | 犬      | quǎn   | KHUYỂN     | Chó            | 4      |
+| STT | Bộ thủ | Pinyin | Tên gọi VN | Ý nghĩa             | Số nét |
+| --- | ------ | ------ | ---------- | ------------------- | ------ |
+| 95  | 玄      | xuán   | HUYỀN      | Đen huyền, huyền bí | 5      |
+| 96  | 玉      | yù     | NGỌC       | Đá quý              | 5      |
+| 97  | 瓜      | guā    | QUA        | Quả dưa             | 5      |
+| 98  | 瓦      | wǎ     | NGÕA       | Ngói                | 5      |
+| 99  | 甘      | gān    | CAM        | Ngọt                | 5      |
+| 100 | 生      | shēng  | SINH       | Sinh sống           | 5      |
+| 101 | 用      | yòng   | DỤNG       | Dùng                | 5      |
+| 102 | 田      | tián   | ĐIỀN       | Ruộng               | 5      |
+| 103 | 疋      | pǐ     | THẤT       | Tấm, đơn vị đo      | 5      |
+| 104 | 疒      | nè     | NẠCH       | Bệnh tật            | 5      |
+| 105 | 癶      | bō     | BÁT        | Gạt ngược           | 5      |
+| 106 | 白      | bái    | BẠCH       | Màu trắng           | 5      |
+| 107 | 皮      | pí     | BÌ         | Da                  | 5      |
+| 108 | 皿      | mǐn    | MÃNH       | Bát đĩa             | 5      |
+| 109 | 目      | mù     | MỤC        | Mắt                 | 5      |
+| 110 | 矛      | máo    | MÂU        | Cây giáo            | 5      |
+| 111 | 矢      | shǐ    | THỈ        | Mũi tên             | 5      |
+| 112 | 石      | shí    | THẠCH      | Đá                  | 5      |
+| 113 | 示      | shì    | THỊ        | Thần linh, chỉ thị  | 5      |
+| 114 | 禸      | róu    | NHỰU       | Dấu vết             | 5      |
+| 115 | 禾      | hé     | HÒA        | Lúa                 | 5      |
+| 116 | 穴      | xué    | HUYỆT      | Hang, lỗ            | 5      |
+| 117 | 立      | lì     | LẬP        | Đứng, thành lập     | 5      |
+| STT | Bộ thủ | Pinyin | Tên gọi VN | Ý nghĩa     | Số nét |
+| --- | ------ | ------ | ---------- | ----------- | ------ |
+| 118 | 竹      | zhú    | TRÚC       | Tre trúc    | 6      |
+| 119 | 米      | mǐ     | MỄ         | Gạo         | 6      |
+| 120 | 糸      | mì     | MỊCH       | Sợi tơ      | 6      |
+| 121 | 缶      | fǒu    | PHẪU       | Đồ sành     | 6      |
+| 122 | 网 (罒)  | wǎng   | VÕNG       | Cái lưới    | 6      |
+| 123 | 羊      | yáng   | DƯƠNG      | Con dê      | 6      |
+| 124 | 羽      | yǔ     | VŨ         | Lông vũ     | 6      |
+| 125 | 老      | lǎo    | LÃO        | Già         | 6      |
+| 126 | 而      | ér     | NHI        | Mà, và      | 6      |
+| 127 | 耒      | lěi    | LÔI        | Cái cày     | 6      |
+| 128 | 耳      | ěr     | NHĨ        | Tai         | 6      |
+| 129 | 聿      | yù     | DUẬT       | Cây bút     | 6      |
+| 130 | 肉      | ròu    | NHỤC       | Thịt        | 6      |
+| 131 | 臣      | chén   | THẦN       | Bề tôi      | 6      |
+| 132 | 自      | zì     | TỰ         | Bản thân    | 6      |
+| 133 | 至      | zhì    | CHÍ        | Đến         | 6      |
+| 134 | 臼      | jiù    | CỬU        | Cối giã gạo | 6      |
+| 135 | 舌      | shé    | THIỆT      | Lưỡi        | 6      |
+| 136 | 舛      | chuǎn  | SUYỄN      | Sai lệch    | 6      |
+| 137 | 舟      | zhōu   | CHU        | Thuyền      | 6      |
+| 138 | 艮      | gèn    | CẤN        | Dừng, cứng  | 6      |
+| 139 | 色      | sè     | SẮC        | Màu sắc     | 6      |
+| 140 | 艸 (艹)  | cǎo    | THẢO       | Cỏ          | 6      |
+| 141 | 虍      | hū     | HÔ         | Vằn hổ      | 6      |
+| 142 | 虫      | chóng  | TRÙNG      | Sâu bọ      | 6      |
+| 143 | 血      | xuè    | HUYẾT      | Máu         | 6      |
+| 144 | 行      | xíng   | HÀNH       | Đi, làm     | 6      |
+| 145 | 衣      | yī     | Y          | Áo          | 6      |
+| 146 | 襾 (西)  | yà     | Á          | Che phủ     | 6      |
+| STT | Bộ thủ | Pinyin | Tên gọi VN | Ý nghĩa       | Số nét |
+| --- | ------ | ------ | ---------- | ------------- | ------ |
+| 147 | 見 (见)  | jiàn   | KIẾN       | Trông thấy    | 7      |
+| 148 | 角      | jiǎo   | GIÁC       | Sừng, góc     | 7      |
+| 149 | 言 (讠)  | yán    | NGÔN       | Nói           | 7      |
+| 150 | 谷      | gǔ     | CỐC        | Khe núi       | 7      |
+| 151 | 豆      | dòu    | ĐẬU        | Hạt đậu       | 7      |
+| 152 | 豕      | shǐ    | THỈ        | Con heo       | 7      |
+| 153 | 豸      | zhì    | TRĨ        | Thú có chân   | 7      |
+| 154 | 貝 (贝)  | bèi    | BỐI        | Vỏ sò, tiền   | 7      |
+| 155 | 赤      | chì    | XÍCH       | Màu đỏ        | 7      |
+| 156 | 走      | zǒu    | TẨU        | Đi, chạy      | 7      |
+| 157 | 足      | zú     | TÚC        | Chân          | 7      |
+| 158 | 身      | shēn   | THÂN       | Cơ thể        | 7      |
+| 159 | 車 (车)  | chē    | XA         | Xe            | 7      |
+| 160 | 辛      | xīn    | TÂN        | Cay, vất vả   | 7      |
+| 161 | 辰      | chén   | THÌN       | Địa chi thứ 5 | 7      |
+| 162 | 辵 (辶)  | chuò   | SƯỚC       | Đi, di chuyển | 7      |
+| 163 | 邑 (阝)  | yì     | ẤP         | Vùng đất      | 7      |
+| 164 | 酉      | yǒu    | DẬU        | Rượu, địa chi | 7      |
+| 165 | 釆      | biàn   | BIỆN       | Phân biệt     | 7      |
+| 166 | 里      | lǐ     | LÝ         | Làng, dặm     | 7      |
+| STT | Bộ thủ | Pinyin | Tên gọi VN | Ý nghĩa          | Số nét |
+| --- | ------ | ------ | ---------- | ---------------- | ------ |
+| 167 | 金      | jīn    | KIM        | Kim loại, vàng   | 8      |
+| 168 | 長 (长)  | cháng  | TRƯỜNG     | Dài, trưởng      | 8      |
+| 169 | 門 (门)  | mén    | MÔN        | Cửa hai cánh     | 8      |
+| 170 | 阜 (阝)  | fù     | PHỤ        | Gò đất, đống đất | 8      |
+| 171 | 隶      | lì     | ĐÃI        | Kịp, theo kịp    | 8      |
+| 172 | 隹      | zhuī   | TRUY       | Chim đuôi ngắn   | 8      |
+| 173 | 雨      | yǔ     | VŨ         | Mưa              | 8      |
+| 174 | 青      | qīng   | THANH      | Màu xanh         | 8      |
+| 175 | 非      | fēi    | PHI        | Sai, không       | 8      |
+| STT | Bộ thủ | Pinyin | Tên gọi VN | Ý nghĩa          | Số nét |
+| --- | ------ | ------ | ---------- | ---------------- | ------ |
+| 176 | 面      | miàn   | DIỆN       | Mặt, bề mặt      | 9      |
+| 177 | 革      | gé     | CÁCH       | Da thú, thay đổi | 9      |
+| 178 | 韋 (韦)  | wéi    | VI         | Da đã thuộc      | 9      |
+| 179 | 韭      | jiǔ    | PHỈ / CỬU  | Rau hẹ           | 9      |
+| 180 | 音      | yīn    | ÂM         | Âm thanh         | 9      |
+| 181 | 頁 (页)  | yè     | HIỆT       | Đầu, trang giấy  | 9      |
+| 182 | 風 (风)  | fēng   | PHONG      | Gió              | 9      |
+| 183 | 飛 (飞)  | fēi    | PHI        | Bay              | 9      |
+| 184 | 食      | shí    | THỰC       | Ăn               | 9      |
+| 185 | 首      | shǒu   | THỦ        | Đầu              | 9      |
+| 186 | 香      | xiāng  | HƯƠNG      | Mùi thơm         | 9      |
+| STT | Bộ thủ | Pinyin  | Tên gọi VN | Ý nghĩa          | Số nét |
+| --- | ------ | ------- | ---------- | ---------------- | ------ |
+| 187 | 馬 (马)  | mǎ      | MÃ         | Con ngựa         | 10     |
+| 188 | 骨      | gǔ      | CỐT        | Xương            | 10     |
+| 189 | 高      | gāo     | CAO        | Cao              | 10     |
+| 190 | 髟      | biāo    | BƯU        | Tóc dài          | 10     |
+| 191 | 鬥      | dòu     | ĐẤU        | Chiến đấu        | 10     |
+| 192 | 鬯      | chàng   | SƯỞNG      | Rượu nếp         | 10     |
+| 193 | 鬲      | gé / lì | CÁCH       | Cái đỉnh, nồi cổ | 10     |
+| 194 | 鬼      | guǐ     | QUỶ        | Con quỷ          | 10     |
+| STT | Bộ thủ | Pinyin | Tên gọi VN | Ý nghĩa  | Số nét |
+| --- | ------ | ------ | ---------- | -------- | ------ |
+| 195 | 魚 (鱼)  | yú     | NGƯ        | Con cá   | 11     |
+| 196 | 鳥 (鸟)  | niǎo   | ĐIỂU       | Con chim | 11     |
+| 197 | 鹵 (卤)  | lǔ     | LỖ         | Đất mặn  | 11     |
+| 198 | 鹿      | lù     | LỘC        | Con hươu | 11     |
+| 199 | 麥 (麦)  | mài    | MẠCH       | Lúa mạch | 11     |
+| 200 | 麻      | má     | MA         | Cây gai  | 11     |
+| STT | Bộ thủ | Pinyin | Tên gọi VN | Ý nghĩa    | Số nét |
+| --- | ------ | ------ | ---------- | ---------- | ------ |
+| 201 | 黃 (黄)  | huáng  | HOÀNG      | Màu vàng   | 12     |
+| 202 | 黍      | shǔ    | THỬ        | Lúa nếp    | 12     |
+| 203 | 黑      | hēi    | HẮC        | Màu đen    | 12     |
+| 204 | 黹      | zhǐ    | CHỈ        | May vá     | 12     |
+| 205 | 黽 (黾)  | mǐn    | MÃNH       | Ếch        | 13     |
+| 206 | 鼎      | dǐng   | ĐỈNH       | Cái đỉnh   | 13     |
+| 207 | 鼓      | gǔ     | CỔ         | Cái trống  | 13     |
+| 208 | 鼠      | shǔ    | THỬ        | Con chuột  | 13     |
+| 209 | 鼻      | bí     | TỲ         | Cái mũi    | 14     |
+| 210 | 齊 (齐)  | qí     | TỀ         | Ngang bằng | 14     |
+| 211 | 齒 (齿)  | chǐ    | XỈ         | Răng       | 15     |
+| STT | Bộ thủ  | Pinyin | Tên gọi VN | Ý nghĩa            | Số nét |
+| --- | ------- | ------ | ---------- | ------------------ | ------ |
+| 212 | 龍 (龙)   | lóng   | LONG       | Con rồng           | 16     |
+| 213 | 龜 (龟/亀) | guī    | QUY        | Con rùa            | 16     |
+| 214 | 龠       | yuè    | DƯỢC       | Ống sáo (nhạc khí) | 17     |

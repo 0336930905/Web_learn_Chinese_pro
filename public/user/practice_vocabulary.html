@@ -636,8 +636,8 @@
             </div>
 
             <!-- Toggles row -->
-            <div class="px-4 py-3 flex items-center gap-2">
-              <div class="flex-1 flex items-center justify-between px-2.5 py-2 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200/60 dark:border-amber-800/30">
+            <div class="px-4 py-3 flex items-center gap-2 flex-wrap">
+              <div class="flex-1 min-w-[45%] flex items-center justify-between px-2.5 py-2 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200/60 dark:border-amber-800/30">
                 <div class="flex items-center gap-1.5">
                   <span class="text-sm leading-none" style="font-family:sans-serif">拼</span>
                   <span class="text-[10px] font-black text-gray-600 dark:text-gray-300">Pinyin gợi ý</span>
@@ -647,7 +647,7 @@
                   <span id="pinyinSupportDot" class="inline-block h-3.5 w-3.5 translate-x-0.5 rounded-full bg-white transition-transform duration-300 shadow"></span>
                 </button>
               </div>
-              <div class="flex-1 flex items-center justify-between px-2.5 py-2 bg-sky-50 dark:bg-sky-900/20 rounded-xl border border-sky-200/60 dark:border-sky-800/30">
+              <div class="flex-1 min-w-[45%] flex items-center justify-between px-2.5 py-2 bg-sky-50 dark:bg-sky-900/20 rounded-xl border border-sky-200/60 dark:border-sky-800/30">
                 <div class="flex items-center gap-1.5">
                   <span class="material-symbols-outlined text-sky-500 text-[15px]">volume_up</span>
                   <span class="text-[10px] font-black text-gray-600 dark:text-gray-300">Tự đọc</span>
@@ -655,6 +655,16 @@
                 <button id="autoSpeakTrack" onclick="toggleAutoSpeak()"
                   class="relative inline-flex h-5 w-9 items-center rounded-full bg-sky-400 transition-colors duration-300 shrink-0">
                   <span id="autoSpeakDot" class="inline-block h-3.5 w-3.5 translate-x-4 rounded-full bg-white transition-transform duration-300 shadow"></span>
+                </button>
+              </div>
+              <div class="w-full flex items-center justify-between px-2.5 py-2 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200/60 dark:border-green-800/30">
+                <div class="flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-green-600 dark:text-green-400 text-[15px]">shuffle</span>
+                  <span class="text-[10px] font-black text-gray-600 dark:text-gray-300">Ngẫu nhiên</span>
+                </div>
+                <button id="vocabOrderTrack" onclick="toggleVocabOrder()"
+                  class="relative inline-flex h-5 w-9 items-center rounded-full bg-gray-200 dark:bg-gray-700 transition-colors duration-300 shrink-0">
+                  <span id="vocabOrderDot" class="inline-block h-3.5 w-3.5 translate-x-0.5 rounded-full bg-white transition-transform duration-300 shadow"></span>
                 </button>
               </div>
             </div>
@@ -1448,7 +1458,7 @@ async function startPractice() {
   }
 
   inputMode = chosenMode;
-  practiceWords = shuffle([...filtered]);
+  practiceWords = vocabOrder === 'random' ? shuffle([...filtered]) : [...filtered];
   currentIdx = 0;
   correctCount = 0;
   wrongCount = 0;
@@ -1879,6 +1889,7 @@ function backToSetup() {
 
 // ==================== TTS (TEXT-TO-SPEECH) ====================
 let ttsAutoSpeak = localStorage.getItem('practiceAutoSpeak') === 'true';
+let vocabOrder = localStorage.getItem('practiceVocabOrder') || 'sequential'; // 'sequential' or 'random'
 
 // ---- Pre-warm voice loading (run immediately on script parse) ----
 (function preWarmVoices() {
@@ -1901,6 +1912,15 @@ document.addEventListener('DOMContentLoaded', () => {
     track.classList.replace('bg-gray-200', 'bg-sky-500');
     track.classList.replace('dark:bg-gray-700', 'dark:bg-sky-500');
     dot.classList.replace('translate-x-1', 'translate-x-6');
+  }
+
+  // Initialize vocab order toggle state
+  const vocabTrack = document.getElementById('vocabOrderTrack');
+  const vocabDot = document.getElementById('vocabOrderDot');
+  if (vocabOrder === 'random' && vocabTrack && vocabDot) {
+    vocabTrack.classList.replace('bg-gray-200', 'bg-green-600');
+    vocabTrack.classList.replace('dark:bg-gray-700', 'dark:bg-green-500');
+    vocabDot.classList.replace('translate-x-0.5', 'translate-x-4');
   }
 }, { once: true });
 
@@ -1998,6 +2018,22 @@ function toggleAutoSpeak() {
     track?.classList.replace('bg-sky-500', 'bg-gray-200');
     track?.classList.replace('dark:bg-sky-500', 'dark:bg-gray-700');
     dot?.classList.replace('translate-x-6', 'translate-x-1');
+  }
+}
+
+function toggleVocabOrder() {
+  vocabOrder = vocabOrder === 'sequential' ? 'random' : 'sequential';
+  localStorage.setItem('practiceVocabOrder', vocabOrder);
+  const track = document.getElementById('vocabOrderTrack');
+  const dot   = document.getElementById('vocabOrderDot');
+  if (vocabOrder === 'random') {
+    track?.classList.replace('bg-gray-200', 'bg-green-600');
+    track?.classList.replace('dark:bg-gray-700', 'dark:bg-green-500');
+    dot?.classList.replace('translate-x-0.5', 'translate-x-4');
+  } else {
+    track?.classList.replace('bg-green-600', 'bg-gray-200');
+    track?.classList.replace('dark:bg-green-500', 'dark:bg-gray-700');
+    dot?.classList.replace('translate-x-4', 'translate-x-0.5');
   }
 }
 
