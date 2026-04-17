@@ -653,8 +653,8 @@
                   <span class="text-[10px] font-black text-gray-600 dark:text-gray-300">Tự đọc</span>
                 </div>
                 <button id="autoSpeakTrack" onclick="toggleAutoSpeak()"
-                  class="relative inline-flex h-5 w-9 items-center rounded-full bg-sky-400 transition-colors duration-300 shrink-0">
-                  <span id="autoSpeakDot" class="inline-block h-3.5 w-3.5 translate-x-4 rounded-full bg-white transition-transform duration-300 shadow"></span>
+                  class="relative inline-flex h-5 w-9 items-center rounded-full bg-gray-200 dark:bg-gray-700 transition-colors duration-300 shrink-0">
+                  <span id="autoSpeakDot" class="inline-block h-3.5 w-3.5 translate-x-0.5 rounded-full bg-white transition-transform duration-300 shadow"></span>
                 </button>
               </div>
               <div class="w-full flex items-center justify-between px-2.5 py-2 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200/60 dark:border-green-800/30">
@@ -1911,7 +1911,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (ttsAutoSpeak && track && dot) {
     track.classList.replace('bg-gray-200', 'bg-sky-500');
     track.classList.replace('dark:bg-gray-700', 'dark:bg-sky-500');
-    dot.classList.replace('translate-x-1', 'translate-x-6');
+    dot.classList.replace('translate-x-0.5', 'translate-x-4');
   }
 
   // Initialize vocab order toggle state
@@ -2013,11 +2013,11 @@ function toggleAutoSpeak() {
   if (ttsAutoSpeak) {
     track?.classList.replace('bg-gray-200', 'bg-sky-500');
     track?.classList.replace('dark:bg-gray-700', 'dark:bg-sky-500');
-    dot?.classList.replace('translate-x-1', 'translate-x-6');
+    dot?.classList.replace('translate-x-0.5', 'translate-x-4');
   } else {
     track?.classList.replace('bg-sky-500', 'bg-gray-200');
     track?.classList.replace('dark:bg-sky-500', 'dark:bg-gray-700');
-    dot?.classList.replace('translate-x-6', 'translate-x-1');
+    dot?.classList.replace('translate-x-4', 'translate-x-0.5');
   }
 }
 
