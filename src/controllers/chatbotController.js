@@ -1,4 +1,5 @@
 const geminiService = require('../services/geminiService');
+const geminiConfig = require('../config/gemini');
 
 class ChatbotController {
     /**
@@ -153,9 +154,6 @@ class ChatbotController {
      */
     async healthCheck(req, res) {
         try {
-            const geminiConfig = require('../config/gemini');
-            const geminiService = require('../services/geminiService');
-            
             const apiKey = geminiConfig.apiKey;
             const isConfigured = !!apiKey;
             const usingFallback = geminiService.useFallback;

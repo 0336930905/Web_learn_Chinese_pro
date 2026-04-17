@@ -34,7 +34,19 @@ async function createIndexes(db) {
       { key: { traditional: 1 } },
       { key: { simplified: 1 } },
       { key: { pinyin: 1 } },
-      { key: { traditional: 'text', simplified: 'text', pinyin: 'text', meaning: 'text' } },
+      { key: { vietnamese: 1 } },
+      { key: { userId: 1, categoryId: 1 } },
+      { key: { traditional: 'text', simplified: 'text', pinyin: 'text', meaning: 'text', vietnamese: 'text' } },
+    ]);
+
+    // Character Analysis indexes (for Vietnamese to Chinese conversion)
+    await db.collection(COLLECTIONS.CHARACTER_ANALYSIS).createIndexes([
+      { key: { userId: 1 } },
+      { key: { traditional: 1 } },
+      { key: { simplified: 1 } },
+      { key: { vietnamese: 1 } },
+      { key: { createdAt: -1 } },
+      { key: { userId: 1, traditional: 1 }, unique: true },
     ]);
 
     // User Progress indexes
@@ -237,6 +249,117 @@ async function setupCollectionValidation(db) {
             example: {
               bsonType: 'string',
             },
+          },
+        },
+      },
+      validationLevel: 'moderate',
+    }).catch(() => {
+      // Ignore if collection doesn't exist
+    });
+
+    // Character Analysis validation (Vietnamese to Chinese)
+    await db.command({
+      collMod: COLLECTIONS.CHARACTER_ANALYSIS,
+      validator: {
+        $jsonSchema: {
+          bsonType: 'object',
+          required: ['vietnamese', 'traditional', 'simplified', 'pinyin', 'userId'],
+          properties: {
+            vietnamese: {
+              bsonType: 'string',
+              description: 'Vietnamese input word'
+            },
+            traditional: {
+              bsonType: 'string',
+              description: 'Traditional Chinese'
+            },
+            simplified: {
+              bsonType: 'string',
+              description: 'Simplified Chinese'
+            },
+            pinyin: {
+              bsonType: 'array',
+              items: { bsonType: 'string' },
+              description: 'Array of pinyin syllables'
+            },
+            english_meaning: {
+              bsonType: 'string',
+              description: 'English translation'
+            },
+            vietnamese_meaning: {
+              bsonType: 'string',
+              description: 'Vietnamese translation'
+            },
+            characters: {
+              bsonType: 'array',
+              items: {
+                bsonType: 'object',
+                properties: {
+                  character: { bsonType: 'string' },
+                  pinyin: { bsonType: 'string' },
+                  radical: { bsonType: 'string' },
+                  stroke_count: { bsonType: 'int' },
+                  meaning_brief: { bsonType: 'string' },
+                  example_word: { bsonType: 'string' },
+                  example_pinyin: { bsonType: 'string' }
+                }
+              }
+            },
+            family_words: {
+              bsonType: 'array',
+              items: {
+                bsonType: 'object',
+                properties: {
+                  word: { bsonType: 'string' },
+                  type: { bsonType: 'string' },
+                  pinyin: { bsonType: 'string' },
+                  meaning: { bsonType: 'string' },
+                  example_sentence: { bsonType: 'string' }
+                }
+              }
+            },
+            usage_examples: {
+              bsonType: 'array',
+              items: {
+                bsonType: 'object',
+                properties: {
+                  sentence: { bsonType: 'string' },
+                  pinyin: { bsonType: 'string' },
+                  english: { bsonType: 'string' },
+                  context: { bsonType: 'string' }
+                }
+              }
+            },
+            grammar_notes: {
+              bsonType: 'string',
+              description: 'Grammar patterns and usage notes'
+            },
+            cultural_notes: {
+              bsonType: 'string',
+              description: 'Cultural significance and context'
+            },
+            userId: {
+              bsonType: 'objectId',
+              description: 'User who created this analysis'
+            },
+            categoryId: {
+              bsonType: 'objectId',
+              description: 'Category reference'
+            },
+            difficulty: {
+              enum: Object.values(DIFFICULTY_LEVELS),
+              description: 'Difficulty level'
+            },
+            htmlContent: {
+              bsonType: 'string',
+              description: 'Generated HTML visualization'
+            },
+            createdAt: {
+              bsonType: 'date'
+            },
+            updatedAt: {
+              bsonType: 'date'
+            }
           },
         },
       },

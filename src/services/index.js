@@ -1,22 +1,28 @@
 /**
  * Services Index
- * Export all services
+ * Centralized export of all services
  */
 
 const UserService = require('./UserService');
-const CategoryService = require('./CategoryService');
 const VocabularyService = require('./VocabularyService');
+const CategoryService = require('./CategoryService');
 const ProgressService = require('./ProgressService');
 const GameService = require('./GameService');
 const DashboardService = require('./DashboardService');
+const achievementService = require('./achievementService');
 const TranslationService = require('./TranslationService');
+const chatbotFallback = require('./chatbotFallback');
+const geminiService = require('./geminiService');
 
 module.exports = {
   UserService,
-  CategoryService,
   VocabularyService,
+  CategoryService,
   ProgressService,
   GameService,
   DashboardService,
+  achievementService,
   TranslationService,
+  chatbotFallback,
+  geminiService,
 };

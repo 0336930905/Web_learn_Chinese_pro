@@ -153,6 +153,7 @@ const COLLECTIONS = {
   USERS: 'users',
   CATEGORIES: 'categories',
   VOCABULARY: 'vocabulary',
+  CHARACTER_ANALYSIS: 'character_analysis',
   USER_PROGRESS: 'user_progress',
   GAME_SESSIONS: 'game_sessions',
   ACTIVITIES: 'activities',

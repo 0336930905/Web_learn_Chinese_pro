@@ -66,11 +66,57 @@
                 </div>
             </div>
             <div class="relative z-10 flex flex-col items-center gap-8 text-center max-w-lg">
-                <div class="relative w-full aspect-square max-w-[500px]">
-                    <!-- Using a placeholder for the mascot as per instructions, but styled specifically -->
-                    <div class="w-full h-full bg-center bg-contain bg-no-repeat drop-shadow-2xl transition-transform hover:scale-105 duration-500"
-                        data-alt="3D cute mascot character holding a colorful book"
-                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDb-6BVaBxOsHZYpINYY3slcNcm8o6ckGuRoBCUAAvQ3i6QGMG0F2EJEjhKQrLT1V1ApQpbllpPCq6BKsMU-F9Zi53jrWgizrlCxPRC-XcdYh3k8LTlzTd7ZDtvo8firG1gYcVwnLDLO6nqaX7wmBXoF1k8mMPBEIECisIwFWIhjSmGc889JuKz1ImgwqSpL9A7krS87wxaKLhkQIZy6py0jxa8sHaGs_RtVWQXs-zdErUE-ZoCweuiejG7xbGZEshMy3n-1a67bCA");'>
+                <div class="relative w-full aspect-square max-w-[500px] flex items-center justify-center group">
+                    <!-- 3D Cute Animated Mascot with Enhanced Frame -->
+                    <style>
+                        @keyframes float {
+                            0%, 100% { transform: translateY(0px) rotate(0deg); }
+                            50% { transform: translateY(-20px) rotate(2deg); }
+                        }
+                        @keyframes float-reverse {
+                            0%, 100% { transform: translateY(0px) rotate(0deg); }
+                            50% { transform: translateY(-15px) rotate(-2deg); }
+                        }
+                        @keyframes pulse-grow {
+                            0%, 100% { transform: scale(1); }
+                            50% { transform: scale(1.05); }
+                        }
+                        .image-frame {
+                            box-shadow: 0 20px 60px rgba(76, 230, 76, 0.25), 
+                                        inset 0 0 20px rgba(76, 230, 76, 0.1);
+                            transition: all 0.3s ease;
+                            border-radius: 3rem;
+                            border: 4px solid #4ce64c;
+                            overflow: hidden;
+                        }
+                        .image-frame:hover {
+                            box-shadow: 0 30px 80px rgba(76, 230, 76, 0.4), 
+                                        inset 0 0 30px rgba(76, 230, 76, 0.15);
+                            transform: translateY(-5px);
+                        }
+                        .mascot-container {
+                            perspective: 1000px;
+                            animation: float 4s ease-in-out infinite;
+                            filter: drop-shadow(0 20px 40px rgba(76, 230, 76, 0.3));
+                            transition: filter 0.3s ease;
+                        }
+                        .image-frame:hover .mascot-container {
+                            filter: drop-shadow(0 30px 60px rgba(76, 230, 76, 0.5));
+                            animation-play-state: paused;
+                        }
+                        .book {
+                            animation: float-reverse 4s ease-in-out infinite;
+                            transform-origin: center;
+                        }
+                        .arm-left {
+                            animation: pulse-grow 2s ease-in-out infinite;
+                            transform-origin: right center;
+                        }
+                    </style>
+                    <div class="image-frame relative w-full h-full">
+                        <!-- Gradient overlay for enhancement -->
+                        <div class="absolute inset-0 bg-gradient-to-br from-primary/10 to-blue-300/5 pointer-events-none"></div>
+                        <img src="/download.jpg" alt="Learning Mascot" class="w-full h-full object-cover" />
                     </div>
                 </div>
                 <div class="space-y-4">
