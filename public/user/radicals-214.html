@@ -12,70 +12,58 @@
         darkMode: "class",
         theme: {
           extend: {
-            colors: {
-              "primary-fixed-dim": "#4bee74",
-              "outline": "#548064",
-              "error-container": "#f95630",
-              "secondary-container": "#ffc697",
-              "inverse-on-surface": "#79a789",
-              "secondary-dim": "#794200",
-              "inverse-primary": "#5cfd80",
-              "on-primary-container": "#005d22",
-              "surface-container-high": "#b2f1c7",
-              "tertiary-dim": "#004aad",
-              "on-primary": "#cfffce",
-              "secondary-fixed": "#ffc697",
-              "surface-variant": "#a8ecbf",
-              "on-primary-fixed-variant": "#006827",
-              "on-background": "#06361f",
-              "error-dim": "#b92902",
-              "on-surface": "#06361f",
-              "tertiary-container": "#8eafff",
-              "secondary-fixed-dim": "#ffb470",
-              "primary-container": "#5cfd80",
-              "error": "#b02500",
-              "on-secondary-container": "#6d3b00",
-              "on-tertiary-fixed-variant": "#003580",
-              "primary": "#006a28",
-              "surface-container-lowest": "#ffffff",
-              "on-secondary-fixed": "#512a00",
-              "surface-tint": "#006a28",
-              "inverse-surface": "#001207",
-              "on-primary-fixed": "#004819",
-              "background": "#dcffe5",
-              "on-secondary": "#fff0e6",
-              "primary-fixed": "#5cfd80",
-              "surface-container-low": "#c7fdd8",
-              "surface-bright": "#dcffe5",
-              "surface-container": "#bbf6ce",
-              "primary-dim": "#005d22",
-              "surface": "#dcffe5",
-              "surface-container-highest": "#a8ecbf",
-              "on-secondary-fixed-variant": "#7a4300",
-              "on-error": "#ffefec",
-              "secondary": "#8a4c00",
-              "tertiary-fixed": "#8eafff",
-              "tertiary-fixed-dim": "#77a1ff",
-              "on-tertiary-fixed": "#00163d",
-              "outline-variant": "#89b898",
-              "tertiary": "#0055c4",
-              "on-tertiary": "#f0f2ff",
-              "surface-dim": "#9ce4b6",
-              "on-surface-variant": "#39644a",
-              "on-error-container": "#520c00",
-              "on-tertiary-container": "#002d6f"
-            },
-            borderRadius: {
-              DEFAULT: "1rem",
-              lg: "2rem",
-              xl: "3rem",
-              full: "9999px"
-            },
-            fontFamily: {
-              headline: ["Lexend"],
-              body: ["Lexend"],
-              label: ["Lexend"]
-            }
+            "colors": {
+                        "surface-dim": "#d8dad9",
+                        "inverse-primary": "#48e349",
+                        "primary-fixed": "#74ff6c",
+                        "surface-variant": "#e1e3e1",
+                        "surface-bright": "#f8faf8",
+                        "tertiary-fixed": "#ffdad4",
+                        "on-secondary-fixed-variant": "#005309",
+                        "surface-container-highest": "#e1e3e1",
+                        "primary-container": "#4ce64c",
+                        "primary": "#006e10",
+                        "on-primary": "#ffffff",
+                        "background": "#f8faf8",
+                        "on-tertiary-fixed-variant": "#6a3932",
+                        "secondary": "#226c20",
+                        "on-secondary-fixed": "#002202",
+                        "on-tertiary-fixed": "#350f0a",
+                        "on-primary-container": "#00630d",
+                        "on-primary-fixed": "#002202",
+                        "surface": "#f8faf8",
+                        "surface-tint": "#006e10",
+                        "error-container": "#ffdad6",
+                        "outline": "#6d7b67",
+                        "tertiary-container": "#ffb8ad",
+                        "surface-container-high": "#e6e9e7",
+                        "secondary-fixed-dim": "#8bd97f",
+                        "secondary-container": "#a6f698",
+                        "surface-container-low": "#f1f4f0",
+                        "surface-container": "#ebede9",
+                        "on-surface-variant": "#6d7b67",
+                        "on-surface": "#1a1c19",
+                        "on-error": "#ffffff",
+                        "error": "#b3261e",
+                        "on-error-container": "#410e0b",
+                        "on-tertiary-container": "#370b05",
+                        "tertiary": "#8f4a3f",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-container": "#001c00",
+                        "on-secondary-fixed": "#002202",
+                        "on-primary-fixed-variant": "#005309"
+                    },
+                    "borderRadius": {
+                        "xs": "0.25rem",
+                        "sm": "0.5rem",
+                        "3xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "lexend": ["Lexend", "sans-serif"],
+                        "body": ["Lexend", "sans-serif"]
+                    }
           }
         }
       }
@@ -103,14 +91,14 @@
         .radical-card {
             transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             cursor: pointer;
-            border: 2px solid #a8ecbf;
+            border: 1px solid var(--outline-variant, #e1e3e1);
             background: white;
         }
         
         .radical-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(0, 106, 40, 0.15);
-            border-color: #5cfd80;
+            box-shadow: 0 12px 24px rgba(0, 110, 16, 0.12);
+            border-color: var(--primary-container, #4ce64c);
         }
         
         #radicalsGrid {
@@ -127,9 +115,7 @@
         }
 
         #detailCard {
-            background: white;
-            border: 2px solid #a8ecbf;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            /* Styles handled by tailwind classes */
         }
 
         .loading {
@@ -147,143 +133,156 @@
     <script src="../i18n/translations.js"></script>
     <script src="../js/sidebar.js"></script>
 </head>
-<body class="bg-background text-on-surface min-h-screen">
+<body class="bg-surface font-body text-on-surface min-h-screen">
 <div class="flex min-h-screen">
     <div id="sidebar-container" data-active-page="radicals"></div>
     <main class="flex-1 ml-0 md:ml-64 min-h-screen transition-all duration-300">
-        <div class="max-w-6xl mx-auto p-8 space-y-12">
-            <!-- Header Section -->
-            <section class="space-y-6 animate-slideDown">
-                <div class="flex items-center gap-4">
-                    <div class="p-3 bg-primary-container rounded-lg flex items-center justify-center">
-                        <span class="material-symbols-outlined text-on-primary-container text-3xl" data-icon="category">category</span>
-                    </div>
-                    <div>
-                        <h2 class="text-4xl font-black text-on-surface tracking-tight uppercase">214 Bộ Thủ</h2>
-                        <p class="text-sm text-on-surface-variant font-medium tracking-wider mt-1">CÁC YẾU TỐ CƠ BẢN TRONG CHỮHÁN</p>
-                    </div>
-                </div>
-                <div class="bg-surface-container-low p-8 rounded-2xl shadow-sm border border-outline-variant/10">
-                    <p class="text-on-surface-variant leading-relaxed text-sm md:text-base">
-                        Bộ thủ (radical) là các yếu tố cơ bản được sử dụng để xây dựng các chữ Hán phức tạp hơn. Khám phá tất cả 214 bộ thủ chuẩn và hiểu rõ cấu trúc của chữ Trung Quốc.
-                    </p>
-                </div>
-            </section>
-
-            <!-- Stats Section -->
-            <section class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <div class="bg-surface-container-low p-6 rounded-2xl border border-outline-variant/10 shadow-sm text-center">
-                    <div class="text-3xl font-black text-primary mb-1" id="totalCount">214</div>
-                    <p class="text-xs text-on-surface-variant font-bold tracking-wide uppercase">Tổng bộ thủ</p>
-                </div>
-                <div class="bg-surface-container-low p-6 rounded-2xl border border-outline-variant/10 shadow-sm text-center">
-                    <div class="text-3xl font-black text-primary mb-1" id="resultCount">0</div>
-                    <p class="text-xs text-on-surface-variant font-bold tracking-wide uppercase">Tìm thấy</p>
-                </div>
-                <div class="bg-surface-container-low p-6 rounded-2xl border border-outline-variant/10 shadow-sm text-center hidden md:block">
-                    <div class="text-3xl font-black text-tertiary mb-1">1</div>
-                    <p class="text-xs text-on-surface-variant font-bold tracking-wide uppercase">Bộ được xem</p>
-                </div>
-            </section>
-
-            <!-- Search & Filter Section -->
-            <section class="bg-surface-container-low p-6 md:p-8 rounded-2xl shadow-sm border border-outline-variant/10 space-y-4">
-                <div class="flex flex-col md:flex-row gap-4">
-                    <div class="relative flex-1">
-                        <input
-                            id="searchInput"
-                            type="text"
-                            placeholder="Tìm kiếm bộ thủ (ký tự, Pinyin)..."
-                            class="w-full bg-surface-container-lowest border-none focus:ring-2 focus:ring-primary h-14 px-6 rounded-full text-on-surface transition-all text-sm md:text-base font-medium"
-                        />
-                        <span class="absolute right-6 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline">search</span>
-                    </div>
-                    <select
-                        id="filterSelect"
-                        class="bg-surface-container-lowest border-none focus:ring-2 focus:ring-primary h-14 px-6 rounded-full text-on-surface transition-all font-medium md:w-56 text-sm">
-                        <option value="">📊 Tất cả bộ thủ</option>
-                        <option value="common">⭐ Thường dùng</option>
-                        <option value="uncommon">📌 Ít dùng</option>
-                    </select>
-                </div>
-            </section>
-
-            <!-- Loading Spinner -->
-            <div id="loadingSpinner" class="loading hidden bg-surface-container-low p-6 rounded-2xl border border-outline-variant/20 shadow-sm items-center justify-center gap-3 text-on-surface-variant">
-                <div class="w-5 h-5 border-2 border-outline-variant border-t-primary rounded-full animate-spin"></div>
-                <span class="text-sm font-bold tracking-wide">Đang tải bộ thủ...</span>
-            </div>
-
-            <!-- Radicals Grid -->
-            <section class="space-y-4">
-                <h3 class="text-lg font-black text-on-surface tracking-tight uppercase">Danh sách bộ thủ</h3>
-                <div id="radicalsGrid" class="animate-fadeIn">
-                    <!-- Will be populated by JavaScript -->
-                </div>
-            </section>
-
-            <!-- Detail Card -->
-            <section id="detailCard" class="hidden bg-white rounded-2xl shadow-lg p-8 md:p-10 space-y-8 border-2 border-primary/20 animate-slideDown">
-                <div class="flex items-start justify-between gap-6">
-                    <div class="flex-1">
-                        <h3 class="text-lg font-bold text-on-surface-variant mb-2 uppercase tracking-wider">Bộ thủ</h3>
-                        <div class="flex items-end gap-4">
-                            <span id="detailCharacter" class="text-7xl md:text-8xl font-black text-primary">字</span>
+        <div class="p-4 md:p-8 @container max-w-5xl mx-auto">
+            <div class="grid grid-cols-12 gap-x-4 gap-y-6">
+                <!-- Header Section -->
+                <section class="col-span-12">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-2 animate-slideDown">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-primary-container text-on-primary-container rounded-2xl flex items-center justify-center shadow-sm shrink-0">
+                                <span class="material-symbols-outlined text-2xl">category</span>
+                            </div>
                             <div>
-                                <p id="detailPinyin" class="text-2xl md:text-3xl font-bold text-primary mb-1">pīnyīn</p>
-                                <p id="detailMeaning" class="text-on-surface-variant text-base md:text-lg font-semibold">Ý nghĩa</p>
+                                <h1 class="text-3xl font-bold text-on-surface tracking-tight">214 Bộ Thủ</h1>
+                                <p class="text-on-surface-variant text-sm font-medium mt-0.5">Các yếu tố cơ bản trong chữ Hán</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Compact Stats Inline Bar -->
+                        <div class="flex items-center bg-surface-container-low p-1.5 rounded-2xl border border-outline-variant/30 shadow-sm shrink-0 w-full md:w-auto">
+                            <div class="flex-1 px-4 md:px-5 py-1 text-center border-r border-outline-variant/20">
+                                <p class="text-[9px] text-on-surface-variant uppercase font-bold tracking-wider mb-0.5">Tổng số</p>
+                                <p class="text-lg font-bold text-primary leading-none" id="totalCount">214</p>
+                            </div>
+                            <div class="flex-1 px-4 md:px-5 py-1 text-center border-r border-outline-variant/20">
+                                <p class="text-[9px] text-on-surface-variant uppercase font-bold tracking-wider mb-0.5">Tìm thấy</p>
+                                <p class="text-lg font-bold text-primary leading-none" id="resultCount">0</p>
+                            </div>
+                            <div class="flex-1 px-4 md:px-5 py-1 text-center hidden md:block">
+                                <p class="text-[9px] text-on-surface-variant uppercase font-bold tracking-wider mb-0.5">Đã xem</p>
+                                <p class="text-lg font-bold text-tertiary leading-none">1</p>
                             </div>
                         </div>
                     </div>
-                    <button onclick="closeDetail()" class="p-2 hover:bg-surface-container-low rounded-lg transition-colors flex-shrink-0">
-                        <span class="material-symbols-outlined text-on-surface-variant text-2xl">close</span>
-                    </button>
+                </section>
+
+                <!-- Search & Filter Section -->
+                <section class="col-span-12 border-b border-outline-variant/20 pb-6 mb-2">
+                    <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center sm:justify-between">
+                        <div class="relative w-full sm:w-auto flex-1 max-w-md">
+                            <input
+                                id="searchInput"
+                                type="text"
+                                placeholder="Tìm kiếm bộ thủ (ký tự, pinyin)..."
+                                class="w-full bg-surface-container border border-outline-variant/20 focus:ring-2 focus:ring-primary py-2.5 px-10 rounded-2xl shadow-sm text-on-surface transition-all text-sm font-medium"
+                            />
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant text-lg">search</span>
+                        </div>
+                        <div class="flex gap-2 w-full sm:w-auto flex-wrap sm:flex-nowrap">
+                            <select
+                                id="filterSelect"
+                                class="w-full sm:w-auto bg-surface-container border border-outline-variant/20 focus:ring-2 focus:ring-primary py-2.5 px-4 pr-10 rounded-2xl shadow-sm text-on-surface transition-all text-sm font-medium">
+                                <option value="">Tất cả phân loại</option>
+                                <option value="common">Thường dùng</option>
+                                <option value="uncommon">Ít dùng</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Description & Loading -->
+                <div class="col-span-12 flex justify-between items-center -mt-2">
+                    <p class="text-on-surface-variant text-sm pl-1 font-medium">
+                        Khám phá tất cả 214 bộ thủ chuẩn và hiểu rõ cấu trúc của chữ Trung Quốc.
+                    </p>
+                    <div id="loadingSpinner" class="hidden items-center gap-2 text-on-surface-variant">
+                        <div class="w-4 h-4 border-2 border-outline-variant border-t-primary rounded-full animate-spin"></div>
+                        <span class="text-xs font-bold tracking-wide">Đang tải...</span>
+                    </div>
                 </div>
 
-                <!-- Detail Info Grid -->
-                <div class="grid md:grid-cols-3 gap-6 border-t border-outline-variant/20 pt-8">
-                    <div>
-                        <h4 class="font-bold text-on-surface mb-3 uppercase tracking-wider text-sm">Số nét</h4>
-                        <div class="bg-primary/10 px-4 py-3 rounded-xl">
-                            <p id="detailStrokes" class="text-on-surface font-black text-2xl">-</p>
-                        </div>
+                <!-- Radicals Grid -->
+                <section class="col-span-12">
+                    <div id="radicalsGrid" class="animate-fadeIn">
+                        <!-- Will be populated by JavaScript -->
                     </div>
-                    <div>
-                        <h4 class="font-bold text-on-surface mb-3 uppercase tracking-wider text-sm">Bộ thủ #</h4>
-                        <div class="bg-secondary-container/20 px-4 py-3 rounded-xl">
-                            <p id="detailNumber" class="text-on-surface font-black text-2xl">-</p>
-                        </div>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-on-surface mb-3 uppercase tracking-wider text-sm">Phân loại</h4>
-                        <div class="bg-tertiary-container/20 px-4 py-3 rounded-xl">
-                            <p id="detailCategory" class="text-on-surface font-bold capitalize">-</p>
-                        </div>
-                    </div>
-                </div>
+                </section>
 
-                <!-- Examples Section -->
-                <div class="border-t border-outline-variant/20 pt-8">
-                    <h4 class="font-bold text-on-surface mb-4 uppercase tracking-wider text-sm flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary">example</span>
-                        Ví dụ từ vựng
-                    </h4>
-                    <div id="detailExamples" class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                        <!-- Examples will be populated -->
+            <!-- Detail Card Modal -->
+            <div id="detailCard" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+                <!-- Backdrop -->
+                <div class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onclick="closeDetail()"></div>
+                
+                <!-- Modal Content -->
+                <div class="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden animate-slideDown flex flex-col max-h-[90vh]">
+                    <!-- Header -->
+                    <div class="px-6 py-5 border-b border-outline-variant/20 flex items-center justify-between bg-surface-container-lowest sticky top-0 z-10">
+                        <h3 class="text-lg font-bold text-on-surface-variant flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">category</span>
+                            Chi tiết bộ thủ
+                        </h3>
+                        <button onclick="closeDetail()" class="p-2 hover:bg-surface-container-low rounded-full transition-colors flex-shrink-0 text-on-surface-variant hover:text-error transition-smooth">
+                            <span class="material-symbols-outlined text-xl">close</span>
+                        </button>
+                    </div>
+
+                    <!-- Body -->
+                    <div class="p-6 md:p-8 overflow-y-auto space-y-6">
+                        <!-- Main Char Info -->
+                        <div class="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
+                            <div class="w-32 h-32 md:w-40 md:h-40 flex items-center justify-center bg-primary-container/30 rounded-3xl border-2 border-primary/20 flex-shrink-0">
+                                <span id="detailCharacter" class="text-7xl md:text-8xl font-black text-primary drop-shadow-sm">字</span>
+                            </div>
+                            <div class="flex-1 space-y-3 text-center md:text-left">
+                                <div>
+                                    <p id="detailPinyin" class="text-3xl md:text-4xl font-black text-on-surface mb-1">pīnyīn</p>
+                                    <p id="detailMeaning" class="text-primary text-lg md:text-xl font-bold">Ý nghĩa</p>
+                                </div>
+                                <div class="grid grid-cols-3 gap-3 pt-3">
+                                    <div class="bg-surface-container-low p-3 rounded-xl border border-outline-variant/10 text-center">
+                                        <p class="text-[10px] md:text-xs text-on-surface-variant font-bold uppercase mb-1">Số nét</p>
+                                        <p id="detailStrokes" class="text-xl md:text-2xl font-black text-on-surface">-</p>
+                                    </div>
+                                    <div class="bg-surface-container-low p-3 rounded-xl border border-outline-variant/10 text-center">
+                                        <p class="text-[10px] md:text-xs text-on-surface-variant font-bold uppercase mb-1">Bộ thủ #</p>
+                                        <p id="detailNumber" class="text-xl md:text-2xl font-black text-on-surface">-</p>
+                                    </div>
+                                    <div class="bg-surface-container-low p-3 rounded-xl border border-outline-variant/10 text-center">
+                                        <p class="text-[10px] md:text-xs text-on-surface-variant font-bold uppercase mb-1">Phân loại</p>
+                                        <p id="detailCategory" class="text-sm font-bold text-on-surface truncate capitalize">-</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Examples Section -->
+                        <div class="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-5">
+                            <h4 class="font-bold text-on-surface mb-4 uppercase tracking-wider text-sm flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary text-lg">hotel_class</span>
+                                Ví dụ từ vựng
+                            </h4>
+                            <div id="detailExamples" class="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                                <!-- Examples will be populated -->
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </section>
+            </div>
 
             <!-- Empty State -->
-            <div id="emptyState" class="hidden text-center py-12">
-                <span class="text-6xl mb-4 block">🔍</span>
+            <div id="emptyState" class="col-span-12 hidden text-center py-12">
+                <span class="material-symbols-outlined text-5xl text-outline-variant mb-2">search_off</span>
                 <p class="text-on-surface-variant font-semibold">Không tìm thấy kết quả nào</p>
             </div>
         </div>
 
         <!-- Footer -->
-        <footer class="p-12 text-center text-on-surface-variant opacity-40 border-t border-outline-variant/10">
-            <p class="text-sm font-medium tracking-widest uppercase">The Living Scroll • © 2024</p>
+        <footer class="p-12 text-center text-on-surface-variant opacity-60">
+            <p class="text-xs font-medium tracking-widest uppercase">VocabHero • © 2024</p>
         </footer>
     </main>
 </div>
@@ -291,16 +290,47 @@
 <script>
     let allRadicals = [];
     const radicalsData = [
-        { number: 1, char: '一', pinyin: 'yī', meaning: 'Một', strokes: 1, category: 'common', examples: ['二', '三', '万', '上'] },
-        { number: 2, char: '丨', pinyin: 'shù', meaning: 'Dọc', strokes: 1, category: 'common', examples: ['中', '长', '高', '册'] },
-        { number: 3, char: '丶', pinyin: 'zhǔ', meaning: 'Chấm', strokes: 1, category: 'uncommon', examples: ['衣', '小', '亡'] },
-        { number: 4, char: '丿', pinyin: 'piě', meaning: 'Ngoặc lệch trái', strokes: 1, category: 'uncommon', examples: ['八', '人', '力', '刀'] },
-        { number: 5, char: '乙', pinyin: 'yǐ', meaning: 'Cong', strokes: 1, category: 'uncommon', examples: ['乛', '乜', '乞', '也'] },
-        { number: 10, char: '儿', pinyin: 'ér', meaning: 'Con trai', strokes: 2, category: 'common', examples: ['先', '光', '党', '兆'] },
-        { number: 39, char: '子', pinyin: 'zǐ', meaning: 'Con trai, em bé', strokes: 3, category: 'common', examples: ['孙', '孩', '孕', '孔'] },
-        { number: 60, char: '彳', pinyin: 'chì', meaning: 'Bước đi', strokes: 3, category: 'common', examples: ['行', '衍', '很', '待'] },
-        { number: 85, char: '水', pinyin: 'shuǐ', meaning: 'Nước', strokes: 4, category: 'common', examples: ['泳', '泪', '海', '河'] },
-        { number: 129, char: '言', pinyin: 'yán', meaning: 'Nói, lời', strokes: 7, category: 'common', examples: ['谈', '语', '说', '读'] },
+        // 8 nét
+        { number: 167, char: '金', pinyin: 'jīn', meaning: 'Kim loại, vàng', strokes: 8, category: 'common', examples: ['钱', '钟', '银', '铜'] },
+        { number: 168, char: '长', pinyin: 'cháng', meaning: 'Dài, trưởng', strokes: 8, category: 'common', examples: ['长', '常', '张', '胀'] },
+        { number: 169, char: '门', pinyin: 'mén', meaning: 'Cửa hai cánh', strokes: 8, category: 'common', examples: ['闭', '闻', '闲', '间'] },
+        { number: 170, char: '阜', pinyin: 'fù', meaning: 'Gò đất, đống đất', strokes: 8, category: 'uncommon', examples: ['阶', '陆', '陰', '陳'] },
+        { number: 171, char: '隶', pinyin: 'lì', meaning: 'Kịp, theo kịp', strokes: 8, category: 'uncommon', examples: ['隶', '隷'] },
+        { number: 172, char: '隹', pinyin: 'zhuī', meaning: 'Chim đuôi ngắn', strokes: 8, category: 'uncommon', examples: ['雄', '雉', '雊'] },
+        { number: 173, char: '雨', pinyin: 'yǔ', meaning: 'Mưa', strokes: 8, category: 'common', examples: ['雲', '雪', '雷', '霸'] },
+        { number: 174, char: '青', pinyin: 'qīng', meaning: 'Màu xanh', strokes: 8, category: 'common', examples: ['清', '靖', '静', '请'] },
+        { number: 175, char: '非', pinyin: 'fēi', meaning: 'Sai, không', strokes: 8, category: 'uncommon', examples: ['飞', '非'] },
+        
+        // 9 nét
+        { number: 176, char: '面', pinyin: 'miàn', meaning: 'Mặt, bề mặt', strokes: 9, category: 'common', examples: ['面', '膜', '霸'] },
+        { number: 177, char: '革', pinyin: 'gé', meaning: 'Da thú, thay đổi', strokes: 9, category: 'common', examples: ['皮', '靴', '靳', '靶'] },
+        { number: 178, char: '韦', pinyin: 'wéi', meaning: 'Da đã thuộc', strokes: 9, category: 'uncommon', examples: ['韦'] },
+        { number: 179, char: '韭', pinyin: 'jiǔ', meaning: 'Rau hẹ', strokes: 9, category: 'uncommon', examples: ['韭'] },
+        { number: 180, char: '音', pinyin: 'yīn', meaning: 'Âm thanh', strokes: 9, category: 'common', examples: ['音', '韵', '蔦', '暗'] },
+        { number: 181, char: '页', pinyin: 'yè', meaning: 'Đầu, trang giấy', strokes: 9, category: 'common', examples: ['頭', '頡', '頤', '顏'] },
+        { number: 182, char: '风', pinyin: 'fēng', meaning: 'Gió', strokes: 9, category: 'common', examples: ['风', '飘', '飞', '飞'] },
+        { number: 183, char: '飞', pinyin: 'fēi', meaning: 'Bay', strokes: 9, category: 'common', examples: ['飞', '飘', '飞'] },
+        { number: 184, char: '食', pinyin: 'shí', meaning: 'Ăn', strokes: 9, category: 'common', examples: ['食', '饭', '餐', '飧'] },
+        { number: 185, char: '首', pinyin: 'shǒu', meaning: 'Đầu', strokes: 9, category: 'common', examples: ['首', '香', '马'] },
+        { number: 186, char: '香', pinyin: 'xiāng', meaning: 'Mùi thơm', strokes: 9, category: 'common', examples: ['香', '馨', '馥'] },
+        
+        // 10 nét
+        { number: 187, char: '马', pinyin: 'mǎ', meaning: 'Con ngựa', strokes: 10, category: 'common', examples: ['马', '驾', '驯', '驰'] },
+        { number: 188, char: '骨', pinyin: 'gǔ', meaning: 'Xương', strokes: 10, category: 'common', examples: ['骨', '骼'] },
+        { number: 189, char: '高', pinyin: 'gāo', meaning: 'Cao', strokes: 10, category: 'common', examples: ['高', '膏', '糕'] },
+        { number: 190, char: '髟', pinyin: 'biāo', meaning: 'Tóc dài', strokes: 10, category: 'uncommon', examples: ['髦', '髭', '髮'] },
+        { number: 191, char: '鬥', pinyin: 'dòu', meaning: 'Chiến đấu', strokes: 10, category: 'uncommon', examples: ['鬥'] },
+        { number: 192, char: '鬯', pinyin: 'chàng', meaning: 'Rượu nếp', strokes: 10, category: 'uncommon', examples: ['鬯'] },
+        { number: 193, char: '鬲', pinyin: 'gé', meaning: 'Cái đỉnh, nồi cổ', strokes: 10, category: 'uncommon', examples: ['鬲'] },
+        { number: 194, char: '鬼', pinyin: 'guǐ', meaning: 'Con quỷ', strokes: 10, category: 'common', examples: ['鬼', '魃', '魅'] },
+        
+        // 11 nét
+        { number: 195, char: '鱼', pinyin: 'yú', meaning: 'Con cá', strokes: 11, category: 'common', examples: ['鱼', '鲁', '鲔'] },
+        { number: 196, char: '鸟', pinyin: 'niǎo', meaning: 'Con chim', strokes: 11, category: 'common', examples: ['鸟', '鹅', '鹦', '鹫'] },
+        { number: 197, char: '卤', pinyin: 'lǔ', meaning: 'Đất mặn', strokes: 11, category: 'uncommon', examples: ['卤'] },
+        { number: 198, char: '鹿', pinyin: 'lù', meaning: 'Con hươu', strokes: 11, category: 'uncommon', examples: ['鹿'] },
+        { number: 199, char: '麦', pinyin: 'mài', meaning: 'Lúa mạch', strokes: 11, category: 'common', examples: ['麦', '麸'] },
+        { number: 200, char: '麻', pinyin: 'má', meaning: 'Cây gai', strokes: 11, category: 'uncommon', examples: ['麻', '麽'] },
     ];
 
     function loadRadicals() {
@@ -326,7 +356,7 @@
         
         radicals.forEach(radical => {
             const card = document.createElement('button');
-            card.className = 'radical-card p-4 md:p-6 rounded-xl hover:shadow-lg transition-smooth text-center flex flex-col items-center justify-center h-28 md:h-32';
+            card.className = 'radical-card p-4 md:p-6 rounded-[1.25rem] hover:shadow-lg transition-smooth text-center flex flex-col items-center justify-center h-28 md:h-32 bg-surface-container-lowest';
             card.onclick = () => showDetail(radical);
             card.innerHTML = `
                 <div class="text-4xl md:text-5xl font-black text-primary mb-2">${radical.char}</div>
@@ -347,17 +377,18 @@
         
         const examplesDiv = document.getElementById('detailExamples');
         examplesDiv.innerHTML = (radical.examples || []).map(ex => `
-            <div class="bg-surface-container-low p-4 rounded-xl border border-outline-variant/20 hover:border-primary/40 transition-colors">
+            <div class="bg-surface-container hover:bg-surface-container-highest p-3 rounded-xl border border-outline-variant/20 hover:border-primary/40 transition-colors text-center cursor-default">
                 <p class="text-2xl font-bold text-primary">${ex}</p>
             </div>
         `).join('');
         
         detailCard.classList.remove('hidden');
-        detailCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        document.body.style.overflow = 'hidden';
     }
 
     function closeDetail() {
         document.getElementById('detailCard').classList.add('hidden');
+        document.body.style.overflow = '';
     }
 
     document.getElementById('searchInput').addEventListener('input', (e) => {
