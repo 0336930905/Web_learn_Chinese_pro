@@ -281,13 +281,22 @@
                     <p class="text-xs text-text-secondary dark:text-primary/60 mt-0.5">Chọn bộ từ để luyện tập hoặc tạo bộ từ mới</p>
                   </div>
                 </div>
-                <button onclick="openCustomForm()"
-                  class="flex items-center gap-2 px-5 py-2.5 bg-primary text-text-main text-sm font-bold rounded-2xl
-                  shadow-fun hover:shadow-fun-hover hover:brightness-105 active:scale-95 transition-all shrink-0">
-                  <span class="material-symbols-outlined text-base">add</span>
-                  <span class="hidden sm:inline">Tạo bộ từ mới</span>
-                  <span class="sm:hidden">Tao mới</span>
-                </button>
+                <div class="flex items-center gap-2 shrink-0">
+                  <button onclick="switchTab('multi')"
+                    class="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-bold rounded-2xl
+                    shadow-fun hover:shadow-fun-hover hover:brightness-110 active:scale-95 transition-all">
+                    <span class="material-symbols-outlined text-base">collections</span>
+                    <span class="hidden sm:inline">Luyện tập nhiều</span>
+                    <span class="sm:hidden">Nhiều bộ</span>
+                  </button>
+                  <button onclick="openCustomForm()"
+                    class="flex items-center gap-2 px-5 py-2.5 bg-primary text-text-main text-sm font-bold rounded-2xl
+                    shadow-fun hover:shadow-fun-hover hover:brightness-105 active:scale-95 transition-all">
+                    <span class="material-symbols-outlined text-base">add</span>
+                    <span class="hidden sm:inline">Tạo bộ từ mới</span>
+                    <span class="sm:hidden">Tao mới</span>
+                  </button>
+                </div>
               </div>
               <!-- Form mode header (hidden) -->
               <div id="customHeaderForm" class="hidden flex items-center gap-3">
