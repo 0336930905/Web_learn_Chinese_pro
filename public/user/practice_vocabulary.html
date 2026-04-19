@@ -1717,7 +1717,7 @@ async function startMultiCustomPractice() {
   
   // Load all words from selected sets
   try {
-    practiceWords = [];
+    let practiceWordsTemp = [];
     let wordIds = new Set();
     const selectedSetIds = new Set(selectedCustomSets.map(s => s.id));
     
@@ -1729,34 +1729,69 @@ async function startMultiCustomPractice() {
       if (selectedSetIds.has(set._id)) {
         for (const word of (set.words || [])) {
           if (!wordIds.has(word.hanzi)) {
-            practiceWords.push({ ...word, sourceSet: set.name, setId: set._id });
+            practiceWordsTemp.push({ ...word, sourceSet: set.name, setId: set._id });
             wordIds.add(word.hanzi);
           }
         }
       }
     }
     
-    if (practiceWords.length === 0) {
+    if (practiceWordsTemp.length === 0) {
       showToast('Các bộ từ không chứa từ nào', 'warning');
       return;
     }
-    
-    // Start practice
-    multiPracticeMode = true;
-    practiceWords.sort(() => Math.random() - 0.5);
+
+    // Show practice UI and ask user to pick input method
+    const setupPanel = document.getElementById('setupPanel');
+    const resultsPanel = document.getElementById('resultsPanel');
+    const practicePanel = document.getElementById('practicePanel');
+
+    inputMode = null;
+    practiceWords = [];
     currentIdx = 0;
-    sessionResults = [];
-    sessionStartTime = Date.now();
     correctCount = 0;
     wrongCount = 0;
-    
-    closeMultiCustomSetsModal();
-    document.getElementById('setupPanel').classList.add('hidden');
-    document.getElementById('practicePanel').classList.remove('hidden');
-    openInputModePicker();
+    sessionResults = [];
+    sessionStartTime = 0;
+    multiPracticeMode = true;
+
+    setupPanel.classList.add('hidden');
+    resultsPanel.classList.add('hidden');
+    practicePanel.classList.remove('hidden');
+
+    const chosenMode = await openInputModePicker();
+    if (!chosenMode) {
+      multiPracticeMode = false;
+      practicePanel.classList.add('hidden');
+      setupPanel.classList.remove('hidden');
+      return;
+    }
+
+    // Filter words based on chosen mode
+    const filtered = filterWordsForInputMode(practiceWordsTemp, chosenMode);
+    if (filtered.length < 2) {
+      showToast('Chế độ này cần ít nhất 2 từ có dữ liệu phù hợp (Pinyin/Nghĩa).', 'error');
+      inputMode = null;
+      multiPracticeMode = false;
+      practicePanel.classList.add('hidden');
+      setupPanel.classList.remove('hidden');
+      return;
+    }
+
+    inputMode = chosenMode;
+    practiceWords = vocabOrder === 'random' ? shuffle([...filtered]) : [...filtered];
+    currentIdx = 0;
+    correctCount = 0;
+    wrongCount = 0;
+    sessionResults = [];
+    sessionStartTime = Date.now();
+
+    updateProgress();
+    renderCurrentCard();
     
   } catch (e) {
     showToast('Lỗi tải bộ từ: ' + e.message, 'error');
+    multiPracticeMode = false;
   }
 }
 
@@ -2082,10 +2117,24 @@ function renderCurrentCard() {
   const pinyinEl = document.getElementById('gamePinyin');
   const meaningEl = document.getElementById('gameMeaning');
 
+  // CLEAR ALL PREVIOUS DATA COMPLETELY
+  if (hanziEl) {
+    hanziEl.textContent = '';
+    hanziEl.innerHTML = '';
+    hanziEl.classList.remove('hidden');
+  }
+  if (pinyinEl) {
+    pinyinEl.textContent = '';
+    pinyinEl.innerHTML = '';
+    pinyinEl.classList.remove('hidden');
+  }
+  if (meaningEl) {
+    meaningEl.textContent = '';
+    meaningEl.innerHTML = '';
+    meaningEl.classList.add('hidden');
+  }
+
   applyInputModeUI();
-  hanziEl.textContent = '';
-  pinyinEl.textContent = '';
-  meaningEl.textContent = '';
 
   if (inputMode === 'vietnamese_to_pinyin' || inputMode === 'vietnamese_to_hanzi') {
     meaningEl.textContent = w.meaning || '';
@@ -2095,7 +2144,7 @@ function renderCurrentCard() {
       class="flex items-center gap-3 px-6 py-4 rounded-2xl bg-teal-50 dark:bg-teal-900/20 border-2 border-teal-300 dark:border-teal-700
       text-teal-600 dark:text-teal-400 hover:bg-teal-100 transition-all active:scale-95 shadow-sm mt-2">
       <span class="material-symbols-outlined text-4xl" style="font-variation-settings:'FILL' 1">volume_up</span>
-      <span class="text-2xl font-extrabold">Nghe l\u1ea1i</span>
+      <span class="text-2xl font-extrabold">Nghe lại</span>
     </button>`;
     hanziEl.classList.remove('hidden');
   } else {
