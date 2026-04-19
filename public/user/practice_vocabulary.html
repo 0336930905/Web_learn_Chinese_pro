@@ -1966,13 +1966,18 @@ async function startPractice() {
   wrongCount = 0;
   sessionResults = [];
   sessionStartTime = 0;
+  multiPracticeMode = false;
 
   setupPanel.classList.add('hidden');
   resultsPanel.classList.add('hidden');
   practicePanel.classList.remove('hidden');
 
   const chosenMode = await openInputModePicker();
-  if (!chosenMode) return; // user cancelled
+  if (!chosenMode) {
+    practicePanel.classList.add('hidden');
+    setupPanel.classList.remove('hidden');
+    return;
+  }
 
   const filtered = filterWordsForInputMode(words, chosenMode);
   if (filtered.length < 2) {
@@ -2117,21 +2122,18 @@ function renderCurrentCard() {
   const pinyinEl = document.getElementById('gamePinyin');
   const meaningEl = document.getElementById('gameMeaning');
 
-  // CLEAR ALL PREVIOUS DATA COMPLETELY
+  // CLEAR ALL PREVIOUS DATA COMPLETELY (but don't touch visibility yet)
   if (hanziEl) {
     hanziEl.textContent = '';
     hanziEl.innerHTML = '';
-    hanziEl.classList.remove('hidden');
   }
   if (pinyinEl) {
     pinyinEl.textContent = '';
     pinyinEl.innerHTML = '';
-    pinyinEl.classList.remove('hidden');
   }
   if (meaningEl) {
     meaningEl.textContent = '';
     meaningEl.innerHTML = '';
-    meaningEl.classList.add('hidden');
   }
 
   applyInputModeUI();
