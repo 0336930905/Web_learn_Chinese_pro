@@ -282,7 +282,7 @@
                   </div>
                 </div>
                 <div class="flex items-center gap-2 shrink-0">
-                  <button onclick="switchTab('multi')"
+                  <button onclick="openMultiCustomSetsPicker()"
                     class="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-bold rounded-2xl
                     shadow-fun hover:shadow-fun-hover hover:brightness-110 active:scale-95 transition-all">
                     <span class="material-symbols-outlined text-base">collections</span>
@@ -992,6 +992,60 @@
   </main>
 </div>
 
+<!-- ====== MULTI CUSTOM SETS PICKER MODAL ====== -->
+<div id="multiCustomSetsModal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center px-3 pb-3 sm:pb-0 bg-black/50 backdrop-blur-sm">
+  <div class="bg-white dark:bg-card-dark rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-purple-100/60 via-pink-50/40 to-transparent dark:from-purple-900/30 dark:via-pink-900/20 dark:to-transparent px-6 py-5 border-b border-gray-100 dark:border-green-900/20 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-purple-400 to-pink-500 text-white flex items-center justify-center text-lg shadow-lg">📚</div>
+        <div>
+          <h2 class="font-extrabold text-base text-text-main dark:text-white">Luyện tập nhiều bộ từ cá nhân</h2>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Chọn tối đa 5 bộ để luyện tập cùng lúc</p>
+        </div>
+      </div>
+      <button onclick="closeMultiCustomSetsModal()" class="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hover:text-red-500 transition-all">
+        <span class="material-symbols-outlined text-lg">close</span>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6 max-h-[70vh] overflow-y-auto">
+      <div id="multiCustomSetsLoading" class="flex items-center justify-center py-8">
+        <div class="animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
+      </div>
+      <div id="multiCustomSetsList" class="hidden space-y-2">
+        <!-- Populated by openMultiCustomSetsPicker() -->
+      </div>
+      <div id="multiCustomSetsEmpty" class="hidden text-center py-8">
+        <div class="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-3">
+          <span class="material-symbols-outlined text-4xl text-gray-400">folder_off</span>
+        </div>
+        <p class="font-semibold text-gray-600 dark:text-gray-300">Bạn chưa có bộ từ nào</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Hãy tạo bộ từ trước khi luyện tập</p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="bg-gray-50 dark:bg-background-dark px-6 py-4 border-t border-gray-100 dark:border-green-900/20 flex gap-3">
+      <button onclick="closeMultiCustomSetsModal()" class="flex-1 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold rounded-2xl hover:bg-gray-300 dark:hover:bg-gray-600 transition-all">
+        Hủy
+      </button>
+      <button id="startMultiCustomBtn" onclick="startMultiCustomPractice()" disabled class="flex-1 py-3 bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-300 font-bold rounded-2xl disabled:opacity-50 transition-all flex items-center justify-center gap-2">
+        <span class="material-symbols-outlined text-lg">play_arrow</span>
+        Bắt đầu (chọn ít nhất 1)
+      </button>
+    </div>
+
+    <!-- Info Bar -->
+    <div class="bg-primary/10 dark:bg-primary/20 px-6 py-3 border-t border-primary/20 dark:border-primary/30 flex items-center justify-between">
+      <span class="text-sm font-semibold text-primary">
+        Đã chọn: <span id="multiCustomSetCount">0</span>/5 bộ • <span id="multiCustomWordCount">0</span> từ
+      </span>
+    </div>
+  </div>
+</div>
+
 <!-- ====== VOICE PICKER MODAL ====== -->
 <div id="voicePickerModal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center px-4 pb-0 sm:pb-4 bg-black/50 backdrop-blur-sm">
   <div class="bg-white dark:bg-card-dark rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-md">
@@ -1488,6 +1542,153 @@ async function deleteCustomSet(setId, btn) {
     if (res.success) { btn.closest('.group').remove(); showToast('Đã xóa bộ từ', 'success'); }
     else showToast(res.error?.message || 'Xóa thất bại', 'error');
   } catch (e) { showToast('Lỗi: ' + e.message, 'error'); }
+}
+
+// ==================== MULTI CUSTOM SETS PICKER ====================
+let selectedCustomSets = []; // For multi-practice with custom sets
+
+async function openMultiCustomSetsPicker() {
+  const modal = document.getElementById('multiCustomSetsModal');
+  const loading = document.getElementById('multiCustomSetsLoading');
+  const listDiv = document.getElementById('multiCustomSetsList');
+  const emptyDiv = document.getElementById('multiCustomSetsEmpty');
+  
+  modal.classList.remove('hidden');
+  selectedCustomSets = [];
+  updateMultiCustomSetInfo();
+  
+  // Load saved sets
+  loading.classList.remove('hidden');
+  listDiv.classList.add('hidden');
+  emptyDiv.classList.add('hidden');
+  
+  try {
+    const res = await authAPI.get('/practice/custom-sets');
+    const sets = res.data || [];
+    
+    loading.classList.add('hidden');
+    
+    if (sets.length === 0) {
+      emptyDiv.classList.remove('hidden');
+      return;
+    }
+    
+    listDiv.classList.remove('hidden');
+    listDiv.innerHTML = sets.map(set => `
+      <label class="flex items-start gap-3 p-3 rounded-xl bg-gray-50 dark:bg-background-dark border border-gray-200 dark:border-green-900/30 cursor-pointer hover:border-primary hover:bg-primary/5 transition-all group">
+        <input type="checkbox" value="${set._id}" data-wordcount="${(set.words || []).length}" onchange="updateMultiCustomSetSelection(this)" 
+          class="mt-1 w-4 h-4 rounded border-2 border-primary/40 accent-primary cursor-pointer">
+        <div class="flex-1 min-w-0">
+          <div class="font-semibold text-sm text-text-main dark:text-white">${esc(set.name)}</div>
+          <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+            ${set.folderName ? `<span class="material-symbols-outlined text-xs align-middle">folder</span> ${esc(set.folderName)} • ` : ''}
+            ${(set.words || []).length} từ
+          </div>
+        </div>
+        <span class="text-xs font-bold text-primary bg-primary/20 px-2 py-0.5 rounded-full whitespace-nowrap mt-0.5">${(set.words || []).length}</span>
+      </label>
+    `).join('');
+    
+  } catch (e) {
+    loading.classList.add('hidden');
+    loading.innerHTML = `<p class="text-red-500 text-sm">Lỗi tải dữ liệu: ${e.message}</p>`;
+  }
+}
+
+function closeMultiCustomSetsModal() {
+  document.getElementById('multiCustomSetsModal').classList.add('hidden');
+  selectedCustomSets = [];
+}
+
+function updateMultiCustomSetSelection(checkbox) {
+  const maxSets = 5;
+  const allChecked = document.querySelectorAll('#multiCustomSetsList input[type="checkbox"]:checked');
+  
+  if (allChecked.length > maxSets) {
+    checkbox.checked = false;
+    showToast(`Chỉ có thể chọn tối đa ${maxSets} bộ từ`, 'warning');
+    return;
+  }
+  
+  selectedCustomSets = Array.from(allChecked).map(cb => ({
+    id: cb.value,
+    wordCount: parseInt(cb.dataset.wordcount) || 0
+  }));
+  
+  updateMultiCustomSetInfo();
+}
+
+function updateMultiCustomSetInfo() {
+  const countBadge = document.getElementById('multiCustomSetCount');
+  const wordBadge = document.getElementById('multiCustomWordCount');
+  const startBtn = document.getElementById('startMultiCustomBtn');
+  
+  countBadge.textContent = selectedCustomSets.length;
+  
+  const totalWords = selectedCustomSets.reduce((sum, set) => sum + set.wordCount, 0);
+  wordBadge.textContent = totalWords;
+  
+  startBtn.disabled = selectedCustomSets.length === 0;
+  if (selectedCustomSets.length === 0) {
+    startBtn.classList.remove('bg-primary', 'shadow-fun', 'hover:shadow-fun-hover', 'text-text-main');
+    startBtn.classList.add('bg-gray-300', 'dark:bg-gray-600', 'text-gray-500', 'dark:text-gray-300');
+    startBtn.textContent = '▶ Bắt đầu (chọn ít nhất 1)';
+  } else {
+    startBtn.classList.add('bg-primary', 'shadow-fun', 'hover:shadow-fun-hover', 'text-text-main');
+    startBtn.classList.remove('bg-gray-300', 'dark:bg-gray-600', 'text-gray-500', 'dark:text-gray-300');
+    startBtn.innerHTML = '<span class="material-symbols-outlined text-lg">play_arrow</span>Bắt đầu luyện tập';
+  }
+}
+
+async function startMultiCustomPractice() {
+  if (selectedCustomSets.length === 0) {
+    showToast('Vui lòng chọn ít nhất 1 bộ từ', 'warning');
+    return;
+  }
+  
+  // Load all words from selected sets
+  try {
+    practiceWords = [];
+    let wordIds = new Set();
+    const selectedSetIds = new Set(selectedCustomSets.map(s => s.id));
+    
+    // Get all custom sets data
+    const res = await authAPI.get('/practice/custom-sets');
+    const allSets = res.data || [];
+    
+    for (const set of allSets) {
+      if (selectedSetIds.has(set._id)) {
+        for (const word of (set.words || [])) {
+          if (!wordIds.has(word.hanzi)) {
+            practiceWords.push({ ...word, sourceSet: set.name, setId: set._id });
+            wordIds.add(word.hanzi);
+          }
+        }
+      }
+    }
+    
+    if (practiceWords.length === 0) {
+      showToast('Các bộ từ không chứa từ nào', 'warning');
+      return;
+    }
+    
+    // Start practice
+    multiPracticeMode = true;
+    practiceWords.sort(() => Math.random() - 0.5);
+    currentIdx = 0;
+    sessionResults = [];
+    sessionStartTime = Date.now();
+    correctCount = 0;
+    wrongCount = 0;
+    
+    closeMultiCustomSetsModal();
+    document.getElementById('setupPanel').classList.add('hidden');
+    document.getElementById('practicePanel').classList.remove('hidden');
+    openInputModePicker();
+    
+  } catch (e) {
+    showToast('Lỗi tải bộ từ: ' + e.message, 'error');
+  }
 }
 
 // ==================== MULTI-SET PRACTICE ====================
