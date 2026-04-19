@@ -1745,6 +1745,7 @@ async function startMultiCustomPractice() {
     const setupPanel = document.getElementById('setupPanel');
     const resultsPanel = document.getElementById('resultsPanel');
     const practicePanel = document.getElementById('practicePanel');
+    const multiCustomSetsModal = document.getElementById('multiCustomSetsModal');
 
     inputMode = null;
     practiceWords = [];
@@ -1755,6 +1756,8 @@ async function startMultiCustomPractice() {
     sessionStartTime = 0;
     multiPracticeMode = true;
 
+    // Close the modal and hide setup panel
+    multiCustomSetsModal.classList.add('hidden');
     setupPanel.classList.add('hidden');
     resultsPanel.classList.add('hidden');
     practicePanel.classList.remove('hidden');
