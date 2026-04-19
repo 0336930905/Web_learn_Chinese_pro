@@ -1011,18 +1011,45 @@
 
     <!-- Body -->
     <div class="p-6 max-h-[70vh] overflow-y-auto">
+      <!-- Search and Sort Controls -->
+      <div class="flex gap-3 mb-4 sticky top-0 bg-white dark:bg-card-dark z-10">
+        <div class="flex-1 relative">
+          <input type="text" id="multiCustomSetsSearch" placeholder="Tìm bộ từ..." 
+            oninput="filterMultiCustomSets()"
+            class="w-full px-4 py-2.5 text-sm bg-gray-100 dark:bg-background-dark border-2 border-gray-200 dark:border-green-900/30 rounded-xl focus:border-primary outline-none transition-all">
+          <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-base">search</span>
+        </div>
+        <select id="multiCustomSetsSort" onchange="filterMultiCustomSets()"
+          class="px-3 py-2.5 text-sm bg-gray-100 dark:bg-background-dark border-2 border-gray-200 dark:border-green-900/30 rounded-xl focus:border-primary outline-none transition-all">
+          <option value="name">Tên A-Z</option>
+          <option value="name-desc">Tên Z-A</option>
+          <option value="words">Số từ (ít)</option>
+          <option value="words-desc">Số từ (nhiều)</option>
+        </select>
+      </div>
+
       <div id="multiCustomSetsLoading" class="flex items-center justify-center py-8">
         <div class="animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
       </div>
-      <div id="multiCustomSetsList" class="hidden space-y-2">
+
+      <div id="multiCustomSetsList" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <!-- Populated by openMultiCustomSetsPicker() -->
       </div>
+
       <div id="multiCustomSetsEmpty" class="hidden text-center py-8">
         <div class="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-3">
           <span class="material-symbols-outlined text-4xl text-gray-400">folder_off</span>
         </div>
         <p class="font-semibold text-gray-600 dark:text-gray-300">Bạn chưa có bộ từ nào</p>
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Hãy tạo bộ từ trước khi luyện tập</p>
+      </div>
+
+      <div id="multiCustomSetsNoResults" class="hidden text-center py-8">
+        <div class="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-3">
+          <span class="material-symbols-outlined text-4xl text-gray-400">search_off</span>
+        </div>
+        <p class="font-semibold text-gray-600 dark:text-gray-300">Không tìm thấy bộ từ</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Thử tìm kiếm với từ khóa khác</p>
       </div>
     </div>
 
@@ -1546,6 +1573,7 @@ async function deleteCustomSet(setId, btn) {
 
 // ==================== MULTI CUSTOM SETS PICKER ====================
 let selectedCustomSets = []; // For multi-practice with custom sets
+let allCustomSets = []; // Store all custom sets for filtering
 
 async function openMultiCustomSetsPicker() {
   const modal = document.getElementById('multiCustomSetsModal');
@@ -1557,42 +1585,83 @@ async function openMultiCustomSetsPicker() {
   selectedCustomSets = [];
   updateMultiCustomSetInfo();
   
+  // Reset search and sort
+  document.getElementById('multiCustomSetsSearch').value = '';
+  document.getElementById('multiCustomSetsSort').value = 'name';
+  
   // Load saved sets
   loading.classList.remove('hidden');
   listDiv.classList.add('hidden');
   emptyDiv.classList.add('hidden');
+  document.getElementById('multiCustomSetsNoResults').classList.add('hidden');
   
   try {
     const res = await authAPI.get('/practice/custom-sets');
-    const sets = res.data || [];
+    allCustomSets = res.data || [];
     
     loading.classList.add('hidden');
     
-    if (sets.length === 0) {
+    if (allCustomSets.length === 0) {
       emptyDiv.classList.remove('hidden');
       return;
     }
     
-    listDiv.classList.remove('hidden');
-    listDiv.innerHTML = sets.map(set => `
-      <label class="flex items-start gap-3 p-3 rounded-xl bg-gray-50 dark:bg-background-dark border border-gray-200 dark:border-green-900/30 cursor-pointer hover:border-primary hover:bg-primary/5 transition-all group">
-        <input type="checkbox" value="${set._id}" data-wordcount="${(set.words || []).length}" onchange="updateMultiCustomSetSelection(this)" 
-          class="mt-1 w-4 h-4 rounded border-2 border-primary/40 accent-primary cursor-pointer">
-        <div class="flex-1 min-w-0">
-          <div class="font-semibold text-sm text-text-main dark:text-white">${esc(set.name)}</div>
-          <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-            ${set.folderName ? `<span class="material-symbols-outlined text-xs align-middle">folder</span> ${esc(set.folderName)} • ` : ''}
-            ${(set.words || []).length} từ
-          </div>
-        </div>
-        <span class="text-xs font-bold text-primary bg-primary/20 px-2 py-0.5 rounded-full whitespace-nowrap mt-0.5">${(set.words || []).length}</span>
-      </label>
-    `).join('');
+    filterMultiCustomSets();
     
   } catch (e) {
     loading.classList.add('hidden');
     loading.innerHTML = `<p class="text-red-500 text-sm">Lỗi tải dữ liệu: ${e.message}</p>`;
   }
+}
+
+function filterMultiCustomSets() {
+  const searchTerm = document.getElementById('multiCustomSetsSearch').value.toLowerCase();
+  const sortValue = document.getElementById('multiCustomSetsSort').value;
+  const listDiv = document.getElementById('multiCustomSetsList');
+  const noResultsDiv = document.getElementById('multiCustomSetsNoResults');
+  
+  // Filter sets
+  let filtered = allCustomSets.filter(set => 
+    set.name.toLowerCase().includes(searchTerm)
+  );
+  
+  // Sort sets
+  if (sortValue === 'name') {
+    filtered.sort((a, b) => a.name.localeCompare(b.name));
+  } else if (sortValue === 'name-desc') {
+    filtered.sort((a, b) => b.name.localeCompare(a.name));
+  } else if (sortValue === 'words') {
+    filtered.sort((a, b) => (a.words || []).length - (b.words || []).length);
+  } else if (sortValue === 'words-desc') {
+    filtered.sort((a, b) => (b.words || []).length - (a.words || []).length);
+  }
+  
+  if (filtered.length === 0) {
+    listDiv.classList.add('hidden');
+    noResultsDiv.classList.remove('hidden');
+    return;
+  }
+  
+  listDiv.classList.remove('hidden');
+  noResultsDiv.classList.add('hidden');
+  
+  // Render grid items
+  listDiv.innerHTML = filtered.map(set => `
+    <label class="relative flex flex-col gap-2 p-3 rounded-2xl bg-gradient-to-br from-white to-gray-50 dark:from-background-dark dark:to-card-dark border-2 border-gray-200 dark:border-green-900/30 cursor-pointer hover:border-primary hover:shadow-lg hover:bg-primary/5 transition-all group">
+      <input type="checkbox" value="${set._id}" data-wordcount="${(set.words || []).length}" onchange="updateMultiCustomSetSelection(this)" 
+        class="absolute top-2 right-2 w-4 h-4 rounded border-2 border-primary/40 accent-primary cursor-pointer">
+      <div class="pr-6">
+        <div class="font-semibold text-sm text-text-main dark:text-white line-clamp-2">${esc(set.name)}</div>
+        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1.5 flex items-center gap-1">
+          <span class="material-symbols-outlined text-xs">school</span>
+          <span>${(set.words || []).length} từ</span>
+        </div>
+      </div>
+      <div class="w-full h-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+        <div class="h-full bg-gradient-to-r from-primary to-blue-500" style="width: ${Math.min(((set.words || []).length / 10) * 100, 100)}%"></div>
+      </div>
+    </label>
+  `).join('');
 }
 
 function closeMultiCustomSetsModal() {
