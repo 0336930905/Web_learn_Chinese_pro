@@ -52,9 +52,11 @@ const CharacterAnalysisController = {
       const analysisData = await CharacterAnalysisController._callOpenRouterAPI(vietnameseWord);
 
       if (!analysisData) {
+        logger.error(`No analysis data returned for: ${normalizedWord}`);
         return res.status(500).json({
           success: false,
-          message: 'Failed to analyze word'
+          message: 'Failed to analyze word - API returned no data',
+          error: 'Unable to generate analysis from OpenRouter API'
         });
       }
 
@@ -81,9 +83,24 @@ const CharacterAnalysisController = {
       });
     } catch (error) {
       logger.error('Character analysis error:', error.message);
+      
+      // Determine error type and provide appropriate message
+      let errorMessage = 'Failed to analyze word';
+      if (error.message?.includes('API key')) {
+        errorMessage = 'Server configuration error - API key missing';
+      } else if (error.response?.status === 401 || error.response?.status === 403) {
+        errorMessage = 'API authentication failed - Invalid API key';
+      } else if (error.response?.status === 429) {
+        errorMessage = 'Too many requests - Please try again later';
+      } else if (error.response?.status === 500) {
+        errorMessage = 'OpenRouter service is temporarily unavailable';
+      } else if (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
+        errorMessage = 'Request timeout - Service is slow, please try again';
+      }
+      
       return res.status(500).json({
         success: false,
-        message: 'Failed to analyze word',
+        message: errorMessage,
         error: error.message
       });
     }
@@ -188,8 +205,8 @@ const CharacterAnalysisController = {
       const openRouterApiUrl = 'https://openrouter.ai/api/v1/chat/completions';
 
       if (!openRouterApiKey) {
-        logger.warn('OpenRouter API key not configured');
-        return null;
+        logger.error('CRITICAL: OpenRouter API key not configured in .env file');
+        throw new Error('OpenRouter API key is not configured');
       }
 
       const prompt = `Analyze the Vietnamese word "${vietnameseWord}" and provide a comprehensive analysis. 
@@ -286,8 +303,17 @@ Requirements:
       return null;
     } catch (error) {
       logger.error('OpenRouter API error:', error.message);
+      if (error.response?.status === 401) {
+        logger.error('Authentication failed - Invalid or expired OpenRouter API key');
+      } else if (error.response?.status === 429) {
+        logger.error('Rate limit exceeded - Too many requests to OpenRouter');
+      } else if (error.response?.status === 500) {
+        logger.error('OpenRouter server error - Service temporarily unavailable');
+      } else if (error.code === 'ECONNABORTED') {
+        logger.error('OpenRouter request timeout - Service response took too long');
+      }
       if (error.response?.data?.error) {
-        logger.error('Error details:', error.response.data.error);
+        logger.error('OpenRouter error response:', error.response.data.error);
       }
       throw error;
     }
