@@ -1670,14 +1670,7 @@ function closeMultiCustomSetsModal() {
 }
 
 function updateMultiCustomSetSelection(checkbox) {
-  const maxSets = 5;
   const allChecked = document.querySelectorAll('#multiCustomSetsList input[type="checkbox"]:checked');
-  
-  if (allChecked.length > maxSets) {
-    checkbox.checked = false;
-    showToast(`Chỉ có thể chọn tối đa ${maxSets} bộ từ`, 'warning');
-    return;
-  }
   
   selectedCustomSets = Array.from(allChecked).map(cb => ({
     id: cb.value,
