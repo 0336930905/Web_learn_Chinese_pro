@@ -222,15 +222,16 @@
 
           <!-- ====== FOLDER BAR (horizontal, above grid) ====== -->
           <div id="folderPanel" class="hidden mb-3 bg-white dark:bg-card-dark rounded-2xl border border-gray-100 dark:border-green-900/30 shadow-soft px-3 py-2.5">
-            <div class="flex items-center gap-3">
+            <div id="folderPanelInnerRow" class="flex items-center gap-2 sm:gap-3">
               <!-- Label -->
-              <div class="flex items-center gap-1 shrink-0">
+              <div class="flex items-center gap-1 shrink-0 pt-0.5">
                 <span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings:'FILL' 1">folder</span>
                 <span class="text-[11px] font-extrabold text-text-secondary dark:text-primary/60 uppercase tracking-wider hidden sm:inline">Thư mục</span>
               </div>
-              <!-- Scrollable pill row -->
-              <div class="flex-1 overflow-x-auto scrollbar-hide">
-                <div class="flex gap-1.5 items-center" style="min-width:max-content">
+              <!-- Scrollable pill row (collapsed) → wrap full width (expanded) -->
+              <div id="folderPillsOuter"
+                class="flex-1 min-w-0 overflow-x-auto scrollbar-hide transition-[box-shadow] duration-200">
+                <div id="folderPillsRow" class="flex gap-1.5 items-center flex-nowrap min-w-max">
                   <!-- "Tất cả" pill -->
                   <button id="folderBtn_all" onclick="selectFolder(null)"
                     class="folder-item flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all
@@ -257,6 +258,19 @@
                   <div id="folderEmpty" class="hidden text-xs text-gray-400 dark:text-zinc-500 italic px-1">Chưa có thư mục nào</div>
                 </div>
               </div>
+              <!-- Mở rộng / thu gọn hàng pill -->
+              <button type="button" id="folderExpandBtn" onclick="toggleFolderPanelExpand()" title="Mở rộng để xem đủ thư mục"
+                aria-expanded="false"
+                class="shrink-0 flex items-center justify-center w-9 h-9 rounded-full text-xs font-bold
+                bg-gray-100 dark:bg-green-900/20 hover:bg-gray-200 dark:hover:bg-green-900/40 text-gray-600 dark:text-gray-400 transition-all">
+                <span id="folderExpandIcon" class="material-symbols-outlined text-base">unfold_more</span>
+              </button>
+              <!-- Modal quản lý thư mục -->
+              <button type="button" onclick="openFolderModal()" title="Quản lý thư mục"
+                class="shrink-0 flex items-center justify-center w-9 h-9 rounded-full text-xs font-bold
+                bg-primary/10 hover:bg-primary/20 text-primary transition-all">
+                <span class="material-symbols-outlined text-base">tune</span>
+              </button>
               <!-- Create folder button -->
               <button onclick="createFolderUI()" title="Tạo thư mục mới"
                 class="shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-bold
@@ -643,6 +657,73 @@
 
       </div><!-- /setupPanel -->
 
+      <!-- ====== INPUT MODE PICKER (GAME SELECTOR) ====== -->
+      <div id="inputModePicker"
+        class="hidden flex fixed inset-0 z-[60] bg-black/60 backdrop-blur-md items-center justify-center px-3">
+        <div id="inputModePickerCard" class="w-full max-w-sm bg-white dark:bg-card-dark rounded-3xl border border-white/60 dark:border-gray-700/60 shadow-2xl overflow-hidden imp-pop">
+          <div class="relative px-5 pt-4 pb-3 flex items-center gap-3">
+            <div class="imp-icon-bounce w-9 h-9 rounded-2xl bg-gradient-to-br from-primary to-blue-500 flex items-center justify-center text-xl shadow-lg shrink-0">🎮</div>
+            <div class="flex-1 min-w-0">
+              <h3 class="text-sm font-black text-gray-800 dark:text-white leading-tight">Chọn trò chơi luyện tập</h3>
+              <p class="text-[10px] font-semibold text-gray-400 dark:text-gray-500">Nhấn vào trò chơi để bắt đầu</p>
+            </div>
+            <button onclick="cancelInputModePicker()" class="w-7 h-7 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 hover:rotate-90 transition-all duration-200 active:scale-90 shrink-0">
+              <span class="material-symbols-outlined text-[17px]">close</span>
+            </button>
+          </div>
+
+          <div class="px-4 pb-1 grid grid-cols-1 gap-2">
+            <button onclick="selectInputMode('multiple_choice')" class="group relative overflow-hidden flex items-center gap-3 py-3 px-3.5 rounded-2xl border-2 border-blue-100 dark:border-blue-900/40 bg-gradient-to-r from-blue-50 to-cyan-50/60 dark:from-blue-900/20 dark:to-cyan-900/10 hover:border-blue-400 hover:from-blue-100 hover:to-cyan-100/60 hover:shadow-lg hover:-translate-y-0.5 active:scale-95 active:shadow-none transition-all duration-200 imp-btn">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-400 to-cyan-500 text-white flex items-center justify-center text-xl shadow-md shrink-0">📝</div>
+              <div class="text-left min-w-0">
+                <div class="text-[11px] font-black text-gray-700 dark:text-gray-200 leading-tight">Trắc nghiệm Trung Việt</div>
+                <div class="text-[9px] text-blue-600 dark:text-blue-400 font-bold">Chọn đáp án đúng từ 4 lựa chọn</div>
+              </div>
+            </button>
+            <button onclick="selectInputMode('matching_game')" class="group relative overflow-hidden flex items-center gap-3 py-3 px-3.5 rounded-2xl border-2 border-purple-100 dark:border-purple-900/40 bg-gradient-to-r from-purple-50 to-pink-50/60 dark:from-purple-900/20 dark:to-pink-900/10 hover:border-purple-400 hover:from-purple-100 hover:to-pink-100/60 hover:shadow-lg hover:-translate-y-0.5 active:scale-95 active:shadow-none transition-all duration-200 imp-btn">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-400 to-pink-500 text-white flex items-center justify-center text-xl shadow-md shrink-0">🔗</div>
+              <div class="text-left min-w-0">
+                <div class="text-[11px] font-black text-gray-700 dark:text-gray-200 leading-tight">Ghép chữ ghép nghĩa</div>
+                <div class="text-[9px] text-purple-600 dark:text-purple-400 font-bold">Ghép chữ Hán với nghĩa tương ứng</div>
+              </div>
+            </button>
+            <button onclick="selectInputMode('listen_and_choose')" class="group relative overflow-hidden flex items-center gap-3 py-3 px-3.5 rounded-2xl border-2 border-green-100 dark:border-green-900/40 bg-gradient-to-r from-green-50 to-emerald-50/60 dark:from-green-900/20 dark:to-emerald-900/10 hover:border-green-400 hover:from-green-100 hover:to-emerald-100/60 hover:shadow-lg hover:-translate-y-0.5 active:scale-95 active:shadow-none transition-all duration-200 imp-btn">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-green-400 to-emerald-500 text-white flex items-center justify-center text-xl shadow-md shrink-0">🎧</div>
+              <div class="text-left min-w-0">
+                <div class="text-[11px] font-black text-gray-700 dark:text-gray-200 leading-tight">Nghe và chọn đáp án</div>
+                <div class="text-[9px] text-green-600 dark:text-green-400 font-bold">Nghe phát âm và chọn đáp án đúng</div>
+              </div>
+            </button>
+            <button onclick="selectInputMode('listen_and_pronounce')" class="group relative overflow-hidden flex items-center gap-3 py-3 px-3.5 rounded-2xl border-2 border-orange-100 dark:border-orange-900/40 bg-gradient-to-r from-orange-50 to-amber-50/60 dark:from-orange-900/20 dark:to-amber-900/10 hover:border-orange-400 hover:from-orange-100 hover:to-amber-100/60 hover:shadow-lg hover:-translate-y-0.5 active:scale-95 active:shadow-none transition-all duration-200 imp-btn">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-400 to-amber-500 text-white flex items-center justify-center text-xl shadow-md shrink-0">🎤</div>
+              <div class="text-left min-w-0">
+                <div class="text-[11px] font-black text-gray-700 dark:text-gray-200 leading-tight">Nghe và phát âm</div>
+                <div class="text-[9px] text-orange-600 dark:text-orange-400 font-bold">Lặp lại phát âm sau khi nghe</div>
+              </div>
+            </button>
+            <button onclick="selectInputMode('review_test')" class="group relative overflow-hidden flex items-center gap-3 py-3 px-3.5 rounded-2xl border-2 border-red-100 dark:border-red-900/40 bg-gradient-to-r from-red-50 to-rose-50/60 dark:from-red-900/20 dark:to-rose-900/10 hover:border-red-400 hover:from-red-100 hover:to-rose-100/60 hover:shadow-lg hover:-translate-y-0.5 active:scale-95 active:shadow-none transition-all duration-200 imp-btn">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-red-400 to-rose-500 text-white flex items-center justify-center text-xl shadow-md shrink-0">✅</div>
+              <div class="text-left min-w-0">
+                <div class="text-[11px] font-black text-gray-700 dark:text-gray-200 leading-tight">Kiểm tra</div>
+                <div class="text-[9px] text-red-600 dark:text-red-400 font-bold">Ôn tập lại từ vựng đã học</div>
+              </div>
+            </button>
+          </div>
+
+          <div class="px-4 py-3">
+            <div class="w-full flex items-center justify-between px-2.5 py-2 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200/60 dark:border-green-800/30">
+              <div class="flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-green-600 dark:text-green-400 text-[15px]">shuffle</span>
+                <span class="text-[10px] font-black text-gray-600 dark:text-gray-300">Trộn câu hỏi</span>
+              </div>
+              <button id="vocabOrderTrack" onclick="toggleVocabOrder()" class="relative inline-flex h-5 w-9 items-center rounded-full bg-gray-200 dark:bg-gray-700 transition-colors duration-300 shrink-0">
+                <span id="vocabOrderDot" class="inline-block h-3.5 w-3.5 translate-x-0.5 rounded-full bg-white transition-transform duration-300 shadow"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- ====== RESULTS MODAL ====== -->
       <div id="resultsPanel" class="hidden fixed inset-0 z-40 overflow-y-auto">
         <div class="fixed inset-0 bg-black/50 backdrop-blur-sm"></div>
@@ -876,6 +957,70 @@
   </div>
 </div>
 
+<!-- ====== FOLDER MANAGEMENT MODAL ====== -->
+<div id="folderManagementModal" onclick="if(event.target===this)closeFolderModal()"
+  class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-start justify-center py-8 px-4">
+  <div class="bg-white dark:bg-card-dark rounded-3xl shadow-2xl w-full max-w-2xl" onclick="event.stopPropagation()">
+    <div class="flex items-start justify-between gap-3 px-6 pt-6 pb-4 border-b border-gray-100 dark:border-gray-700/30">
+      <div>
+        <h2 class="text-lg font-extrabold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary">tune</span>
+          Quản lý thư mục
+        </h2>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1.5 leading-relaxed max-w-md">
+          Đổi tên hoặc xóa thư mục. Khi xóa, các bộ từ trong thư mục sẽ chuyển về <strong class="text-text-main dark:text-gray-200 font-semibold">Chưa phân loại</strong>.
+        </p>
+      </div>
+      <button onclick="closeFolderModal()" class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-all">
+        <span class="material-symbols-outlined text-gray-400">close</span>
+      </button>
+    </div>
+    <div id="folderManagementList" class="px-6 py-4 flex flex-col gap-3 max-h-[70vh] overflow-y-auto">
+      <div class="flex items-center justify-center gap-2 py-8 text-gray-400 text-sm">
+        <div class="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+        Đang tải...
+      </div>
+    </div>
+    <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700/30 flex gap-2 justify-end">
+      <button onclick="closeFolderModal()" class="px-4 py-2.5 bg-gray-100 dark:bg-background-dark text-gray-600 dark:text-gray-300 text-sm font-semibold rounded-2xl hover:bg-gray-200 dark:hover:bg-green-900/30 transition-all">
+        Đóng
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== FOLDER NAME (create / rename) ====== -->
+<div id="folderNameModal" onclick="if(event.target===this)closeFolderNameModal()"
+  class="hidden fixed inset-0 z-[55] overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center px-4 py-8">
+  <div class="bg-white dark:bg-card-dark rounded-3xl shadow-2xl w-full max-w-md border border-gray-100 dark:border-green-900/30"
+    onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="folderNameModalTitle">
+    <div class="px-6 pt-6 pb-4 border-b border-gray-100 dark:border-gray-700/30">
+      <h2 id="folderNameModalTitle" class="text-lg font-extrabold text-gray-800 dark:text-gray-100">Thư mục</h2>
+      <p id="folderNameModalHint" class="text-xs text-gray-500 dark:text-gray-400 mt-1.5 leading-relaxed"></p>
+    </div>
+    <div class="px-6 py-4">
+      <label for="folderNameInput" class="sr-only">Tên thư mục</label>
+      <input id="folderNameInput" type="text" maxlength="80" autocomplete="off"
+        class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-green-900/40 bg-white dark:bg-background-dark
+        text-text-main dark:text-white text-sm font-semibold placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary"
+        placeholder="Nhập tên thư mục…"
+        onkeydown="if(event.key==='Enter'){event.preventDefault();submitFolderNameModal();}"
+        oninput="const c=document.getElementById('folderNameCharCount'); if(c) c.textContent=this.value.length">
+      <p class="text-[10px] text-gray-400 mt-2 text-right"><span id="folderNameCharCount">0</span>/80</p>
+    </div>
+    <div class="px-6 pb-6 flex flex-wrap gap-2 justify-end">
+      <button type="button" onclick="closeFolderNameModal()"
+        class="px-4 py-2.5 bg-gray-100 dark:bg-background-dark text-gray-600 dark:text-gray-300 text-sm font-semibold rounded-2xl hover:bg-gray-200 dark:hover:bg-green-900/30 transition-all">
+        Hủy
+      </button>
+      <button type="button" onclick="submitFolderNameModal()"
+        class="px-5 py-2.5 bg-primary text-text-main text-sm font-bold rounded-2xl hover:brightness-105 transition-all">
+        Lưu
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- ====== TOAST ====== -->
 <div id="toastContainer" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
@@ -898,6 +1043,14 @@ let showHint = false;         // current hint visibility state
 let defaultShowPinyin = false; // starter default from picker toggle
 let folders = [];              // list of folder objects loaded from server
 let currentFolderId = null;    // null=all, 'unfiled'=no folder, '<id>'=specific folder
+let folderPanelExpanded = false;
+let _folderNameModalCtx = null;
+function _folderNameOnEscape(e) {
+  if (e.key !== 'Escape') return;
+  e.preventDefault();
+  document.removeEventListener('keydown', _folderNameOnEscape);
+  closeFolderNameModal();
+}
 let _currentEditSetId = null;  // set id being edited (null = creating new)
 let selectedMultipleSets = []; // array of selected set IDs for multi-practice
 let multiPracticeMode = false; // flag for multi-set practice mode
@@ -1316,13 +1469,70 @@ async function practiceFromSet(setId) {
     const res = await authAPI.get('/practice/custom-sets');
     const set = (res.data || []).find(s => s._id === setId);
     if (!set) { showToast('Không tìm thấy bộ từ', 'error'); return; }
-    // Load into editor state so startPractice() can read it
+    // Keep editor in sync, but run practice directly from selected set.
     document.getElementById('wordRowsContainer').innerHTML = '';
     customWordRowCount = 0;
     document.getElementById('customSetName').value = set.name;
     set.words.forEach(w => addWordRow(w.hanzi, w.pinyin, w.meaning));
     updateWordCount();
-    await startPractice();
+
+    const words = (set.words || [])
+      .map(w => ({
+        hanzi: w.hanzi || w.simplified || '',
+        pinyin: w.pinyin || '',
+        meaning: w.meaning || w.vietnamese || ''
+      }))
+      .filter(w => w.hanzi && w.meaning);
+
+    if (words.length < 2) {
+      showToast('Bộ từ cần ít nhất 2 từ có dữ liệu', 'error');
+      return;
+    }
+
+    const setupPanel = document.getElementById('setupPanel');
+    const resultsPanel = document.getElementById('resultsPanel');
+
+    inputMode = null;
+    practiceWords = [];
+    currentIdx = 0;
+    correctCount = 0;
+    wrongCount = 0;
+    sessionResults = [];
+    sessionStartTime = 0;
+    multiPracticeMode = false;
+
+    setupPanel.classList.add('hidden');
+    resultsPanel.classList.add('hidden');
+
+    const chosenMode = await openInputModePicker();
+    if (!chosenMode) {
+      setupPanel.classList.remove('hidden');
+      return;
+    }
+
+    const filtered = filterWordsForInputMode(words, chosenMode);
+    if (filtered.length < 2) {
+      showToast('Chế độ này cần ít nhất 2 từ có dữ liệu phù hợp (Pinyin/Nghĩa).', 'error');
+      setupPanel.classList.remove('hidden');
+      return;
+    }
+
+    inputMode = chosenMode;
+    practiceWords = vocabOrder === 'random' ? shuffle([...filtered]) : [...filtered];
+    currentIdx = 0;
+    correctCount = 0;
+    wrongCount = 0;
+    sessionResults = [];
+    sessionStartTime = Date.now();
+
+    if (isGameMode(chosenMode)) {
+      launchGameMode(chosenMode);
+      return;
+    }
+
+    renderQuestionGrid();
+    updateProgress();
+    renderCurrentCard();
   } catch (e) { showToast('Lỗi: ' + e.message, 'error'); }
 }
 
@@ -3042,6 +3252,112 @@ async function folderDrop(event, folderId) {
 
 // ==================== FOLDERS ====================
 
+function openFolderNameModal(ctx) {
+  document.removeEventListener('keydown', _folderNameOnEscape);
+  _folderNameModalCtx = ctx;
+  const modal = document.getElementById('folderNameModal');
+  const input = document.getElementById('folderNameInput');
+  const title = document.getElementById('folderNameModalTitle');
+  const hint = document.getElementById('folderNameModalHint');
+  const countEl = document.getElementById('folderNameCharCount');
+  if (!modal || !input || !title || !hint) return;
+  title.textContent = ctx.mode === 'create' ? 'Tạo thư mục mới' : 'Đổi tên thư mục';
+  hint.textContent = ctx.mode === 'create'
+    ? 'Đặt tên ngắn gọn, dễ nhớ (tối đa 80 ký tự).'
+    : 'Tên mới áp dụng cho thanh thư mục, thẻ bộ từ và màn hình quản lý.';
+  input.value = ctx.initialName || '';
+  if (countEl) countEl.textContent = String(input.value.length);
+  modal.classList.remove('hidden');
+  document.addEventListener('keydown', _folderNameOnEscape);
+  requestAnimationFrame(() => { input.focus(); input.select(); });
+}
+
+function closeFolderNameModal() {
+  document.removeEventListener('keydown', _folderNameOnEscape);
+  const modal = document.getElementById('folderNameModal');
+  if (modal) modal.classList.add('hidden');
+  _folderNameModalCtx = null;
+}
+
+async function submitFolderNameModal() {
+  const input = document.getElementById('folderNameInput');
+  const name = (input?.value || '').trim();
+  const ctx = _folderNameModalCtx;
+  if (!ctx) return;
+  if (!name) {
+    showToast('Vui lòng nhập tên thư mục', 'error');
+    input?.focus();
+    return;
+  }
+  try {
+    if (ctx.mode === 'create') {
+      const res = await authAPI.post('/practice/folders', { name });
+      if (res.success) {
+        showToast(`Đã tạo thư mục "${name}"`, 'success');
+        closeFolderNameModal();
+        if (ctx.onSuccess) await ctx.onSuccess();
+      } else {
+        showToast(res.error?.message || 'Tạo thất bại', 'error');
+      }
+      return;
+    }
+    if (name === ctx.initialName) {
+      closeFolderNameModal();
+      return;
+    }
+    const res = await authAPI.put(`/practice/folders/${ctx.folderId}`, { name });
+    if (res.success) {
+      showToast('Đã đổi tên thư mục', 'success');
+      closeFolderNameModal();
+      if (ctx.onSuccess) await ctx.onSuccess();
+    } else {
+      showToast(res.error?.message || 'Đổi tên thất bại', 'error');
+    }
+  } catch (e) {
+    showToast('Lỗi: ' + e.message, 'error');
+  }
+}
+
+function toggleFolderPanelExpand() {
+  folderPanelExpanded = !folderPanelExpanded;
+  const outer = document.getElementById('folderPillsOuter');
+  const inner = document.getElementById('folderPillsRow');
+  const btn = document.getElementById('folderExpandBtn');
+  const icon = document.getElementById('folderExpandIcon');
+  const row = document.getElementById('folderPanelInnerRow');
+  if (!outer || !inner) return;
+
+  if (folderPanelExpanded) {
+    outer.classList.remove('overflow-x-auto', 'scrollbar-hide');
+    outer.classList.add('overflow-visible');
+    inner.classList.remove('flex-nowrap', 'min-w-max');
+    inner.classList.add('flex-wrap', 'w-full');
+    if (icon) icon.textContent = 'unfold_less';
+    if (btn) {
+      btn.title = 'Thu gọn danh sách thư mục';
+      btn.setAttribute('aria-expanded', 'true');
+    }
+    if (row) {
+      row.classList.remove('items-center');
+      row.classList.add('items-start');
+    }
+  } else {
+    outer.classList.add('overflow-x-auto', 'scrollbar-hide');
+    outer.classList.remove('overflow-visible');
+    inner.classList.add('flex-nowrap', 'min-w-max');
+    inner.classList.remove('flex-wrap', 'w-full');
+    if (icon) icon.textContent = 'unfold_more';
+    if (btn) {
+      btn.title = 'Mở rộng để xem đủ thư mục';
+      btn.setAttribute('aria-expanded', 'false');
+    }
+    if (row) {
+      row.classList.add('items-center');
+      row.classList.remove('items-start');
+    }
+  }
+}
+
 async function loadFolders() {
   try {
     const res = await authAPI.get('/practice/folders');
@@ -3119,33 +3435,25 @@ function selectFolder(id) {
   loadSavedSets();
 }
 
-async function createFolderUI() {
-  const name = prompt('Nhập tên thư mục mới:');
-  if (!name || !name.trim()) return;
-  try {
-    const res = await authAPI.post('/practice/folders', { name: name.trim() });
-    if (res.success) {
-      showToast(`Đã tạo thư mục "${name.trim()}"`, 'success');
-      await loadFolders();
-    } else {
-      showToast(res.error?.message || 'Tạo thất bại', 'error');
-    }
-  } catch (e) { showToast('Lỗi: ' + e.message, 'error'); }
+function createFolderUI() {
+  openFolderNameModal({
+    mode: 'create',
+    initialName: '',
+    onSuccess: async () => { await loadFolders(); },
+  });
 }
 
-async function renameFolderUI(id, currentName) {
-  const name = prompt('Đổi tên thư mục:', currentName);
-  if (!name || !name.trim() || name.trim() === currentName) return;
-  try {
-    const res = await authAPI.put(`/practice/folders/${id}`, { name: name.trim() });
-    if (res.success) {
-      showToast('Đã đổi tên thư mục', 'success');
+function renameFolderUI(id, currentName) {
+  openFolderNameModal({
+    mode: 'rename',
+    folderId: id,
+    initialName: currentName,
+    onSuccess: async () => {
       await loadFolders();
-      loadSavedSets(); // refresh folder badges on cards
-    } else {
-      showToast(res.error?.message || 'Đổi tên thất bại', 'error');
-    }
-  } catch (e) { showToast('Lỗi: ' + e.message, 'error'); }
+      loadSavedSets();
+      renderFolderPanel();
+    },
+  });
 }
 
 async function deleteFolderUI(id, name) {
@@ -3154,7 +3462,7 @@ async function deleteFolderUI(id, name) {
     const res = await authAPI.delete(`/practice/folders/${id}`);
     if (res.success) {
       showToast(`Đã xóa thư mục "${name}"`, 'success');
-      if (currentFolderId === id) currentFolderId = null;
+      if (String(currentFolderId) === String(id)) currentFolderId = null;
       await loadFolders();
       loadSavedSets();
     } else {
@@ -3222,6 +3530,100 @@ async function moveSetToFolder(setId, folderId) {
       showToast(res.error?.message || 'Chuyển thất bại', 'error');
     }
   } catch (e) { showToast('Lỗi: ' + e.message, 'error'); }
+}
+
+// ==================== FOLDER MANAGEMENT MODAL ====================
+async function openFolderModal() {
+  const modal = document.getElementById('folderManagementModal');
+  if (!modal) return;
+  modal.classList.remove('hidden');
+  await renderFolderModalList();
+}
+
+function closeFolderModal() {
+  const modal = document.getElementById('folderManagementModal');
+  if (modal) modal.classList.add('hidden');
+}
+
+async function renderFolderModalList() {
+  const list = document.getElementById('folderManagementList');
+  if (!list) return;
+
+  let allSets = [];
+  try {
+    const res = await authAPI.get('/practice/custom-sets');
+    allSets = res.data || [];
+  } catch (e) {
+    showToast('Lỗi tải dữ liệu: ' + e.message, 'error');
+    list.innerHTML = '<div class="text-center text-red-500 py-6">Lỗi tải dữ liệu</div>';
+    return;
+  }
+
+  if (folders.length === 0) {
+    list.innerHTML = '<div class="text-center text-gray-500 py-8"><span class="material-symbols-outlined text-4xl mb-2">folder_off</span><p class="mt-2">Chưa có thư mục nào</p></div>';
+    return;
+  }
+
+  list.innerHTML = folders.map(folder => {
+    const count = allSets.filter(s => s.folderId && String(s.folderId) === String(folder._id)).length;
+    const folderNameSafe = esc(folder.name).replace(/'/g, "\\'");
+
+    return `
+    <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-green-900/10 rounded-xl border border-gray-200 dark:border-green-900/30 hover:border-primary transition-all">
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="material-symbols-outlined text-primary shrink-0">folder</span>
+          <span class="font-semibold text-text-main dark:text-white truncate">${esc(folder.name)}</span>
+          <span class="text-xs font-bold bg-primary/20 text-primary px-2 py-1 rounded-full shrink-0">${count}</span>
+        </div>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Chứa ${count} bộ từ</p>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <button onclick="renameFolderFromModal('${folder._id}', '${folderNameSafe}')"
+          class="p-2 text-gray-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-all" title="Đổi tên">
+          <span class="material-symbols-outlined text-base">edit</span>
+        </button>
+        <button onclick="deleteFolderFromModal('${folder._id}', '${folderNameSafe}')"
+          class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all" title="Xóa">
+          <span class="material-symbols-outlined text-base">delete</span>
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renameFolderFromModal(id, currentName) {
+  openFolderNameModal({
+    mode: 'rename',
+    folderId: id,
+    initialName: currentName,
+    onSuccess: async () => {
+      await loadFolders();
+      await renderFolderModalList();
+      renderFolderPanel();
+      loadSavedSets();
+    },
+  });
+}
+
+async function deleteFolderFromModal(id, folderName) {
+  if (!confirm(`Xóa thư mục "${folderName}"?\n\nCác bộ từ trong thư mục sẽ tự động chuyển về "Chưa phân loại".`)) return;
+
+  try {
+    const res = await authAPI.delete(`/practice/folders/${id}`);
+    if (res.success) {
+      showToast(`Đã xóa thư mục "${folderName}". Các bộ từ đã chuyển về "Chưa phân loại"`, 'success');
+      if (String(currentFolderId) === String(id)) currentFolderId = null;
+      await loadFolders();
+      await renderFolderModalList();
+      renderFolderPanel();
+      loadSavedSets();
+    } else {
+      showToast(res.error?.message || 'Xóa thất bại', 'error');
+    }
+  } catch (e) {
+    showToast('Lỗi: ' + e.message, 'error');
+  }
 }
 
 // ==================== SPEECH INPUT ====================

@@ -222,15 +222,16 @@
 
           <!-- ====== FOLDER BAR (horizontal, above grid) ====== -->
           <div id="folderPanel" class="hidden mb-3 bg-white dark:bg-card-dark rounded-2xl border border-gray-100 dark:border-green-900/30 shadow-soft px-3 py-2.5">
-            <div class="flex items-center gap-3">
+            <div id="folderPanelInnerRow" class="flex items-center gap-2 sm:gap-3">
               <!-- Label -->
-              <div class="flex items-center gap-1 shrink-0">
+              <div class="flex items-center gap-1 shrink-0 pt-0.5">
                 <span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings:'FILL' 1">folder</span>
                 <span class="text-[11px] font-extrabold text-text-secondary dark:text-primary/60 uppercase tracking-wider hidden sm:inline">Thư mục</span>
               </div>
-              <!-- Scrollable pill row -->
-              <div class="flex-1 overflow-x-auto scrollbar-hide">
-                <div class="flex gap-1.5 items-center" style="min-width:max-content">
+              <!-- Scrollable pill row (collapsed) → wrap full width (expanded) -->
+              <div id="folderPillsOuter"
+                class="flex-1 min-w-0 overflow-x-auto scrollbar-hide transition-[box-shadow] duration-200">
+                <div id="folderPillsRow" class="flex gap-1.5 items-center flex-nowrap min-w-max">
                   <!-- "Tất cả" pill -->
                   <button id="folderBtn_all" onclick="selectFolder(null)"
                     class="folder-item flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all
@@ -257,11 +258,18 @@
                   <div id="folderEmpty" class="hidden text-xs text-gray-400 dark:text-zinc-500 italic px-1">Chưa có thư mục nào</div>
                 </div>
               </div>
-              <!-- Expand folders button -->
-              <button onclick="openFolderModal()" title="Xem tất cả thư mục"
+              <!-- Mở rộng / thu gọn hàng pill (nhiều thư mục không bị tràn ngang) -->
+              <button type="button" id="folderExpandBtn" onclick="toggleFolderPanelExpand()" title="Mở rộng để xem đủ thư mục"
+                aria-expanded="false"
                 class="shrink-0 flex items-center justify-center w-9 h-9 rounded-full text-xs font-bold
                 bg-gray-100 dark:bg-green-900/20 hover:bg-gray-200 dark:hover:bg-green-900/40 text-gray-600 dark:text-gray-400 transition-all">
-                <span class="material-symbols-outlined text-base">unfold_more</span>
+                <span id="folderExpandIcon" class="material-symbols-outlined text-base">unfold_more</span>
+              </button>
+              <!-- Modal quản lý thư mục -->
+              <button type="button" onclick="openFolderModal()" title="Quản lý thư mục"
+                class="shrink-0 flex items-center justify-center w-9 h-9 rounded-full text-xs font-bold
+                bg-primary/10 hover:bg-primary/20 text-primary transition-all">
+                <span class="material-symbols-outlined text-base">tune</span>
               </button>
               <!-- Create folder button -->
               <button onclick="createFolderUI()" title="Tạo thư mục mới"
@@ -1186,14 +1194,20 @@
 </div>
 
 <!-- ====== FOLDER MANAGEMENT MODAL ====== -->
-<div id="folderManagementModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-start justify-center py-8 px-4">
-  <div class="bg-white dark:bg-card-dark rounded-3xl shadow-2xl w-full max-w-2xl">
+<div id="folderManagementModal" onclick="if(event.target===this)closeFolderModal()"
+  class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-start justify-center py-8 px-4">
+  <div class="bg-white dark:bg-card-dark rounded-3xl shadow-2xl w-full max-w-2xl" onclick="event.stopPropagation()">
     <!-- Header -->
-    <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-100 dark:border-gray-700/30">
-      <h2 class="text-lg font-extrabold text-gray-800 dark:text-gray-100 flex items-center gap-2">
-        <span class="material-symbols-outlined text-primary">folder</span>
-        Quản lý thư mục
-      </h2>
+    <div class="flex items-start justify-between gap-3 px-6 pt-6 pb-4 border-b border-gray-100 dark:border-gray-700/30">
+      <div>
+        <h2 class="text-lg font-extrabold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary">tune</span>
+          Quản lý thư mục
+        </h2>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1.5 leading-relaxed max-w-md">
+          Đổi tên hoặc xóa thư mục. Khi xóa, các bộ từ trong thư mục sẽ chuyển về <strong class="text-text-main dark:text-gray-200 font-semibold">Chưa phân loại</strong>.
+        </p>
+      </div>
       <button onclick="closeFolderModal()" class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-all">
         <span class="material-symbols-outlined text-gray-400">close</span>
       </button>
@@ -1209,6 +1223,38 @@
     <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700/30 flex gap-2 justify-end">
       <button onclick="closeFolderModal()" class="px-4 py-2.5 bg-gray-100 dark:bg-background-dark text-gray-600 dark:text-gray-300 text-sm font-semibold rounded-2xl hover:bg-gray-200 dark:hover:bg-green-900/30 transition-all">
         Đóng
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== FOLDER NAME (create / rename) ====== -->
+<div id="folderNameModal" onclick="if(event.target===this)closeFolderNameModal()"
+  class="hidden fixed inset-0 z-[55] overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center px-4 py-8">
+  <div class="bg-white dark:bg-card-dark rounded-3xl shadow-2xl w-full max-w-md border border-gray-100 dark:border-green-900/30"
+    onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="folderNameModalTitle">
+    <div class="px-6 pt-6 pb-4 border-b border-gray-100 dark:border-gray-700/30">
+      <h2 id="folderNameModalTitle" class="text-lg font-extrabold text-gray-800 dark:text-gray-100">Thư mục</h2>
+      <p id="folderNameModalHint" class="text-xs text-gray-500 dark:text-gray-400 mt-1.5 leading-relaxed"></p>
+    </div>
+    <div class="px-6 py-4">
+      <label for="folderNameInput" class="sr-only">Tên thư mục</label>
+      <input id="folderNameInput" type="text" maxlength="80" autocomplete="off"
+        class="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-green-900/40 bg-white dark:bg-background-dark
+        text-text-main dark:text-white text-sm font-semibold placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary"
+        placeholder="Nhập tên thư mục…"
+        onkeydown="if(event.key==='Enter'){event.preventDefault();submitFolderNameModal();}"
+        oninput="const c=document.getElementById('folderNameCharCount'); if(c) c.textContent=this.value.length">
+      <p class="text-[10px] text-gray-400 mt-2 text-right"><span id="folderNameCharCount">0</span>/80</p>
+    </div>
+    <div class="px-6 pb-6 flex flex-wrap gap-2 justify-end">
+      <button type="button" onclick="closeFolderNameModal()"
+        class="px-4 py-2.5 bg-gray-100 dark:bg-background-dark text-gray-600 dark:text-gray-300 text-sm font-semibold rounded-2xl hover:bg-gray-200 dark:hover:bg-green-900/30 transition-all">
+        Hủy
+      </button>
+      <button type="button" onclick="submitFolderNameModal()"
+        class="px-5 py-2.5 bg-primary text-text-main text-sm font-bold rounded-2xl hover:brightness-105 transition-all">
+        Lưu
       </button>
     </div>
   </div>
@@ -1236,6 +1282,14 @@ let showHint = false;         // current hint visibility state
 let defaultShowPinyin = false; // starter default from picker toggle
 let folders = [];              // list of folder objects loaded from server
 let currentFolderId = null;    // null=all, 'unfiled'=no folder, '<id>'=specific folder
+let folderPanelExpanded = false; // true = pills wrap nhiều dòng, không cuộn ngang
+let _folderNameModalCtx = null;
+function _folderNameOnEscape(e) {
+  if (e.key !== 'Escape') return;
+  e.preventDefault();
+  document.removeEventListener('keydown', _folderNameOnEscape);
+  closeFolderNameModal();
+}
 let _currentEditSetId = null;  // set id being edited (null = creating new)
 let selectedMultipleSets = []; // array of selected set IDs for multi-practice
 let multiPracticeMode = false; // flag for multi-set practice mode
@@ -3320,6 +3374,112 @@ async function folderDrop(event, folderId) {
 
 // ==================== FOLDERS ====================
 
+function openFolderNameModal(ctx) {
+  document.removeEventListener('keydown', _folderNameOnEscape);
+  _folderNameModalCtx = ctx;
+  const modal = document.getElementById('folderNameModal');
+  const input = document.getElementById('folderNameInput');
+  const title = document.getElementById('folderNameModalTitle');
+  const hint = document.getElementById('folderNameModalHint');
+  const countEl = document.getElementById('folderNameCharCount');
+  if (!modal || !input || !title || !hint) return;
+  title.textContent = ctx.mode === 'create' ? 'Tạo thư mục mới' : 'Đổi tên thư mục';
+  hint.textContent = ctx.mode === 'create'
+    ? 'Đặt tên ngắn gọn, dễ nhớ (tối đa 80 ký tự).'
+    : 'Tên mới áp dụng cho thanh thư mục, thẻ bộ từ và màn hình quản lý.';
+  input.value = ctx.initialName || '';
+  if (countEl) countEl.textContent = String(input.value.length);
+  modal.classList.remove('hidden');
+  document.addEventListener('keydown', _folderNameOnEscape);
+  requestAnimationFrame(() => { input.focus(); input.select(); });
+}
+
+function closeFolderNameModal() {
+  document.removeEventListener('keydown', _folderNameOnEscape);
+  const modal = document.getElementById('folderNameModal');
+  if (modal) modal.classList.add('hidden');
+  _folderNameModalCtx = null;
+}
+
+async function submitFolderNameModal() {
+  const input = document.getElementById('folderNameInput');
+  const name = (input?.value || '').trim();
+  const ctx = _folderNameModalCtx;
+  if (!ctx) return;
+  if (!name) {
+    showToast('Vui lòng nhập tên thư mục', 'error');
+    input?.focus();
+    return;
+  }
+  try {
+    if (ctx.mode === 'create') {
+      const res = await authAPI.post('/practice/folders', { name });
+      if (res.success) {
+        showToast(`Đã tạo thư mục "${name}"`, 'success');
+        closeFolderNameModal();
+        if (ctx.onSuccess) await ctx.onSuccess();
+      } else {
+        showToast(res.error?.message || 'Tạo thất bại', 'error');
+      }
+      return;
+    }
+    if (name === ctx.initialName) {
+      closeFolderNameModal();
+      return;
+    }
+    const res = await authAPI.put(`/practice/folders/${ctx.folderId}`, { name });
+    if (res.success) {
+      showToast('Đã đổi tên thư mục', 'success');
+      closeFolderNameModal();
+      if (ctx.onSuccess) await ctx.onSuccess();
+    } else {
+      showToast(res.error?.message || 'Đổi tên thất bại', 'error');
+    }
+  } catch (e) {
+    showToast('Lỗi: ' + e.message, 'error');
+  }
+}
+
+function toggleFolderPanelExpand() {
+  folderPanelExpanded = !folderPanelExpanded;
+  const outer = document.getElementById('folderPillsOuter');
+  const inner = document.getElementById('folderPillsRow');
+  const btn = document.getElementById('folderExpandBtn');
+  const icon = document.getElementById('folderExpandIcon');
+  const row = document.getElementById('folderPanelInnerRow');
+  if (!outer || !inner) return;
+
+  if (folderPanelExpanded) {
+    outer.classList.remove('overflow-x-auto', 'scrollbar-hide');
+    outer.classList.add('overflow-visible');
+    inner.classList.remove('flex-nowrap', 'min-w-max');
+    inner.classList.add('flex-wrap', 'w-full');
+    if (icon) icon.textContent = 'unfold_less';
+    if (btn) {
+      btn.title = 'Thu gọn danh sách thư mục';
+      btn.setAttribute('aria-expanded', 'true');
+    }
+    if (row) {
+      row.classList.remove('items-center');
+      row.classList.add('items-start');
+    }
+  } else {
+    outer.classList.add('overflow-x-auto', 'scrollbar-hide');
+    outer.classList.remove('overflow-visible');
+    inner.classList.add('flex-nowrap', 'min-w-max');
+    inner.classList.remove('flex-wrap', 'w-full');
+    if (icon) icon.textContent = 'unfold_more';
+    if (btn) {
+      btn.title = 'Mở rộng để xem đủ thư mục';
+      btn.setAttribute('aria-expanded', 'false');
+    }
+    if (row) {
+      row.classList.add('items-center');
+      row.classList.remove('items-start');
+    }
+  }
+}
+
 async function loadFolders() {
   try {
     const res = await authAPI.get('/practice/folders');
@@ -3397,33 +3557,25 @@ function selectFolder(id) {
   loadSavedSets();
 }
 
-async function createFolderUI() {
-  const name = prompt('Nhập tên thư mục mới:');
-  if (!name || !name.trim()) return;
-  try {
-    const res = await authAPI.post('/practice/folders', { name: name.trim() });
-    if (res.success) {
-      showToast(`Đã tạo thư mục "${name.trim()}"`, 'success');
-      await loadFolders();
-    } else {
-      showToast(res.error?.message || 'Tạo thất bại', 'error');
-    }
-  } catch (e) { showToast('Lỗi: ' + e.message, 'error'); }
+function createFolderUI() {
+  openFolderNameModal({
+    mode: 'create',
+    initialName: '',
+    onSuccess: async () => { await loadFolders(); },
+  });
 }
 
-async function renameFolderUI(id, currentName) {
-  const name = prompt('Đổi tên thư mục:', currentName);
-  if (!name || !name.trim() || name.trim() === currentName) return;
-  try {
-    const res = await authAPI.put(`/practice/folders/${id}`, { name: name.trim() });
-    if (res.success) {
-      showToast('Đã đổi tên thư mục', 'success');
+function renameFolderUI(id, currentName) {
+  openFolderNameModal({
+    mode: 'rename',
+    folderId: id,
+    initialName: currentName,
+    onSuccess: async () => {
       await loadFolders();
-      loadSavedSets(); // refresh folder badges on cards
-    } else {
-      showToast(res.error?.message || 'Đổi tên thất bại', 'error');
-    }
-  } catch (e) { showToast('Lỗi: ' + e.message, 'error'); }
+      loadSavedSets();
+      renderFolderPanel();
+    },
+  });
 }
 
 async function deleteFolderUI(id, name) {
@@ -3432,7 +3584,7 @@ async function deleteFolderUI(id, name) {
     const res = await authAPI.delete(`/practice/folders/${id}`);
     if (res.success) {
       showToast(`Đã xóa thư mục "${name}"`, 'success');
-      if (currentFolderId === id) currentFolderId = null;
+      if (String(currentFolderId) === String(id)) currentFolderId = null;
       await loadFolders();
       loadSavedSets();
     } else {
@@ -3568,23 +3720,18 @@ async function renderFolderModalList() {
   }).join('');
 }
 
-async function renameFolderFromModal(id, currentName) {
-  const newName = prompt('Đổi tên thư mục:', currentName);
-  if (!newName || !newName.trim() || newName.trim() === currentName) return;
-  
-  try {
-    const res = await authAPI.put(`/practice/folders/${id}`, { name: newName.trim() });
-    if (res.success) {
-      showToast('Đã đổi tên thư mục', 'success');
+function renameFolderFromModal(id, currentName) {
+  openFolderNameModal({
+    mode: 'rename',
+    folderId: id,
+    initialName: currentName,
+    onSuccess: async () => {
       await loadFolders();
       await renderFolderModalList();
       renderFolderPanel();
-    } else {
-      showToast(res.error?.message || 'Đổi tên thất bại', 'error');
-    }
-  } catch (e) {
-    showToast('Lỗi: ' + e.message, 'error');
-  }
+      loadSavedSets();
+    },
+  });
 }
 
 async function deleteFolderFromModal(id, folderName) {
@@ -3594,7 +3741,7 @@ async function deleteFolderFromModal(id, folderName) {
     const res = await authAPI.delete(`/practice/folders/${id}`);
     if (res.success) {
       showToast(`Đã xóa thư mục "${folderName}". Các bộ từ đã chuyển về "Chưa phân loại"`, 'success');
-      if (currentFolderId === id) currentFolderId = null;
+      if (String(currentFolderId) === String(id)) currentFolderId = null;
       await loadFolders();
       await renderFolderModalList();
       renderFolderPanel();

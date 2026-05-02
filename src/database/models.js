@@ -106,6 +106,8 @@ async function createIndexes(db) {
     await db.collection(COLLECTIONS.PRACTICE_BOOKMARKS).createIndexes([
       { key: { userId: 1 } },
       { key: { userId: 1, hanzi: 1 }, unique: true },
+      { key: { userId: 1, difficulty: 1 } },
+      { key: { difficulty: 1 } },
       { key: { createdAt: -1 } },
     ]);
 
@@ -532,6 +534,49 @@ async function setupCollectionValidation(db) {
       validationLevel: 'moderate',
     }).catch(() => {
       // Ignore if collection doesn't exist
+    });
+
+    // Practice Bookmarks validation
+    await db.command({
+      collMod: COLLECTIONS.PRACTICE_BOOKMARKS,
+      validator: {
+        $jsonSchema: {
+          bsonType: 'object',
+          required: ['userId', 'hanzi', 'meaning'],
+          properties: {
+            userId: {
+              bsonType: 'objectId',
+              description: 'ID of the user who bookmarked this word',
+            },
+            hanzi: {
+              bsonType: 'string',
+              description: 'Chinese character/word (traditional)',
+            },
+            pinyin: {
+              bsonType: 'string',
+              description: 'Pinyin pronunciation',
+            },
+            meaning: {
+              bsonType: 'string',
+              description: 'Vietnamese meaning',
+            },
+            difficulty: {
+              enum: Object.values(DIFFICULTY_LEVELS),
+              description: 'Difficulty level (optional)',
+            },
+            imageUrl: {
+              bsonType: 'string',
+              description: 'Optional image URL for the bookmark',
+            },
+            createdAt: {
+              bsonType: 'date',
+            },
+          },
+        },
+      },
+      validationLevel: 'moderate',
+    }).catch(() => {
+      // Ignore if collection doesn't exist yet
     });
 
     // Practice Custom Sets validation

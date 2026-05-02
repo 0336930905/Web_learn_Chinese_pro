@@ -159,16 +159,18 @@ const getVocabularyCards = asyncHandler(async (req, res) => {
 /**
  * Get Reverse Quiz
  * GET /api/games/reverse-quiz
+ * Supports: categoryId | userId (from bookmarks) | difficulty
  */
 const getReverseQuiz = asyncHandler(async (req, res) => {
-  const { categoryId, difficulty, count } = req.query;
+  const { categoryId, userId, difficulty, count } = req.query;
 
-  if (!categoryId && !difficulty) {
+  // Support multiple modes: categoryId, userId (bookmarks), or difficulty
+  if (!categoryId && !userId && !difficulty) {
     return res.status(HTTP_STATUS.BAD_REQUEST).json({
       success: false,
       error: {
-        message: 'Category ID hoặc Difficulty là bắt buộc',
-        field: 'categoryId/difficulty'
+        message: 'Category ID, User ID (cho bookmarks) hoặc Difficulty là bắt buộc',
+        field: 'categoryId/userId/difficulty'
       }
     });
   }
@@ -176,10 +178,31 @@ const getReverseQuiz = asyncHandler(async (req, res) => {
   const gameService = new GameService(req.db);
   
   let quizzes;
-  if (difficulty) {
-    const userId = req.user?._id;
-    quizzes = await gameService.getReverseQuizByDifficulty(difficulty, count, userId);
+  
+  if (userId) {
+    // Get from user bookmarks
+    const userIdToUse = userId === 'me' ? req.user?._id : userId;
+    if (!userIdToUse) {
+      return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+        success: false,
+        error: {
+          message: 'Vui lòng đăng nhập để sử dụng bookmarks',
+          field: 'userId'
+        }
+      });
+    }
+    
+    if (difficulty) {
+      quizzes = await gameService.getReverseQuizFromBookmarksByDifficulty(userIdToUse, difficulty, count);
+    } else {
+      quizzes = await gameService.getReverseQuizFromBookmarks(userIdToUse, null, count);
+    }
+  } else if (difficulty) {
+    // Get from multiple categories by difficulty
+    const userIdForDifficulty = req.user?._id;
+    quizzes = await gameService.getReverseQuizByDifficulty(difficulty, count, userIdForDifficulty);
   } else {
+    // Get from specific category
     quizzes = await gameService.getReverseQuiz(categoryId, count);
   }
 

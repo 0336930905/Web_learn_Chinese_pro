@@ -49,9 +49,9 @@ coverage/
 # MongoDB data (if running locally)
 data/
 
-# Vercel
-.vercel
-.vercel.json
+# Vercel (thư mục link local + token project — không commit)
+# Lưu ý: file cấu hình build ở root phải có trong git — tên là vercel.json (KHÔNG có dấu chấm đầu).
+.vercel/
 
 # Backup files
 backup_*.json

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ghép chữ ghép nghĩa</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔗</text></svg>">
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/user-common.css" />
+  <script src="/i18n/translations.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary":           "#3b82f6",
+            "primary-dark":      "#1e40af",
+            "background-light":  "#f6f8f6",
+            "background-dark":   "#112111",
+            "card-dark":         "#1a2e1a",
+            "text-main":         "#0e1b0e",
+            "text-secondary":    "#509550",
+          },
+          fontFamily: { display: ["Lexend", "sans-serif"], body: ["Lexend", "sans-serif"] },
+          borderRadius: { DEFAULT: "1rem", lg: "1.5rem", xl: "2rem", "2xl": "2.5rem", "3xl": "3rem", full: "9999px" },
+          boxShadow: {
+            "soft":      "0 4px 20px -2px rgba(0,0,0,0.05)",
+            "fun":       "0 6px 0px 0px rgba(59,130,246,0.2)",
+            "fun-hover": "0 10px 24px 0 rgba(59,130,246,0.22)",
+          },
+        },
+      },
+    };
+  </script>
+  <style type="text/tailwindcss">
+    body { font-family: 'Lexend', sans-serif; }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .matched-pair {
+      @apply ring-2 ring-primary ring-offset-2 dark:ring-offset-gray-900;
+    }
+    .match-tile {
+      @apply w-full p-4 rounded-2xl border-2 bg-white dark:bg-gray-800 transition-all text-left;
+    }
+    .hanzi-tile {
+      @apply relative border-purple-100 dark:border-purple-900/40 hover:border-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20;
+    }
+    .meaning-tile {
+      @apply border-pink-100 dark:border-pink-900/40 hover:border-pink-400 hover:bg-pink-50 dark:hover:bg-pink-900/20;
+    }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-text-main dark:text-white overflow-hidden">
+
+<div class="flex h-screen w-full overflow-hidden">
+  <!-- Main Game Area -->
+  <main class="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark">
+    <!-- Decorative background -->
+    <div class="absolute top-0 right-0 -z-10 h-96 w-96 translate-x-1/3 -translate-y-1/3 rounded-full bg-purple-400/10 blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-0 left-0 -z-10 h-64 w-64 -translate-x-1/3 translate-y-1/3 rounded-full bg-pink-400/10 blur-3xl pointer-events-none"></div>
+
+    <div class="mx-auto max-w-4xl px-4 md:px-8 py-6 md:py-8">
+      <!-- Header -->
+      <header class="mb-8 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-purple-400/20 dark:bg-purple-400/30 flex items-center justify-center text-2xl shadow-soft">🔗</div>
+          <div>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-text-main dark:text-white tracking-tight">Ghép chữ ghép nghĩa</h1>
+            <p class="text-text-secondary dark:text-primary/70 text-sm font-medium">Ghép chữ Hán với nghĩa tương ứng</p>
+          </div>
+        </div>
+        <button onclick="window.history.back()" class="w-10 h-10 rounded-full bg-gray-200 dark:bg-card-dark hover:bg-gray-300 dark:hover:bg-gray-700 flex items-center justify-center transition-all">
+          <span class="material-symbols-outlined text-lg">close</span>
+        </button>
+      </header>
+
+      <!-- Progress Bar -->
+      <div class="mb-8">
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-sm font-bold text-gray-600 dark:text-gray-400">Ghép <span id="matchedCount">0</span> / <span id="totalPairs">0</span></span>
+          <span class="text-sm font-bold text-primary" id="scoreDisplay">0%</span>
+        </div>
+        <div class="w-full h-2 bg-gray-200 dark:bg-card-dark rounded-full overflow-hidden">
+          <div id="progressBar" class="h-full bg-gradient-to-r from-purple-400 to-pink-500 transition-all duration-300" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Game Container -->
+      <div class="relative bg-white dark:bg-card-dark rounded-3xl shadow-soft p-8 mb-8">
+        <button id="pinyinHintBtn" type="button" onclick="togglePinyinHints()"
+          title="Gợi ý Pinyin"
+          class="absolute top-4 right-4 w-9 h-9 rounded-xl border border-amber-200 dark:border-amber-800/50 text-amber-600 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/30 hover:bg-amber-100 dark:hover:bg-amber-900/45 transition-all">
+          <span class="material-symbols-outlined text-[18px]">lightbulb</span>
+        </button>
+        <div class="grid grid-cols-2 gap-4 md:gap-6">
+          <!-- Left column: Characters -->
+          <div>
+            <p class="text-sm font-bold text-gray-500 dark:text-gray-400 mb-4">Chữ Hán</p>
+            <div id="charactersContainer" class="space-y-3">
+              <!-- Characters will be inserted here -->
+            </div>
+          </div>
+
+          <!-- Right column: Meanings -->
+          <div>
+            <p class="text-sm font-bold text-gray-500 dark:text-gray-400 mb-4">Nghĩa tiếng Việt</p>
+            <div id="meaningsContainer" class="space-y-3">
+              <!-- Meanings will be inserted here -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Instructions -->
+      <div class="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-4 border border-blue-200 dark:border-blue-900/40 text-center text-sm text-blue-700 dark:text-blue-300 font-medium mb-6">
+        💡 Nhấp vào một chữ Hán và một nghĩa để ghép chúng lại
+      </div>
+
+      <!-- Page Controls -->
+      <div id="pageControls" class="mb-6 flex items-center justify-center gap-3">
+        <button id="prevPageBtn" onclick="goToPrevPage()" class="px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-600 text-sm font-bold hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
+          Trang trước
+        </button>
+        <span id="pageIndicator" class="text-sm font-extrabold text-purple-600 dark:text-purple-300 bg-purple-50 dark:bg-purple-900/30 px-3 py-1 rounded-full">1/1</span>
+        <button id="nextPageBtn" onclick="goToNextPage()" class="px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-600 text-sm font-bold hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
+          Trang sau
+        </button>
+      </div>
+
+      <div id="matchFeedback" class="hidden mb-6 rounded-2xl px-4 py-3 text-center text-sm font-bold border"></div>
+
+      <!-- Results Modal -->
+      <div id="resultsModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-card-dark rounded-3xl max-w-md w-full p-8 shadow-2xl">
+          <div class="text-center mb-6">
+            <div class="w-20 h-20 rounded-full bg-purple-400/20 dark:bg-purple-400/30 flex items-center justify-center text-4xl mx-auto mb-4">✅</div>
+            <h2 class="text-3xl font-extrabold text-text-main dark:text-white mb-2">Hoàn thành!</h2>
+            <p class="text-gray-600 dark:text-gray-400">Bạn đã ghép tất cả cặp</p>
+          </div>
+          <div class="text-center mb-8">
+            <div class="text-5xl font-black text-purple-600 mb-2" id="finalScore">0%</div>
+            <div class="text-gray-600 dark:text-gray-400 font-medium">
+              <span id="correctCount">0</span> / <span id="totalCount">0</span> cặp đúng
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <button onclick="retryGame()" class="flex-1 px-4 py-3 rounded-xl border-2 border-purple-600 text-purple-600 font-bold hover:bg-purple-600/5 transition-all">
+              Thử lại
+            </button>
+            <button onclick="goHome()" class="flex-1 px-4 py-3 rounded-xl bg-purple-600 text-white font-bold hover:bg-purple-700 transition-all">
+              Về trang chủ
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  let allPairs = [];
+  let gameData = null;
+  let selectedCharacter = null;
+  let selectedMeaning = null;
+  let isChecking = false;
+  let currentPage = 0;
+  const PAGE_SIZE = 5;
+  const matchedIds = new Set();
+  let showPinyinHints = false;
+
+  function shuffleArray(arr) {
+    return [...arr].sort(() => Math.random() - 0.5);
+  }
+
+  // Load game data from sessionStorage
+  function loadGameData() {
+    const storedData = sessionStorage.getItem('gameSessionData');
+    if (storedData) {
+      try {
+        gameData = JSON.parse(storedData);
+        allPairs = (gameData.vocabularyData || [])
+          .map((item, idx) => ({
+            id: idx,
+            hanzi: item.hanzi || item.simplified || '',
+            meaning: item.meaning || item.vietnamese || '',
+            pinyin: item.pinyin || ''
+          }))
+          .filter(item => item.hanzi && item.meaning);
+
+        if (gameData.userPreferences?.vocabOrder === 'random') {
+          allPairs = shuffleArray(allPairs);
+          allPairs = allPairs.map((item, idx) => ({ ...item, id: idx }));
+        }
+      } catch (error) {
+        console.error('Error loading game data:', error);
+        allPairs = [];
+      }
+    }
+    return allPairs.length > 0;
+  }
+
+  function getPagePairs() {
+    const start = currentPage * PAGE_SIZE;
+    return allPairs.slice(start, start + PAGE_SIZE);
+  }
+
+  function totalPages() {
+    return Math.max(1, Math.ceil(allPairs.length / PAGE_SIZE));
+  }
+
+  // Initialize game
+  async function initGame() {
+    try {
+      const hasData = loadGameData();
+      if (!hasData) {
+        allPairs = [
+          { id: 0, hanzi: '学', meaning: 'Học tập', pinyin: 'xue' },
+          { id: 1, hanzi: '中', meaning: 'Giữa, Trung Quốc', pinyin: 'zhong' },
+          { id: 2, hanzi: '文', meaning: 'Văn', pinyin: 'wen' },
+          { id: 3, hanzi: '字', meaning: 'Chữ', pinyin: 'zi' },
+          { id: 4, hanzi: '语', meaning: 'Ngôn ngữ', pinyin: 'yu' },
+          { id: 5, hanzi: '言', meaning: 'Nói', pinyin: 'yan' },
+        ];
+      }
+
+      document.getElementById('totalPairs').textContent = allPairs.length;
+      updateProgress();
+      renderPage();
+    } catch (error) {
+      console.error('Error initializing game:', error);
+    }
+  }
+
+  function clearSelectionRings() {
+    if (selectedCharacter?.btn) {
+      selectedCharacter.btn.classList.remove('ring-2', 'ring-purple-400', 'ring-offset-2');
+    }
+    if (selectedMeaning?.btn) {
+      selectedMeaning.btn.classList.remove('ring-2', 'ring-pink-400', 'ring-offset-2');
+    }
+  }
+
+  // Render current page (5 pairs max)
+  function renderPage() {
+    const charContainer = document.getElementById('charactersContainer');
+    const meanContainer = document.getElementById('meaningsContainer');
+    const pagePairs = getPagePairs();
+
+    clearSelectionRings();
+    selectedCharacter = null;
+    selectedMeaning = null;
+    isChecking = false;
+    hideMatchFeedback();
+
+    charContainer.innerHTML = '';
+    meanContainer.innerHTML = '';
+
+    const shuffledMeanings = shuffleArray(pagePairs);
+
+    pagePairs.forEach((pair, index) => {
+      const charBtn = document.createElement('button');
+      charBtn.className = 'match-tile hanzi-tile text-2xl font-black cursor-pointer';
+      charBtn.dataset.id = pair.id;
+      charBtn.innerHTML = `
+        <span class="absolute top-2 right-2 w-5 h-5 rounded-full bg-purple-500 text-white text-[10px] font-black flex items-center justify-center">${index + 1}</span>
+        <span>${pair.hanzi}</span>
+      `;
+      charBtn.onclick = () => selectCharacter(charBtn, pair.id);
+      if (matchedIds.has(pair.id)) applyMatchedState(charBtn, true);
+      charContainer.appendChild(charBtn);
+
+      const meaningPair = shuffledMeanings[index];
+      const meanBtn = document.createElement('button');
+      meanBtn.className = 'match-tile meaning-tile text-sm font-bold cursor-pointer';
+      meanBtn.innerHTML = `
+        <span class="inline-flex items-center justify-between gap-2 w-full">
+          <span>${meaningPair.meaning}</span>
+          <span class="pinyin-hint text-[11px] font-semibold text-violet-600 dark:text-violet-300 ${showPinyinHints ? '' : 'hidden'}">\\${meaningPair.pinyin || '-'}\\</span>
+        </span>
+      `;
+      meanBtn.dataset.id = meaningPair.id;
+      meanBtn.onclick = () => selectMeaning(meanBtn, meaningPair.id);
+      if (matchedIds.has(meaningPair.id)) applyMatchedState(meanBtn, true);
+      meanContainer.appendChild(meanBtn);
+    });
+
+    updatePageControls();
+  }
+
+  function applyMatchedState(btn, disable) {
+    btn.classList.add('opacity-55');
+    if (disable) btn.disabled = true;
+    btn.classList.add('border-green-400', 'bg-green-50', 'dark:bg-green-900/20');
+  }
+
+  function selectCharacter(btn, pairId) {
+    if (isChecking || matchedIds.has(pairId)) return;
+    if (selectedCharacter?.btn) {
+      selectedCharacter.btn.classList.remove('ring-2', 'ring-purple-400', 'ring-offset-2');
+    }
+    selectedCharacter = { btn, pairId };
+    btn.classList.add('ring-2', 'ring-purple-400', 'ring-offset-2');
+    if (selectedMeaning) checkMatch();
+  }
+
+  function selectMeaning(btn, pairId) {
+    if (isChecking || matchedIds.has(pairId)) return;
+    if (selectedMeaning?.btn) {
+      selectedMeaning.btn.classList.remove('ring-2', 'ring-pink-400', 'ring-offset-2');
+    }
+    selectedMeaning = { btn, pairId };
+    btn.classList.add('ring-2', 'ring-pink-400', 'ring-offset-2');
+    if (selectedCharacter) checkMatch();
+  }
+
+  function isCurrentPageCompleted() {
+    return getPagePairs().every(p => matchedIds.has(p.id));
+  }
+
+  function checkMatch() {
+    if (!selectedCharacter || !selectedMeaning || isChecking) return;
+    isChecking = true;
+    const isCorrect = selectedCharacter.pairId === selectedMeaning.pairId;
+
+    if (isCorrect) {
+      const id = selectedCharacter.pairId;
+      matchedIds.add(id);
+      showMatchFeedback(true, '✅ Chính xác!');
+      applyMatchedState(selectedCharacter.btn, true);
+      applyMatchedState(selectedMeaning.btn, true);
+      selectedCharacter.btn.classList.remove('ring-2', 'ring-purple-400', 'ring-offset-2');
+      selectedMeaning.btn.classList.remove('ring-2', 'ring-pink-400', 'ring-offset-2');
+      selectedCharacter = null;
+      selectedMeaning = null;
+      updateProgress();
+
+      setTimeout(() => {
+        isChecking = false;
+        if (matchedIds.size === allPairs.length) {
+          showResults();
+          return;
+        }
+        if (isCurrentPageCompleted() && currentPage < totalPages() - 1) {
+          currentPage += 1;
+          renderPage();
+        }
+      }, 450);
+      return;
+    }
+
+    showMatchFeedback(false, '❌ Sai rồi, thử lại!');
+    setTimeout(() => {
+      if (selectedCharacter?.btn) selectedCharacter.btn.classList.remove('ring-2', 'ring-purple-400', 'ring-offset-2');
+      if (selectedMeaning?.btn) selectedMeaning.btn.classList.remove('ring-2', 'ring-pink-400', 'ring-offset-2');
+      selectedCharacter = null;
+      selectedMeaning = null;
+      isChecking = false;
+      hideMatchFeedback();
+    }, 550);
+  }
+
+  function updatePageControls() {
+    const indicator = document.getElementById('pageIndicator');
+    const prevBtn = document.getElementById('prevPageBtn');
+    const nextBtn = document.getElementById('nextPageBtn');
+    const controls = document.getElementById('pageControls');
+    const pages = totalPages();
+
+    indicator.textContent = `${currentPage + 1}/${pages}`;
+    prevBtn.disabled = currentPage === 0;
+    nextBtn.disabled = currentPage >= pages - 1;
+    prevBtn.classList.toggle('opacity-40', prevBtn.disabled);
+    nextBtn.classList.toggle('opacity-40', nextBtn.disabled);
+    controls.classList.toggle('hidden', pages <= 1);
+  }
+
+  function togglePinyinHints() {
+    showPinyinHints = !showPinyinHints;
+    const btn = document.getElementById('pinyinHintBtn');
+    if (btn) {
+      btn.classList.toggle('bg-amber-200', showPinyinHints);
+      btn.classList.toggle('dark:bg-amber-900/60', showPinyinHints);
+      btn.classList.toggle('ring-2', showPinyinHints);
+      btn.classList.toggle('ring-amber-300/50', showPinyinHints);
+    }
+    document.querySelectorAll('.pinyin-hint').forEach(el => {
+      el.classList.toggle('hidden', !showPinyinHints);
+    });
+  }
+
+  function goToPrevPage() {
+    if (currentPage === 0) return;
+    currentPage -= 1;
+    renderPage();
+  }
+
+  function goToNextPage() {
+    if (currentPage >= totalPages() - 1) return;
+    currentPage += 1;
+    renderPage();
+  }
+
+  // Update progress
+  function updateProgress() {
+    document.getElementById('matchedCount').textContent = matchedIds.size;
+    const progress = allPairs.length ? (matchedIds.size / allPairs.length) * 100 : 0;
+    document.getElementById('progressBar').style.width = progress + '%';
+    document.getElementById('scoreDisplay').textContent = Math.round(progress) + '%';
+  }
+
+  function showMatchFeedback(isCorrect, text) {
+    const fb = document.getElementById('matchFeedback');
+    fb.classList.remove('hidden', 'border-green-200', 'bg-green-50', 'text-green-700', 'dark:bg-green-900/30', 'dark:text-green-300', 'border-red-200', 'bg-red-50', 'text-red-600', 'dark:bg-red-900/30', 'dark:text-red-300');
+    fb.classList.add(isCorrect ? 'border-green-200' : 'border-red-200');
+    fb.classList.add(isCorrect ? 'bg-green-50' : 'bg-red-50');
+    fb.classList.add(isCorrect ? 'text-green-700' : 'text-red-600');
+    fb.classList.add(isCorrect ? 'dark:bg-green-900/30' : 'dark:bg-red-900/30');
+    fb.classList.add(isCorrect ? 'dark:text-green-300' : 'dark:text-red-300');
+    fb.textContent = text;
+  }
+
+  function hideMatchFeedback() {
+    const fb = document.getElementById('matchFeedback');
+    fb.classList.add('hidden');
+    fb.textContent = '';
+  }
+
+  // Show results
+  function showResults() {
+    document.getElementById('finalScore').textContent = '100%';
+    document.getElementById('correctCount').textContent = matchedIds.size;
+    document.getElementById('totalCount').textContent = allPairs.length;
+    document.getElementById('resultsModal').classList.remove('hidden');
+  }
+
+  // Action functions
+  function resetMatches() {
+    matchedIds.clear();
+    selectedCharacter = null;
+    selectedMeaning = null;
+    currentPage = 0;
+    showPinyinHints = false;
+    renderPage();
+    updateProgress();
+    const btn = document.getElementById('pinyinHintBtn');
+    if (btn) {
+      btn.classList.remove('bg-amber-200', 'dark:bg-amber-900/60', 'ring-2', 'ring-amber-300/50');
+    }
+  }
+
+  function retryGame() {
+    document.getElementById('resultsModal').classList.add('hidden');
+    resetMatches();
+  }
+
+  function goHome() {
+    window.location.href = '/user/games_home.html';
+  }
+
+  // Initialize on load
+  window.addEventListener('DOMContentLoaded', initGame);
+</script>
+
+</body>
+</html>

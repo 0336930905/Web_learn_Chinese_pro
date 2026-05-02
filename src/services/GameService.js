@@ -1230,6 +1230,203 @@ class GameService {
   }
 
   /**
+   * Get Reverse Quiz from User Bookmarks
+   * Tối ưu hóa: Lấy dữ liệu từ practice_bookmarks thay vì categories + vocabulary
+   * GET /api/games/reverse-quiz-bookmarks
+   */
+  async getReverseQuizFromBookmarks(userId, difficulty = null, count = 10) {
+    try {
+      if (!ObjectId.isValid(userId)) {
+        throw new AppError(
+          'User ID không hợp lệ',
+          HTTP_STATUS.BAD_REQUEST,
+          ERROR_CODES.INVALID_INPUT
+        );
+      }
+
+      const bookmarksCollection = this.db.collection(COLLECTIONS.PRACTICE_BOOKMARKS);
+      
+      // Build filter
+      const filter = { userId: new ObjectId(userId) };
+      if (difficulty) {
+        filter.difficulty = difficulty;
+      }
+
+      // Get bookmarks - if count is specified, use $sample
+      let pipeline = [{ $match: filter }];
+
+      if (count && parseInt(count) > 0) {
+        pipeline.push({ $sample: { size: Math.min(parseInt(count), 100) } });
+      } else {
+        pipeline.push({ $limit: 100 }); // Safety limit
+      }
+
+      const bookmarks = await bookmarksCollection
+        .aggregate(pipeline)
+        .toArray();
+
+      if (bookmarks.length === 0) {
+        throw new AppError(
+          'Không có từ vựng được ghi nhớ',
+          HTTP_STATUS.NOT_FOUND,
+          ERROR_CODES.RESOURCE_NOT_FOUND
+        );
+      }
+
+      // Create quiz for each bookmarked word
+      const quizzes = await Promise.all(bookmarks.map(async (bookmark) => {
+        // Get 3 wrong answers from other bookmarks of the same user
+        const wrongAnswers = await bookmarksCollection
+          .aggregate([
+            { 
+              $match: { 
+                _id: { $ne: bookmark._id },
+                userId: new ObjectId(userId)
+              } 
+            },
+            { $sample: { size: 3 } }
+          ])
+          .toArray();
+
+        // Create 4 options (1 correct + up to 3 wrong)
+        const options = [
+          { 
+            id: bookmark._id.toString(), 
+            meaning: bookmark.meaning,
+            pinyin: bookmark.pinyin,
+            traditional: bookmark.hanzi,
+            simplified: bookmark.hanzi,
+            isCorrect: true 
+          },
+          ...wrongAnswers.map(w => ({ 
+            id: w._id.toString(), 
+            meaning: w.meaning,
+            pinyin: w.pinyin,
+            traditional: w.hanzi,
+            simplified: w.hanzi,
+            isCorrect: false 
+          }))
+        ];
+
+        // Shuffle options
+        const shuffledOptions = this.shuffleArray(options);
+
+        return {
+          id: bookmark._id,
+          traditional: bookmark.hanzi,
+          simplified: bookmark.hanzi,
+          pinyin: bookmark.pinyin,
+          meaning: bookmark.meaning,
+          difficulty: bookmark.difficulty || 'medium',
+          imageUrl: bookmark.imageUrl || this.getPlaceholderImage(bookmark.meaning),
+          hint: bookmark.pinyin,
+          options: shuffledOptions
+        };
+      }));
+
+      return quizzes;
+    } catch (error) {
+      logger.error('Get reverse quiz from bookmarks error', { error: error.message });
+      throw error;
+    }
+  }
+
+  /**
+   * Get Reverse Quiz from User Bookmarks by Difficulty (with fallback)
+   */
+  async getReverseQuizFromBookmarksByDifficulty(userId, difficulty, count = 5) {
+    try {
+      if (!ObjectId.isValid(userId)) {
+        throw new AppError(
+          'User ID không hợp lệ',
+          HTTP_STATUS.BAD_REQUEST,
+          ERROR_CODES.INVALID_INPUT
+        );
+      }
+
+      const bookmarksCollection = this.db.collection(COLLECTIONS.PRACTICE_BOOKMARKS);
+      
+      // First try to get bookmarks with matching difficulty
+      let bookmarks = await bookmarksCollection
+        .aggregate([
+          { 
+            $match: { 
+              userId: new ObjectId(userId),
+              difficulty: difficulty
+            } 
+          },
+          { $sample: { size: Math.min(parseInt(count) || 5, 100) } }
+        ])
+        .toArray();
+
+      // If not enough bookmarks with this difficulty, get all bookmarks
+      if (bookmarks.length < Math.min(parseInt(count) || 5, 2)) {
+        bookmarks = await bookmarksCollection
+          .aggregate([
+            { 
+              $match: { 
+                userId: new ObjectId(userId)
+              } 
+            },
+            { $sample: { size: Math.min(parseInt(count) || 5, 100) } }
+          ])
+          .toArray();
+      }
+
+      if (bookmarks.length === 0) {
+        throw new AppError(
+          'Không có từ vựng được ghi nhớ',
+          HTTP_STATUS.NOT_FOUND,
+          ERROR_CODES.RESOURCE_NOT_FOUND
+        );
+      }
+
+      // Create quiz for each bookmarked word
+      const quizzes = await Promise.all(bookmarks.map(async (bookmark) => {
+        // Get 3 wrong answers from other bookmarks
+        const wrongAnswers = await bookmarksCollection
+          .aggregate([
+            { 
+              $match: { 
+                _id: { $ne: bookmark._id },
+                userId: new ObjectId(userId)
+              } 
+            },
+            { $sample: { size: 3 } }
+          ])
+          .toArray();
+
+        const allOptions = [
+          { text: `${bookmark.hanzi} (${bookmark.pinyin})`, meaning: bookmark.meaning, isCorrect: true },
+          ...wrongAnswers.map(w => ({ 
+            text: `${w.hanzi} (${w.pinyin})`, 
+            meaning: w.meaning,
+            isCorrect: false 
+          }))
+        ];
+        const shuffledOptions = this.shuffleArray(allOptions);
+
+        return {
+          word: {
+            traditional: bookmark.hanzi,
+            simplified: bookmark.hanzi,
+            pinyin: bookmark.pinyin,
+            meaning: bookmark.meaning
+          },
+          imageUrl: bookmark.imageUrl || this.getPlaceholderImage(bookmark.meaning),
+          hint: bookmark.pinyin,
+          options: shuffledOptions
+        };
+      }));
+
+      return quizzes;
+    } catch (error) {
+      logger.error('Get reverse quiz from bookmarks by difficulty error', { error: error.message });
+      throw error;
+    }
+  }
+
+  /**
    * Shuffle array helper
    */
   shuffleArray(array) {

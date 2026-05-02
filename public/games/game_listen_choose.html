@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nghe và chọn đáp án</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎧</text></svg>">
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/user-common.css" />
+  <script src="/i18n/translations.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary":           "#3b82f6",
+            "primary-dark":      "#1e40af",
+            "background-light":  "#f6f8f6",
+            "background-dark":   "#112111",
+            "card-dark":         "#1a2e1a",
+            "text-main":         "#0e1b0e",
+            "text-secondary":    "#509550",
+          },
+          fontFamily: { display: ["Lexend", "sans-serif"], body: ["Lexend", "sans-serif"] },
+          borderRadius: { DEFAULT: "1rem", lg: "1.5rem", xl: "2rem", "2xl": "2.5rem", "3xl": "3rem", full: "9999px" },
+          boxShadow: {
+            "soft":      "0 4px 20px -2px rgba(0,0,0,0.05)",
+            "fun":       "0 6px 0px 0px rgba(59,130,246,0.2)",
+            "fun-hover": "0 10px 24px 0 rgba(59,130,246,0.22)",
+          },
+          animation: {
+            "pulse-wave": "pulse-wave 1s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+          },
+          keyframes: {
+            "pulse-wave": {
+              "0%, 100%": { transform: "scaleX(1)" },
+              "50%": { transform: "scaleX(1.1)" },
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <style type="text/tailwindcss">
+    body { font-family: 'Lexend', sans-serif; }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .audio-wave {
+      animation: pulse-wave 1s ease-in-out infinite;
+    }
+    .option-btn {
+      @apply p-4 rounded-2xl border-2 border-emerald-100 dark:border-emerald-900/40 bg-white dark:bg-gray-800 text-2xl font-black transition-all;
+    }
+    .option-btn:hover {
+      @apply border-emerald-400 bg-emerald-50 dark:bg-emerald-900/20;
+    }
+    .option-btn-active {
+      @apply ring-2 ring-emerald-400 ring-offset-2;
+    }
+    .option-btn-correct {
+      @apply border-green-500 bg-green-50 dark:bg-green-900/30 ring-2 ring-green-400/40;
+    }
+    .option-btn-wrong {
+      @apply border-red-500 bg-red-50 dark:bg-red-900/30 ring-2 ring-red-400/40;
+    }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-text-main dark:text-white overflow-hidden">
+
+<div class="flex h-screen w-full overflow-hidden">
+  <!-- Main Game Area -->
+  <main class="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark">
+    <!-- Decorative background -->
+    <div class="absolute top-0 right-0 -z-10 h-96 w-96 translate-x-1/3 -translate-y-1/3 rounded-full bg-green-400/10 blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-0 left-0 -z-10 h-64 w-64 -translate-x-1/3 translate-y-1/3 rounded-full bg-emerald-400/10 blur-3xl pointer-events-none"></div>
+
+    <div class="mx-auto max-w-4xl px-4 md:px-8 py-6 md:py-8">
+      <!-- Header -->
+      <header class="mb-8 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-green-400/20 dark:bg-green-400/30 flex items-center justify-center text-2xl shadow-soft">🎧</div>
+          <div>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-text-main dark:text-white tracking-tight">Nghe và chọn</h1>
+            <p class="text-text-secondary dark:text-primary/70 text-sm font-medium">Nghe phát âm và chọn đáp án đúng</p>
+          </div>
+        </div>
+        <button onclick="window.history.back()" class="w-10 h-10 rounded-full bg-gray-200 dark:bg-card-dark hover:bg-gray-300 dark:hover:bg-gray-700 flex items-center justify-center transition-all">
+          <span class="material-symbols-outlined text-lg">close</span>
+        </button>
+      </header>
+
+      <!-- Progress Bar -->
+      <div class="mb-8">
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-sm font-bold text-gray-600 dark:text-gray-400">Câu <span id="currentQuestion">0</span> / <span id="totalQuestions">0</span></span>
+          <span class="text-sm font-bold text-primary" id="scoreDisplay">0%</span>
+        </div>
+        <div class="w-full h-2 bg-gray-200 dark:bg-card-dark rounded-full overflow-hidden">
+          <div id="progressBar" class="h-full bg-gradient-to-r from-green-400 to-emerald-500 transition-all duration-300" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Audio Player Card -->
+      <div class="relative bg-white dark:bg-card-dark rounded-3xl shadow-soft p-4  mb-2 border border-emerald-100/80 dark:border-emerald-900/30">
+        <div class=" flex items-center gap-2">
+          <div class="flex-1 min-w-0">
+            <p class="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">Giọng đọc</p>
+            <select id="voiceRegionSelect" onchange="onVoiceRegionChange()"
+              class="w-full rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm font-bold text-gray-700 dark:text-gray-200">
+              <option value="zh-CN">Tiếng Trung (Phổ thông)</option>
+              <option value="zh-TW">Tiếng Đài (Đài Loan)</option>
+            </select>
+          </div>
+          <button id="pinyinHintBtn" type="button" onclick="togglePinyinHint()"
+            title="Gợi ý Pinyin"
+            class="shrink-0 mt-5 w-9 h-9 rounded-xl border border-amber-200 dark:border-amber-800/50 text-amber-600 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/30 hover:bg-amber-100 dark:hover:bg-amber-900/45 transition-all">
+            <span class="material-symbols-outlined text-[18px]">lightbulb</span>
+          </button>
+        </div>
+        
+        <div class="flex flex-col items-center gap-4 py-4">
+          <p class="text-center text-sm font-bold text-gray-500 dark:text-gray-400">Nghe phát âm</p>
+          <!-- Play Button -->
+          <button id="playBtn" onclick="playAudio()" class="w-20 h-20 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 text-white flex items-center justify-center text-4xl shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all cursor-pointer group">
+            <span class="material-symbols-outlined text-4xl group-hover:animate-pulse">play_arrow</span>
+          </button>
+
+          <!-- Audio element -->
+          <audio id="audioPlayer"></audio>
+
+          <!-- Info text -->
+          <p class="text-sm text-gray-600 dark:text-gray-400 font-medium">Nhấp vào nút để nghe phát âm</p>
+
+          <!-- Pinyin hint -->
+          <div id="pinyinHint" class="hidden text-xs md:text-sm font-semibold text-violet-700 dark:text-violet-300 bg-violet-50 dark:bg-violet-900/25 px-3 py-1 rounded-xl border border-violet-200/70 dark:border-violet-800/40">
+            \ <span id="pinyinDisplay">-</span> \
+          </div>
+
+          <div class="mt-1 flex items-center gap-2">
+            <button onclick="replayAudio()" class="px-3 py-2 rounded-xl bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-xs font-bold hover:bg-green-200 dark:hover:bg-green-900/50 transition-all flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[16px]">replay</span>
+              Nghe lại
+            </button>
+            <button onclick="skipQuestion()" class="px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-xs font-bold hover:bg-gray-100 dark:hover:bg-gray-800 transition-all flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[16px]">skip_next</span>
+              Bỏ qua
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Answer Options -->
+      <div class="mb-8">
+        <p class="text-sm font-bold text-gray-600 dark:text-gray-400 mb-4">Chữ Hán là?</p>
+        <div class="grid grid-cols-2 gap-4" id="optionsContainer">
+          <!-- Options will be inserted here -->
+        </div>
+      </div>
+      <div id="answerFeedback" class="mb-6 hidden rounded-2xl px-4 py-3 text-center text-sm font-bold border"></div>
+
+      <!-- Results Modal -->
+      <div id="resultsModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-card-dark rounded-3xl max-w-md w-full p-8 shadow-2xl">
+          <div class="text-center mb-6">
+            <div class="w-20 h-20 rounded-full bg-green-400/20 dark:bg-green-400/30 flex items-center justify-center text-4xl mx-auto mb-4">✅</div>
+            <h2 class="text-3xl font-extrabold text-text-main dark:text-white mb-2">Hoàn thành!</h2>
+            <p class="text-gray-600 dark:text-gray-400">Điểm số của bạn</p>
+          </div>
+          <div class="text-center mb-8">
+            <div class="text-5xl font-black text-green-600 mb-2" id="finalScore">0</div>
+            <div class="text-gray-600 dark:text-gray-400 font-medium">
+              <span id="correctCount">0</span> / <span id="totalCount">0</span> câu đúng
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <button onclick="retryGame()" class="flex-1 px-4 py-3 rounded-xl border-2 border-green-600 text-green-600 font-bold hover:bg-green-600/5 transition-all">
+              Thử lại
+            </button>
+            <button onclick="goHome()" class="flex-1 px-4 py-3 rounded-xl bg-green-600 text-white font-bold hover:bg-green-700 transition-all">
+              Về trang chủ
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  let currentQuestionIndex = 0;
+  let correctAnswers = 0;
+  let totalQuestions = 0;
+  let questions = [];
+  let gameData = null;
+  let isAnswerLocked = false;
+  let showPinyin = false;
+  let selectedVoiceRegion = 'zh-CN';
+  let selectedVoiceName = '';
+
+  // Load game data from sessionStorage
+  function loadGameData() {
+    const storedData = sessionStorage.getItem('gameSessionData');
+    if (storedData) {
+      try {
+        gameData = JSON.parse(storedData);
+        questions = gameData.vocabularyData || [];
+        // Shuffle if user preference enabled
+        if (gameData.userPreferences?.vocabOrder === 'random') {
+          questions = questions.sort(() => Math.random() - 0.5);
+        }
+      } catch (error) {
+        console.error('Error loading game data:', error);
+        questions = [];
+      }
+    }
+    return questions.length > 0;
+  }
+
+  // Initialize game
+  async function initGame() {
+    try {
+      // Try to load from sessionStorage first
+      const hasData = loadGameData();
+      
+      if (!hasData) {
+        // Fallback: Load sample data
+        questions = [
+          { hanzi: '学', simplified: '学', pinyin: 'xué', meaning: 'Học tập', vietnamese: 'học tập', audioUrl: 'https://example.com/audio/xue.mp3' },
+          { hanzi: '中', simplified: '中', pinyin: 'zhōng', meaning: 'Giữa', vietnamese: 'giữa', audioUrl: 'https://example.com/audio/zhong.mp3' },
+          { hanzi: '文', simplified: '文', pinyin: 'wén', meaning: 'Văn', vietnamese: 'văn', audioUrl: 'https://example.com/audio/wen.mp3' },
+        ];
+      }
+      
+      totalQuestions = questions.length;
+      document.getElementById('totalQuestions').textContent = totalQuestions;
+      
+      if (questions.length > 0) {
+        loadQuestion();
+      } else {
+        showToast('❌ Không có từ vựng để luyện tập', 'error');
+      }
+    } catch (error) {
+      console.error('Error initializing game:', error);
+    }
+  }
+
+  // Load current question
+  function loadQuestion() {
+    if (currentQuestionIndex >= questions.length) {
+      showResults();
+      return;
+    }
+
+    const question = questions[currentQuestionIndex];
+    document.getElementById('pinyinDisplay').textContent = question.pinyin;
+    document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+    isAnswerLocked = false;
+    hideFeedback();
+    
+    // Generate options
+    const options = generateOptions(question.hanzi);
+    renderOptions(options, question.hanzi);
+    
+    updateProgressBar();
+  }
+
+  // Generate answer options
+  function generateOptions(correctAnswer) {
+    const distractors = questions
+      .map((q) => String(q.hanzi || q.simplified || '').trim())
+      .filter((hanzi) => hanzi && hanzi !== correctAnswer);
+    const uniqueDistractors = [...new Set(distractors)].sort(() => Math.random() - 0.5).slice(0, 3);
+    return [correctAnswer, ...uniqueDistractors].sort(() => Math.random() - 0.5);
+  }
+
+  // Render answer options
+  function renderOptions(options, correctAnswer) {
+    const container = document.getElementById('optionsContainer');
+    container.innerHTML = '';
+    
+    options.forEach((option) => {
+      const button = document.createElement('button');
+      button.className = 'option-btn';
+      button.dataset.option = option;
+      button.textContent = option;
+      button.onclick = () => selectAnswer(option, correctAnswer);
+      container.appendChild(button);
+    });
+  }
+
+  // Select answer
+  function selectAnswer(selected, correct) {
+    if (isAnswerLocked) return;
+    isAnswerLocked = true;
+    const buttons = Array.from(document.querySelectorAll('#optionsContainer button'));
+    const selectedBtn = buttons.find(btn => btn.dataset.option === selected);
+    const correctBtn = buttons.find(btn => btn.dataset.option === correct);
+    selectedBtn?.classList.add('option-btn-active');
+
+    if (selected === correct) {
+      correctAnswers++;
+      selectedBtn?.classList.add('option-btn-correct');
+      showFeedback(true, '✅ Chính xác!');
+    } else {
+      selectedBtn?.classList.add('option-btn-wrong');
+      correctBtn?.classList.add('option-btn-correct');
+      showFeedback(false, '❌ Sai rồi. Đáp án đúng: ' + correct);
+    }
+    updateProgressBar();
+    
+    setTimeout(() => {
+      currentQuestionIndex++;
+      loadQuestion();
+    }, 1000);
+  }
+
+  // Update progress bar
+  function updateProgressBar() {
+    const progress = totalQuestions > 0 ? (currentQuestionIndex / totalQuestions) * 100 : 0;
+    document.getElementById('progressBar').style.width = progress + '%';
+    
+    const answered = Math.max(currentQuestionIndex, 1);
+    const score = totalQuestions > 0 ? Math.round((correctAnswers / answered) * 100) : 0;
+    document.getElementById('scoreDisplay').textContent = isNaN(score) ? '0%' : score + '%';
+  }
+
+  // Audio control
+  function playAudio() {
+    const question = questions[currentQuestionIndex];
+    if (!question) return;
+    speakText(question.hanzi || question.simplified || '');
+  }
+
+  function replayAudio() {
+    playAudio();
+  }
+
+  function onVoiceRegionChange() {
+    const select = document.getElementById('voiceRegionSelect');
+    selectedVoiceRegion = select?.value || 'zh-CN';
+    selectedVoiceName = '';
+  }
+
+  function pickVoice() {
+    const voices = window.speechSynthesis?.getVoices?.() || [];
+    if (!voices.length) return null;
+    if (selectedVoiceName) {
+      const exact = voices.find(v => v.name === selectedVoiceName);
+      if (exact) return exact;
+    }
+    const exactLang = voices.find(v => v.lang === selectedVoiceRegion);
+    if (exactLang) return exactLang;
+    const prefix = selectedVoiceRegion.slice(0, 2);
+    return voices.find(v => v.lang?.startsWith(prefix)) || null;
+  }
+
+  function speakText(text) {
+    if (!window.speechSynthesis || !text) return;
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = selectedVoiceRegion;
+    const voice = pickVoice();
+    if (voice) {
+      utter.voice = voice;
+      selectedVoiceName = voice.name;
+      utter.lang = voice.lang;
+    }
+    utter.rate = 0.95;
+    utter.pitch = 1;
+    window.speechSynthesis.speak(utter);
+  }
+
+  // Show results
+  function showResults() {
+    document.getElementById('finalScore').textContent = correctAnswers;
+    document.getElementById('correctCount').textContent = correctAnswers;
+    document.getElementById('totalCount').textContent = totalQuestions;
+    document.getElementById('resultsModal').classList.remove('hidden');
+  }
+
+  // Action functions
+  function skipQuestion() {
+    currentQuestionIndex++;
+    loadQuestion();
+  }
+
+  function retryGame() {
+    currentQuestionIndex = 0;
+    correctAnswers = 0;
+    document.getElementById('resultsModal').classList.add('hidden');
+    loadQuestion();
+  }
+
+  function goHome() {
+    window.location.href = '/user/games_home.html';
+  }
+
+  // Toast notification
+  function showToast(message, type = 'info') {
+    console.log(message);
+  }
+
+  function togglePinyinHint() {
+    showPinyin = !showPinyin;
+    const hint = document.getElementById('pinyinHint');
+    const btn = document.getElementById('pinyinHintBtn');
+    hint?.classList.toggle('hidden', !showPinyin);
+    if (btn) {
+      btn.classList.toggle('bg-amber-200', showPinyin);
+      btn.classList.toggle('dark:bg-amber-900/60', showPinyin);
+      btn.classList.toggle('ring-2', showPinyin);
+      btn.classList.toggle('ring-amber-300/50', showPinyin);
+    }
+  }
+
+  function showFeedback(isCorrect, text) {
+    const feedback = document.getElementById('answerFeedback');
+    if (!feedback) return;
+    feedback.classList.remove('hidden', 'border-green-200', 'bg-green-50', 'text-green-700', 'dark:bg-green-900/30', 'dark:text-green-300', 'border-red-200', 'bg-red-50', 'text-red-600', 'dark:bg-red-900/30', 'dark:text-red-300');
+    feedback.classList.add(isCorrect ? 'border-green-200' : 'border-red-200');
+    feedback.classList.add(isCorrect ? 'bg-green-50' : 'bg-red-50');
+    feedback.classList.add(isCorrect ? 'text-green-700' : 'text-red-600');
+    feedback.classList.add(isCorrect ? 'dark:bg-green-900/30' : 'dark:bg-red-900/30');
+    feedback.classList.add(isCorrect ? 'dark:text-green-300' : 'dark:text-red-300');
+    feedback.textContent = text;
+  }
+
+  function hideFeedback() {
+    const feedback = document.getElementById('answerFeedback');
+    if (!feedback) return;
+    feedback.classList.add('hidden');
+    feedback.textContent = '';
+  }
+
+  // Initialize on load
+  window.addEventListener('DOMContentLoaded', initGame);
+</script>
+
+</body>
+</html>

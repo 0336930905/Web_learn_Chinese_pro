@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kiểm tra</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>✅</text></svg>">
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/user-common.css" />
+  <script src="/i18n/translations.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary":           "#3b82f6",
+            "primary-dark":      "#1e40af",
+            "background-light":  "#f6f8f6",
+            "background-dark":   "#112111",
+            "card-dark":         "#1a2e1a",
+            "text-main":         "#0e1b0e",
+            "text-secondary":    "#509550",
+          },
+          fontFamily: { display: ["Lexend", "sans-serif"], body: ["Lexend", "sans-serif"] },
+          borderRadius: { DEFAULT: "1rem", lg: "1.5rem", xl: "2rem", "2xl": "2.5rem", "3xl": "3rem", full: "9999px" },
+          boxShadow: {
+            "soft":      "0 4px 20px -2px rgba(0,0,0,0.05)",
+            "fun":       "0 6px 0px 0px rgba(59,130,246,0.2)",
+            "fun-hover": "0 10px 24px 0 rgba(59,130,246,0.22)",
+          },
+        },
+      },
+    };
+  </script>
+  <style type="text/tailwindcss">
+    body { font-family: 'Lexend', sans-serif; }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .card-flip {
+      perspective: 1000px;
+    }
+    .card-flip-inner {
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+    .card-flip-inner.flipped {
+      transform: rotateY(180deg);
+    }
+    .card-flip-front, .card-flip-back {
+      backface-visibility: hidden;
+    }
+    .card-flip-back {
+      transform: rotateY(180deg);
+    }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-text-main dark:text-white overflow-hidden">
+
+<div class="flex h-screen w-full overflow-hidden">
+  <!-- Main Game Area -->
+  <main class="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark">
+    <!-- Decorative background -->
+    <div class="absolute top-0 right-0 -z-10 h-96 w-96 translate-x-1/3 -translate-y-1/3 rounded-full bg-red-400/10 blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-0 left-0 -z-10 h-64 w-64 -translate-x-1/3 translate-y-1/3 rounded-full bg-rose-400/10 blur-3xl pointer-events-none"></div>
+
+    <div class="mx-auto max-w-4xl px-4 md:px-8 py-6 md:py-8">
+      <!-- Header -->
+      <header class="mb-8 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-red-400/20 dark:bg-red-400/30 flex items-center justify-center text-2xl shadow-soft">✅</div>
+          <div>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-text-main dark:text-white tracking-tight">Kiểm tra</h1>
+            <p class="text-text-secondary dark:text-primary/70 text-sm font-medium">Ôn tập lại từ vựng đã học</p>
+          </div>
+        </div>
+        <button onclick="window.history.back()" class="w-10 h-10 rounded-full bg-gray-200 dark:bg-card-dark hover:bg-gray-300 dark:hover:bg-gray-700 flex items-center justify-center transition-all">
+          <span class="material-symbols-outlined text-lg">close</span>
+        </button>
+      </header>
+
+      <!-- Progress Bar -->
+      <div class="mb-8">
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-sm font-bold text-gray-600 dark:text-gray-400">Từ <span id="currentQuestion">0</span> / <span id="totalQuestions">0</span></span>
+          <span class="text-sm font-bold text-primary" id="scoreDisplay">0%</span>
+        </div>
+        <div class="w-full h-2 bg-gray-200 dark:bg-card-dark rounded-full overflow-hidden">
+          <div id="progressBar" class="h-full bg-gradient-to-r from-red-400 to-rose-500 transition-all duration-300" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Flashcard -->
+      <div class="h-80 mb-8 cursor-pointer card-flip" onclick="flipCard()">
+        <div class="h-full card-flip-inner" id="cardInner">
+          <!-- Front: Character -->
+          <div class="card-flip-front w-full h-full bg-white dark:bg-card-dark rounded-3xl shadow-soft p-8 flex flex-col items-center justify-center">
+            <p class="text-sm font-bold text-gray-500 dark:text-gray-400 mb-6 absolute top-6 left-6">Chữ Hán</p>
+            <div class="text-7xl md:text-8xl font-black text-red-600 dark:text-red-400" id="cardCharacter">-</div>
+            <p class="text-center text-gray-600 dark:text-gray-400 text-sm mt-8 font-medium">💡 Nhấp thẻ để xem đáp án</p>
+          </div>
+
+          <!-- Back: Information -->
+          <div class="card-flip-back w-full h-full bg-white dark:bg-card-dark rounded-3xl shadow-soft p-8 flex flex-col items-center justify-center">
+            <div class="w-full">
+              <div class="mb-8">
+                <p class="text-xs font-bold text-gray-500 dark:text-gray-400 mb-2 uppercase">Pinyin</p>
+                <p class="text-3xl font-black text-red-600 dark:text-red-400" id="cardPinyin">-</p>
+              </div>
+              <div class="mb-8">
+                <p class="text-xs font-bold text-gray-500 dark:text-gray-400 mb-2 uppercase">Nghĩa tiếng Việt</p>
+                <p class="text-xl font-bold text-gray-700 dark:text-gray-200" id="cardMeaning">-</p>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-gray-500 dark:text-gray-400 mb-2 uppercase">Ví dụ</p>
+                <p class="text-sm text-gray-600 dark:text-gray-400" id="cardExample">-</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rating -->
+      <div class="bg-white dark:bg-card-dark rounded-3xl shadow-soft p-6 mb-8">
+        <p class="text-center text-sm font-bold text-gray-600 dark:text-gray-400 mb-6">Bạn đã nhớ được bao nhiêu?</p>
+        <div class="flex gap-3 justify-center">
+          <button onclick="rateCard('hard')" class="flex-1 px-4 py-3 rounded-xl border-2 border-red-300 dark:border-red-900/40 text-red-600 dark:text-red-400 font-bold hover:bg-red-50 dark:hover:bg-red-900/20 transition-all">
+            <span class="material-symbols-outlined text-base align-middle">sentiment_very_dissatisfied</span>
+            <br>Khó
+          </button>
+          <button onclick="rateCard('medium')" class="flex-1 px-4 py-3 rounded-xl border-2 border-yellow-300 dark:border-yellow-900/40 text-yellow-600 dark:text-yellow-400 font-bold hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-all">
+            <span class="material-symbols-outlined text-base align-middle">sentiment_neutral</span>
+            <br>Bình thường
+          </button>
+          <button onclick="rateCard('easy')" class="flex-1 px-4 py-3 rounded-xl border-2 border-green-300 dark:border-green-900/40 text-green-600 dark:text-green-400 font-bold hover:bg-green-50 dark:hover:bg-green-900/20 transition-all">
+            <span class="material-symbols-outlined text-base align-middle">sentiment_very_satisfied</span>
+            <br>Dễ
+          </button>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex gap-4 justify-center">
+        <button onclick="previousCard()" class="px-6 py-3 rounded-xl border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-bold hover:bg-gray-100 dark:hover:bg-gray-800 transition-all flex items-center gap-2">
+          <span class="material-symbols-outlined text-base">arrow_back</span>
+          Trước
+        </button>
+        <button onclick="nextCard()" class="px-6 py-3 rounded-xl bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 font-bold hover:bg-red-200 dark:hover:bg-red-900/50 transition-all flex items-center gap-2">
+          Tiếp theo
+          <span class="material-symbols-outlined text-base">arrow_forward</span>
+        </button>
+      </div>
+
+      <!-- Results Modal -->
+      <div id="resultsModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-card-dark rounded-3xl max-w-md w-full p-8 shadow-2xl">
+          <div class="text-center mb-6">
+            <div class="w-20 h-20 rounded-full bg-red-400/20 dark:bg-red-400/30 flex items-center justify-center text-4xl mx-auto mb-4">✅</div>
+            <h2 class="text-3xl font-extrabold text-text-main dark:text-white mb-2">Ôn tập xong!</h2>
+            <p class="text-gray-600 dark:text-gray-400">Bạn đã xem xét tất cả các từ</p>
+          </div>
+          <div class="text-center mb-8">
+            <div class="text-4xl font-black text-red-600 mb-4" id="statsDisplay">-</div>
+            <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+              <div>Dễ: <span id="easyCount">0</span></div>
+              <div>Bình thường: <span id="mediumCount">0</span></div>
+              <div>Khó: <span id="hardCount">0</span></div>
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <button onclick="retryGame()" class="flex-1 px-4 py-3 rounded-xl border-2 border-red-600 text-red-600 font-bold hover:bg-red-600/5 transition-all">
+              Ôn lại
+            </button>
+            <button onclick="goHome()" class="flex-1 px-4 py-3 rounded-xl bg-red-600 text-white font-bold hover:bg-red-700 transition-all">
+              Về trang chủ
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  let currentQuestionIndex = 0;
+  let totalQuestions = 0;
+  let questions = [];
+  let ratings = {};
+  let isCardFlipped = false;
+  let gameData = null;
+
+  // Load game data from sessionStorage
+  function loadGameData() {
+    const storedData = sessionStorage.getItem('gameSessionData');
+    if (storedData) {
+      try {
+        gameData = JSON.parse(storedData);
+        questions = gameData.vocabularyData || [];
+        // Shuffle if user preference enabled
+        if (gameData.userPreferences?.vocabOrder === 'random') {
+          questions = questions.sort(() => Math.random() - 0.5);
+        }
+      } catch (error) {
+        console.error('Error loading game data:', error);
+        questions = [];
+      }
+    }
+    return questions.length > 0;
+  }
+
+  // Initialize game
+  async function initGame() {
+    try {
+      // Try to load from sessionStorage first
+      const hasData = loadGameData();
+      
+      if (!hasData) {
+        // Fallback: Load sample data
+        questions = [
+          { hanzi: '学', simplified: '学', pinyin: 'xué', meaning: 'Học tập', vietnamese: 'học tập', example: '学习 (xué xí) - Học tập' },
+          { hanzi: '中', simplified: '中', pinyin: 'zhōng', meaning: 'Giữa, Trung', vietnamese: 'giữa', example: '中国 (zhōng guó) - Trung Quốc' },
+          { hanzi: '文', simplified: '文', pinyin: 'wén', meaning: 'Văn', vietnamese: 'văn', example: '文化 (wén huà) - Văn hóa' },
+          { hanzi: '字', simplified: '字', pinyin: 'zì', meaning: 'Chữ', vietnamese: 'chữ', example: '汉字 (hàn zì) - Chữ Hán' },
+          { hanzi: '语', simplified: '语', pinyin: 'yǔ', meaning: 'Ngôn ngữ', vietnamese: 'ngôn ngữ', example: '语言 (yǔ yán) - Ngôn ngữ' },
+        ];
+      }
+      
+      totalQuestions = questions.length;
+      document.getElementById('totalQuestions').textContent = totalQuestions;
+      
+      if (questions.length > 0) {
+        loadQuestion();
+      } else {
+        showToast('❌ Không có từ vựng để luyện tập', 'error');
+      }
+    } catch (error) {
+      console.error('Error initializing game:', error);
+    }
+  }
+
+  // Load current question
+  function loadQuestion() {
+    if (currentQuestionIndex >= questions.length) {
+      showResults();
+      return;
+    }
+
+    const question = questions[currentQuestionIndex];
+    document.getElementById('cardCharacter').textContent = question.hanzi;
+    document.getElementById('cardPinyin').textContent = question.pinyin;
+    document.getElementById('cardMeaning').textContent = question.meaning;
+    document.getElementById('cardExample').textContent = question.example;
+    document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+    
+    // Reset card to front
+    isCardFlipped = false;
+    document.getElementById('cardInner').classList.remove('flipped');
+    
+    updateProgressBar();
+  }
+
+  // Update progress bar
+  function updateProgressBar() {
+    const progress = ((currentQuestionIndex) / totalQuestions) * 100;
+    document.getElementById('progressBar').style.width = progress + '%';
+    document.getElementById('scoreDisplay').textContent = Math.round(progress) + '%';
+  }
+
+  // Card control
+  function flipCard() {
+    isCardFlipped = !isCardFlipped;
+    const inner = document.getElementById('cardInner');
+    if (isCardFlipped) {
+      inner.classList.add('flipped');
+    } else {
+      inner.classList.remove('flipped');
+    }
+  }
+
+  // Rating functions
+  function rateCard(rating) {
+    const question = questions[currentQuestionIndex];
+    ratings[question.hanzi] = rating;
+    
+    const messages = {
+      'hard': '😰 Cần ôn lại thêm',
+      'medium': '😊 Bạn đang tiến bộ',
+      'easy': '🎉 Tuyệt vời!'
+    };
+    
+    showToast(messages[rating], 'info');
+    nextCard();
+  }
+
+  // Navigation
+  function nextCard() {
+    currentQuestionIndex++;
+    if (currentQuestionIndex >= totalQuestions) {
+      showResults();
+    } else {
+      loadQuestion();
+    }
+  }
+
+  function previousCard() {
+    if (currentQuestionIndex > 0) {
+      currentQuestionIndex--;
+      loadQuestion();
+    }
+  }
+
+  // Show results
+  function showResults() {
+    const hardCount = Object.values(ratings).filter(r => r === 'hard').length;
+    const mediumCount = Object.values(ratings).filter(r => r === 'medium').length;
+    const easyCount = Object.values(ratings).filter(r => r === 'easy').length;
+    
+    document.getElementById('easyCount').textContent = easyCount;
+    document.getElementById('mediumCount').textContent = mediumCount;
+    document.getElementById('hardCount').textContent = hardCount;
+    document.getElementById('statsDisplay').textContent = totalQuestions + ' từ đã xem xét';
+    document.getElementById('resultsModal').classList.remove('hidden');
+  }
+
+  // Action functions
+  function retryGame() {
+    currentQuestionIndex = 0;
+    ratings = {};
+    document.getElementById('resultsModal').classList.add('hidden');
+    loadQuestion();
+  }
+
+  function goHome() {
+    window.location.href = '/user/games_home.html';
+  }
+
+  // Toast notification
+  function showToast(message, type = 'info') {
+    console.log(message);
+  }
+
+  // Initialize on load
+  window.addEventListener('DOMContentLoaded', initGame);
+</script>
+
+</body>
+</html>

@@ -237,10 +237,19 @@
     </div>
 
 <script>
-// ========== Helper: Get categoryId from URL ==========
+// ========== Helper: Get categoryId or userId from URL ==========
 function getCategoryIdFromUrl() {
     const params = new URLSearchParams(window.location.search);
     return params.get('categoryId');
+}
+
+function getSourceParamsFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+        categoryId: params.get('categoryId'),
+        useBookmarks: params.get('useBookmarks') === 'true',
+        userId: params.get('userId')
+    };
 }
 
 // ========== State ==========
@@ -248,6 +257,7 @@ let questions = [];
 let currentIndex = 0;
 let score = 0;
 let timer = null;
+let sourceMode = 'category'; // 'category' | 'bookmarks'
 let timeLeft = 15;
 let gameStartTime = Date.now();
 let quizMode = 'han-viet'; // 'han-viet' | 'han-pinyin' | 'viet-pinyin' | 'viet-han'
@@ -272,17 +282,34 @@ function setMode(mode) {
 
 // ========== Load Questions ==========
 async function loadQuestions() {
-    const categoryId = getCategoryIdFromUrl();
-    if (!categoryId) {
-        alert('Không tìm thấy categoryId!');
+    const source = getSourceParamsFromUrl();
+    
+    // Determine source: bookmarks or category
+    if (source.useBookmarks) {
+        sourceMode = 'bookmarks';
+    } else if (!source.categoryId) {
+        alert('Không tìm thấy categoryId hoặc useBookmarks!');
         window.location.href = '../user/games_home.html';
         return;
+    } else {
+        sourceMode = 'category';
     }
     
     gameStartTime = Date.now(); // Reset timer
     
     try {
-        const res = await fetch(`/api/games/reverse-quiz?categoryId=${categoryId}`);
+        let apiUrl = '/api/games/reverse-quiz';
+        
+        if (sourceMode === 'bookmarks') {
+            // Load from user bookmarks
+            const userId = source.userId || 'me';
+            apiUrl += `?userId=${userId}`;
+        } else {
+            // Load from category
+            apiUrl += `?categoryId=${source.categoryId}`;
+        }
+        
+        const res = await fetch(apiUrl);
         const data = await res.json();
         if (!data.success) {
             alert('Không thể tải câu hỏi: ' + (data.error?.message || 'Lỗi không xác định'));

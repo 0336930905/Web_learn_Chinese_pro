@@ -297,14 +297,14 @@ const getBookmarks = asyncHandler(async (req, res) => {
  * POST /api/practice/bookmarks
  * Toggle-add a word to the user's bookmark list.
  * If the word (by hanzi) already exists it is REMOVED (toggle).
- * Body: { hanzi, pinyin?, meaning }
+ * Body: { hanzi, pinyin?, meaning, difficulty?, imageUrl? }
  */
 const addBookmark = asyncHandler(async (req, res) => {
   if (!req.user?._id) {
     return res.status(HTTP_STATUS.UNAUTHORIZED).json({ success: false, error: { message: 'Vui lòng đăng nhập' } });
   }
 
-  const { hanzi, pinyin, meaning } = req.body;
+  const { hanzi, pinyin, meaning, difficulty, imageUrl } = req.body;
   if (!hanzi || !String(hanzi).trim() || !meaning || !String(meaning).trim()) {
     return res.status(HTTP_STATUS.BAD_REQUEST).json({
       success: false, error: { message: 'Thiếu thông tin từ vựng (hanzi, meaning)' },
@@ -325,6 +325,8 @@ const addBookmark = asyncHandler(async (req, res) => {
     hanzi: hanziTrimmed,
     pinyin: String(pinyin || '').trim(),
     meaning: String(meaning).trim(),
+    difficulty: difficulty || 'medium',
+    imageUrl: imageUrl ? String(imageUrl).trim() : null,
     createdAt: new Date(),
   };
   const result = await req.db.collection(COLLECTIONS.PRACTICE_BOOKMARKS).insertOne(bookmark);

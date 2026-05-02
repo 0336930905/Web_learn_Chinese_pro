@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trắc nghiệm Trung Việt</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>📝</text></svg>">
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/user-common.css" />
+  <script src="/i18n/translations.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary":           "#3b82f6",
+            "primary-dark":      "#1e40af",
+            "background-light":  "#f6f8f6",
+            "background-dark":   "#112111",
+            "card-dark":         "#1a2e1a",
+            "text-main":         "#0e1b0e",
+            "text-secondary":    "#509550",
+          },
+          fontFamily: { display: ["Lexend", "sans-serif"], body: ["Lexend", "sans-serif"] },
+          borderRadius: { DEFAULT: "1rem", lg: "1.5rem", xl: "2rem", "2xl": "2.5rem", "3xl": "3rem", full: "9999px" },
+          boxShadow: {
+            "soft":      "0 4px 20px -2px rgba(0,0,0,0.05)",
+            "fun":       "0 6px 0px 0px rgba(59,130,246,0.2)",
+            "fun-hover": "0 10px 24px 0 rgba(59,130,246,0.22)",
+          },
+        },
+      },
+    };
+  </script>
+  <style type="text/tailwindcss">
+    body { font-family: 'Lexend', sans-serif; }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .option-btn {
+      @apply p-4 rounded-2xl border-2 border-sky-100 dark:border-sky-900/40 bg-gradient-to-br from-white to-sky-50/40 dark:from-card-dark dark:to-sky-900/10 text-left transition-all duration-150;
+    }
+    .option-btn:hover {
+      @apply border-primary/60 bg-primary/10 dark:bg-primary/15;
+    }
+    .option-btn-active {
+      @apply border-primary bg-gradient-to-r from-primary/15 to-blue-200/20 dark:from-primary/25 dark:to-blue-900/20 ring-2 ring-primary/40;
+    }
+    .option-btn-correct {
+      @apply border-green-500 bg-green-50 dark:bg-green-900/30 ring-2 ring-green-400/40;
+    }
+    .option-btn-wrong {
+      @apply border-red-500 bg-red-50 dark:bg-red-900/30 ring-2 ring-red-400/40;
+    }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-text-main dark:text-white overflow-hidden">
+
+<div class="flex h-screen w-full overflow-hidden">
+  <!-- Main Game Area -->
+  <main class="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark">
+    <!-- Decorative background -->
+    <div class="absolute top-0 right-0 -z-10 h-96 w-96 translate-x-1/3 -translate-y-1/3 rounded-full bg-primary/10 blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-0 left-0 -z-10 h-64 w-64 -translate-x-1/3 translate-y-1/3 rounded-full bg-blue-400/10 blur-3xl pointer-events-none"></div>
+
+    <div class="mx-auto max-w-4xl px-4 md:px-8 py-6 md:py-8">
+      <!-- Header -->
+      <header class="mb-8 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-primary/20 dark:bg-primary/30 flex items-center justify-center text-2xl shadow-soft">📝</div>
+          <div>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-text-main dark:text-white tracking-tight">Trắc nghiệm Trung Việt</h1>
+            <p class="text-text-secondary dark:text-primary/70 text-sm font-medium">Chọn đáp án đúng từ 4 lựa chọn</p>
+          </div>
+        </div>
+        <button onclick="window.history.back()" class="w-10 h-10 rounded-full bg-gray-200 dark:bg-card-dark hover:bg-gray-300 dark:hover:bg-gray-700 flex items-center justify-center transition-all">
+          <span class="material-symbols-outlined text-lg">close</span>
+        </button>
+      </header>
+
+      <!-- Progress Bar -->
+      <div class="mb-8">
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-sm font-bold text-gray-600 dark:text-gray-400">Câu <span id="currentQuestion">0</span> / <span id="totalQuestions">0</span></span>
+          <span class="text-sm font-bold text-primary" id="scoreDisplay">0%</span>
+        </div>
+        <div class="w-full h-2 bg-gray-200 dark:bg-card-dark rounded-full overflow-hidden">
+          <div id="progressBar" class="h-full bg-gradient-to-r from-primary to-blue-500 transition-all duration-300" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Question Card -->
+      <div class="relative bg-white dark:bg-card-dark rounded-3xl shadow-soft p-8 mb-8 border border-sky-100/80 dark:border-sky-900/30">
+        <div class="mb-6">
+          <p class="text-sm font-bold text-gray-500 dark:text-gray-400 mb-3">Chữ Hán:</p>
+          <div class="text-4xl md:text-5xl font-black text-primary text-center py-6 bg-primary/5 dark:bg-primary/10 rounded-2xl">
+            <span id="questionCharacter">-</span>
+          </div>
+        </div>
+
+        <div class="mb-2 flex items-center justify-center gap-2">
+          <button id="pinyinHintBtn" type="button" onclick="togglePinyinHint()"
+            class="absolute top-4 right-4 w-10 h-10 rounded-xl border border-amber-200 dark:border-amber-800/50 text-amber-600 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/30 hover:bg-amber-100 dark:hover:bg-amber-900/45 shadow-sm hover:shadow transition-all"
+            title="Gợi ý Pinyin">
+            <span class="material-symbols-outlined text-[18px]">lightbulb</span>
+          </button>
+          <span id="pinyinHint" class="hidden text-xs md:text-sm font-semibold text-violet-700 dark:text-violet-300 bg-violet-50 dark:bg-violet-900/25 px-3 py-1 rounded-xl border border-violet-200/70 dark:border-violet-800/40">
+            \ <span id="questionPinyin">-</span> \
+          </span>
+        </div>
+
+        <p class="text-center text-gray-600 dark:text-gray-400 font-medium">Nghĩa tiếng Việt của chữ này là?</p>
+      </div>
+
+      <!-- Answer Options -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8" id="optionsContainer">
+        <!-- Options will be inserted here -->
+      </div>
+      <div id="answerFeedback" class="mb-6 hidden rounded-2xl px-4 py-3 text-center text-sm font-bold border"></div>
+
+      <!-- Action Buttons -->
+      <div class="flex gap-4 justify-center">
+        <button onclick="skipQuestion()" class="px-6 py-3 rounded-xl border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-bold hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
+          Bỏ qua
+        </button>
+        <button onclick="showAnswer()" class="px-6 py-3 rounded-xl bg-blue-100 dark:bg-blue-900/30 text-primary font-bold hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-all">
+          Xem đáp án
+        </button>
+      </div>
+
+      <!-- Results Modal -->
+      <div id="resultsModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-card-dark rounded-3xl max-w-md w-full p-8 shadow-2xl">
+          <div class="text-center mb-6">
+            <div class="w-20 h-20 rounded-full bg-primary/20 dark:bg-primary/30 flex items-center justify-center text-4xl mx-auto mb-4">✅</div>
+            <h2 class="text-3xl font-extrabold text-text-main dark:text-white mb-2">Hoàn thành!</h2>
+            <p class="text-gray-600 dark:text-gray-400">Điểm số của bạn</p>
+          </div>
+          <div class="text-center mb-8">
+            <div class="text-5xl font-black text-primary mb-2" id="finalScore">0</div>
+            <div class="text-gray-600 dark:text-gray-400 font-medium">
+              <span id="correctCount">0</span> / <span id="totalCount">0</span> câu đúng
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <button onclick="retryGame()" class="flex-1 px-4 py-3 rounded-xl border-2 border-primary text-primary font-bold hover:bg-primary/5 transition-all">
+              Thử lại
+            </button>
+            <button onclick="goHome()" class="flex-1 px-4 py-3 rounded-xl bg-primary text-white font-bold hover:bg-primary-dark transition-all">
+              Về trang chủ
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  let currentQuestionIndex = 0;
+  let correctAnswers = 0;
+  let totalQuestions = 0;
+  let questions = [];
+  let gameData = null;
+  let isAnswerLocked = false;
+
+  // Load game data from sessionStorage
+  function loadGameData() {
+    const storedData = sessionStorage.getItem('gameSessionData');
+    if (storedData) {
+      try {
+        gameData = JSON.parse(storedData);
+        questions = gameData.vocabularyData || [];
+        // Shuffle if user preference enabled
+        if (gameData.userPreferences?.vocabOrder === 'random') {
+          questions = questions.sort(() => Math.random() - 0.5);
+        }
+      } catch (error) {
+        console.error('Error loading game data:', error);
+        questions = [];
+      }
+    }
+    return questions.length > 0;
+  }
+
+  // Initialize game
+  async function initGame() {
+    try {
+      // Try to load from sessionStorage first
+      const hasData = loadGameData();
+      
+      if (!hasData) {
+        // Fallback: Fetch from API if no sessionStorage data
+        // const response = await apiGet('/practice/bookmarks?limit=10');
+        // questions = response.data;
+        
+        // Placeholder: Load sample data
+        questions = [
+          { hanzi: '学', simplified: '学', pinyin: 'xué', meaning: 'Học tập', vietnamese: 'học tập' },
+          { hanzi: '中', simplified: '中', pinyin: 'zhōng', meaning: 'Giữa, Trung Quốc', vietnamese: 'giữa' },
+          { hanzi: '文', simplified: '文', pinyin: 'wén', meaning: 'Văn', vietnamese: 'văn' },
+        ];
+      }
+      
+      totalQuestions = questions.length;
+      document.getElementById('totalQuestions').textContent = totalQuestions;
+      
+      if (questions.length > 0) {
+        loadQuestion();
+      } else {
+        showToast('❌ Không có từ vựng để luyện tập', 'error');
+      }
+    } catch (error) {
+      console.error('Error initializing game:', error);
+    }
+  }
+
+  // Load current question
+  function loadQuestion() {
+    if (currentQuestionIndex >= questions.length) {
+      showResults();
+      return;
+    }
+
+    const question = questions[currentQuestionIndex];
+    document.getElementById('questionCharacter').textContent = question.hanzi;
+    document.getElementById('questionPinyin').textContent = question.pinyin;
+    document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+    isAnswerLocked = false;
+    hideFeedback();
+    resetPinyinHint();
+    
+    // Generate options (correct answer + 3 random options)
+    const options = generateOptions(question.meaning);
+    renderOptions(options, question.meaning);
+    
+    updateProgressBar();
+  }
+
+  // Generate answer options
+  function generateOptions(correctAnswer) {
+    const normalizedCorrect = String(correctAnswer || '').trim();
+    const distractors = questions
+      .map((q) => String(q.meaning || q.vietnamese || '').trim())
+      .filter((meaning) => meaning && meaning !== normalizedCorrect);
+
+    const uniqueDistractors = [...new Set(distractors)];
+    const shuffledDistractors = uniqueDistractors.sort(() => Math.random() - 0.5);
+    const selectedDistractors = shuffledDistractors.slice(0, 3);
+
+    return [normalizedCorrect, ...selectedDistractors].sort(() => Math.random() - 0.5);
+  }
+
+  // Render answer options
+  function renderOptions(options, correctAnswer) {
+    const container = document.getElementById('optionsContainer');
+    container.innerHTML = '';
+    
+    options.forEach((option, index) => {
+      const button = document.createElement('button');
+      button.className = 'option-btn group';
+      button.dataset.option = option;
+      button.innerHTML = `
+        <div class="flex items-start gap-3">
+          <div class="option-marker w-6 h-6 rounded-full border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center text-xs font-black transition-all">
+            ${String.fromCharCode(65 + index)}
+          </div>
+          <span class="flex-1 font-bold">${option}</span>
+          <span class="result-icon material-symbols-outlined text-lg hidden"></span>
+        </div>
+      `;
+      button.onclick = () => selectAnswer(option, correctAnswer);
+      container.appendChild(button);
+    });
+  }
+
+  // Select answer
+  function selectAnswer(selected, correct) {
+    if (isAnswerLocked) return;
+    isAnswerLocked = true;
+
+    const buttons = Array.from(document.querySelectorAll('#optionsContainer button'));
+    const selectedBtn = buttons.find(btn => btn.dataset.option === selected);
+    const correctBtn = buttons.find(btn => btn.dataset.option === correct);
+    if (selectedBtn) selectedBtn.classList.add('option-btn-active');
+
+    if (selected === correct) {
+      correctAnswers++;
+      markButtonState(selectedBtn, true);
+      showFeedback(true, '✅ Chính xác!');
+    } else {
+      markButtonState(selectedBtn, false);
+      markButtonState(correctBtn, true);
+      showFeedback(false, '❌ Sai rồi. Đáp án đúng: ' + correct);
+    }
+    updateProgressBar();
+
+    const nextDelayMs = 1000;
+    setTimeout(() => {
+      currentQuestionIndex++;
+      loadQuestion();
+    }, nextDelayMs);
+  }
+
+  function markButtonState(button, isCorrect) {
+    if (!button) return;
+    button.classList.remove('option-btn-active');
+    button.classList.add(isCorrect ? 'option-btn-correct' : 'option-btn-wrong');
+    const marker = button.querySelector('.option-marker');
+    const icon = button.querySelector('.result-icon');
+    if (marker) {
+      marker.classList.remove('border-gray-300', 'dark:border-gray-600');
+      if (isCorrect) {
+        marker.classList.add('border-green-500', 'bg-green-100', 'text-green-700');
+      } else {
+        marker.classList.add('border-red-500', 'bg-red-100', 'text-red-700');
+      }
+    }
+    if (icon) {
+      icon.classList.remove('hidden');
+      icon.textContent = isCorrect ? 'check_circle' : 'cancel';
+      icon.classList.add(isCorrect ? 'text-green-600' : 'text-red-500');
+    }
+  }
+
+  // Update progress bar
+  function updateProgressBar() {
+    const progress = totalQuestions > 0 ? (currentQuestionIndex / totalQuestions) * 100 : 0;
+    document.getElementById('progressBar').style.width = progress + '%';
+    
+    const answered = Math.max(currentQuestionIndex, 1);
+    const score = totalQuestions > 0 ? Math.round((correctAnswers / answered) * 100) : 0;
+    document.getElementById('scoreDisplay').textContent = isNaN(score) ? '0%' : score + '%';
+  }
+
+  // Show results
+  function showResults() {
+    document.getElementById('finalScore').textContent = correctAnswers;
+    document.getElementById('correctCount').textContent = correctAnswers;
+    document.getElementById('totalCount').textContent = totalQuestions;
+    document.getElementById('resultsModal').classList.remove('hidden');
+  }
+
+  // Action functions
+  function skipQuestion() {
+    currentQuestionIndex++;
+    loadQuestion();
+  }
+
+  function showAnswer() {
+    const question = questions[currentQuestionIndex];
+    showFeedback(false, 'Đáp án: ' + question.meaning);
+  }
+
+  function retryGame() {
+    currentQuestionIndex = 0;
+    correctAnswers = 0;
+    document.getElementById('resultsModal').classList.add('hidden');
+    loadQuestion();
+  }
+
+  function goHome() {
+    window.location.href = '/user/games_home.html';
+  }
+
+  // Toast notification
+  function showToast(message, type = 'info') {
+    // Placeholder implementation
+    console.log(message);
+  }
+
+  function togglePinyinHint() {
+    const hint = document.getElementById('pinyinHint');
+    const btn = document.getElementById('pinyinHintBtn');
+    if (!hint || !btn) return;
+    const visible = !hint.classList.contains('hidden');
+    if (visible) {
+      hint.classList.add('hidden');
+      btn.classList.remove('bg-amber-200', 'dark:bg-amber-900/60', 'ring-2', 'ring-amber-300/50');
+    } else {
+      hint.classList.remove('hidden');
+      btn.classList.add('bg-amber-200', 'dark:bg-amber-900/60', 'ring-2', 'ring-amber-300/50');
+    }
+  }
+
+  function resetPinyinHint() {
+    const hint = document.getElementById('pinyinHint');
+    const btn = document.getElementById('pinyinHintBtn');
+    if (hint) hint.classList.add('hidden');
+    if (btn) btn.classList.remove('bg-amber-200', 'dark:bg-amber-900/60', 'ring-2', 'ring-amber-300/50');
+  }
+
+  function showFeedback(isCorrect, text) {
+    const feedback = document.getElementById('answerFeedback');
+    if (!feedback) return;
+    feedback.classList.remove('hidden', 'border-green-200', 'bg-green-50', 'text-green-700', 'dark:bg-green-900/30', 'dark:text-green-300', 'border-red-200', 'bg-red-50', 'text-red-600', 'dark:bg-red-900/30', 'dark:text-red-300');
+    feedback.classList.add(isCorrect ? 'bg-green-50' : 'bg-red-50');
+    feedback.classList.add(isCorrect ? 'text-green-700' : 'text-red-600');
+    feedback.classList.add(isCorrect ? 'border-green-200' : 'border-red-200');
+    feedback.classList.add(isCorrect ? 'dark:bg-green-900/30' : 'dark:bg-red-900/30');
+    feedback.classList.add(isCorrect ? 'dark:text-green-300' : 'dark:text-red-300');
+    feedback.textContent = text;
+  }
+
+  function hideFeedback() {
+    const feedback = document.getElementById('answerFeedback');
+    if (!feedback) return;
+    feedback.classList.add('hidden');
+    feedback.textContent = '';
+  }
+
+  // Initialize on load
+  window.addEventListener('DOMContentLoaded', initGame);
+</script>
+
+</body>
+</html>
