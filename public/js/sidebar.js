@@ -1,4 +1,4 @@
-﻿// Sidebar Component - Shared across all pages
+﻿// Sidebar Component - Shared across all pages (v2.0.1 - With practice bookmarks)
 function renderSidebar(activePage = 'home', profileData = null) {
     // Check if i18n is available, otherwise use defaults
     const t = (key, fallback) => {
