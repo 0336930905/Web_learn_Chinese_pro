@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html class="light" lang="vi">
 <head>
   <meta charset="utf-8" />
@@ -19,8 +19,8 @@
       theme: {
         extend: {
           colors: {
-            "primary":           "#4ce64c",
-            "primary-dark":      "#38c438",
+            "primary":           "#b2cbf3",
+            "primary-dark":      "#1e40af",
             "background-light":  "#f6f8f6",
             "background-dark":   "#112111",
             "card-dark":         "#1a2e1a",
@@ -31,8 +31,8 @@
           borderRadius: { DEFAULT: "1rem", lg: "1.5rem", xl: "2rem", "2xl": "2.5rem", "3xl": "3rem", full: "9999px" },
           boxShadow: {
             "soft":      "0 4px 20px -2px rgba(0,0,0,0.05)",
-            "fun":       "0 6px 0px 0px rgba(76,230,76,0.2)",
-            "fun-hover": "0 10px 24px 0 rgba(76,230,76,0.22)",
+            "fun":       "0 6px 0px 0px rgba(59,130,246,0.2)",
+            "fun-hover": "0 10px 24px 0 rgba(59,130,246,0.22)",
           },
         },
       },
@@ -54,7 +54,7 @@
     .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
     .practice-card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 12px 24px 0 rgba(76,230,76,0.14);
+      box-shadow: 0 12px 24px 0 rgba(59,130,246,0.14);
     }
     .material-symbols-outlined {
       font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
@@ -64,15 +64,15 @@
     }
     ::-webkit-scrollbar { width: 10px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #dcfce7; border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: #4ce64c; }
+    ::-webkit-scrollbar-thumb { background: #dbeafe; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #b2cbf3; }
   </style>
 </head>
 <body class="bg-background-light dark:bg-background-dark text-text-main dark:text-white overflow-hidden">
 
 <div class="flex h-screen w-full overflow-hidden">
   <!-- Sidebar -->
-  <div id="sidebar-container" data-active-page="practice"></div>
+  <div id="sidebar-container" data-active-page="practiceBookmarks"></div>
 
   <!-- Main -->
   <main class="flex-1 ml-0 md:ml-64 overflow-y-auto bg-background-light dark:bg-background-dark relative transition-all duration-300">
@@ -257,12 +257,6 @@
                   <div id="folderEmpty" class="hidden text-xs text-gray-400 dark:text-zinc-500 italic px-1">Chưa có thư mục nào</div>
                 </div>
               </div>
-              <!-- Expand folders button -->
-              <button onclick="openFolderModal()" title="Xem tất cả thư mục"
-                class="shrink-0 flex items-center justify-center w-9 h-9 rounded-full text-xs font-bold
-                bg-gray-100 dark:bg-green-900/20 hover:bg-gray-200 dark:hover:bg-green-900/40 text-gray-600 dark:text-gray-400 transition-all">
-                <span class="material-symbols-outlined text-base">unfold_more</span>
-              </button>
               <!-- Create folder button -->
               <button onclick="createFolderUI()" title="Tạo thư mục mới"
                 class="shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-bold
@@ -649,309 +643,6 @@
 
       </div><!-- /setupPanel -->
 
-      <!-- ====== PRACTICE PANEL ====== -->
-      <div id="practicePanel" class="hidden fixed inset-0 z-50 flex flex-col bg-background-light dark:bg-background-dark">
-
-        <!-- ====== INPUT MODE PICKER ====== -->
-        <div id="inputModePicker"
-          class="hidden flex fixed inset-0 z-[60] bg-black/60 backdrop-blur-md items-end sm:items-center justify-center px-3 pb-3 sm:pb-0">
-          <div id="inputModePickerCard" class="w-full max-w-sm bg-white dark:bg-card-dark rounded-3xl border border-white/60 dark:border-gray-700/60 shadow-2xl overflow-hidden imp-pop">
-
-            <!-- Header -->
-            <div class="relative px-5 pt-4 pb-3 flex items-center gap-3">
-              <div class="imp-icon-bounce w-9 h-9 rounded-2xl bg-gradient-to-br from-primary to-blue-500 flex items-center justify-center text-xl shadow-lg shrink-0">🎯</div>
-              <div class="flex-1 min-w-0">
-                <h3 class="text-sm font-black text-gray-800 dark:text-white leading-tight">Chọn chế độ luyện tập</h3>
-                <p class="text-[10px] font-semibold text-gray-400 dark:text-gray-500">Nhấn vào một chế độ để bắt đầu</p>
-              </div>
-              <button onclick="quitPractice()" class="w-7 h-7 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 hover:rotate-90 transition-all duration-200 active:scale-90 shrink-0">
-                <span class="material-symbols-outlined text-[17px]">close</span>
-              </button>
-            </div>
-
-            <!-- Mode Grid (2x2 + 1 full) -->
-            <div class="px-4 pb-1 grid grid-cols-2 gap-2">
-              <button onclick="selectInputMode('hanzi_to_pinyin')"
-                class="imp-btn group relative overflow-hidden flex flex-col items-center gap-1.5 py-3.5 px-2 rounded-2xl border-2 border-teal-100 dark:border-teal-900/40 bg-gradient-to-b from-teal-50 to-white dark:from-teal-900/20 dark:to-transparent hover:border-teal-400 hover:from-teal-100 hover:shadow-lg hover:-translate-y-1 active:scale-95 active:shadow-none transition-all duration-200 text-center"
-                style="animation-delay:.04s">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-400 to-emerald-500 text-white flex items-center justify-center text-lg font-black shadow-md group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-teal-300/50 group-hover:shadow-lg transition-all duration-200">漢</div>
-                <div class="text-[10px] font-black text-gray-700 dark:text-gray-200 leading-tight">Chữ Hán</div>
-                <div class="text-[9px] text-teal-600 dark:text-teal-400 font-bold">→ Pinyin</div>
-                <span class="absolute inset-0 rounded-2xl ring-2 ring-teal-400 ring-offset-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></span>
-              </button>
-
-              <button onclick="selectInputMode('hanzi_to_meaning')"
-                class="imp-btn group relative overflow-hidden flex flex-col items-center gap-1.5 py-3.5 px-2 rounded-2xl border-2 border-blue-100 dark:border-blue-900/40 bg-gradient-to-b from-blue-50 to-white dark:from-blue-900/20 dark:to-transparent hover:border-blue-400 hover:from-blue-100 hover:shadow-lg hover:-translate-y-1 active:scale-95 active:shadow-none transition-all duration-200 text-center"
-                style="animation-delay:.08s">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-400 to-indigo-500 text-white flex items-center justify-center text-lg font-black shadow-md group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-blue-300/50 group-hover:shadow-lg transition-all duration-200">💡</div>
-                <div class="text-[10px] font-black text-gray-700 dark:text-gray-200 leading-tight">Chữ Hán</div>
-                <div class="text-[9px] text-blue-600 dark:text-blue-400 font-bold">→ Nghĩa</div>
-                <span class="absolute inset-0 rounded-2xl ring-2 ring-blue-400 ring-offset-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></span>
-              </button>
-
-              <button onclick="selectInputMode('vietnamese_to_pinyin')"
-                class="imp-btn group relative overflow-hidden flex flex-col items-center gap-1.5 py-3.5 px-2 rounded-2xl border-2 border-purple-100 dark:border-purple-900/40 bg-gradient-to-b from-purple-50 to-white dark:from-purple-900/20 dark:to-transparent hover:border-purple-400 hover:from-purple-100 hover:shadow-lg hover:-translate-y-1 active:scale-95 active:shadow-none transition-all duration-200 text-center"
-                style="animation-delay:.12s">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-400 to-fuchsia-500 text-white flex items-center justify-center text-xs font-black shadow-md group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-purple-300/50 group-hover:shadow-lg transition-all duration-200">VN</div>
-                <div class="text-[10px] font-black text-gray-700 dark:text-gray-200 leading-tight">Tiếng Việt</div>
-                <div class="text-[9px] text-purple-600 dark:text-purple-400 font-bold">→ Pinyin</div>
-                <span class="absolute inset-0 rounded-2xl ring-2 ring-purple-400 ring-offset-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></span>
-              </button>
-
-              <button onclick="selectInputMode('vietnamese_to_hanzi')"
-                class="imp-btn group relative overflow-hidden flex flex-col items-center gap-1.5 py-3.5 px-2 rounded-2xl border-2 border-rose-100 dark:border-rose-900/40 bg-gradient-to-b from-rose-50 to-white dark:from-rose-900/20 dark:to-transparent hover:border-rose-400 hover:from-rose-100 hover:shadow-lg hover:-translate-y-1 active:scale-95 active:shadow-none transition-all duration-200 text-center"
-                style="animation-delay:.16s">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-400 to-pink-500 text-white flex items-center justify-center text-lg font-black shadow-md group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-rose-300/50 group-hover:shadow-lg transition-all duration-200">✍️</div>
-                <div class="text-[10px] font-black text-gray-700 dark:text-gray-200 leading-tight">Tiếng Việt</div>
-                <div class="text-[9px] text-rose-600 dark:text-rose-400 font-bold">→ Chữ Hán</div>
-                <span class="absolute inset-0 rounded-2xl ring-2 ring-rose-400 ring-offset-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></span>
-              </button>
-
-              <!-- Listen: full width -->
-              <button onclick="selectInputMode('listen_to_meaning')"
-                class="imp-btn col-span-2 group relative overflow-hidden flex items-center gap-3 py-3 px-3.5 rounded-2xl border-2 border-amber-100 dark:border-amber-900/40 bg-gradient-to-r from-amber-50 to-orange-50/60 dark:from-amber-900/20 dark:to-orange-900/10 hover:border-amber-400 hover:from-amber-100 hover:to-orange-100/60 hover:shadow-lg hover:-translate-y-0.5 active:scale-95 active:shadow-none transition-all duration-200"
-                style="animation-delay:.20s">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-white flex items-center justify-center text-xl shadow-md group-hover:scale-110 group-hover:animate-[wiggle_.4s_ease] group-hover:shadow-amber-300/50 group-hover:shadow-lg transition-all duration-200 shrink-0">🎧</div>
-                <div class="text-left min-w-0">
-                  <div class="text-[11px] font-black text-gray-700 dark:text-gray-200 leading-tight">Nghe tiếng Trung</div>
-                  <div class="text-[9px] text-amber-600 dark:text-amber-400 font-bold">→ Nhập nghĩa tiếng Việt</div>
-                </div>
-                <span class="material-symbols-outlined ml-auto text-amber-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200 text-base shrink-0">arrow_forward</span>
-                <span class="absolute inset-0 rounded-2xl ring-2 ring-amber-400 ring-offset-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></span>
-              </button>
-            </div>
-
-            <!-- Toggles row -->
-            <div class="px-4 py-3 flex items-center gap-2 flex-wrap">
-              <div class="flex-1 min-w-[45%] flex items-center justify-between px-2.5 py-2 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200/60 dark:border-amber-800/30">
-                <div class="flex items-center gap-1.5">
-                  <span class="text-sm leading-none" style="font-family:sans-serif">拼</span>
-                  <span class="text-[10px] font-black text-gray-600 dark:text-gray-300">Pinyin gợi ý</span>
-                </div>
-                <button id="pinyinSupportToggle" onclick="toggleDefaultPinyin()"
-                  class="relative inline-flex h-5 w-9 items-center rounded-full bg-gray-200 dark:bg-gray-700 transition-colors duration-300 shrink-0">
-                  <span id="pinyinSupportDot" class="inline-block h-3.5 w-3.5 translate-x-0.5 rounded-full bg-white transition-transform duration-300 shadow"></span>
-                </button>
-              </div>
-              <div class="flex-1 min-w-[45%] flex items-center justify-between px-2.5 py-2 bg-sky-50 dark:bg-sky-900/20 rounded-xl border border-sky-200/60 dark:border-sky-800/30">
-                <div class="flex items-center gap-1.5">
-                  <span class="material-symbols-outlined text-sky-500 text-[15px]">volume_up</span>
-                  <span class="text-[10px] font-black text-gray-600 dark:text-gray-300">Tự đọc</span>
-                </div>
-                <button id="autoSpeakTrack" onclick="toggleAutoSpeak()"
-                  class="relative inline-flex h-5 w-9 items-center rounded-full bg-gray-200 dark:bg-gray-700 transition-colors duration-300 shrink-0">
-                  <span id="autoSpeakDot" class="inline-block h-3.5 w-3.5 translate-x-0.5 rounded-full bg-white transition-transform duration-300 shadow"></span>
-                </button>
-              </div>
-              <div class="w-full flex items-center justify-between px-2.5 py-2 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200/60 dark:border-green-800/30">
-                <div class="flex items-center gap-1.5">
-                  <span class="material-symbols-outlined text-green-600 dark:text-green-400 text-[15px]">shuffle</span>
-                  <span class="text-[10px] font-black text-gray-600 dark:text-gray-300">Ngẫu nhiên</span>
-                </div>
-                <button id="vocabOrderTrack" onclick="toggleVocabOrder()"
-                  class="relative inline-flex h-5 w-9 items-center rounded-full bg-gray-200 dark:bg-gray-700 transition-colors duration-300 shrink-0">
-                  <span id="vocabOrderDot" class="inline-block h-3.5 w-3.5 translate-x-0.5 rounded-full bg-white transition-transform duration-300 shadow"></span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <style>
-          @keyframes impPop {
-            0%   { opacity:0; transform: scale(0.88) translateY(20px); }
-            70%  { opacity:1; transform: scale(1.03) translateY(-3px); }
-            100% { transform: scale(1) translateY(0); }
-          }
-          @keyframes impBtnIn {
-            from { opacity:0; transform: translateY(10px) scale(0.94); }
-            to   { opacity:1; transform: none; }
-          }
-          @keyframes impIconBounce {
-            0%,100% { transform: scale(1) rotate(0deg); }
-            30%     { transform: scale(1.18) rotate(-8deg); }
-            60%     { transform: scale(1.1) rotate(6deg); }
-          }
-          @keyframes wiggle {
-            0%,100% { transform: rotate(0); }
-            25%     { transform: rotate(-12deg) scale(1.1); }
-            75%     { transform: rotate(10deg) scale(1.1); }
-          }
-          .imp-pop { animation: impPop 0.36s cubic-bezier(.34,1.56,.64,1) both; }
-          .imp-btn { animation: impBtnIn 0.3s cubic-bezier(.22,1,.36,1) both; }
-          .imp-icon-bounce { animation: impIconBounce 0.7s 0.3s ease both; }
-          @keyframes slideUp { from { opacity:0; transform: translateY(24px) scale(0.97); } to { opacity:1; transform: none; } }
-        </style>
-
-        <!-- Top bar -->
-        <div class="flex items-center gap-3 px-4 sm:px-6 pt-5 pb-3 shrink-0 border-b border-gray-100 dark:border-green-900/30 bg-white/80 dark:bg-card-dark/80 backdrop-blur-sm">
-          <button onclick="quitPractice()"
-            class="p-1.5 rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-200
-            hover:bg-gray-100 dark:hover:bg-green-900/30 transition-all shrink-0">
-            <span class="material-symbols-outlined text-xl">close</span>
-          </button>
-          <div class="flex-1 h-3 bg-gray-100 dark:bg-green-900/30 rounded-full overflow-hidden">
-            <div id="progressBar"
-              class="h-full bg-primary rounded-full transition-all duration-500 ease-out"
-              style="width:0%"></div>
-          </div>
-          <span id="progressPct"
-            class="text-sm font-extrabold text-gray-500 dark:text-gray-400 w-10 text-right shrink-0">0%</span>
-          <!-- End early button -->
-          <button onclick="endPracticeEarly()" title="Kết thúc & xem kết quả"
-            class="p-1.5 rounded-full text-orange-400 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/30 transition-all shrink-0">
-            <span class="material-symbols-outlined text-xl">flag</span>
-          </button>
-          <!-- Voice picker button -->
-          <button onclick="openVoicePicker()" title="Chọn giọng đọc"
-            class="p-1.5 rounded-full text-sky-400 hover:text-sky-600 hover:bg-sky-50 dark:hover:bg-sky-900/30 transition-all shrink-0">
-            <span class="material-symbols-outlined text-xl">record_voice_over</span>
-          </button>
-        </div>
-
-        <!-- Game area -->
-        <div class="flex-1 flex flex-col lg:flex-row overflow-y-auto px-5 sm:px-10 pb-8 max-w-5xl mx-auto w-full gap-8 lg:gap-16">
-          
-          <!-- Left Column / Main content -->
-          <div class="flex-1 flex flex-col max-w-xl mx-auto w-full">
-
-          <!-- Character + action buttons -->
-          <div class="flex items-start justify-between mt-8 lg:mt-10 mb-6 gap-4">
-            <div class="flex-1 min-w-0">
-              <p id="gamePromptTitle" class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Chữ Hán</p>
-              <p id="gameHanzi"
-                class="text-6xl sm:text-7xl font-extrabold text-text-main dark:text-white leading-none tracking-wide select-none drop-shadow-sm">
-              </p>
-              <p id="gamePinyin"
-                class="mt-2 text-lg font-semibold text-blue-500 dark:text-blue-400 select-none">
-              </p>
-              <p id="gameMeaning"
-                class="hidden mt-2 text-xl font-bold text-text-secondary dark:text-gray-300 select-none">
-              </p>
-              <!-- Hint section (toggleable) -->
-              <div id="gameHintSection" class="hidden mt-4 px-3 py-2.5 rounded-xl border border-dashed border-amber-300 dark:border-amber-700/50 bg-amber-50/70 dark:bg-amber-900/20">
-                <p id="gameHintLabel" class="text-[10px] font-bold text-amber-500 dark:text-amber-400 uppercase tracking-widest mb-1">Gợi ý</p>
-                <p id="gameHintText" class="text-base font-semibold text-amber-700 dark:text-amber-300 select-none"></p>
-              </div>
-            </div>
-            <div class="flex flex-col gap-2 shrink-0 mt-1">
-              <!-- Hint toggle button -->
-              <button id="hintToggleBtn" onclick="toggleHint()"
-                class="flex items-center gap-1.5 px-3 py-2 rounded-xl border-2 border-gray-200 dark:border-green-900/40
-                text-sm font-bold text-gray-500 dark:text-gray-400 bg-white dark:bg-card-dark
-                hover:border-amber-300 hover:text-amber-500
-                transition-all active:scale-95 shadow-soft">
-                <span id="hintBtnIcon" class="material-symbols-outlined text-base">visibility_off</span>
-                <span id="hintBtnLabel">Gợi ý</span>
-              </button>
-              <!-- Bookmark button -->
-              <button id="bookmarkBtn" onclick="toggleBookmark()"
-                class="flex items-center gap-1.5 px-3 py-2 rounded-xl border-2 border-amber-200 dark:border-amber-800/50
-                text-sm font-bold text-amber-500 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20
-                hover:border-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40
-                transition-all active:scale-95 shadow-soft">
-                <span id="bookmarkBtnIcon" class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 0">star</span>
-                <span id="bookmarkBtnLabel">Ghi nhớ</span>
-              </button>
-              <!-- Speak button -->
-              <button id="speakBtn" onclick="speakCurrentWord()"
-                class="flex items-center gap-1.5 px-3 py-2 rounded-xl border-2 border-sky-200 dark:border-sky-800/50
-                text-sm font-bold text-sky-500 dark:text-sky-400 bg-sky-50 dark:bg-sky-900/20
-                hover:border-sky-400 hover:bg-sky-100 dark:hover:bg-sky-900/40
-                transition-all active:scale-95 shadow-soft">
-                <span class="material-symbols-outlined text-base">volume_up</span>
-                Nghe
-              </button>
-              <!-- Skip button -->
-              <button onclick="skipWrite()"
-                class="flex items-center gap-1.5 px-3 py-2 rounded-xl border-2 border-gray-200 dark:border-green-900/40
-                text-sm font-bold text-gray-500 dark:text-gray-400 bg-white dark:bg-card-dark
-                hover:border-red-300 hover:text-red-400 dark:hover:border-red-700 dark:hover:text-red-400
-                transition-all active:scale-95 shadow-soft">
-                <span class="material-symbols-outlined text-base">skip_next</span>
-                Không biết
-              </button>
-            </div>
-          </div>
-
-          <!-- Feedback banner -->
-          <div id="writeFeedback"
-            class="hidden rounded-2xl p-3 text-sm font-bold text-center mb-5 transition-all"></div>
-
-          <!-- Spacer -->
-          <div class="flex-1 min-h-[2rem]"></div>
-
-          <!-- Input prompt label -->
-          <p id="writePromptLabel" class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Nhập nghĩa tiếng Việt</p>
-
-          <!-- Pinyin IME suggestion bar (shown only in vietnamese_to_hanzi mode) -->
-          <div id="pinyinSuggestBar" style="display:none" class="gap-1 flex-wrap mb-2 max-h-24 overflow-y-auto -mx-1 px-1 border border-primary/20 rounded-2xl p-2 bg-primary/5"></div>
-
-          <!-- Underline-style input -->
-          <div class="border-b-2 border-primary pb-1 mb-2 flex items-center gap-2">
-            <input id="writeInput"
-              type="text"
-              autocomplete="off"
-              autocorrect="off"
-              spellcheck="false"
-              placeholder="Nhập bằng định nghĩa"
-              oninput="_updatePinyinBar(this)"
-              onkeydown="if(event.key==='Enter')checkWrite()"
-              class="flex-1 bg-transparent border-none outline-none shadow-none ring-0 focus:ring-0 text-xl font-semibold
-              text-text-main dark:text-white placeholder-gray-300 dark:placeholder-green-900/60 py-2 rounded-none" />
-            <button id="micBtn" type="button" onclick="toggleSpeechInput()"
-              title="Nhập bằng giọng nói"
-              class="shrink-0 w-10 h-10 flex items-center justify-center rounded-xl transition-all
-              text-gray-400 hover:text-teal-500 hover:bg-teal-50 dark:hover:bg-teal-900/20
-              active:scale-95">
-              <span id="micIcon" class="material-symbols-outlined text-2xl">mic</span>
-            </button>
-            <button type="button" onclick="checkWrite()"
-              title="Kiểm tra"
-              class="shrink-0 w-10 h-10 flex items-center justify-center rounded-xl transition-all
-              text-gray-400 hover:text-primary hover:bg-primary/10 dark:hover:bg-primary/20
-              active:scale-95">
-              <span class="material-symbols-outlined text-2xl">keyboard_return</span>
-            </button>
-          </div>
-          <p class="text-xs text-gray-300 dark:text-zinc-700">Nhấn Enter hoặc <span class="material-symbols-outlined text-xs align-middle" style="font-size:14px">keyboard_return</span> để kiểm tra</p>
-
-          <!-- Progress label -->
-          <p id="progressLabel" class="text-xs text-gray-300 dark:text-zinc-700 text-right mt-4 mb-6">0 / 0</p>
-          </div>
-
-          <!-- Right Column / Sidebar Question Grid -->
-          <div class="w-full lg:w-[380px] shrink-0 flex flex-col lg:pl-10 lg:border-l lg:border-gray-100 lg:dark:border-green-900/30">
-            <!-- Question Grid Header (right-aligned content) -->
-            <div class="flex items-end justify-between lg:justify-end gap-3 mb-4">
-              <span class="text-xs font-extrabold text-gray-400 uppercase tracking-widest">Câu hỏi</span>
-              <span id="gridPageIndicator" class="text-xs text-gray-500 dark:text-gray-400 font-bold bg-gray-100 dark:bg-green-900/30 px-2 py-0.5 rounded-full">1/1</span>
-            </div>
-            
-            <!-- Grid container centered -->
-            <div class="flex justify-center bg-gray-50/50 dark:bg-card-dark/50 rounded-3xl p-4 sm:p-5 border border-gray-100/80 dark:border-green-900/20 shadow-inner overflow-x-auto">
-              <div id="questionGrid" class="grid gap-1 lg:gap-1.5" style="grid-template-columns: repeat(10, minmax(0, 1fr)); width: min-content;">
-                <!-- Populated by renderQuestionGrid() -->
-              </div>
-            </div>
-            
-            <!-- Pagination controls -->
-            <div id="gridPaginationControls" class="hidden flex items-center justify-center gap-3 mt-4">
-              <button id="gridPrevBtn" onclick="gridPrevPage()" 
-                class="p-2 rounded-xl bg-white dark:bg-card-dark border border-gray-200 dark:border-green-900/40 text-gray-400 hover:text-primary hover:border-primary/30 hover:bg-primary/5 shadow-sm
-                transition-all active:scale-95">
-                <span class="material-symbols-outlined text-xl leading-none">chevron_left</span>
-              </button>
-              <span id="gridPageText" class="text-xs font-bold text-primary dark:text-primary/90 px-1 uppercase tracking-widest hidden"></span>
-              <button id="gridNextBtn" onclick="gridNextPage()" 
-                class="p-2 rounded-xl bg-white dark:bg-card-dark border border-gray-200 dark:border-green-900/40 text-gray-400 hover:text-primary hover:border-primary/30 hover:bg-primary/5 shadow-sm
-                transition-all active:scale-95">
-                <span class="material-symbols-outlined text-xl leading-none">chevron_right</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div><!-- /practicePanel -->
-
       <!-- ====== RESULTS MODAL ====== -->
       <div id="resultsPanel" class="hidden fixed inset-0 z-40 overflow-y-auto">
         <div class="fixed inset-0 bg-black/50 backdrop-blur-sm"></div>
@@ -1182,35 +873,6 @@
     </div>
     <!-- List -->
     <div id="detailReviewList" class="px-4 py-4 flex flex-col gap-2.5 max-h-[70vh] overflow-y-auto"></div>
-  </div>
-</div>
-
-<!-- ====== FOLDER MANAGEMENT MODAL ====== -->
-<div id="folderManagementModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-start justify-center py-8 px-4">
-  <div class="bg-white dark:bg-card-dark rounded-3xl shadow-2xl w-full max-w-2xl">
-    <!-- Header -->
-    <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-100 dark:border-gray-700/30">
-      <h2 class="text-lg font-extrabold text-gray-800 dark:text-gray-100 flex items-center gap-2">
-        <span class="material-symbols-outlined text-primary">folder</span>
-        Quản lý thư mục
-      </h2>
-      <button onclick="closeFolderModal()" class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-all">
-        <span class="material-symbols-outlined text-gray-400">close</span>
-      </button>
-    </div>
-    <!-- List -->
-    <div id="folderManagementList" class="px-6 py-4 flex flex-col gap-3 max-h-[70vh] overflow-y-auto">
-      <div class="flex items-center justify-center gap-2 py-8 text-gray-400 text-sm">
-        <div class="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-        Đang tải...
-      </div>
-    </div>
-    <!-- Footer -->
-    <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700/30 flex gap-2 justify-end">
-      <button onclick="closeFolderModal()" class="px-4 py-2.5 bg-gray-100 dark:bg-background-dark text-gray-600 dark:text-gray-300 text-sm font-semibold rounded-2xl hover:bg-gray-200 dark:hover:bg-green-900/30 transition-all">
-        Đóng
-      </button>
-    </div>
   </div>
 </div>
 
@@ -1912,7 +1574,6 @@ async function startMultiCustomPractice() {
     // Show practice UI and ask user to pick input method
     const setupPanel = document.getElementById('setupPanel');
     const resultsPanel = document.getElementById('resultsPanel');
-    const practicePanel = document.getElementById('practicePanel');
     const multiCustomSetsModal = document.getElementById('multiCustomSetsModal');
 
     inputMode = null;
@@ -1928,12 +1589,10 @@ async function startMultiCustomPractice() {
     multiCustomSetsModal.classList.add('hidden');
     setupPanel.classList.add('hidden');
     resultsPanel.classList.add('hidden');
-    practicePanel.classList.remove('hidden');
 
     const chosenMode = await openInputModePicker();
     if (!chosenMode) {
       multiPracticeMode = false;
-      practicePanel.classList.add('hidden');
       setupPanel.classList.remove('hidden');
       return;
     }
@@ -1944,7 +1603,6 @@ async function startMultiCustomPractice() {
       showToast('Chế độ này cần ít nhất 2 từ có dữ liệu phù hợp (Pinyin/Nghĩa).', 'error');
       inputMode = null;
       multiPracticeMode = false;
-      practicePanel.classList.add('hidden');
       setupPanel.classList.remove('hidden');
       return;
     }
@@ -2098,9 +1756,10 @@ async function startMultiPractice() {
   wrongCount = 0;
   
   // Show input mode picker
-  document.getElementById('practicePanel').classList.remove('hidden');
   document.getElementById('setupPanel').classList.add('hidden');
-  showInputModePicker();
+  if (typeof showInputModePicker === 'function') {
+    showInputModePicker();
+  }
 }
 
 // ==================== START PRACTICE ====================
@@ -2129,7 +1788,6 @@ async function startPractice() {
   // Show practice UI and ask user to pick input method.
   const setupPanel = document.getElementById('setupPanel');
   const resultsPanel = document.getElementById('resultsPanel');
-  const practicePanel = document.getElementById('practicePanel');
 
   inputMode = null;
   practiceWords = [];
@@ -2142,11 +1800,9 @@ async function startPractice() {
 
   setupPanel.classList.add('hidden');
   resultsPanel.classList.add('hidden');
-  practicePanel.classList.remove('hidden');
 
   const chosenMode = await openInputModePicker();
   if (!chosenMode) {
-    practicePanel.classList.add('hidden');
     setupPanel.classList.remove('hidden');
     return;
   }
@@ -2155,7 +1811,6 @@ async function startPractice() {
   if (filtered.length < 2) {
     showToast('Chế độ này cần ít nhất 2 từ có dữ liệu phù hợp (Pinyin/Nghĩa).', 'error');
     inputMode = null;
-    practicePanel.classList.add('hidden');
     setupPanel.classList.remove('hidden');
     return;
   }
@@ -2168,6 +1823,13 @@ async function startPractice() {
   sessionResults = [];
   sessionStartTime = Date.now();
 
+  // Check if chosenMode matches a game mode (from game button selection)
+  if (isGameMode(chosenMode)) {
+    // Navigate to game with prepared practice data
+    launchGameMode(chosenMode);
+    return;
+  }
+
   renderQuestionGrid();
   updateProgress();
   renderCurrentCard();
@@ -2175,6 +1837,9 @@ async function startPractice() {
 
 function openInputModePicker() {
   const picker = document.getElementById('inputModePicker');
+  if (!picker) {
+    return Promise.resolve(null);
+  }
   picker.classList.remove('hidden');
   // Re-trigger entry animations
   const card = document.getElementById('inputModePickerCard');
@@ -2190,9 +1855,50 @@ function openInputModePicker() {
   });
 }
 
+function isGameMode(mode) {
+  return mode === 'multiple_choice' || mode === 'matching_game' ||
+         mode === 'listen_and_choose' || mode === 'listen_and_pronounce' ||
+         mode === 'review_test';
+}
+
+function launchGameMode(mode) {
+  const gameMap = {
+    'multiple_choice': '/games/game_multiple_choice.html',
+    'matching_game': '/games/game_matching.html',
+    'listen_and_choose': '/games/game_listen_choose.html',
+    'listen_and_pronounce': '/games/game_listen_pronounce.html',
+    'review_test': '/games/game_review.html'
+  };
+  if (!gameMap[mode]) return;
+
+  const gameData = {
+    mode: mode,
+    vocabularyData: practiceWords.map(w => ({
+      hanzi: w.hanzi || w.simplified || '',
+      simplified: w.simplified || w.hanzi || '',
+      pinyin: w.pinyin || '',
+      meaning: w.meaning || w.vietnamese || '',
+      vietnamese: w.vietnamese || w.meaning || '',
+      example: w.example || '',
+      difficulty: w.difficulty
+    })),
+    userPreferences: {
+      showPinyin: defaultShowPinyin,
+      autoSpeak: ttsAutoSpeak,
+      vocabOrder: vocabOrder,
+      selectedVoice: localStorage.getItem('practiceSelectedVoice') || 'default'
+    },
+    selectedFolder: currentFolderId,
+    categoryName: categories.find(c => c._id === currentFolderId)?.name || 'Các từ vựng'
+  };
+
+  sessionStorage.setItem('gameSessionData', JSON.stringify(gameData));
+  window.location.href = gameMap[mode];
+}
+
 function selectInputMode(mode) {
   const picker = document.getElementById('inputModePicker');
-  picker.classList.add('hidden');
+  if (picker) picker.classList.add('hidden');
   inputMode = mode;
   showHint = defaultShowPinyin; // apply user's default preference
   if (inputModeResolve) {
@@ -2312,18 +2018,20 @@ function renderCurrentCard() {
   applyInputModeUI();
 
   if (inputMode === 'vietnamese_to_pinyin' || inputMode === 'vietnamese_to_hanzi') {
-    meaningEl.textContent = w.meaning || '';
+    if (meaningEl) meaningEl.textContent = w.meaning || '';
   } else if (inputMode === 'listen_to_meaning') {
     // Show a large speaker button as the "question"
-    hanziEl.innerHTML = `<button onclick="speakCurrentWord()"
-      class="flex items-center gap-3 px-6 py-4 rounded-2xl bg-teal-50 dark:bg-teal-900/20 border-2 border-teal-300 dark:border-teal-700
-      text-teal-600 dark:text-teal-400 hover:bg-teal-100 transition-all active:scale-95 shadow-sm mt-2">
-      <span class="material-symbols-outlined text-4xl" style="font-variation-settings:'FILL' 1">volume_up</span>
-      <span class="text-2xl font-extrabold">Nghe lại</span>
-    </button>`;
-    hanziEl.classList.remove('hidden');
+    if (hanziEl) {
+      hanziEl.innerHTML = `<button onclick="speakCurrentWord()"
+        class="flex items-center gap-3 px-6 py-4 rounded-2xl bg-teal-50 dark:bg-teal-900/20 border-2 border-teal-300 dark:border-teal-700
+        text-teal-600 dark:text-teal-400 hover:bg-teal-100 transition-all active:scale-95 shadow-sm mt-2">
+        <span class="material-symbols-outlined text-4xl" style="font-variation-settings:'FILL' 1">volume_up</span>
+        <span class="text-2xl font-extrabold">Nghe lại</span>
+      </button>`;
+      hanziEl.classList.remove('hidden');
+    }
   } else {
-    hanziEl.textContent = w.hanzi || '';
+    if (hanziEl) hanziEl.textContent = w.hanzi || '';
   }
 
   // Set hint content based on mode
@@ -2349,12 +2057,12 @@ function renderCurrentCard() {
   const input = document.getElementById('writeInput');
   const fb    = document.getElementById('writeFeedback');
   _stopSpeech();
-  input.value    = '';
-  input.disabled = false;
-  fb.className   = 'hidden rounded-2xl p-3 text-sm font-bold text-center mb-5 transition-all';
+  if (input) input.value    = '';
+  if (input) input.disabled = false;
+  if (fb) fb.className   = 'hidden rounded-2xl p-3 text-sm font-bold text-center mb-5 transition-all';
   _clearPinyinBar();
 
-  setTimeout(() => input.focus(), 120);
+  if (input) setTimeout(() => input.focus(), 120);
   if (ttsAutoSpeak || inputMode === 'listen_to_meaning') setTimeout(() => speakCurrentWord(), 1000);
 }
 
@@ -2362,9 +2070,12 @@ function updateProgress() {
   const total = practiceWords.length;
   const done  = currentIdx;
   const pct   = total > 0 ? Math.round((done / total) * 100) : 0;
-  document.getElementById('progressBar').style.width   = pct + '%';
-  document.getElementById('progressPct').textContent   = pct + '%';
-  document.getElementById('progressLabel').textContent = `${done} / ${total}`;
+  const progressBar = document.getElementById('progressBar');
+  if (progressBar) progressBar.style.width = pct + '%';
+  const progressPct = document.getElementById('progressPct');
+  if (progressPct) progressPct.textContent = pct + '%';
+  const progressLabel = document.getElementById('progressLabel');
+  if (progressLabel) progressLabel.textContent = `${done} / ${total}`;
   updateQuestionGrid();
 }
 
@@ -2525,9 +2236,9 @@ function jumpToQuestion(index) {
   // Clear current input and feedback
   const input = document.getElementById('writeInput');
   const fb = document.getElementById('writeFeedback');
-  input.value = '';
-  input.disabled = false;
-  fb.className = 'hidden rounded-2xl p-3 text-sm font-bold text-center mb-5 transition-all';
+  if (input) input.value = '';
+  if (input) input.disabled = false;
+  if (fb) fb.className = 'hidden rounded-2xl p-3 text-sm font-bold text-center mb-5 transition-all';
   
   currentIdx = index;
   updateProgress();
@@ -2587,7 +2298,9 @@ function revealFullWord(w) {
 // ==================== WRITE GAME ====================
 function checkWrite() {
   const w      = practiceWords[currentIdx];
-  const answer = document.getElementById('writeInput').value.trim();
+  const inputEl = document.getElementById('writeInput');
+  if (!inputEl) return;
+  const answer = inputEl.value.trim();
   if (!answer) return;
 
   const norm = s => String(s || '').normalize('NFC').toLowerCase().replace(/\s+/g, ' ').trim();
@@ -2603,16 +2316,21 @@ function checkWrite() {
 
   if (isCorrect) {
     correctCount++;
-    fb.className = 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-2xl p-3 text-sm font-bold text-center mb-5 transition-all';
-    fb.innerHTML = `✅ Chính xác!`;
+    if (fb) {
+      fb.className = 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-2xl p-3 text-sm font-bold text-center mb-5 transition-all';
+      fb.innerHTML = `✅ Chính xác!`;
+    }
   } else {
     wrongCount++;
-    fb.className = 'bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 rounded-2xl p-3 text-sm font-bold text-center mb-5 transition-all';
-    fb.innerHTML = `❌ Đáp án: <span class="font-black">${esc(expected)}</span>`;
+    if (fb) {
+      fb.className = 'bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 rounded-2xl p-3 text-sm font-bold text-center mb-5 transition-all';
+      fb.innerHTML = `❌ Đáp án: <span class="font-black">${esc(expected)}</span>`;
+    }
   }
 
   sessionResults.push({ word: w, correct: isCorrect, userInput: answer });
-  document.getElementById('writeInput').disabled = true;
+  const writeInputEl = document.getElementById('writeInput');
+  if (writeInputEl) writeInputEl.disabled = true;
   updateProgress();
   setTimeout(() => { currentIdx++; updateProgress(); renderCurrentCard(); }, isCorrect ? 900 : 1400);
 }
@@ -2628,19 +2346,21 @@ function skipWrite() {
   const expected = inputMode === 'hanzi_to_meaning' || inputMode === 'listen_to_meaning' ? w.meaning
                  : inputMode === 'vietnamese_to_hanzi' ? w.hanzi
                  : w.pinyin;
-  fb.className = 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 rounded-2xl p-3 text-sm font-bold text-center mb-5 transition-all';
-  fb.innerHTML = `⏭️ Đáp án: <span class="font-black">${esc(expected)}</span>`;
+  if (fb) {
+    fb.className = 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 rounded-2xl p-3 text-sm font-bold text-center mb-5 transition-all';
+    fb.innerHTML = `⏭️ Đáp án: <span class="font-black">${esc(expected)}</span>`;
+  }
 
   sessionResults.push({ word: w, correct: false, userInput: '' });
   wrongCount++;
-  document.getElementById('writeInput').disabled = true;
+  const writeInput2 = document.getElementById('writeInput');
+  if (writeInput2) writeInput2.disabled = true;
   updateProgress();
   setTimeout(() => { currentIdx++; updateProgress(); renderCurrentCard(); }, 1200);
 }
 
 // ==================== END PRACTICE ====================
 async function endPractice() {
-  document.getElementById('practicePanel').classList.add('hidden');
   document.getElementById('setupPanel').classList.remove('hidden');
   document.getElementById('resultsPanel').classList.remove('hidden');
   document.body.classList.add('overflow-hidden');
@@ -2727,7 +2447,6 @@ function retryPractice() {
   document.getElementById('resultsPanel').classList.add('hidden');
   document.body.classList.remove('overflow-hidden');
   document.getElementById('setupPanel').classList.add('hidden');
-  document.getElementById('practicePanel').classList.remove('hidden');
   renderQuestionGrid();
   updateProgress();
   renderCurrentCard();
@@ -2743,7 +2462,6 @@ function retryMistakes() {
   document.getElementById('resultsPanel').classList.add('hidden');
   document.body.classList.remove('overflow-hidden');
   document.getElementById('setupPanel').classList.add('hidden');
-  document.getElementById('practicePanel').classList.remove('hidden');
   renderQuestionGrid();
   updateProgress();
   renderCurrentCard();
@@ -2751,7 +2469,6 @@ function retryMistakes() {
 
 function quitPractice() {
   cancelInputModePicker();
-  document.getElementById('practicePanel').classList.add('hidden');
   document.getElementById('setupPanel').classList.remove('hidden');
   multiPracticeMode = false;
 }
@@ -2762,7 +2479,8 @@ async function endPracticeEarly() {
     return;
   }
   _stopSpeech();
-  cancelInputModePicker();
+  const pickerEl = document.getElementById('inputModePicker');
+  if (pickerEl) cancelInputModePicker();
   await endPractice();
 }
 
@@ -3152,7 +2870,6 @@ async function practiceFromBookmarks() {
     document.getElementById('setupPanel').classList.add('hidden');
     document.getElementById('resultsPanel').classList.add('hidden');
     document.body.classList.remove('overflow-hidden');
-    document.getElementById('practicePanel').classList.remove('hidden');
 
     inputMode = null;
     currentIdx = correctCount = wrongCount = 0;
@@ -3165,7 +2882,6 @@ async function practiceFromBookmarks() {
     const filtered = filterWordsForInputMode(words, chosenMode);
     if (filtered.length < 2) {
       showToast('Chế độ này cần ít nhất 2 từ có dữ liệu phù hợp.', 'error');
-      document.getElementById('practicePanel').classList.add('hidden');
       document.getElementById('setupPanel').classList.remove('hidden');
       return;
     }
@@ -3175,6 +2891,12 @@ async function practiceFromBookmarks() {
     currentIdx       = correctCount = wrongCount = 0;
     sessionResults   = [];
     sessionStartTime = Date.now();
+
+    if (isGameMode(chosenMode)) {
+      launchGameMode(chosenMode);
+      return;
+    }
+
     updateProgress();
     renderCurrentCard();
   } catch (e) {
@@ -3500,111 +3222,6 @@ async function moveSetToFolder(setId, folderId) {
       showToast(res.error?.message || 'Chuyển thất bại', 'error');
     }
   } catch (e) { showToast('Lỗi: ' + e.message, 'error'); }
-}
-
-// ==================== FOLDER MANAGEMENT MODAL ====================
-async function openFolderModal() {
-  const modal = document.getElementById('folderManagementModal');
-  const list = document.getElementById('folderManagementList');
-  if (!modal) return;
-  
-  modal.classList.remove('hidden');
-  
-  // Load and render folder list
-  await renderFolderModalList();
-}
-
-function closeFolderModal() {
-  const modal = document.getElementById('folderManagementModal');
-  if (modal) modal.classList.add('hidden');
-}
-
-async function renderFolderModalList() {
-  const list = document.getElementById('folderManagementList');
-  if (!list) return;
-  
-  // Get all custom sets to count items in each folder
-  let allSets = [];
-  try {
-    const res = await authAPI.get('/practice/custom-sets');
-    allSets = res.data || [];
-  } catch (e) {
-    showToast('Lỗi tải dữ liệu: ' + e.message, 'error');
-    list.innerHTML = '<div class="text-center text-red-500 py-6">Lỗi tải dữ liệu</div>';
-    return;
-  }
-  
-  if (folders.length === 0) {
-    list.innerHTML = '<div class="text-center text-gray-500 py-8"><span class="material-symbols-outlined text-4xl mb-2">folder_off</span><p class="mt-2">Chưa có thư mục nào</p></div>';
-    return;
-  }
-  
-  // Render each folder with its item count and actions
-  list.innerHTML = folders.map(folder => {
-    const count = allSets.filter(s => s.folderId && String(s.folderId) === String(folder._id)).length;
-    const folderNameSafe = esc(folder.name).replace(/'/g, "\\'");
-    
-    return `
-    <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-green-900/10 rounded-xl border border-gray-200 dark:border-green-900/30 hover:border-primary transition-all">
-      <div class="flex-1">
-        <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-primary">folder</span>
-          <span class="font-semibold text-text-main dark:text-white">${esc(folder.name)}</span>
-          <span class="text-xs font-bold bg-primary/20 text-primary px-2 py-1 rounded-full">${count}</span>
-        </div>
-        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Chứa ${count} bộ từ</p>
-      </div>
-      <div class="flex items-center gap-2">
-        <button onclick="renameFolderFromModal('${folder._id}', '${folderNameSafe}')"
-          class="p-2 text-gray-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-all" title="Đổi tên">
-          <span class="material-symbols-outlined text-base">edit</span>
-        </button>
-        <button onclick="deleteFolderFromModal('${folder._id}', '${folderNameSafe}')"
-          class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all" title="Xóa">
-          <span class="material-symbols-outlined text-base">delete</span>
-        </button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-async function renameFolderFromModal(id, currentName) {
-  const newName = prompt('Đổi tên thư mục:', currentName);
-  if (!newName || !newName.trim() || newName.trim() === currentName) return;
-  
-  try {
-    const res = await authAPI.put(`/practice/folders/${id}`, { name: newName.trim() });
-    if (res.success) {
-      showToast('Đã đổi tên thư mục', 'success');
-      await loadFolders();
-      await renderFolderModalList();
-      renderFolderPanel();
-    } else {
-      showToast(res.error?.message || 'Đổi tên thất bại', 'error');
-    }
-  } catch (e) {
-    showToast('Lỗi: ' + e.message, 'error');
-  }
-}
-
-async function deleteFolderFromModal(id, folderName) {
-  if (!confirm(`Xóa thư mục "${folderName}"?\n\nCác bộ từ trong thư mục sẽ tự động chuyển về "Chưa phân loại".`)) return;
-  
-  try {
-    const res = await authAPI.delete(`/practice/folders/${id}`);
-    if (res.success) {
-      showToast(`Đã xóa thư mục "${folderName}". Các bộ từ đã chuyển về "Chưa phân loại"`, 'success');
-      if (currentFolderId === id) currentFolderId = null;
-      await loadFolders();
-      await renderFolderModalList();
-      renderFolderPanel();
-      loadSavedSets();
-    } else {
-      showToast(res.error?.message || 'Xóa thất bại', 'error');
-    }
-  } catch (e) {
-    showToast('Lỗi: ' + e.message, 'error');
-  }
 }
 
 // ==================== SPEECH INPUT ====================
