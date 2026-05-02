@@ -869,12 +869,13 @@
                 <span class="material-symbols-outlined text-base">volume_up</span>
                 Nghe
               </button>
-              <!-- Skip button -->
-              <button onclick="skipWrite()"
+              <!-- Skip button (không dùng được khi câu đã có kết quả, vd. đã nhập sai) -->
+              <button id="skipWriteBtn" type="button" onclick="skipWrite()"
                 class="flex items-center gap-1.5 px-3 py-2 rounded-xl border-2 border-gray-200 dark:border-green-900/40
                 text-sm font-bold text-gray-500 dark:text-gray-400 bg-white dark:bg-card-dark
                 hover:border-red-300 hover:text-red-400 dark:hover:border-red-700 dark:hover:text-red-400
-                transition-all active:scale-95 shadow-soft">
+                transition-all active:scale-95 shadow-soft
+                disabled:opacity-40 disabled:pointer-events-none disabled:cursor-not-allowed disabled:hover:border-gray-200 dark:disabled:hover:border-green-900/40 disabled:hover:text-gray-500 dark:disabled:hover:text-gray-400">
                 <span class="material-symbols-outlined text-base">skip_next</span>
                 Không biết
               </button>
@@ -894,8 +895,8 @@
           <!-- Pinyin IME suggestion bar (shown only in vietnamese_to_hanzi mode) -->
           <div id="pinyinSuggestBar" style="display:none" class="gap-1 flex-wrap mb-2 max-h-24 overflow-y-auto -mx-1 px-1 border border-primary/20 rounded-2xl p-2 bg-primary/5"></div>
 
-          <!-- Underline-style input -->
-          <div class="border-b-2 border-primary pb-1 mb-2 flex items-center gap-2">
+          <!-- Underline-style input (khung sáng/tối theo đúng/sai sau khi chấm) -->
+          <div id="writeInputRow" class="border-b-2 border-primary pb-1 mb-2 flex items-center gap-2 rounded-xl px-3 py-2 -mx-1 sm:-mx-2 transition-all duration-200">
             <input id="writeInput"
               type="text"
               autocomplete="off"
@@ -904,8 +905,9 @@
               placeholder="Nhập bằng định nghĩa"
               oninput="_updatePinyinBar(this)"
               onkeydown="if(event.key==='Enter')checkWrite()"
-              class="flex-1 bg-transparent border-none outline-none shadow-none ring-0 focus:ring-0 text-xl font-semibold
-              text-text-main dark:text-white placeholder-gray-300 dark:placeholder-green-900/60 py-2 rounded-none" />
+              class="flex-1 min-w-0 bg-transparent border-none outline-none shadow-none ring-0 focus:ring-0 text-xl font-semibold
+              text-text-main dark:text-white placeholder-gray-300 dark:placeholder-green-900/60 py-2 rounded-none
+              selection:bg-primary/35 dark:selection:bg-primary/45 selection:text-text-main dark:selection:text-white" />
             <button id="micBtn" type="button" onclick="toggleSpeechInput()"
               title="Nhập bằng giọng nói"
               class="shrink-0 w-10 h-10 flex items-center justify-center rounded-xl transition-all
@@ -930,32 +932,72 @@
           <!-- Right Column / Sidebar Question Grid -->
           <div class="w-full lg:w-[380px] shrink-0 flex flex-col lg:pl-10 lg:border-l lg:border-gray-100 lg:dark:border-green-900/30">
             <!-- Question Grid Header (right-aligned content) -->
-            <div class="flex items-end justify-between lg:justify-end gap-3 mb-4">
+            <div class="flex items-center justify-between lg:justify-between gap-3 mb-4 px-1">
               <span class="text-xs font-extrabold text-gray-400 uppercase tracking-widest">Câu hỏi</span>
-              <span id="gridPageIndicator" class="text-xs text-gray-500 dark:text-gray-400 font-bold bg-gray-100 dark:bg-green-900/30 px-2 py-0.5 rounded-full">1/1</span>
+              <span id="gridPageIndicator" class="text-xs text-gray-500 dark:text-gray-400 font-bold bg-gray-100 dark:bg-green-900/30 px-3 py-1 rounded-full">1/1</span>
             </div>
             
-            <!-- Grid container centered -->
-            <div class="flex justify-center bg-gray-50/50 dark:bg-card-dark/50 rounded-3xl p-4 sm:p-5 border border-gray-100/80 dark:border-green-900/20 shadow-inner overflow-x-auto">
-              <div id="questionGrid" class="grid gap-1 lg:gap-1.5" style="grid-template-columns: repeat(10, minmax(0, 1fr)); width: min-content;">
+            <!-- Grid: 10 ô/hàng, tối đa 50 ô/trang (5 hàng), >50 thì phân trang -->
+            <div class="flex justify-center bg-gray-50/50 dark:bg-card-dark/50 rounded-2xl p-3 sm:p-4 border border-gray-100/80 dark:border-green-900/20 shadow-inner w-full">
+              <div id="questionGrid" class="grid w-full max-w-[17.5rem] sm:max-w-[21rem] grid-cols-10 gap-1 sm:gap-1.5 justify-items-center mx-auto">
                 <!-- Populated by renderQuestionGrid() -->
               </div>
             </div>
             
-            <!-- Pagination controls -->
-            <div id="gridPaginationControls" class="hidden flex items-center justify-center gap-3 mt-4">
-              <button id="gridPrevBtn" onclick="gridPrevPage()" 
-                class="p-2 rounded-xl bg-white dark:bg-card-dark border border-gray-200 dark:border-green-900/40 text-gray-400 hover:text-primary hover:border-primary/30 hover:bg-primary/5 shadow-sm
-                transition-all active:scale-95">
-                <span class="material-symbols-outlined text-xl leading-none">chevron_left</span>
-              </button>
-              <span id="gridPageText" class="text-xs font-bold text-primary dark:text-primary/90 px-1 uppercase tracking-widest hidden"></span>
-              <button id="gridNextBtn" onclick="gridNextPage()" 
-                class="p-2 rounded-xl bg-white dark:bg-card-dark border border-gray-200 dark:border-green-900/40 text-gray-400 hover:text-primary hover:border-primary/30 hover:bg-primary/5 shadow-sm
-                transition-all active:scale-95">
-                <span class="material-symbols-outlined text-xl leading-none">chevron_right</span>
-              </button>
+            <!-- Pagination controls - Enhanced with better styling -->
+            <div id="gridPaginationControls" class="hidden flex flex-col items-center gap-4 mt-5 px-2">
+              <!-- Page info -->
+              <div class="w-full text-center px-2">
+                <p id="gridPageText" class="text-sm font-bold text-text-secondary dark:text-green-400/80 uppercase tracking-widest">
+                  Trang <span id="gridCurrentPageNum" class="text-primary">1</span> / <span id="gridTotalPageNum" class="text-primary">1</span>
+                </p>
+              </div>
+              
+              <!-- Navigation buttons - Separated clearly -->
+              <div class="flex items-center justify-center gap-4 w-full">
+                <!-- Previous button -->
+                <button id="gridPrevBtn" onclick="gridPrevPage()" 
+                  title="Trang trước"
+                  class="flex items-center justify-center w-12 h-12 rounded-xl shrink-0
+                  bg-white dark:bg-card-dark 
+                  border-2 border-gray-200 dark:border-green-900/40 
+                  text-gray-500 dark:text-gray-400
+                  hover:text-primary hover:border-primary/50 hover:bg-primary/10 dark:hover:bg-primary/10
+                  active:scale-95 active:shadow-none
+                  shadow-sm transition-all duration-200
+                  enabled:cursor-pointer enabled:hover:shadow-md
+                  disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:shadow-none">
+                  <span class="material-symbols-outlined text-2xl leading-none">chevron_left</span>
+                </button>
+                
+                <!-- Page counter -->
+                <div class="flex items-center justify-center min-w-[100px] px-3 py-2 rounded-lg bg-primary/10 dark:bg-primary/5 border border-primary/20 dark:border-primary/30">
+                  <span id="gridPageCounter" class="text-sm font-extrabold text-primary dark:text-primary/90">1 / 1</span>
+                </div>
+                
+                <!-- Next button -->
+                <button id="gridNextBtn" onclick="gridNextPage()" 
+                  title="Trang tiếp"
+                  class="flex items-center justify-center w-12 h-12 rounded-xl shrink-0
+                  bg-white dark:bg-card-dark 
+                  border-2 border-gray-200 dark:border-green-900/40 
+                  text-gray-500 dark:text-gray-400
+                  hover:text-primary hover:border-primary/50 hover:bg-primary/10 dark:hover:bg-primary/10
+                  active:scale-95 active:shadow-none
+                  shadow-sm transition-all duration-200
+                  enabled:cursor-pointer enabled:hover:shadow-md
+                  disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:shadow-none">
+                  <span class="material-symbols-outlined text-2xl leading-none">chevron_right</span>
+                </button>
+              </div>
             </div>
+
+            <button type="button" onclick="endPracticeEarly()" title="Nộp bài và xem kết quả"
+              class="mt-5 w-full flex items-center justify-center gap-2 py-3 px-4 rounded-2xl font-extrabold text-sm shrink-0
+              bg-primary text-white shadow-md hover:bg-primary/90 active:scale-[0.98] transition-all border border-primary/20">
+              <span class="material-symbols-outlined text-xl">task_alt</span>
+              Nộp bài
+            </button>
           </div>
         </div>
       </div><!-- /practicePanel -->
@@ -1294,7 +1336,7 @@ let _currentEditSetId = null;  // set id being edited (null = creating new)
 let selectedMultipleSets = []; // array of selected set IDs for multi-practice
 let multiPracticeMode = false; // flag for multi-set practice mode
 let gridCurrentPage = 0;       // pagination for question grid (0-based index)
-let gridItemsPerPage = 50;     // max items shown per page (10 columns x 5 rows)
+let gridItemsPerPage = 50;     // tối đa 50 câu/trang: 5 hàng × 10 cột; >50 thì phân trang
 document.addEventListener('DOMContentLoaded', async () => {
   try {
     const r = await apiClient.get('/settings');
@@ -2011,6 +2053,7 @@ async function startMultiCustomPractice() {
     sessionResults = [];
     sessionStartTime = Date.now();
 
+    gridCurrentPage = 0;
     renderQuestionGrid();
     updateProgress();
     renderCurrentCard();
@@ -2222,6 +2265,7 @@ async function startPractice() {
   sessionResults = [];
   sessionStartTime = Date.now();
 
+  gridCurrentPage = 0;
   renderQuestionGrid();
   updateProgress();
   renderCurrentCard();
@@ -2403,10 +2447,42 @@ function renderCurrentCard() {
   const input = document.getElementById('writeInput');
   const fb    = document.getElementById('writeFeedback');
   _stopSpeech();
+
+  const prevList = sessionResults.filter(r => r.questionIndex === currentIdx);
+  const prev = prevList.length ? prevList[prevList.length - 1] : null;
+
+  if (prev) {
+    revealFullWord(w);
+    const expected = getExpectedAnswer(w);
+    const skipped = (prev.userInput || '') === '';
+    input.value = prev.userInput || '';
+    input.disabled = true;
+    fb.classList.remove('hidden');
+    if (prev.correct) {
+      fb.className = 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-2xl p-3 text-sm font-bold text-center mb-5 transition-all';
+      fb.innerHTML = feedbackHtmlCorrect(prev.userInput || '');
+      setWriteInputRowHighlight('correct');
+    } else if (skipped) {
+      fb.className = 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 rounded-2xl p-3 text-sm font-bold text-center mb-5 transition-all';
+      fb.innerHTML = `<div class="flex flex-col gap-1 items-center"><span>⏭️ Đã bỏ qua</span><span class="text-xs font-semibold max-w-full break-words leading-snug">Bạn chưa nhập · Đáp án: <span class="font-black">${esc(expected)}</span></span></div>`;
+      setWriteInputRowHighlight('skip');
+    } else {
+      fb.className = 'bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 rounded-2xl p-3 text-sm font-bold text-center mb-5 transition-all';
+      fb.innerHTML = feedbackHtmlWrong(prev.userInput, expected);
+      setWriteInputRowHighlight('wrong');
+    }
+    _clearPinyinBar();
+    selectWriteInputForReview(input);
+    updateSkipWriteBtnState();
+    return;
+  }
+
+  setWriteInputRowHighlight('idle');
   input.value    = '';
   input.disabled = false;
   fb.className   = 'hidden rounded-2xl p-3 text-sm font-bold text-center mb-5 transition-all';
   _clearPinyinBar();
+  updateSkipWriteBtnState();
 
   setTimeout(() => input.focus(), 120);
   if (ttsAutoSpeak || inputMode === 'listen_to_meaning') setTimeout(() => speakCurrentWord(), 1000);
@@ -2430,19 +2506,17 @@ function renderQuestionGrid() {
   const total = practiceWords.length;
   grid.innerHTML = '';
   
-  // Reset to page 0 when re-rendering
-  gridCurrentPage = 0;
-  
   // Calculate pagination
   const totalPages = Math.ceil(total / gridItemsPerPage);
   const startIdx = gridCurrentPage * gridItemsPerPage;
   const endIdx = Math.min(startIdx + gridItemsPerPage, total);
   
-  // Show/hide pagination controls
+  // Show/hide pagination controls and update button states
   const paginationDiv = document.getElementById('gridPaginationControls');
   if (paginationDiv) {
     if (totalPages > 1) {
       paginationDiv.classList.remove('hidden');
+      updatePaginationButtons(totalPages);
     } else {
       paginationDiv.classList.add('hidden');
     }
@@ -2452,6 +2526,20 @@ function renderQuestionGrid() {
   const pageIndicator = document.getElementById('gridPageIndicator');
   if (pageIndicator) {
     pageIndicator.textContent = `${gridCurrentPage + 1}/${totalPages}`;
+  }
+  
+  // Update page counter in pagination controls
+  const pageCounter = document.getElementById('gridPageCounter');
+  if (pageCounter) {
+    pageCounter.textContent = `${gridCurrentPage + 1} / ${totalPages}`;
+  }
+  
+  // Update page text
+  const pageCurrentNum = document.getElementById('gridCurrentPageNum');
+  const pageTotalNum = document.getElementById('gridTotalPageNum');
+  if (pageCurrentNum && pageTotalNum) {
+    pageCurrentNum.textContent = gridCurrentPage + 1;
+    pageTotalNum.textContent = totalPages;
   }
   
   // Render items for current page
@@ -2491,10 +2579,23 @@ function renderQuestionGrid() {
       }
     }
     
-    btn.className = `w-7 h-7 rounded border ${bgColor} ${textColor} ${borderColor} ${fontWeight} text-[10px] transition-all hover:shadow-sm active:scale-90 flex items-center justify-center cursor-pointer`;
+    btn.className = `w-6 h-6 sm:w-7 sm:h-7 min-w-[1.5rem] sm:min-w-[1.75rem] rounded-full border ${bgColor} ${textColor} ${borderColor} ${fontWeight} text-[9px] sm:text-[10px] leading-none transition-all hover:shadow-md active:scale-90 flex items-center justify-center cursor-pointer`;
     btn.textContent = i + 1;
     
     grid.appendChild(btn);
+  }
+}
+
+function updatePaginationButtons(totalPages) {
+  const prevBtn = document.getElementById('gridPrevBtn');
+  const nextBtn = document.getElementById('gridNextBtn');
+  
+  if (prevBtn) {
+    prevBtn.disabled = gridCurrentPage === 0;
+  }
+  
+  if (nextBtn) {
+    nextBtn.disabled = gridCurrentPage >= totalPages - 1;
   }
 }
 
@@ -2504,7 +2605,8 @@ function gridPrevPage() {
   
   if (gridCurrentPage > 0) {
     gridCurrentPage--;
-    renderQuestionGrid();
+    renderQuestionGridPage();
+    updatePaginationButtons(totalPages);
   }
 }
 
@@ -2514,7 +2616,85 @@ function gridNextPage() {
   
   if (gridCurrentPage < totalPages - 1) {
     gridCurrentPage++;
-    renderQuestionGrid();
+    renderQuestionGridPage();
+    updatePaginationButtons(totalPages);
+  }
+}
+
+// Render only the current page without resetting pagination
+function renderQuestionGridPage() {
+  const grid = document.getElementById('questionGrid');
+  if (!grid) return;
+  
+  const total = practiceWords.length;
+  grid.innerHTML = '';
+  
+  // Calculate pagination
+  const totalPages = Math.ceil(total / gridItemsPerPage);
+  const startIdx = gridCurrentPage * gridItemsPerPage;
+  const endIdx = Math.min(startIdx + gridItemsPerPage, total);
+  
+  // Update page indicator
+  const pageIndicator = document.getElementById('gridPageIndicator');
+  if (pageIndicator) {
+    pageIndicator.textContent = `${gridCurrentPage + 1}/${totalPages}`;
+  }
+  
+  // Update page counter in pagination controls
+  const pageCounter = document.getElementById('gridPageCounter');
+  if (pageCounter) {
+    pageCounter.textContent = `${gridCurrentPage + 1} / ${totalPages}`;
+  }
+  
+  // Update page text
+  const pageCurrentNum = document.getElementById('gridCurrentPageNum');
+  const pageTotalNum = document.getElementById('gridTotalPageNum');
+  if (pageCurrentNum && pageTotalNum) {
+    pageCurrentNum.textContent = gridCurrentPage + 1;
+    pageTotalNum.textContent = totalPages;
+  }
+  
+  // Render items for current page
+  for (let i = startIdx; i < endIdx; i++) {
+    const word = practiceWords[i];
+    if (!word || !word.hanzi) continue;
+    
+    const isCurrentIndex = i === currentIdx;
+    const result = sessionResults.find(r => r.word && r.word.hanzi === word.hanzi);
+    const isAnswered = result !== undefined;
+    const isCorrect = result?.correct === true;
+    
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.onclick = () => jumpToQuestion(i);
+    btn.title = `Câu ${i + 1}: ${word.hanzi}`;
+    
+    let bgColor = 'bg-gray-100 dark:bg-gray-700';
+    let textColor = 'text-gray-600 dark:text-gray-300';
+    let borderColor = 'border-gray-200 dark:border-gray-600';
+    let fontWeight = 'font-semibold';
+    
+    if (isCurrentIndex) {
+      bgColor = 'bg-primary/90 dark:bg-primary/80';
+      textColor = 'text-white';
+      borderColor = 'border-primary';
+      fontWeight = 'font-bold';
+    } else if (isAnswered) {
+      if (isCorrect) {
+        bgColor = 'bg-green-100 dark:bg-green-900/40';
+        textColor = 'text-green-600 dark:text-green-400';
+        borderColor = 'border-green-300 dark:border-green-700';
+      } else {
+        bgColor = 'bg-red-100 dark:bg-red-900/40';
+        textColor = 'text-red-600 dark:text-red-400';
+        borderColor = 'border-red-300 dark:border-red-700';
+      }
+    }
+    
+    btn.className = `w-6 h-6 sm:w-7 sm:h-7 min-w-[1.5rem] sm:min-w-[1.75rem] rounded-full border ${bgColor} ${textColor} ${borderColor} ${fontWeight} text-[9px] sm:text-[10px] leading-none transition-all hover:shadow-md active:scale-90 flex items-center justify-center cursor-pointer`;
+    btn.textContent = i + 1;
+    
+    grid.appendChild(btn);
   }
 }
 
@@ -2569,8 +2749,13 @@ function updateQuestionGrid() {
       }
     }
     
-    btn.className = `w-7 h-7 rounded border ${bgColor} ${textColor} ${borderColor} ${fontWeight} text-[10px] transition-all hover:shadow-sm active:scale-90 flex items-center justify-center cursor-pointer`;
+    btn.className = `w-6 h-6 sm:w-7 sm:h-7 min-w-[1.5rem] sm:min-w-[1.75rem] rounded-full border ${bgColor} ${textColor} ${borderColor} ${fontWeight} text-[9px] sm:text-[10px] leading-none transition-all hover:shadow-md active:scale-90 flex items-center justify-center cursor-pointer`;
   });
+  
+  // Update pagination button states
+  const total = practiceWords.length;
+  const totalPages = Math.ceil(total / gridItemsPerPage);
+  updatePaginationButtons(totalPages);
 }
 
 function jumpToQuestion(index) {
@@ -2638,6 +2823,79 @@ function revealFullWord(w) {
   if (titleEl)   titleEl.textContent = 'Chữ Hán · Pinyin · Nghĩa';
 }
 
+function getExpectedAnswer(w) {
+  if (!w) return '';
+  return inputMode === 'hanzi_to_meaning' || inputMode === 'listen_to_meaning' ? (w.meaning || '')
+    : inputMode === 'vietnamese_to_hanzi' ? (w.hanzi || '')
+    : (w.pinyin || '');
+}
+
+const WRITE_INPUT_ROW_BASE = 'border-b-2 border-primary pb-1 mb-2 flex items-center gap-2 rounded-xl px-3 py-2 -mx-1 sm:-mx-2 transition-all duration-200';
+
+function setWriteInputRowHighlight(kind) {
+  const el = document.getElementById('writeInputRow');
+  if (!el) return;
+  const layer = {
+    idle: '',
+    correct: ' bg-green-100 dark:bg-green-950/50 ring-2 ring-inset ring-green-500/40 dark:ring-green-400/30 border-green-500/35 dark:border-green-600/40',
+    wrong: ' bg-red-100 dark:bg-red-950/50 ring-2 ring-inset ring-red-500/40 dark:ring-red-400/30 border-red-500/35 dark:border-red-600/40',
+    skip: ' bg-amber-100 dark:bg-amber-950/45 ring-2 ring-inset ring-amber-500/40 dark:ring-amber-400/30 border-amber-500/35 dark:border-amber-600/40',
+  };
+  el.className = WRITE_INPUT_ROW_BASE + (layer[kind] || '');
+}
+
+function feedbackHtmlCorrect(answer) {
+  return `<div class="flex flex-col gap-1 items-center"><span>✅ Chính xác!</span><span class="text-xs font-semibold opacity-95 max-w-full break-words leading-snug">Bạn đã nhập: <span class="font-black">${esc(answer)}</span></span></div>`;
+}
+
+function feedbackHtmlWrong(answer, expected) {
+  return `<div class="flex flex-col gap-1.5 items-center text-center"><span>❌ Chưa đúng</span><span class="text-xs font-semibold max-w-full break-words leading-snug">Bạn đã nhập: <span class="font-black">${esc(answer)}</span></span><span class="text-xs max-w-full break-words leading-snug">Đáp án đúng: <span class="font-black">${esc(expected)}</span></span></div>`;
+}
+
+function selectWriteInputForReview(inputEl) {
+  if (!inputEl) return;
+  requestAnimationFrame(() => {
+    try {
+      inputEl.focus({ preventScroll: true });
+      inputEl.select();
+    } catch (_) {}
+  });
+}
+
+function isQuestionAnswered(idx) {
+  return sessionResults.some(r => r.questionIndex === idx);
+}
+
+function findNextUnansweredIndex(fromIdx) {
+  const n = practiceWords.length;
+  if (n === 0) return 0;
+  for (let i = fromIdx + 1; i < n; i++) {
+    if (!isQuestionAnswered(i)) return i;
+  }
+  for (let i = 0; i <= fromIdx; i++) {
+    if (!isQuestionAnswered(i)) return i;
+  }
+  return n;
+}
+
+function hasWrongTypedAnswerForIndex(idx) {
+  return sessionResults.some(r =>
+    r.questionIndex === idx &&
+    r.correct === false &&
+    String(r.userInput || '').trim() !== ''
+  );
+}
+
+function updateSkipWriteBtnState() {
+  const btn = document.getElementById('skipWriteBtn');
+  if (!btn) return;
+  const disable = isQuestionAnswered(currentIdx);
+  btn.disabled = disable;
+  btn.title = disable
+    ? (hasWrongTypedAnswerForIndex(currentIdx) ? 'Đã nhập sai — không thể bỏ qua' : 'Câu này đã được trả lời')
+    : 'Không biết đáp án';
+}
+
 // ==================== WRITE GAME ====================
 function checkWrite() {
   const w      = practiceWords[currentIdx];
@@ -2645,51 +2903,67 @@ function checkWrite() {
   if (!answer) return;
 
   const norm = s => String(s || '').normalize('NFC').toLowerCase().replace(/\s+/g, ' ').trim();
-  const expected = inputMode === 'hanzi_to_meaning' || inputMode === 'listen_to_meaning' ? w.meaning
-                 : inputMode === 'vietnamese_to_hanzi' ? w.hanzi
-                 : w.pinyin;
+  const expected = getExpectedAnswer(w);
   const isCorrect = norm(answer) === norm(expected);
 
   // Always reveal all 3 components after answering
   revealFullWord(w);
 
   const fb = document.getElementById('writeFeedback');
+  const inputEl = document.getElementById('writeInput');
+  const answeredAt = currentIdx;
 
   if (isCorrect) {
     correctCount++;
     fb.className = 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-2xl p-3 text-sm font-bold text-center mb-5 transition-all';
-    fb.innerHTML = `✅ Chính xác!`;
+    fb.innerHTML = feedbackHtmlCorrect(answer);
+    setWriteInputRowHighlight('correct');
   } else {
     wrongCount++;
     fb.className = 'bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 rounded-2xl p-3 text-sm font-bold text-center mb-5 transition-all';
-    fb.innerHTML = `❌ Đáp án: <span class="font-black">${esc(expected)}</span>`;
+    fb.innerHTML = feedbackHtmlWrong(answer, expected);
+    setWriteInputRowHighlight('wrong');
   }
 
-  sessionResults.push({ word: w, correct: isCorrect, userInput: answer });
-  document.getElementById('writeInput').disabled = true;
+  sessionResults.push({ word: w, correct: isCorrect, userInput: answer, questionIndex: currentIdx });
+  inputEl.disabled = true;
+  selectWriteInputForReview(inputEl);
+  updateSkipWriteBtnState();
   updateProgress();
-  setTimeout(() => { currentIdx++; updateProgress(); renderCurrentCard(); }, isCorrect ? 900 : 1400);
+  setTimeout(() => {
+    currentIdx = findNextUnansweredIndex(answeredAt);
+    updateProgress();
+    renderCurrentCard();
+  }, isCorrect ? 900 : 1600);
 }
 
 function skipWrite() {
   if (currentIdx >= practiceWords.length) return;
+  if (isQuestionAnswered(currentIdx)) return;
   const w  = practiceWords[currentIdx];
 
   // Always reveal all 3 components after skipping
   revealFullWord(w);
 
   const fb = document.getElementById('writeFeedback');
-  const expected = inputMode === 'hanzi_to_meaning' || inputMode === 'listen_to_meaning' ? w.meaning
-                 : inputMode === 'vietnamese_to_hanzi' ? w.hanzi
-                 : w.pinyin;
+  const inputEl = document.getElementById('writeInput');
+  const expected = getExpectedAnswer(w);
   fb.className = 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 rounded-2xl p-3 text-sm font-bold text-center mb-5 transition-all';
-  fb.innerHTML = `⏭️ Đáp án: <span class="font-black">${esc(expected)}</span>`;
+  fb.innerHTML = `<div class="flex flex-col gap-1 items-center"><span>⏭️ Đã bỏ qua</span><span class="text-xs font-semibold max-w-full break-words leading-snug">Bạn chưa nhập · Đáp án: <span class="font-black">${esc(expected)}</span></span></div>`;
 
-  sessionResults.push({ word: w, correct: false, userInput: '' });
+  const answeredAt = currentIdx;
+  sessionResults.push({ word: w, correct: false, userInput: '', questionIndex: currentIdx });
   wrongCount++;
-  document.getElementById('writeInput').disabled = true;
+  setWriteInputRowHighlight('skip');
+  inputEl.disabled = true;
+  selectWriteInputForReview(inputEl);
+  updateSkipWriteBtnState();
   updateProgress();
-  setTimeout(() => { currentIdx++; updateProgress(); renderCurrentCard(); }, 1200);
+  setTimeout(() => {
+    currentIdx = findNextUnansweredIndex(answeredAt);
+    updateProgress();
+    renderCurrentCard();
+  }, 1400);
 }
 
 // ==================== END PRACTICE ====================
@@ -2711,19 +2985,30 @@ async function endPractice() {
   document.getElementById('resultEmoji').textContent =
     accuracy >= 90 ? '⭐' : accuracy >= 70 ? '🌟' : accuracy >= 50 ? '💡' : '❌';
 
-  const mistakes       = sessionResults.filter(r => !r.correct).map(r => r.word);
+  const mistakeRows    = sessionResults.filter(r => !r.correct);
+  const mistakes       = mistakeRows.map(r => r.word);
   const mistakeSection = document.getElementById('mistakeSection');
   const retryBtn       = document.getElementById('retryMistakesBtn');
 
   if (mistakes.length > 0) {
     mistakeSection.classList.remove('hidden');
     retryBtn.classList.remove('hidden');
-    document.getElementById('mistakeList').innerHTML = mistakes.map(w => `
-      <div class="flex items-center gap-3 p-2.5 bg-red-50 dark:bg-red-900/20 rounded-xl text-sm">
-        <span class="text-xl">${esc(w.hanzi)}</span>
-        <span class="text-xs text-gray-400 flex-1">${esc(w.pinyin)}</span>
-        <span class="font-semibold text-gray-600 dark:text-gray-300">${esc(w.meaning)}</span>
-      </div>`).join('');
+    document.getElementById('mistakeList').innerHTML = mistakeRows.map(r => {
+      const w = r.word;
+      const typed = (r.userInput || '').trim();
+      const typedLine = typed
+        ? `<div class="text-[11px] text-red-700/90 dark:text-red-300/90 mt-1.5">Đã nhập: <span class="font-bold">${esc(typed)}</span></div>`
+        : `<div class="text-[11px] text-amber-700/90 dark:text-amber-300/80 mt-1.5">Chưa nhập (bỏ qua)</div>`;
+      return `
+      <div class="p-2.5 bg-red-50 dark:bg-red-900/20 rounded-xl text-sm text-left">
+        <div class="flex items-center gap-3">
+          <span class="text-xl shrink-0">${esc(w.hanzi)}</span>
+          <span class="text-xs text-gray-400 flex-1 min-w-0">${esc(w.pinyin)}</span>
+          <span class="font-semibold text-gray-600 dark:text-gray-300 shrink-0">${esc(w.meaning)}</span>
+        </div>
+        ${typedLine}
+      </div>`;
+    }).join('');
   } else {
     mistakeSection.classList.add('hidden');
     retryBtn.classList.add('hidden');
@@ -2738,7 +3023,12 @@ async function endPractice() {
       totalWords: total,
       correctWords: correct,
       duration,
-      results: sessionResults.map(r => ({ hanzi: r.word.hanzi, correct: r.correct })),
+      results: sessionResults.map(r => ({
+        hanzi: r.word.hanzi,
+        correct: r.correct,
+        userInput: r.userInput != null ? String(r.userInput) : '',
+        questionIndex: typeof r.questionIndex === 'number' ? r.questionIndex : null,
+      })),
     });
   } catch {}
 
@@ -2782,6 +3072,7 @@ function retryPractice() {
   document.body.classList.remove('overflow-hidden');
   document.getElementById('setupPanel').classList.add('hidden');
   document.getElementById('practicePanel').classList.remove('hidden');
+  gridCurrentPage = 0;
   renderQuestionGrid();
   updateProgress();
   renderCurrentCard();
@@ -2798,6 +3089,7 @@ function retryMistakes() {
   document.body.classList.remove('overflow-hidden');
   document.getElementById('setupPanel').classList.add('hidden');
   document.getElementById('practicePanel').classList.remove('hidden');
+  gridCurrentPage = 0;
   renderQuestionGrid();
   updateProgress();
   renderCurrentCard();
