@@ -1358,6 +1358,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Show folder panel after data is ready
   const folderPanel = document.getElementById('folderPanel');
   if (folderPanel) { folderPanel.classList.remove('hidden'); }
+  
+  // Pre-initialize SpeechRecognition to reduce first-use delay
+  if (!_speechRecognition) {
+    _speechRecognition = initSpeechRecognition();
+  }
 });
 
 // ==================== TABS ====================
@@ -4116,12 +4121,26 @@ async function deleteFolderFromModal(id, folderName) {
 // ==================== SPEECH INPUT ====================
 let _speechRecognition = null;
 let _speechActive = false;
+let _speechHasFinalResult = false;
+
+function initSpeechRecognition() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) return null;
+  
+  const recognition = new SpeechRecognition();
+  recognition.interimResults = true;
+  recognition.continuous = false;
+  recognition.maxAlternatives = 1;
+  
+  return recognition;
+}
 
 function toggleSpeechInput() {
   if (_speechActive) {
     _stopSpeech();
     return;
   }
+  
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) {
     showToast('Trình duyệt không hỗ trợ nhận giọng nói', 'error');
@@ -4130,11 +4149,12 @@ function toggleSpeechInput() {
   const input = document.getElementById('writeInput');
   if (input && input.disabled) return;
 
-  _speechRecognition = new SpeechRecognition();
+  if (!_speechRecognition) {
+    _speechRecognition = initSpeechRecognition();
+  }
+
+  _speechHasFinalResult = false;
   _speechRecognition.lang = (inputMode === 'hanzi_to_pinyin' || inputMode === 'vietnamese_to_pinyin') ? 'zh-CN' : 'vi-VN';
-  _speechRecognition.interimResults = true;
-  _speechRecognition.continuous = false;
-  _speechRecognition.maxAlternatives = 1;
 
   _speechRecognition.onstart = () => {
     _speechActive = true;
@@ -4145,9 +4165,33 @@ function toggleSpeechInput() {
   };
 
   _speechRecognition.onresult = (e) => {
-    const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
+    let transcript = '';
+    let isFinal = false;
+    
+    // Collect both interim and final results
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      transcript += e.results[i][0].transcript;
+      if (e.results[i].isFinal) {
+        isFinal = true;
+      }
+    }
+    
     const input = document.getElementById('writeInput');
-    if (input) { input.value = transcript; _updatePinyinBar(input); }
+    if (input) { 
+      input.value = transcript; 
+      _updatePinyinBar(input);
+      
+      // Auto-submit when final result is received
+      if (isFinal) {
+        _speechHasFinalResult = true;
+        // Delay slightly to ensure UI is updated
+        setTimeout(() => {
+          if (_speechHasFinalResult && input.value.trim()) {
+            checkWrite();
+          }
+        }, 100);
+      }
+    }
   };
 
   _speechRecognition.onerror = (e) => {
@@ -4157,12 +4201,24 @@ function toggleSpeechInput() {
 
   _speechRecognition.onend = () => { _stopSpeech(); };
 
-  _speechRecognition.start();
+  // Start recording immediately with minimal delay
+  try {
+    _speechRecognition.start();
+  } catch (e) {
+    // If already running, stop and restart
+    try {
+      _speechRecognition.stop();
+      setTimeout(() => _speechRecognition.start(), 50);
+    } catch(_) {}
+  }
 }
 
 function _stopSpeech() {
   _speechActive = false;
-  if (_speechRecognition) { try { _speechRecognition.stop(); } catch(_) {} _speechRecognition = null; }
+  _speechHasFinalResult = false;
+  if (_speechRecognition) { 
+    try { _speechRecognition.stop(); } catch(_) {} 
+  }
   const btn = document.getElementById('micBtn');
   const icon = document.getElementById('micIcon');
   if (btn) btn.classList.remove('text-red-500', '!text-red-500', 'bg-red-50', 'dark:bg-red-900/20');
