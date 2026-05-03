@@ -4121,7 +4121,6 @@ async function deleteFolderFromModal(id, folderName) {
 // ==================== SPEECH INPUT ====================
 let _speechRecognition = null;
 let _speechActive = false;
-let _speechHasFinalResult = false;
 
 function initSpeechRecognition() {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -4153,7 +4152,6 @@ function toggleSpeechInput() {
     _speechRecognition = initSpeechRecognition();
   }
 
-  _speechHasFinalResult = false;
   _speechRecognition.lang = (inputMode === 'hanzi_to_pinyin' || inputMode === 'vietnamese_to_pinyin') ? 'zh-CN' : 'vi-VN';
 
   _speechRecognition.onstart = () => {
@@ -4166,31 +4164,16 @@ function toggleSpeechInput() {
 
   _speechRecognition.onresult = (e) => {
     let transcript = '';
-    let isFinal = false;
     
     // Collect both interim and final results
     for (let i = e.resultIndex; i < e.results.length; i++) {
       transcript += e.results[i][0].transcript;
-      if (e.results[i].isFinal) {
-        isFinal = true;
-      }
     }
     
     const input = document.getElementById('writeInput');
     if (input) { 
       input.value = transcript; 
       _updatePinyinBar(input);
-      
-      // Auto-submit when final result is received
-      if (isFinal) {
-        _speechHasFinalResult = true;
-        // Delay slightly to ensure UI is updated
-        setTimeout(() => {
-          if (_speechHasFinalResult && input.value.trim()) {
-            checkWrite();
-          }
-        }, 100);
-      }
     }
   };
 
@@ -4215,7 +4198,6 @@ function toggleSpeechInput() {
 
 function _stopSpeech() {
   _speechActive = false;
-  _speechHasFinalResult = false;
   if (_speechRecognition) { 
     try { _speechRecognition.stop(); } catch(_) {} 
   }
