@@ -2422,6 +2422,7 @@ function renderCurrentCard() {
     hanziEl.classList.remove('hidden');
   } else {
     hanziEl.textContent = w.hanzi || '';
+    adjustHanziTextSize();
   }
 
   // Set hint content based on mode
@@ -2811,13 +2812,33 @@ function applyHintUI() {
 
 // ==================== REVEAL FULL WORD ====================
 // Called after answering — always shows Hanzi + Pinyin + Meaning together
+function adjustHanziTextSize() {
+  const hanziEl = document.getElementById('gameHanzi');
+  if (!hanziEl) return;
+  
+  const textLength = (hanziEl.textContent || '').length;
+  // Remove all size classes first
+  hanziEl.className = hanziEl.className.replace(/text-[0-9a-z]+/g, '').replace(/sm:text-[0-9a-z]+/g, '');
+  
+  // Add appropriate size classes based on text length
+  if (textLength > 20) {
+    hanziEl.classList.add('text-3xl', 'sm:text-4xl');
+  } else if (textLength > 15) {
+    hanziEl.classList.add('text-4xl', 'sm:text-5xl');
+  } else if (textLength > 10) {
+    hanziEl.classList.add('text-5xl', 'sm:text-6xl');
+  } else {
+    hanziEl.classList.add('text-6xl', 'sm:text-7xl');
+  }
+}
+
 function revealFullWord(w) {
   const hanziEl   = document.getElementById('gameHanzi');
   const pinyinEl  = document.getElementById('gamePinyin');
   const meaningEl = document.getElementById('gameMeaning');
   const titleEl   = document.getElementById('gamePromptTitle');
 
-  if (hanziEl)   { hanziEl.textContent   = w.hanzi   || ''; hanziEl.classList.remove('hidden'); }
+  if (hanziEl)   { hanziEl.textContent   = w.hanzi   || ''; hanziEl.classList.remove('hidden'); adjustHanziTextSize(); }
   if (pinyinEl)  { pinyinEl.textContent  = w.pinyin  || ''; pinyinEl.classList.remove('hidden'); }
   if (meaningEl) { meaningEl.textContent = w.meaning || ''; meaningEl.classList.remove('hidden'); }
   if (titleEl)   titleEl.textContent = 'Chữ Hán · Pinyin · Nghĩa';
@@ -2843,14 +2864,19 @@ function stripAnnotations(text) {
 }
 
 // Kiểm tra xem answer có khớp với expected hay không
-// Hỗ trợ partial match: nếu expected = "cây, cây cối", chấp nhận "cây" hoặc "cây, cây cối"
+// Hỗ trợ multiple options: nếu expected = "Ông, bà, ngài", chấp nhận bất kỳ 1 trong 3
 function isAnswerMatching(answer, expected) {
   if (answer === expected) return true;
   
-  // Split by comma to handle "word1, word2" cases
+  // Split by comma to handle "word1, word2, word3" cases
   const parts = expected.split(',').map(p => p.trim());
   
-  // Check if answer matches starting from first part up to any part
+  // Check if answer matches any one of the parts
+  for (let i = 0; i < parts.length; i++) {
+    if (answer === parts[i]) return true;
+  }
+  
+  // Also support accumulated match (first option, first + second, etc.)
   let accumulated = '';
   for (let i = 0; i < parts.length; i++) {
     if (accumulated) accumulated += ', ';
@@ -2887,7 +2913,7 @@ function feedbackHtmlCorrect(answer) {
 }
 
 function feedbackHtmlWrong(answer, expected) {
-  return `<div class="flex flex-col gap-1.5 items-center text-center"><span>❌ Chưa đúng</span><span class="text-xs font-semibold max-w-full break-words leading-snug">Bạn đã nhập: <span class="font-black">${esc(answer)}</span></span><span class="text-xs max-w-full break-words leading-snug">Đáp án đúng: <span class="font-black">${esc(expected)}</span></span></div>`;
+  return `<div class="flex flex-col gap-2 items-center text-center"><span>❌ Chưa đúng</span><span class="text-xs font-semibold max-w-full break-words leading-snug">Bạn đã nhập: <span class="font-black">${esc(answer)}</span></span><span class="text-xs font-semibold max-w-full break-words leading-snug">Đáp án đúng: <span class="font-black">${esc(expected)}</span></span></div>`;
 }
 
 function selectWriteInputForReview(inputEl) {
