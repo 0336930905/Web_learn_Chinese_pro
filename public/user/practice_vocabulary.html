@@ -2823,6 +2823,44 @@ function revealFullWord(w) {
   if (titleEl)   titleEl.textContent = 'Chữ Hán · Pinyin · Nghĩa';
 }
 
+// Loại bỏ ghi chú từ câu trả lời
+// Ghi chú bao gồm: (text), , text theo sau dấu "-"
+function stripAnnotations(text) {
+  if (!text) return '';
+  
+  // Loại bỏ phần trong ngoặc ()
+  let result = text.replace(/\s*\([^)]*\)\s*/g, ' ');
+  
+  // Loại bỏ phần sau dấu "-" (ghi chú giải thích)
+  // Chỉ loại nếu có khoảng trắng trước dấu "-"
+  result = result.replace(/\s+-\s+.*$/g, '');
+  
+  // Loại bỏ dấu phẩy ở cuối nếu theo sau là dấu "-"
+  // Normalize multiple spaces
+  result = result.replace(/\s+/g, ' ').trim();
+  
+  return result;
+}
+
+// Kiểm tra xem answer có khớp với expected hay không
+// Hỗ trợ partial match: nếu expected = "cây, cây cối", chấp nhận "cây" hoặc "cây, cây cối"
+function isAnswerMatching(answer, expected) {
+  if (answer === expected) return true;
+  
+  // Split by comma to handle "word1, word2" cases
+  const parts = expected.split(',').map(p => p.trim());
+  
+  // Check if answer matches starting from first part up to any part
+  let accumulated = '';
+  for (let i = 0; i < parts.length; i++) {
+    if (accumulated) accumulated += ', ';
+    accumulated += parts[i];
+    if (answer === accumulated) return true;
+  }
+  
+  return false;
+}
+
 function getExpectedAnswer(w) {
   if (!w) return '';
   return inputMode === 'hanzi_to_meaning' || inputMode === 'listen_to_meaning' ? (w.meaning || '')
@@ -2904,7 +2942,10 @@ function checkWrite() {
 
   const norm = s => String(s || '').normalize('NFC').toLowerCase().replace(/\s+/g, ' ').trim();
   const expected = getExpectedAnswer(w);
-  const isCorrect = norm(answer) === norm(expected);
+  // Loại bỏ ghi chú từ cả answer và expected, rồi kiểm tra xem có khớp hay không
+  const strippedAnswer = norm(stripAnnotations(answer));
+  const strippedExpected = norm(stripAnnotations(expected));
+  const isCorrect = isAnswerMatching(strippedAnswer, strippedExpected);
 
   // Always reveal all 3 components after answering
   revealFullWord(w);
