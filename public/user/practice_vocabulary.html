@@ -893,7 +893,7 @@
           <p id="writePromptLabel" class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Nhập nghĩa tiếng Việt</p>
 
           <!-- Pinyin IME suggestion bar (shown only in vietnamese_to_hanzi mode) -->
-          <div id="pinyinSuggestBar" style="display:none" class="gap-1 flex-wrap mb-2 max-h-24 overflow-y-auto -mx-1 px-1 border border-primary/20 rounded-2xl p-2 bg-primary/5"></div>
+          <div id="pinyinSuggestBar" style="display:none" class="flex flex-col gap-1 mb-2 max-h-[min(72vh,32rem)] overflow-y-auto -mx-1 px-2 py-1.5 border border-primary/20 rounded-xl bg-primary/5 shadow-inner"></div>
 
           <!-- Underline-style input (khung sáng/tối theo đúng/sai sau khi chấm) -->
           <div id="writeInputRow" class="border-b-2 border-primary pb-1 mb-2 flex items-center gap-2 rounded-xl px-3 py-2 -mx-1 sm:-mx-2 transition-all duration-200">
@@ -904,7 +904,7 @@
               spellcheck="false"
               placeholder="Nhập bằng định nghĩa"
               oninput="_updatePinyinBar(this)"
-              onkeydown="if(event.key==='Enter')checkWrite()"
+              onkeydown="_writeInputKeydown(event)"
               class="flex-1 min-w-0 bg-transparent border-none outline-none shadow-none ring-0 focus:ring-0 text-xl font-semibold
               text-text-main dark:text-white placeholder-gray-300 dark:placeholder-green-900/60 py-2 rounded-none
               selection:bg-primary/35 dark:selection:bg-primary/45 selection:text-text-main dark:selection:text-white" />
@@ -992,8 +992,11 @@
               </div>
             </div>
 
+            <p id="practiceSubmitHint" class="hidden mt-5 mb-2 px-2 text-center text-xs sm:text-sm font-bold text-primary dark:text-green-400 leading-snug">
+              Đã làm hết các câu. Bấm <span class="underline decoration-2 underline-offset-2">Nộp bài</span> để kết thúc và xem kết quả.
+            </p>
             <button type="button" onclick="endPracticeEarly()" title="Nộp bài và xem kết quả"
-              class="mt-5 w-full flex items-center justify-center gap-2 py-3 px-4 rounded-2xl font-extrabold text-sm shrink-0
+              class="mt-1 w-full flex items-center justify-center gap-2 py-3 px-4 rounded-2xl font-extrabold text-sm shrink-0
               bg-primary text-white shadow-md hover:bg-primary/90 active:scale-[0.98] transition-all border border-primary/20">
               <span class="material-symbols-outlined text-xl">task_alt</span>
               Nộp bài
@@ -2366,7 +2369,7 @@ function applyInputModeUI() {
     if (pinyinEl) pinyinEl.classList.add('hidden');
     if (meaningEl) meaningEl.classList.remove('hidden');
     if (labelEl) labelEl.textContent = 'Nhập chữ Hán (gõ pinyin → chọn ký tự)';
-    if (inputEl) inputEl.placeholder = 'Gõ pinyin, vd: ni → 你';
+    if (inputEl) inputEl.placeholder = 'Gõ pinyin / cụm liền, vd: ni → 你, nihao → 你好';
     return;
   }
 
@@ -2391,7 +2394,13 @@ function applyInputModeUI() {
 
 // ==================== RENDER CARD ====================
 function renderCurrentCard() {
-  if (currentIdx >= practiceWords.length) { endPractice(); return; }
+  const n = practiceWords.length;
+  if (n === 0) {
+    endPractice();
+    return;
+  }
+  if (currentIdx >= n) currentIdx = n - 1;
+  if (currentIdx < 0) currentIdx = 0;
 
   const w = practiceWords[currentIdx];
   const hanziEl = document.getElementById('gameHanzi');
@@ -2496,11 +2505,19 @@ function renderCurrentCard() {
 
 function updateProgress() {
   const total = practiceWords.length;
-  const done  = currentIdx;
-  const pct   = total > 0 ? Math.round((done / total) * 100) : 0;
-  document.getElementById('progressBar').style.width   = pct + '%';
-  document.getElementById('progressPct').textContent   = pct + '%';
-  document.getElementById('progressLabel').textContent = `${done} / ${total}`;
+  let answered = 0;
+  for (let i = 0; i < total; i++) {
+    if (isQuestionAnswered(i)) answered++;
+  }
+  const pct = total > 0 ? Math.round((answered / total) * 100) : 0;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressPct').textContent = pct + '%';
+  document.getElementById('progressLabel').textContent = `${answered} / ${total}`;
+  const hint = document.getElementById('practiceSubmitHint');
+  if (hint) {
+    if (total > 0 && answered === total) hint.classList.remove('hidden');
+    else hint.classList.add('hidden');
+  }
   updateQuestionGrid();
 }
 
@@ -2944,7 +2961,8 @@ function findNextUnansweredIndex(fromIdx) {
   for (let i = 0; i <= fromIdx; i++) {
     if (!isQuestionAnswered(i)) return i;
   }
-  return n;
+  /** Đã trả lời hết: không nhảy qua n (tránh tự gọi endPractice); ở lại câu vừa làm để người dùng chủ động Nộp bài. */
+  return fromIdx;
 }
 
 function hasWrongTypedAnswerForIndex(idx) {
@@ -3040,6 +3058,7 @@ function skipWrite() {
 
 // ==================== END PRACTICE ====================
 async function endPractice() {
+  document.getElementById('practiceSubmitHint')?.classList.add('hidden');
   document.getElementById('practicePanel').classList.add('hidden');
   document.getElementById('setupPanel').classList.remove('hidden');
   document.getElementById('resultsPanel').classList.remove('hidden');
@@ -3169,6 +3188,7 @@ function retryMistakes() {
 
 function quitPractice() {
   cancelInputModePicker();
+  document.getElementById('practiceSubmitHint')?.classList.add('hidden');
   document.getElementById('practicePanel').classList.add('hidden');
   document.getElementById('setupPanel').classList.remove('hidden');
   multiPracticeMode = false;
@@ -4211,35 +4231,283 @@ function _stopSpeech() {
 const PINYIN_DICT={a:['啊','阿','呵'],ai:['愛','哀','埃','礙','藹','唉','艾','挨','癌','矮','隘','靄'],an:['安','案','按','暗','岸','氨','鞍','諳','黯','庵'],ang:['昂','盎','骯'],ao:['澳','奧','傲','熬','鏖','翱','螯','嗷'],ba:['把','爸','吧','八','巴','拔','罷','壩','芭','疤','霸'],bai:['白','百','拜','柏','敗','擺','佰','唄'],ban:['半','班','板','般','搬','辦','版','伴','扮','頒','斑','絆','瓣'],bang:['幫','棒','邦','綁','磅','傍','鎊','謗'],bao:['報','保','抱','包','爆','寶','薄','飽','豹','暴','鮑','褒','胞','剝','堡'],bei:['北','被','背','杯','倍','備','輩','貝','悲','碑','憊'],ben:['本','笨','奔'],beng:['崩','繃','蹦','甭'],bi:['必','比','筆','避','幣','壁','臂','閉','鼻','彼','碧','逼','祕','弊','匕','斃','婢','鄙','痹','弼','篦'],bian:['邊','變','便','遍','編','辯','辨','鞭','貶','扁','匾','辮','砭','蝙'],biao:['表','標','彪','鏢','飆','裱','膘'],bie:['別','憋','癟','彆'],bin:['賓','濱','殯','繽','斌','鬢','彬','檳'],bing:['並','病','冰','丙','兵','餅','秉','稟','柄','屏','摒'],bo:['波','伯','博','播','脖','薄','玻','剝','泊','膊','駁','箔','搏','勃','帛','撥','渤','菠'],bu:['不','步','布','部','補','卜','捕','哺','埔','簿','怖','鋪'],ca:['擦','嚓'],cai:['才','菜','財','採','彩','猜','裁','踩','睬'],can:['參','慘','殘','蠶','燦','慚','摻'],cang:['藏','倉','蒼','艙','滄'],cao:['操','草','槽','曹','嘈','艹'],ce:['測','策','側','廁','惻','冊'],ceng:['層','蹭','曾'],cha:['查','差','茶','插','叉','拆','察','岔','詫'],chai:['拆','柴','釵','豺'],chan:['產','禪','纏','嬋','顫','闡','懺','蟬','讒','攙'],chang:['長','場','常','唱','嘗','廠','暢','昌','倡','猖','腸','悵'],chao:['超','朝','抄','吵','鈔','炒','嘲','巢','潮'],che:['車','撤','澈','扯','徹'],chen:['陳','塵','沉','稱','晨','趁','臣','嗔','抻'],cheng:['成','城','程','誠','承','稱','秤','乘','懲','撐','澄','瞠','逞','橙','丞','呈','塍'],chi:['吃','尺','池','遲','赤','持','翅','痴','齒','斥','馳','恥','熾','侈','叱'],chong:['重','充','蟲','衝','崇','寵','種'],chou:['愁','抽','醜','仇','籌','稠','綢','臭','疇','惆','皺'],chu:['出','初','處','除','廚','觸','儲','矗','楚','鋤','雛','芻'],chuai:['揣','踹'],chuan:['傳','穿','船','川','串','喘'],chuang:['床','創','窗','闖','瘡'],chui:['吹','垂','錘','捶','炊'],chun:['春','脣','純','蠢','醇'],ci:['此','次','詞','刺','慈','磁','雌','祠','賜','伺'],cong:['從','聰','叢','匆','蔥'],cou:['湊'],cu:['促','粗','醋','猝','簇'],cuan:['篡','竄','攢'],cui:['催','翠','脆','粹','悴','摧','淬','璀'],cun:['存','村','寸','忖'],cuo:['錯','挫','措','搓','磋','蹉'],da:['大','打','答','搭','達'],dai:['代','帶','待','戴','袋','呆','逮','歹','怠','貸','殆','黛'],dan:['但','單','擔','蛋','彈','淡','膽','旦','誕','丹','啖'],dang:['當','黨','擋','蕩','宕','噹'],dao:['到','道','倒','導','島','刀','稻','盜','禱','搗'],de:['的','得','德'],deng:['等','燈','登','鄧','凳','瞪'],di:['地','低','的','底','弟','第','敵','笛','滴','蒂','帝','遞','堤','抵','嫡'],dian:['電','點','店','典','顛','澱','甸','碘','惦','玷','殿','靛','奠','癲'],diao:['調','掉','雕','吊','叼','釣'],die:['跌','爹','疊','迭','蝶','牒','碟','諜'],ding:['定','頂','訂','丁','釘','叮','鼎','碇','腚','錠'],diu:['丟'],dong:['動','東','懂','凍','洞','棟','董'],dou:['都','豆','鬥','抖','逗','兜','蚪','竇','痘'],du:['度','都','讀','獨','堵','賭','杜','渡','毒','督','篤','肚'],duan:['斷','段','端','短','鍛','椴'],dui:['對','隊','兌','堆'],dun:['頓','盾','蹲','敦','噸','墩','囤','燉','遁'],duo:['多','奪','朵','躲','鐸','剁','惰','舵','墮','跺'],e:['餓','惡','鵝','額','遏','扼','厄','鰐','蛾','娥','萼'],en:['恩'],er:['而','二','耳','兒','爾','餌','邇','貳'],fa:['法','發','罰','乏','髮','閥','伐','筏'],fan:['反','飯','範','繁','番','煩','販','泛','藩','帆','梵','礬','樊','凡','翻','返','氾'],fang:['方','放','房','訪','防','仿','芳','紡','坊','妨','肪'],fei:['飛','費','廢','非','肺','肥','菲','沸','匪','誹','緋','霏'],fen:['分','份','粉','憤','糞','奮','墳','芬','氛','紛','焚','酚'],feng:['風','逢','豐','鋒','鳳','縫','楓','蜂','瘋','峰','諷','封','俸','奉','烽'],fo:['佛'],fou:['否'],fu:['父','服','婦','夫','富','副','府','付','復','腹','輔','浮','伏','負','務','赴','福','腐','附','賦','釜','幅','撫','拂','俯','甫','孵','敷','蝠'],ga:['嘎','尬'],gai:['該','改','概','蓋','丐','鈣','溉'],gan:['感','幹','趕','乾','敢','贛','桿','甘','竿','柑','肝'],gang:['港','剛','鋼','崗','綱','槓','缸'],gao:['高','告','搞','稿','糕','膏'],ge:['個','各','哥','格','給','歌','隔','葛','閣','革','戈','擱','骼'],gen:['根','跟'],geng:['更','梗','耕','耿','哽'],gong:['公','工','共','功','供','攻','宮','弓','鞏','貢','恭','拱','汞'],gou:['夠','狗','購','溝','構','鉤','垢','苟'],gu:['古','顧','股','骨','故','固','估','孤','菇','穀','辜'],gua:['掛','瓜','刮','寡','卦','呱','颳'],guai:['怪','乖'],guan:['管','官','關','觀','慣','貫','館','冠','棺','灌','罐','鰥','莞','盥','鸛'],guang:['光','廣','逛'],gui:['貴','規','鬼','歸','桂','跪','軌','詭','癸','皈','龜','匱'],gun:['滾','棍'],guo:['國','過','果','裹','鍋','郭','幗','虢','蟈'],ha:['哈'],hai:['海','害','還','孩','駭','亥','骸','嗨'],han:['漢','寒','喊','含','汗','旱','韓','憾','翰','罕','焊','鼾','邯'],hang:['行','航','杭','夯'],hao:['好','號','豪','耗','嚎','毫','浩','皓','昊','郝','壕'],he:['和','何','喝','合','河','賀','荷','核','赫','褐','壑','嚇','鶴','禾','呵','貉','盒','涸','闔','曷'],hei:['黑'],hen:['很','恨','狠','痕'],heng:['恒','橫','哼','亨','衡'],hong:['紅','洪','哄','鴻','宏','弘','烘','虹'],hou:['後','厚','侯','喉','猴','吼'],hu:['護','虎','互','戶','湖','胡','狐','壺','呼','糊','鬍','惚','弧','葫','蝴'],hua:['話','化','花','滑','劃','華','畫','嘩','樺'],huai:['壞','懷','淮'],huan:['換','歡','環','緩','患','幻','煥','喚','寰','渙','浣'],huang:['黃','皇','慌','荒','謊','恍','晃','煌','蝗','磺'],hui:['回','會','惠','匯','繪','揮','灰','毀','悔','徽','彙','誨','晦','穢'],hun:['婚','混','魂','昏','渾'],huo:['或','活','火','貨','獲','惑','禍','霍','豁'],ji:['機','計','及','幾','基','即','集','雞','藉','記','繼','濟','際','技','激','吉','積','急','極','給','己','擊','忌','季','籍','級','輯','績','脊','嫉','齊','畸','嘰','寂','棘','躋','稽'],jia:['家','假','加','甲','架','夾','嘉','價','佳','頰','鉀','稼'],jian:['見','間','建','鍵','監','艱','堅','減','檢','賤','漸','簡','薦','劍','箭','健','兼','踐','儉','尖','殲','揀','諫','柬','蹇','鑑','緘','剪'],jiang:['將','講','江','強','降','漿','獎','醬','疆','槳','僵','姜','絳'],jiao:['叫','教','覺','腳','角','較','交','嬌','澆','焦','驕','矯','攪','鉸','蕉','椒','膠'],jie:['解','接','節','街','介','借','結','姐','截','戒','階','屆','揭','傑','睫','捷','碣','孑','誡','潔'],jin:['金','今','進','近','僅','禁','緊','晉','盡','謹','錦','勁','津','浸','噤','筋'],jing:['京','精','景','靜','境','警','競','驚','徑','晶','淨','鏡','頸','莖','脛','荊','憬','阱','痙','旌'],jiong:['炯','窘','囧'],jiu:['就','舊','九','救','酒','久','究','揪','韭','糾','廄','疚','灸','咎'],ju:['就','舉','居','巨','劇','據','局','句','菊','矩','拒','懼','具','俱','距','鋸','駒','炬'],juan:['捐','卷','捲','眷','雋','娟','倦','鵑'],jue:['覺','決','絕','掘','崛','撅','訣','爵','厥','蕨','抉','珏'],jun:['軍','均','君','俊','駿','菌','郡','竣','鈞','峻'],ka:['卡','咖','喀'],kai:['開','凱','慨','揩','鎧'],kan:['看','坎','砍','勘','侃','刊','瞰'],kang:['抗','康','炕','慷','糠'],kao:['考','靠','烤','拷'],ke:['可','客','課','科','刻','克','渴','殼','坷','咳','柯','棵','磕'],ken:['肯','墾','懇','啃'],keng:['坑','吭'],kong:['空','控','孔','恐'],kou:['口','扣','摳','寇','叩'],ku:['苦','哭','庫','酷','枯','窟','褲'],kua:['跨','誇','垮','胯','挎'],kuai:['快','塊','膾','筷'],kuan:['款','寬'],kuang:['況','框','狂','礦','曠','筐','匡'],kui:['魁','愧','傀','窺','潰','匱','饋','奎'],kun:['困','昆','捆','坤'],kuo:['括','擴','廓','闊'],la:['拉','啦','辣','臘','蠟','喇','垃'],lai:['來','賴','萊','睞'],lan:['藍','攔','覽','濫','爛','懶','瀾','籃','蘭','嵐','欄'],lang:['浪','狼','廊','朗','閬','螂'],lao:['老','勞','撈','姥','嘮','烙','澇','酪','潦'],le:['了','樂','勒','肋'],lei:['累','類','淚','雷','磊','蕾','鐳','擂','壘'],leng:['冷','楞','愣','棱'],li:['裡','力','利','立','禮','理','李','里','歷','麗','離','例','勵','粒','莉','鯉','吏','荔','厘','厲','儷','罹','蜊','痢','笠','栗','礪'],lian:['連','練','臉','聯','戀','廉','蓮','憐','煉','斂','漣','鐮','鏈'],liang:['兩','量','涼','亮','良','糧','諒','輛'],liao:['了','料','聊','廖','療','遼','寥','繚','燎','撩'],lie:['列','劣','裂','獵','烈','冽'],lin:['林','臨','鄰','麟','磷','凜','琳','淋','轔','藺','鱗','霖','廩','嶙'],ling:['領','令','靈','零','齡','鈴','嶺','凌','菱','陵','羚','另','伶','玲','綾','聆','翎','苓','囹','泠'],liu:['流','六','劉','留','柳','瀏','溜','遛','硫','餾','鎏'],long:['龍','隆','弄','籠','聾','攏','壟','窿'],lou:['樓','漏','露','婁','摟','陋','簍'],lu:['路','陸','露','錄','旅','盧','鹿','蘆','魯','祿','顱','臚','麓','擄','戮','鷺'],luan:['亂','卵','欒','孿','鸞','巒'],lun:['論','倫','輪','掄','淪','崙'],luo:['落','羅','絡','邏','鑼','螺','籮','駱','珞','洛'],lv:['旅','律','綠','呂','慮','濾','侶','鋁','氯','縷','閭','履','屢','率'],lü:['旅','律','綠','呂','慮','濾','侶','鋁','氯','縷','閭','履','屢','率'],ma:['媽','馬','嗎','罵','麻','瑪','碼','螞'],mai:['買','賣','麥','脈','邁','埋','霾'],man:['滿','慢','漫','蔓','曼','瞞','饅','鰻','謾'],mang:['忙','芒','茫','盲','莽','蟒'],mao:['貓','毛','冒','帽','矛','茅','錨','耄','昴','瞄','牦','卯'],me:['麼'],mei:['美','每','沒','妹','玫','媒','眉','梅','煤','枚','湄','霉','黴','莓','昧','媚','寐','魅'],men:['們','門','悶','捫'],meng:['夢','盟','猛','蒙','萌','懵','朦'],mi:['米','密','迷','祕','謎','蜜','幂','靡','覓','泌'],mian:['面','棉','免','眠','綿','勉','緬','冕'],miao:['妙','苗','廟','秒','描','渺','藐'],mie:['滅','蔑','篾'],min:['民','敏','閔','皿','憫','岷','泯'],ming:['明','名','命','鳴','銘','冥'],mo:['沒','末','模','默','墨','磨','膜','摩','魔','陌','抹','寞','漠','莫','驀'],mou:['某','謀','牟','眸'],mu:['木','目','母','牧','墓','沐','幕','穆','慕','睦','苜','牡'],na:['那','拿','哪','納','捺','鈉','娜','吶'],nai:['奶','乃','耐','奈'],nan:['南','難','男','喃','楠'],nao:['腦','鬧','惱','撓'],ne:['那','呢','訥','疒'],nei:['內','哪','餒'],neng:['能'],ni:['你','妳','妮','尼','逆','泥','擬','膩','倪','溺','霓','旎'],nian:['年','念','輾','黏','碾','粘','拈','廿'],niang:['娘','釀'],niao:['鳥','尿','溺','裊'],nie:['捏','涅','囁','鑷','聶','蘖'],nin:['您'],ning:['寧','凝','擰','檸','獰'],niu:['牛','扭','鈕','紐','忸'],nong:['農','弄','濃','膿'],nu:['怒','努','奴','弩','女'],nuan:['暖'],nuo:['諾','挪','糯','懦'],nv:['女'],nü:['女'],o:['哦','喔'],ou:['歐','偶','嘔','毆','藕','漚','謳'],pa:['怕','爬','趴','啪','葩'],pai:['牌','排','派','拍','徘','湃'],pan:['判','盼','盤','攀','叛','畔','胖','磐','蹣'],pang:['旁','胖','龐','螃','磅'],pao:['跑','泡','炮','拋','咆','袍'],pei:['裴','佩','配','培','賠','陪','胚','霈','沛'],pen:['盆','噴'],peng:['朋','碰','蓬','膨','棚','彭','澎','篷','怦','砰','捧'],pi:['皮','批','琵','脾','疲','譬','匹','劈','僻','庇','披','辟','癖','啤','毗'],pian:['騙','偏','片','篇','翩'],piao:['漂','票','飄','嫖','瓢','縹'],pie:['撇','瞥'],pin:['品','貧','拼','頻','聘','蘋'],ping:['平','評','憑','瓶','蘋','屏','乒','坪','萍'],po:['破','坡','迫','潑','婆','魄','頗','珀'],pu:['普','撲','葡','鋪','蒲','僕','瀑','樸','圃','浦','菩'],qi:['起','期','其','氣','奇','七','棋','器','旗','欺','騎','乞','妻','啟','企','琦','豈','棄','砌','泣','戚','淇','綺','琪','齊','稽'],qia:['恰','掐','洽'],qian:['前','千','錢','遷','潛','謙','簽','欠','牽','鉛','乾','倩','黔','虔','歉','塹','縴'],qiang:['強','搶','槍','牆','腔','嗆','薔','鏘','羌'],qiao:['橋','巧','俏','悄','敲','喬','翹','蹺','竅','僑','瞧'],qie:['切','且','竊','茄','妾','愜'],qin:['親','琴','秦','欽','勤','寢','禽','擒','芹','沁','衾'],qing:['情','請','清','青','慶','輕','傾','晴','磬','卿','擎','罄'],qiong:['窮','瓊','穹'],qiu:['秋','球','求','仇','丘','蚯','裘','酋'],qu:['去','取','趣','曲','區','渠','驅','屈','祛','覷'],quan:['全','泉','權','勸','券','拳','犬','圈','銓','痊','蜷'],que:['確','缺','卻','雀','鵲','闕','榷'],qun:['群','裙'],ran:['然','染','燃','髯','苒','冉'],rang:['讓','嚷','穰','壤','瓤'],rao:['繞','擾','饒','橈'],re:['熱','惹'],ren:['人','認','任','忍','仁','刃','韌','紉','壬','妊'],reng:['仍','扔'],ri:['日'],rong:['容','榮','融','戎','熔','絨','冗','嶸','蓉','溶','茸'],rou:['肉','柔','蹂','揉'],ru:['入','如','儒','汝','孺','乳','辱','茹','褥','蠕'],ruan:['軟','阮'],rui:['銳','瑞','蕊','芮','睿'],run:['潤','閏'],ruo:['若','弱','偌'],sa:['撒','灑','颯'],sai:['賽','塞','腮','鰓'],san:['三','散','傘','叁'],sang:['喪','桑','嗓'],sao:['掃','嫂','搔','騷'],se:['色','瑟','澀','嗇'],sen:['森'],seng:['僧'],sha:['沙','傻','殺','紗','篩','廈','剎','霎'],shan:['山','閃','善','扇','跚','杉','珊','訕','擅','贍','禪','鱔','衫','煽','膻','汕','疝'],shang:['上','商','賞','傷','尚','晌'],shao:['少','燒','紹','稍','哨','芍','韶'],she:['射','設','社','蛇','舍','捨','赦','懾','攝','麝','什'],shen:['深','申','什','審','神','沈','慎','滲','伸','腎','莘','嬸','蜃','瀋','砷'],sheng:['生','聲','勝','盛','剩','繩','省','升','聖','甥','笙'],shi:['是','時','事','使','示','市','世','式','識','實','士','詩','師','失','始','石','誓','施','適','勢','試','獅','拾','嗜','侍','矢','仕','視','逝','屍','恃','食'],shou:['手','受','守','首','壽','授','收','獸','瘦','售'],shu:['書','數','樹','術','束','輸','屬','疏','熟','署','蜀','恕','戍','墅','薯','豎','庶','黍','贖'],shua:['刷','耍'],shuai:['率','帥','衰','甩','摔'],shuan:['栓','拴','涮'],shuang:['雙','霜','爽'],shui:['水','睡','稅','誰'],shun:['順','瞬','舜'],shuo:['說','碩','爍','朔'],si:['四','死','思','似','私','撕','斯','絲','飼','肆','廝','巳','嗣','泗','祀'],song:['送','鬆','宋','松','誦','聳','頌','慫'],sou:['搜','艘','嗽','颼','擻'],su:['速','素','宿','俗','蘇','訴','酥','肅','塑','粟','謖','溯'],suan:['算','酸','蒜'],sui:['雖','碎','隨','歲','穗','邃','燧','祟'],sun:['孫','損','筍','遜','榫'],suo:['所','縮','鎖','梭','瑣','索','唆','蓑'],ta:['他','它','她','踏','塌','拓','沓'],tai:['太','台','胎','苔','抬','泰','態','鈦'],tan:['談','探','灘','貪','嘆','炭','痰','碳','毯','坦','彈','覃','憚','癱','澹','袒'],tang:['糖','躺','堂','湯','趟','唐','棠','燙','膛','螳','倘'],tao:['討','套','桃','逃','濤','掏','陶','滔','萄','韜'],te:['特'],teng:['疼','騰','藤','謄','滕'],ti:['提','體','題','梯','替','踢','啼','剔','蹄','屜','悌','涕'],tian:['天','田','填','甜','舔','添','腆','佃'],tiao:['跳','條','調','挑','眺','窕','迢'],tie:['鐵','貼','帖','餮'],ting:['聽','停','庭','廳','挺','亭','艇','婷','蜓','汀','霆'],tong:['通','同','痛','銅','統','瞳','桶','童','筒','慟','彤','酮'],tou:['頭','透','投','偷','骰'],tu:['土','兔','圖','途','塗','肚','突','禿','吐','徒'],tuan:['團','湍'],tui:['推','退','腿','頹','蛻'],tun:['吞','豚','屯','臀','囤'],tuo:['脫','託','拖','陀','駝','妥','橢','舵','拓','坨','沱','鴕'],wa:['挖','哇','蛙','窪','娃','洼','襪','瓦'],wai:['外','歪'],wan:['萬','完','晚','碗','彎','玩','灣','挽','頑','惋','蜿','婉','腕','豌','綰','琬','皖','宛'],wang:['王','望','忘','往','旺','亡','罔','妄'],wei:['為','維','威','衛','微','偉','圍','委','位','胃','未','謂','違','味','慰','瑋','蔚','緯','尾','韋','魏'],wen:['問','文','溫','穩','聞','汶','吻','紋','蚊','瘟','雯'],weng:['翁','嗡','甕'],wo:['我','握','臥','窩','渦','蝸','斡','幄','沃','喔','倭'],wu:['五','物','無','務','午','武','吾','霧','悟','誤','舞','嗚','污','烏','屋','蕪','毋','蜈','梧','巫','鎢'],xi:['西','希','系','習','喜','戲','析','稀','錫','吸','犀','膝','熄','息','席','媳','奚','羲','熙','晰','洗','蜥','曦','蟋','係','細','繫','惜','昔','悉','夕','隙','犧','璽','徙','嬉','兮','汐','矽','熹','禧','囍','襲','嘻','稀','晰','翕'],xia:['下','夏','峽','蝦','俠','霞','瞎','匣','轄','遐','嚇'],xian:['現','先','線','縣','顯','鮮','閑','鹹','嫌','獻','限','仙','憲','羨','纖','弦','涎','銜','蜆','嫻','賢','舷','掀','癇','陷','餡','閒','跣','銑','冼','暹','氙','蜆'],xiang:['想','像','向','相','象','鄉','香','響','箱','詳','享','巷','廂','翔','餉','橡','湘','祥','饗','驤','庠','薌'],xiao:['小','笑','消','學','校','效','肖','霄','逍','潇','硝','嘯','梟','蕭','孝','宵','銷','哮','囂','瀟','簫','篠'],xie:['寫','謝','鞋','血','斜','解','卸','歇','攜','諧','邪','蟹','械','脅','洩','泄','褻','榭','屑','楔','協','些','懈','邂','燮','擷','挾'],xin:['心','新','信','辛','欣','芯','薪','忻','馨','鑫'],xing:['行','興','星','型','形','性','幸','姓','醒','腥','刑','杏'],xiong:['熊','雄','胸','兇','兄','匈','洶'],xiu:['秀','修','休','銹','繡','嗅','羞','宿','朽','袖','鏽'],xu:['需','許','序','續','學','虛','敘','恤','旭','蓄','絮','煦','栩','嘘','墟','詡'],xuan:['選','宣','旋','懸','玄','絢','炫','眩','暄','喧','渲','楦'],xue:['學','雪','血','穴','靴'],xun:['訓','尋','迅','詢','循','薰','巡','遜','汛','熏','殉','馴','荀'],ya:['也','壓','押','鴨','牙','啞','雅','亞','芽','崖','訝','涯','軋'],yan:['言','研','嚴','眼','煙','宴','演','驗','燕','顏','鹽','淹','焰','延','掩','艷','厭','硯','諺','儼'],yang:['樣','陽','洋','養','楊','央','揚','仰','秧','佯','殃','漾','羊'],yao:['要','藥','搖','腰','姚','窯','咬','遙','謠','鑰','耀','爻','堯','餚'],ye:['也','夜','葉','野','爺','業','噎','曳','椰','冶','邪','液','燁','腋','掖','謁'],yi:['一','以','已','意','義','易','醫','依','宜','移','衣','疑','議','億','益','逸','翼','異','抑','役','遺','藝','憶','儀','誼','毅','肄','裔','懿'],yin:['因','音','引','印','銀','飲','隱','寅','陰','吟','淫','殷','蚓','胤'],ying:['應','英','影','映','贏','迎','鷹','櫻','螢','瑩','盈','塋'],yo:['喲'],yong:['用','勇','永','擁','湧','詠','庸','泳','雍','傭','踴','甬'],you:['有','由','又','友','右','游','幽','誘','尤','優','猶','釉','柚','郵','囿','宥','鼬','莠'],yu:['于','與','語','遇','域','魚','玉','御','育','漁','預','愈','余','欲','逾','豫','愉','娛','諭','宇','嶼','虞','隅','羽','竽','迂','淤','禹','輿','嫗','雨'],yuan:['原','元','員','遠','願','園','源','院','怨','緣','圓','冤','鴛','袁','苑','猿','媛','轅','垣','塬'],yue:['月','樂','越','約','閱','岳','悅','粵','躍'],yun:['雲','運','允','暈','韻','孕','均','醞','隕','蕓','熨'],za:['雜','砸','紮','咂'],zai:['在','再','載','災','宰','栽'],zan:['贊','暫','咱','讚','簪','攢'],zang:['藏','臟','葬','髒'],zao:['早','造','燥','噪','棗','灶','皂','澡','鑿','蚤'],ze:['責','則','擇','澤','嘖'],zei:['賊'],zen:['怎'],zeng:['增','曾','贈','憎'],zha:['這','扎','炸','紮','閘','眨','詐','渣','軋','鍘','喳','柵','榨'],zhai:['窄','債','齋','摘','寨'],zhan:['站','展','戰','佔','沾','斬','氈','顫','湛','霑','綻'],zhang:['長','張','章','掌','漲','帳','脹','障','仗','丈','賬','杖','樟','彰'],zhao:['找','著','照','招','召','趙','爪','沼','昭'],zhe:['這','者','著','折','浙','哲','遮','蟄','謫'],zhen:['真','針','珍','診','震','鎮','陣','枕','斟','甄','貞','砧','縝'],zheng:['正','整','政','征','爭','鄭','蒸','掙'],zhi:['之','知','只','制','支','直','指','治','志','質','智','值','紙','致','置','芝','枝','脂','殖','稚','蜘','汁','炙','侄','旨','秩','摯','贄','滯','峙','痣'],zhong:['中','種','重','終','眾','鐘','忠','腫','仲','盅','粽'],zhou:['周','洲','州','宙','皺','軸','粥','咒','肘','晝','帚','舟'],zhu:['主','住','著','注','諸','朱','珠','竹','助','豬','逐','煮','燭','囑','築','鑄','駐','貯','柱','拄','矚','蛛'],zhua:['抓'],zhuai:['拽'],zhuan:['傳','轉','磚','賺','篆','撰'],zhuang:['裝','狀','壯','樁','撞','幢'],zhui:['追','墜','錘','椎','綴','贅'],zhun:['準','諄'],zhuo:['著','桌','卓','濁','捉','灼','酌','茁','鐲','擢'],zi:['子','字','自','紫','姿','資','仔','茲','滋','籽','錙'],zong:['總','縱','宗','棕','蹤','粽','綜','鬃'],zou:['走','奏','鄒','揍'],zu:['族','組','足','租','祖','阻','卒'],zuan:['鑽','攢'],zui:['最','罪','嘴','醉'],zun:['尊','遵'],zuo:['做','作','坐','左','座','昨','佐']};
 
 let pinyinBuffer = '';
+let pinyinReplaceLen = 0;
+/** Tối đa 9 lựa chọn: phím 1–9 theo đúng thứ tự hiển thị trên thanh gợi ý */
+let _pinyinHotkeyChoices = [];
 
-function _updatePinyinBar(inputEl) {
-  const bar = document.getElementById('pinyinSuggestBar');
-  if (!bar || inputMode !== 'vietnamese_to_hanzi') { if(bar) bar.style.display='none'; return; }
-  const val = inputEl.value;
-  const m = val.match(/[a-z]+$/i);
-  pinyinBuffer = m ? m[0].toLowerCase() : '';
-  if (!pinyinBuffer) { _clearPinyinBar(); return; }
-  const chars = PINYIN_DICT[pinyinBuffer] || [];
-  if (!chars.length) { _clearPinyinBar(); return; }
-  bar.style.display = 'flex';
-  bar.innerHTML = '<span class="text-xs text-primary/60 font-semibold self-center mr-1 shrink-0">' + pinyinBuffer + ':</span>' +
-    chars.slice(0, 30).map(c =>
-    `<button type="button" onclick="insertPinyinChar('${c}')"
-      class="shrink-0 px-2.5 py-1.5 bg-white dark:bg-card-dark border border-gray-200 dark:border-green-900/30 rounded-xl text-xl font-semibold text-text-main dark:text-white hover:bg-primary/10 hover:border-primary transition-all shadow-sm active:scale-95">${c}</button>`
-  ).join('');
+/** Cụm thường gặp: pinyin liền (a-z, v thay ü) → Hán phồn thể */
+const PINYIN_PHRASE_DICT = {
+  nihao: ['你好'], nihaoma: ['你好嗎'], zaoshanghao: ['早上好'], wanshanghao: ['晚上好'], zaijian: ['再見'],
+  xiexie: ['謝謝'], xiexieni: ['謝謝你'], duibuqi: ['對不起'], buhaoyisi: ['不好意思'], meiguanxi: ['沒關係'], meishi: ['沒事'],
+  qing: ['請'], qingwen: ['請問'], qingzuo: ['請坐'], qingchi: ['請吃'], qinghe: ['請喝'], qingdeng: ['請等'], qingjin: ['請進'],
+  haode: ['好的'], keyi: ['可以'], buyao: ['不要'], bukeqi: ['不客氣'], meiwenti: ['沒問題'], dangran: ['當然'],
+  women: ['我們'], nimen: ['你們'], tamen: ['他們'], ta: ['他', '她', '它'], tashi: ['他是', '她是', '它是'], tabushi: ['他不是'], wo: ['我'], ni: ['你'], nin: ['您'], ren: ['人'],
+  shenme: ['什麼'], zenme: ['怎麼'], zenmeyang: ['怎麼樣'], weishenme: ['為什麼'], duoshao: ['多少'], naer: ['哪兒'], zenmezou: ['怎麼走'],
+  xianzai: ['現在'], jintian: ['今天'], mingtian: ['明天'], zuotian: ['昨天'], shihou: ['時候'], yijing: ['已經'], haiyou: ['還有'],
+  xuexiao: ['學校'], laoshi: ['老師'], tongxue: ['同學'], pengyou: ['朋友'], gongzuo: ['工作'], shijian: ['時間'], wenti: ['問題'],
+  zhongwen: ['中文'], yingwen: ['英文'], hanyu: ['漢語'], putonghua: ['普通話'], fanyi: ['翻譯'], lianxi: ['練習'], xuexi: ['學習'],
+  daka: ['打卡'], kaishi: ['開始'], jieshu: ['結束'], zhunbei: ['準備'], dengyixia: ['等一下'], mashang: ['馬上'], kuai: ['快'],
+  zhege: ['這個'], nage: ['那個'], zheli: ['這裡'], nali: ['那裡'], zher: ['這兒'], nar: ['那兒'],
+  bucuo: ['不錯'], henhao: ['很好'], taihaole: ['太好了'], feichang: ['非常'], zhende: ['真的'], yidian: ['一點'],
+  xihuan: ['喜歡'], buxihuan: ['不喜歡'], xuyao: ['需要'], xiangyao: ['想要'], zhidao: ['知道'], buzhidao: ['不知道'], mingbai: ['明白'],
+  qingchu: ['清楚'], tingdong: ['聽懂'], kanjian: ['看見'], tingjian: ['聽見'], shuohua: ['說話'], ting: ['聽'], shuo: ['說'], kan: ['看'], du: ['讀'], xie: ['寫'],
+  zaoshang: ['早上'], wanshang: ['晚上'], zhongwu: ['中午'], xiexienin: ['謝謝您'], huanying: ['歡迎'],
+};
+
+const PINYIN_LOOKUP = (() => {
+  const L = Object.assign({}, PINYIN_DICT);
+  for (const k of Object.keys(PINYIN_DICT)) {
+    if (k.indexOf('ü') !== -1) L[k.replace(/ü/g, 'v')] = PINYIN_DICT[k];
+  }
+  return L;
+})();
+const _PINYIN_SYLLABLES_SORTED = Object.keys(PINYIN_LOOKUP).sort((a, b) => b.length - a.length);
+
+function pinyinToBareAscii(p) {
+  if (!p || typeof p !== 'string') return '';
+  let s = p.toLowerCase().trim().replace(/[1-5]/g, '');
+  try { s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); } catch (_) {}
+  const map = { ā: 'a', á: 'a', ǎ: 'a', à: 'a', ē: 'e', é: 'e', ě: 'e', è: 'e', ī: 'i', í: 'i', ǐ: 'i', ì: 'i',
+    ō: 'o', ó: 'o', ǒ: 'o', ò: 'o', ū: 'u', ú: 'u', ǔ: 'u', ù: 'u', ǖ: 'v', ǘ: 'v', ǚ: 'v', ǜ: 'v', ü: 'v' };
+  let r = '';
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    r += map[c] !== undefined ? map[c] : c;
+  }
+  return r.replace(/[^a-z]/g, '');
 }
 
-function insertPinyinChar(char) {
+function splitAsciiPinyin(buffer) {
+  const syllables = [];
+  let i = 0;
+  const buf = String(buffer || '').toLowerCase();
+  while (i < buf.length) {
+    let found = null;
+    for (let si = 0; si < _PINYIN_SYLLABLES_SORTED.length; si++) {
+      const syll = _PINYIN_SYLLABLES_SORTED[si];
+      if (buf.startsWith(syll, i)) { found = syll; break; }
+    }
+    if (!found) return { syllables, rest: buf.slice(i) };
+    syllables.push(found);
+    i += found.length;
+  }
+  return { syllables, rest: '' };
+}
+
+function _pinyinPhraseCandidates(buf) {
+  const out = [];
+  const seen = new Set();
+  const exact = PINYIN_PHRASE_DICT[buf];
+  if (exact) exact.forEach(t => { if (t && !seen.has(t)) { seen.add(t); out.push(t); } });
+  if (buf.length < 2) return out;
+  const bufSp = splitAsciiPinyin(buf);
+  /** Đã gõ ≥2 âm tiết đầy đủ (vd: tashi) → chỉ cụm khớp đủ / gợi ý cụm dài hơn, không kéo khóa ngắn (vd: ta) vào hàng cụm. */
+  const multiSylComplete = !bufSp.rest && bufSp.syllables.length >= 2;
+  for (const key of Object.keys(PINYIN_PHRASE_DICT)) {
+    if (key === buf) continue;
+    if (key.startsWith(buf)) {
+      PINYIN_PHRASE_DICT[key].forEach(t => { if (t && !seen.has(t)) { seen.add(t); out.push(t); } });
+    } else if (!multiSylComplete && key.length <= buf.length && buf.startsWith(key)) {
+      PINYIN_PHRASE_DICT[key].forEach(t => { if (t && !seen.has(t)) { seen.add(t); out.push(t); } });
+    }
+  }
+  return out.slice(0, 24);
+}
+
+/** Cắt Hán theo số âm tiết đã khớp tiền tố (1 âm ≈ 1 chữ khi độ dài trùng; không trùng thì chia tỷ lệ). */
+function _hanziPrefixForSyllables(fullHanzi, keySyllableCount, nSyllables) {
+  const H = String(fullHanzi || '').trim();
+  if (!H || nSyllables <= 0) return '';
+  const kc = keySyllableCount;
+  if (kc <= 0) return '';
+  const chars = Array.from(H);
+  if (!chars.length) return '';
+  if (chars.length === kc) return chars.slice(0, Math.min(nSyllables, chars.length)).join('');
+  const n = Math.max(1, Math.min(chars.length, Math.round((nSyllables * chars.length) / kc)));
+  return chars.slice(0, n).join('');
+}
+
+function _vocabHanziFromPinyin(buf) {
+  const out = [];
+  const seen = new Set();
+  const b = String(buf || '').toLowerCase();
+  if (b.length < 1) return out;
+  const bufSp = splitAsciiPinyin(b);
+  const bufComplete = !bufSp.rest && bufSp.syllables.join('') === b;
+
+  for (let i = 0; i < practiceWords.length; i++) {
+    const w = practiceWords[i];
+    if (!w || !w.pinyin || !w.hanzi) continue;
+    const key = pinyinToBareAscii(w.pinyin);
+    if (!key) continue;
+    const hFull = String(w.hanzi).trim();
+    if (!hFull) continue;
+
+    const keySp = splitAsciiPinyin(key);
+    const keyComplete = !keySp.rest && keySp.syllables.join('') === key;
+
+    if (key === b) {
+      if (seen.has('F:' + hFull)) continue;
+      seen.add('F:' + hFull);
+      out.push({ hanzi: hFull, key, hint: hFull + ' · ' + key, isFull: true });
+      continue;
+    }
+
+    if (!bufComplete) continue;
+
+    const ns = bufSp.syllables.length;
+    if (!keyComplete || keySp.syllables.length < ns || ns >= keySp.syllables.length) continue;
+
+    let sylOk = true;
+    for (let j = 0; j < ns; j++) {
+      if (bufSp.syllables[j] !== keySp.syllables[j]) { sylOk = false; break; }
+    }
+    if (!sylOk) continue;
+
+    const snippet = _hanziPrefixForSyllables(hFull, keySp.syllables.length, ns);
+    if (!snippet) continue;
+    const dedupe = 'P:' + snippet + '|' + hFull;
+    if (seen.has(dedupe)) continue;
+    seen.add(dedupe);
+    out.push({
+      hanzi: snippet,
+      key,
+      hint: hFull + ' · ' + key,
+      isFull: false,
+    });
+  }
+
+  out.sort((a, x) => {
+    const af = a.isFull ? 1 : 0;
+    const xf = x.isFull ? 1 : 0;
+    if (af !== xf) return xf - af;
+    const ax = a.key === b ? 1 : 0;
+    const xx = x.key === b ? 1 : 0;
+    if (ax !== xx) return xx - ax;
+    return a.key.length - x.key.length;
+  });
+  return out.slice(0, 16);
+}
+
+function _pinyinBtnClass(big) {
+  return (big ? 'text-lg leading-tight px-2 py-1 ' : 'text-base leading-tight px-1.5 py-0.5 ') +
+    'shrink-0 bg-white dark:bg-card-dark border border-gray-200 dark:border-green-900/30 rounded-lg font-semibold text-text-main dark:text-white hover:bg-primary/15 hover:border-primary transition-all shadow-sm active:scale-[0.98]';
+}
+
+function _pinyinHotkeyNumSpan(num) {
+  return '<span class="inline-flex items-center justify-center min-w-[1rem] h-4 px-0.5 rounded bg-primary/25 dark:bg-primary/35 text-[10px] font-black text-primary mr-0.5 leading-none">' + num + '</span>';
+}
+/** Gán số 1–9 theo thứ tự hiển thị; đồng bộ với _pinyinHotkeyChoices. */
+function _pinyinHotkeyBadgeAndPush(text, replaceLen) {
+  if (_pinyinHotkeyChoices.length >= 9 || text == null || text === '') return '';
+  const num = _pinyinHotkeyChoices.length + 1;
+  _pinyinHotkeyChoices.push({ text: String(text), replaceLen });
+  return _pinyinHotkeyNumSpan(num);
+}
+
+function _writeInputKeydown(ev) {
+  if (ev.key === 'Enter') {
+    checkWrite();
+    return;
+  }
+  if (ev.isComposing || inputMode !== 'vietnamese_to_hanzi') return;
+  if (!/^[1-9]$/.test(ev.key)) return;
+  const idx = parseInt(ev.key, 10) - 1;
+  const choice = _pinyinHotkeyChoices[idx];
+  if (!choice) return;
+  ev.preventDefault();
+  insertPinyinPick(choice.text, choice.replaceLen);
+}
+
+function insertPinyinPick(text, replaceLen) {
   const input = document.getElementById('writeInput');
-  if (!input) return;
-  input.value = input.value.slice(0, input.value.length - pinyinBuffer.length) + char;
+  if (!input || text == null) return;
+  const n = typeof replaceLen === 'number' && replaceLen > 0 ? replaceLen : (pinyinReplaceLen || pinyinBuffer.length);
+  input.value = input.value.slice(0, input.value.length - n) + String(text);
   pinyinBuffer = '';
+  pinyinReplaceLen = 0;
   _clearPinyinBar();
   input.focus();
 }
 
+function insertPinyinChar(char) {
+  insertPinyinPick(char, pinyinBuffer.length);
+}
+
+function _updatePinyinBar(inputEl) {
+  const bar = document.getElementById('pinyinSuggestBar');
+  if (!bar || inputMode !== 'vietnamese_to_hanzi') { if (bar) bar.style.display = 'none'; _pinyinHotkeyChoices = []; return; }
+  const val = inputEl.value;
+  const m = val.match(/[a-z]+$/i);
+  pinyinBuffer = m ? m[0].toLowerCase() : '';
+  pinyinReplaceLen = pinyinBuffer.length;
+  _pinyinHotkeyChoices = [];
+  if (!pinyinBuffer) { _clearPinyinBar(); return; }
+
+  const phrases = _pinyinPhraseCandidates(pinyinBuffer);
+  const split = splitAsciiPinyin(pinyinBuffer);
+  let comboDefault = '';
+  if (!split.rest && split.syllables.length >= 2) {
+    comboDefault = split.syllables.map(s => (PINYIN_LOOKUP[s] && PINYIN_LOOKUP[s][0]) || '').join('');
+  }
+  const vocabRows = _vocabHanziFromPinyin(pinyinBuffer);
+  let showSyl = '';
+  if (split.rest) showSyl = split.rest;
+  else if (split.syllables.length === 1) showSyl = split.syllables[0];
+  const sylChars = showSyl ? (PINYIN_LOOKUP[showSyl] || []) : [];
+
+  if (!phrases.length && !comboDefault && !vocabRows.length && !sylChars.length) { _clearPinyinBar(); return; }
+
+  bar.style.display = 'flex';
+  const escJs = (t) => JSON.stringify(t == null ? '' : String(t));
+  const pickRow = (inner) =>
+    inner ? '<div class="min-w-0"><div class="flex flex-wrap gap-1 items-center">' + inner + '</div></div>' : '';
+  const joinSecs = (parts) => {
+    const ok = parts.filter(Boolean);
+    return ok.map((html, i) => (i ? '<div class="border-t border-primary/10 dark:border-green-900/20 pt-1.5 mt-1"></div>' : '') + html).join('');
+  };
+
+  /** Gõ ≤1 âm tiết đầy đủ hoặc đang dở âm cuối → ưu tiên hàng đơn âm lên trước. */
+  const preferSingleSylFirst = !(split.syllables.length >= 2 && split.rest === '');
+
+  const mkPhrases = () => {
+    if (!phrases.length) return '';
+    return pickRow(phrases.slice(0, 14).map(t =>
+      '<button type="button" onclick=\'insertPinyinPick(' + escJs(t) + ',' + pinyinBuffer.length + ')\' class="' + _pinyinBtnClass(true) + ' flex items-center">' + _pinyinHotkeyBadgeAndPush(t, pinyinBuffer.length) + esc(t) + '</button>'
+    ).join(''));
+  };
+  const mkCombo = () => {
+    if (!comboDefault || phrases.indexOf(comboDefault) !== -1) return '';
+    return pickRow('<button type="button" onclick=\'insertPinyinPick(' + escJs(comboDefault) + ',' + pinyinBuffer.length + ')\' class="' + _pinyinBtnClass(true) + ' flex items-center">' + _pinyinHotkeyBadgeAndPush(comboDefault, pinyinBuffer.length) + esc(comboDefault) + '</button>');
+  };
+  const mkVocab = () => {
+    if (!vocabRows.length) return '';
+    return pickRow(vocabRows.map(v =>
+      '<button type="button" onclick=\'insertPinyinPick(' + escJs(v.hanzi) + ',' + pinyinBuffer.length + ')\' title="' + esc(v.hint || v.key) + '" class="' + _pinyinBtnClass(true) + ' flex items-center">' + _pinyinHotkeyBadgeAndPush(v.hanzi, pinyinBuffer.length) + esc(v.hanzi) + '</button>'
+    ).join(''));
+  };
+  const mkSyl = () => {
+    if (!sylChars.length) return '';
+    return pickRow(sylChars.slice(0, 36).map(c =>
+      '<button type="button" onclick=\'insertPinyinPick(' + escJs(c) + ',' + showSyl.length + ')\' class="' + _pinyinBtnClass(false) + ' flex items-center">' + _pinyinHotkeyBadgeAndPush(c, showSyl.length) + esc(c) + '</button>'
+    ).join(''));
+  };
+
+  const sectionOrder = preferSingleSylFirst
+    ? [mkSyl, mkPhrases, mkCombo, mkVocab]
+    : [mkPhrases, mkCombo, mkVocab, mkSyl];
+  const body = joinSecs(sectionOrder.map(fn => fn()).filter(Boolean));
+
+  bar.innerHTML = '<div class="text-[10px] font-semibold text-gray-500 dark:text-green-500/70 px-0.5 mb-0.5 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">' +
+    '<span class="font-mono">' + pinyinBuffer + '</span>' +
+    (_pinyinHotkeyChoices.length ? '<span class="text-primary/75 dark:text-green-400/85">1–9 chọn</span>' : '') +
+    '</div>' + body;
+}
+
 function _clearPinyinBar() {
   pinyinBuffer = '';
+  pinyinReplaceLen = 0;
+  _pinyinHotkeyChoices = [];
   const bar = document.getElementById('pinyinSuggestBar');
   if (bar) { bar.style.display = 'none'; bar.innerHTML = ''; }
 }
