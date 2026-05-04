@@ -2989,7 +2989,7 @@ function checkWrite() {
   const answer = document.getElementById('writeInput').value.trim();
   if (!answer) return;
 
-  const norm = s => String(s || '').normalize('NFC').toLowerCase().replace(/\s+/g, ' ').trim();
+  const norm = s => String(s || '').normalize('NFC').toLowerCase().replace(/\s+/g, '').trim();
   const expected = getExpectedAnswer(w);
   // Loại bỏ ghi chú từ cả answer và expected, rồi kiểm tra xem có khớp hay không
   const strippedAnswer = norm(stripAnnotations(answer));
