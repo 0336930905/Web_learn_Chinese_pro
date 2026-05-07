@@ -2874,11 +2874,9 @@ function stripAnnotations(text) {
   // Loại bỏ phần trong ngoặc ()
   let result = text.replace(/\s*\([^)]*\)\s*/g, ' ');
   
-  // Loại bỏ phần sau dấu "-" (ghi chú giải thích)
-  // Chỉ loại nếu có khoảng trắng trước dấu "-"
-  result = result.replace(/\s+-\s+.*$/g, '');
+  // KHÔNG loại bỏ phần sau dấu "-" nữa vì nó là liệt kê ví dụ, không phải ghi chú
+  // Ví dụ: "hao = tốt - đẹp - khỏe" sẽ được giữ nguyên
   
-  // Loại bỏ dấu phẩy ở cuối nếu theo sau là dấu "-"
   // Normalize multiple spaces
   result = result.replace(/\s+/g, ' ').trim();
   
@@ -2887,15 +2885,39 @@ function stripAnnotations(text) {
 
 // Kiểm tra xem answer có khớp với expected hay không
 // Hỗ trợ multiple options: nếu expected = "Ông, bà, ngài", chấp nhận bất kỳ 1 trong 3
+// Hỗ trợ liệt kê dấu "-": nếu expected = "tốt - đẹp - khỏe", chấp nhận "tốt" hoặc "đẹp" hoặc "tốtđẹpkhỏe"
+// Dấu câu cuối (!,  ?, .) được phép bỏ qua
 function isAnswerMatching(answer, expected) {
   if (answer === expected) return true;
   
-  // Split by comma to handle "word1, word2, word3" cases
+  // Xóa dấu câu cuối (!,  ?, .) từ answer
+  const answerNoEndPunct = answer.replace(/[!?.]+$/, '').trim();
+  if (answerNoEndPunct === expected) return true;
+  
+  // Kiểm tra xem expected có chứa dấu "-" (liệt kê ví dụ) hay dấu "," (nhiều đáp án)
+  if (expected.includes(' - ')) {
+    // Trường hợp liệt kê dấu "-" (ví dụ: "tốt - đẹp - khỏe - được")
+    const dashParts = expected.split(/\s*-\s*/).map(p => p.trim()).filter(p => p);
+    
+    // Chấp nhận nếu answer khớp với bất kỳ từ nào trong danh sách
+    for (let i = 0; i < dashParts.length; i++) {
+      if (answerNoEndPunct === dashParts[i]) return true;
+    }
+    
+    // Chấp nhận nếu answer khớp với tất cả các từ viết liền (có hoặc không có khoảng trắng)
+    const allWordsNoSpace = dashParts.join('').toLowerCase();
+    const answerNoSpace = answerNoEndPunct.toLowerCase().replace(/\s+/g, '');
+    if (answerNoSpace === allWordsNoSpace) return true;
+    
+    return false;
+  }
+  
+  // Trường hợp dấu "," (multiple options: ông, bà, ngài)
   const parts = expected.split(',').map(p => p.trim());
   
-  // Check if answer matches any one of the parts
+  // Check if answer matches any one of the parts (có thể có dấu câu cuối)
   for (let i = 0; i < parts.length; i++) {
-    if (answer === parts[i]) return true;
+    if (answerNoEndPunct === parts[i]) return true;
   }
   
   // Also support accumulated match (first option, first + second, etc.)
@@ -2903,7 +2925,7 @@ function isAnswerMatching(answer, expected) {
   for (let i = 0; i < parts.length; i++) {
     if (accumulated) accumulated += ', ';
     accumulated += parts[i];
-    if (answer === accumulated) return true;
+    if (answerNoEndPunct === accumulated) return true;
   }
   
   return false;
