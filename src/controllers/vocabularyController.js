@@ -166,6 +166,57 @@ const getRandomVocabulary = asyncHandler(async (req, res) => {
   return successResponse(res, vocabulary, 'Lấy từ vựng ngẫu nhiên thành công');
 });
 
+/**
+ * Get pinyin suggestions
+ * GET /api/vocabulary/pinyin-suggestions/:pinyin
+ * Returns hanzi characters that match the given pinyin
+ */
+const getPinyinSuggestions = asyncHandler(async (req, res) => {
+  const { pinyin } = req.params;
+  
+  if (!pinyin || pinyin.length === 0) {
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({
+      success: false,
+      error: { message: 'Pinyin không được để trống' },
+    });
+  }
+
+  // Search in vocabulary collection for matching pinyin
+  const suggestions = await req.db.collection('vocabulary')
+    .find({
+      pinyin: { $regex: '^' + pinyin, $options: 'i' }
+    })
+    .project({
+      hanzi: 1,
+      pinyin: 1,
+      meaning: 1,
+      vietnamese: 1,
+      traditional: 1,
+      simplified: 1
+    })
+    .limit(30)
+    .toArray();
+
+  // Remove duplicates by hanzi and sort by frequency
+  const seen = new Set();
+  const results = [];
+  
+  suggestions.forEach(item => {
+    const hanzi = item.hanzi || item.traditional || item.simplified;
+    if (hanzi && !seen.has(hanzi)) {
+      seen.add(hanzi);
+      results.push({
+        hanzi,
+        pinyin: item.pinyin,
+        meaning: item.meaning,
+        vietnamese: item.vietnamese,
+      });
+    }
+  });
+
+  return successResponse(res, results, 'Lấy gợi ý pinyin thành công');
+});
+
 module.exports = {
   getAllVocabulary,
   getVocabularyById,
@@ -173,4 +224,5 @@ module.exports = {
   updateVocabulary,
   deleteVocabulary,
   getRandomVocabulary,
+  getPinyinSuggestions,
 };

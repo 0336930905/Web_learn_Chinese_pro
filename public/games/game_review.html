@@ -78,7 +78,7 @@
             <p class="text-text-secondary dark:text-primary/70 text-sm font-medium">Ôn tập lại từ vựng đã học</p>
           </div>
         </div>
-        <button onclick="window.history.back()" class="w-10 h-10 rounded-full bg-gray-200 dark:bg-card-dark hover:bg-gray-300 dark:hover:bg-gray-700 flex items-center justify-center transition-all">
+        <button onclick="goBackToPractice()" class="w-10 h-10 rounded-full bg-gray-200 dark:bg-card-dark hover:bg-gray-300 dark:hover:bg-gray-700 flex items-center justify-center transition-all">
           <span class="material-symbols-outlined text-lg">close</span>
         </button>
       </header>
@@ -95,12 +95,22 @@
       </div>
 
       <!-- Flashcard -->
+      <div class="mb-3 grid grid-cols-1 md:grid-cols-2 gap-2">
+        <select id="voiceSelect" onchange="onVoiceSelectChange()" class="rounded-xl border border-red-200 dark:border-red-800/50 bg-white dark:bg-card-dark px-3 py-2 text-xs font-bold text-gray-700 dark:text-gray-200">
+          <option value="">Giọng: Tự động</option>
+        </select>
+        <select id="voiceRateSelect" onchange="onVoiceRateChange()" class="rounded-xl border border-red-200 dark:border-red-800/50 bg-white dark:bg-card-dark px-3 py-2 text-xs font-bold text-gray-700 dark:text-gray-200">
+          <option value="0.25">Tốc độ: 0.25x</option>
+          <option value="0.5">Tốc độ: 0.5x</option>
+          <option value="1">Tốc độ: 1.0x</option>
+        </select>
+      </div>
       <div class="h-80 mb-8 cursor-pointer card-flip" onclick="flipCard()">
         <div class="h-full card-flip-inner" id="cardInner">
           <!-- Front: Character -->
           <div class="card-flip-front w-full h-full bg-white dark:bg-card-dark rounded-3xl shadow-soft p-8 flex flex-col items-center justify-center">
             <p class="text-sm font-bold text-gray-500 dark:text-gray-400 mb-6 absolute top-6 left-6">Chữ Hán</p>
-            <div class="text-7xl md:text-8xl font-black text-red-600 dark:text-red-400" id="cardCharacter">-</div>
+            <div class="text-7xl md:text-8xl font-black text-red-600 dark:text-red-400" id="cardCharacter" onclick="event.stopPropagation();speakCurrentCard();">-</div>
             <p class="text-center text-gray-600 dark:text-gray-400 text-sm mt-8 font-medium">💡 Nhấp thẻ để xem đáp án</p>
           </div>
 
@@ -192,6 +202,8 @@
   let ratings = {};
   let isCardFlipped = false;
   let gameData = null;
+  let selectedVoiceName = localStorage.getItem('practiceSelectedVoiceName') || '';
+  let selectedVoiceRate = Number(localStorage.getItem('practiceVoiceRate') || '0.5');
 
   // Load game data from sessionStorage
   function loadGameData() {
@@ -231,6 +243,7 @@
       
       totalQuestions = questions.length;
       document.getElementById('totalQuestions').textContent = totalQuestions;
+      initVoiceControls();
       
       if (questions.length > 0) {
         loadQuestion();
@@ -261,6 +274,30 @@
     document.getElementById('cardInner').classList.remove('flipped');
     
     updateProgressBar();
+  }
+
+  function speakCurrentCard() {
+    const question = questions[currentQuestionIndex];
+    if (!question || !window.speechSynthesis) return;
+    const text = String(question.hanzi || '').trim();
+    if (!text) return;
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.rate = selectedVoiceRate;
+    utter.pitch = 1;
+    utter.volume = 1;
+    const voices = window.speechSynthesis.getVoices();
+    const chosen = selectedVoiceName
+      ? voices.find(v => v.name === selectedVoiceName)
+      : voices.find(v => String(v.lang || '').toLowerCase().startsWith('zh-tw'))
+        || voices.find(v => String(v.lang || '').toLowerCase().startsWith('zh'));
+    if (chosen) {
+      utter.voice = chosen;
+      utter.lang = chosen.lang;
+    } else {
+      utter.lang = 'zh-TW';
+    }
+    window.speechSynthesis.speak(utter);
   }
 
   // Update progress bar
@@ -336,6 +373,49 @@
 
   function goHome() {
     window.location.href = '/user/games_home.html';
+  }
+
+  function initVoiceControls() {
+    const rateSelect = document.getElementById('voiceRateSelect');
+    if (rateSelect) {
+      rateSelect.value = String(selectedVoiceRate);
+      if (!['0.25', '0.5', '1'].includes(rateSelect.value)) rateSelect.value = '0.5';
+    }
+    refreshVoiceOptions();
+    if (window.speechSynthesis && window.speechSynthesis.onvoiceschanged !== undefined) {
+      window.speechSynthesis.addEventListener('voiceschanged', refreshVoiceOptions, { once: true });
+    }
+  }
+
+  function refreshVoiceOptions() {
+    const select = document.getElementById('voiceSelect');
+    if (!select || !window.speechSynthesis) return;
+    const voices = window.speechSynthesis.getVoices().filter(v => String(v.lang || '').toLowerCase().startsWith('zh'));
+    select.innerHTML = '<option value="">Giọng: Tự động</option>';
+    voices.forEach(v => {
+      const opt = document.createElement('option');
+      opt.value = v.name;
+      opt.textContent = `${v.name} (${v.lang})`;
+      select.appendChild(opt);
+    });
+    select.value = voices.some(v => v.name === selectedVoiceName) ? selectedVoiceName : '';
+  }
+
+  function onVoiceSelectChange() {
+    const select = document.getElementById('voiceSelect');
+    selectedVoiceName = select?.value || '';
+    localStorage.setItem('practiceSelectedVoiceName', selectedVoiceName);
+  }
+
+  function onVoiceRateChange() {
+    const select = document.getElementById('voiceRateSelect');
+    const val = Number(select?.value || '0.5');
+    selectedVoiceRate = [0.25, 0.5, 1].includes(val) ? val : 0.5;
+    localStorage.setItem('practiceVoiceRate', String(selectedVoiceRate));
+  }
+
+  function goBackToPractice() {
+    window.location.href = 'http://localhost:3000/user/practice_bookmarks.html';
   }
 
   // Toast notification

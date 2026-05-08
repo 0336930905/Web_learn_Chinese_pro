@@ -17,6 +17,7 @@ const vocabularyRoutes = (router, db) => {
   // All routes require authentication - vocabulary belongs to user's categories only
   router.get('/', verifyToken, vocabularyController.getAllVocabulary);
   router.get('/random', verifyToken, vocabularyController.getRandomVocabulary);
+  router.get('/pinyin-suggestions/:pinyin', verifyToken, vocabularyController.getPinyinSuggestions);
   router.get('/:id', verifyToken, validateObjectId('id'), vocabularyController.getVocabularyById);
   router.post('/', verifyToken, vocabularyController.createVocabulary);
   router.put('/:id', verifyToken, validateObjectId('id'), vocabularyController.updateVocabulary);

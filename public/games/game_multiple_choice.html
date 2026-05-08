@@ -77,7 +77,7 @@
             <p class="text-text-secondary dark:text-primary/70 text-sm font-medium">Chọn đáp án đúng từ 4 lựa chọn</p>
           </div>
         </div>
-        <button onclick="window.history.back()" class="w-10 h-10 rounded-full bg-gray-200 dark:bg-card-dark hover:bg-gray-300 dark:hover:bg-gray-700 flex items-center justify-center transition-all">
+        <button onclick="goBackToPractice()" class="w-10 h-10 rounded-full bg-gray-200 dark:bg-card-dark hover:bg-gray-300 dark:hover:bg-gray-700 flex items-center justify-center transition-all">
           <span class="material-symbols-outlined text-lg">close</span>
         </button>
       </header>
@@ -95,11 +95,26 @@
 
       <!-- Question Card -->
       <div class="relative bg-white dark:bg-card-dark rounded-3xl shadow-soft p-8 mb-8 border border-sky-100/80 dark:border-sky-900/30">
+        <button id="questionSpeakBtn" type="button" onclick="speakCurrentQuestion()"
+          class="absolute top-4 right-16 w-10 h-10 rounded-xl border border-sky-200 dark:border-sky-800/50 text-sky-600 dark:text-sky-300 bg-sky-50 dark:bg-sky-900/30 hover:bg-sky-100 dark:hover:bg-sky-900/45 shadow-sm hover:shadow transition-all"
+          title="Đọc câu hỏi">
+          <span class="material-symbols-outlined text-[18px]">volume_up</span>
+        </button>
         <div class="mb-6">
           <p class="text-sm font-bold text-gray-500 dark:text-gray-400 mb-3">Chữ Hán:</p>
-          <div class="text-4xl md:text-5xl font-black text-primary text-center py-6 bg-primary/5 dark:bg-primary/10 rounded-2xl">
+          <div id="questionCharacterBox" onclick="speakCurrentQuestion()" class="cursor-pointer text-4xl md:text-5xl font-black text-primary text-center py-6 bg-primary/5 dark:bg-primary/10 rounded-2xl">
             <span id="questionCharacter">-</span>
           </div>
+        </div>
+        <div class="mb-3 grid grid-cols-1 md:grid-cols-2 gap-2">
+          <select id="voiceSelect" onchange="onVoiceSelectChange()" class="rounded-xl border border-sky-200 dark:border-sky-800/50 bg-white dark:bg-card-dark px-3 py-2 text-xs font-bold text-gray-700 dark:text-gray-200">
+            <option value="">Giọng: Tự động</option>
+          </select>
+          <select id="voiceRateSelect" onchange="onVoiceRateChange()" class="rounded-xl border border-sky-200 dark:border-sky-800/50 bg-white dark:bg-card-dark px-3 py-2 text-xs font-bold text-gray-700 dark:text-gray-200">
+            <option value="0.25">Tốc độ: 0.25x</option>
+            <option value="0.5">Tốc độ: 0.5x</option>
+            <option value="1">Tốc độ: 1.0x</option>
+          </select>
         </div>
 
         <div class="mb-2 flex items-center justify-center gap-2">
@@ -167,6 +182,9 @@
   let questions = [];
   let gameData = null;
   let isAnswerLocked = false;
+  let autoSpeakQuestion = false;
+  let selectedVoiceName = '';
+  let selectedVoiceRate = Number(localStorage.getItem('practiceVoiceRate') || '0.5');
 
   // Load game data from sessionStorage
   function loadGameData() {
@@ -175,6 +193,8 @@
       try {
         gameData = JSON.parse(storedData);
         questions = gameData.vocabularyData || [];
+        autoSpeakQuestion = Boolean(gameData.userPreferences?.autoSpeak);
+        selectedVoiceName = localStorage.getItem('practiceSelectedVoiceName') || '';
         // Shuffle if user preference enabled
         if (gameData.userPreferences?.vocabOrder === 'random') {
           questions = questions.sort(() => Math.random() - 0.5);
@@ -208,6 +228,7 @@
       
       totalQuestions = questions.length;
       document.getElementById('totalQuestions').textContent = totalQuestions;
+      initVoiceControls();
       
       if (questions.length > 0) {
         loadQuestion();
@@ -239,6 +260,89 @@
     renderOptions(options, question.meaning);
     
     updateProgressBar();
+
+    if (autoSpeakQuestion) {
+      setTimeout(() => speakCurrentQuestion(), 150);
+    }
+  }
+
+  function pickChineseVoice(voices) {
+    if (selectedVoiceName) {
+      const selected = voices.find(v => v.name === selectedVoiceName);
+      if (selected) return selected;
+    }
+    const zhVoices = voices.filter(v => String(v.lang || '').toLowerCase().startsWith('zh'));
+    if (!zhVoices.length) return null;
+    const preferred = zhVoices.find(v => String(v.lang || '').toLowerCase().startsWith('zh-tw'));
+    return preferred || zhVoices.find(v => v.localService) || zhVoices[0];
+  }
+
+  function speakCurrentQuestion() {
+    const question = questions[currentQuestionIndex];
+    if (!question || !window.speechSynthesis) return;
+    const text = String(question.hanzi || '').trim();
+    if (!text) return;
+
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.rate = selectedVoiceRate;
+    utter.pitch = 1;
+    utter.volume = 1;
+
+    const voices = window.speechSynthesis.getVoices();
+    const chosen = pickChineseVoice(voices);
+    if (chosen) {
+      utter.voice = chosen;
+      utter.lang = chosen.lang;
+    } else {
+      utter.lang = 'zh-TW';
+    }
+
+    window.speechSynthesis.speak(utter);
+  }
+
+  function initVoiceControls() {
+    const rateSelect = document.getElementById('voiceRateSelect');
+    if (rateSelect) {
+      rateSelect.value = String(selectedVoiceRate);
+      if (!['0.25', '0.5', '1'].includes(rateSelect.value)) rateSelect.value = '0.5';
+    }
+    refreshVoiceOptions();
+    if (window.speechSynthesis && window.speechSynthesis.onvoiceschanged !== undefined) {
+      window.speechSynthesis.addEventListener('voiceschanged', refreshVoiceOptions, { once: true });
+    }
+  }
+
+  function refreshVoiceOptions() {
+    const select = document.getElementById('voiceSelect');
+    if (!select || !window.speechSynthesis) return;
+    const voices = window.speechSynthesis.getVoices().filter(v => String(v.lang || '').toLowerCase().startsWith('zh'));
+    const current = selectedVoiceName;
+    select.innerHTML = '<option value="">Giọng: Tự động</option>';
+    voices.forEach(v => {
+      const opt = document.createElement('option');
+      opt.value = v.name;
+      opt.textContent = `${v.name} (${v.lang})`;
+      select.appendChild(opt);
+    });
+    select.value = voices.some(v => v.name === current) ? current : '';
+  }
+
+  function onVoiceSelectChange() {
+    const select = document.getElementById('voiceSelect');
+    selectedVoiceName = select?.value || '';
+    localStorage.setItem('practiceSelectedVoiceName', selectedVoiceName);
+  }
+
+  function onVoiceRateChange() {
+    const select = document.getElementById('voiceRateSelect');
+    const val = Number(select?.value || '0.5');
+    selectedVoiceRate = [0.25, 0.5, 1].includes(val) ? val : 0.5;
+    localStorage.setItem('practiceVoiceRate', String(selectedVoiceRate));
+  }
+
+  function goBackToPractice() {
+    window.location.href = 'http://localhost:3000/user/practice_bookmarks.html';
   }
 
   // Generate answer options

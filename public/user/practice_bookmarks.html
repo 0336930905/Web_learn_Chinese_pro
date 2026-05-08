@@ -710,7 +710,16 @@
             </button>
           </div>
 
-          <div class="px-4 py-3">
+          <div class="px-4 py-3 space-y-2">
+            <div class="w-full flex items-center justify-between px-2.5 py-2 bg-sky-50 dark:bg-sky-900/20 rounded-xl border border-sky-200/60 dark:border-sky-800/30">
+              <div class="flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-sky-500 text-[15px]">volume_up</span>
+                <span class="text-[10px] font-black text-gray-600 dark:text-gray-300">Tự đọc câu hỏi</span>
+              </div>
+              <button id="autoSpeakTrack" onclick="toggleAutoSpeak()" class="relative inline-flex h-5 w-9 items-center rounded-full bg-gray-200 dark:bg-gray-700 transition-colors duration-300 shrink-0">
+                <span id="autoSpeakDot" class="inline-block h-3.5 w-3.5 translate-x-0.5 rounded-full bg-white transition-transform duration-300 shadow"></span>
+              </button>
+            </div>
             <div class="w-full flex items-center justify-between px-2.5 py-2 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200/60 dark:border-green-800/30">
               <div class="flex items-center gap-1.5">
                 <span class="material-symbols-outlined text-green-600 dark:text-green-400 text-[15px]">shuffle</span>
@@ -930,7 +939,19 @@
         <span class="material-symbols-outlined text-gray-400">close</span>
       </button>
     </div>
-    <div id="voicePickerList" class="px-4 py-3 flex flex-col gap-2 max-h-[60vh] overflow-y-auto pb-safe">
+    <div class="px-4 pt-3 pb-2 border-b border-gray-100 dark:border-gray-700/30">
+      <div class="flex items-center gap-1.5">
+        <button type="button" id="voiceRegionAll" onclick="setVoiceRegionFilter('all')"
+          class="px-2.5 py-1 rounded-full text-xs font-bold bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300">Tất cả</button>
+        <button type="button" id="voiceRegionTW" onclick="setVoiceRegionFilter('tw')"
+          class="px-2.5 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300">Đài Loan</button>
+        <button type="button" id="voiceRegionHK" onclick="setVoiceRegionFilter('hk')"
+          class="px-2.5 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300">Hồng Kông</button>
+        <button type="button" id="voiceRegionCN" onclick="setVoiceRegionFilter('cn')"
+          class="px-2.5 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300">Trung Quốc</button>
+      </div>
+    </div>
+    <div id="voicePickerList" class="px-4 py-3 flex flex-col gap-2 max-h-[58vh] overflow-y-auto pb-safe">
       <div class="text-center text-gray-400 text-sm py-6">Đang tải danh sách giọng đọc...</div>
     </div>
     <div class="px-4 pb-5 pt-2 border-t border-gray-100 dark:border-gray-700/30">
@@ -2226,6 +2247,7 @@ function renderCurrentCard() {
   }
 
   applyInputModeUI();
+  ensureGameTtsActions();
 
   if (inputMode === 'vietnamese_to_pinyin' || inputMode === 'vietnamese_to_hanzi') {
     if (meaningEl) meaningEl.textContent = w.meaning || '';
@@ -2705,6 +2727,27 @@ function backToSetup() {
 let ttsAutoSpeak = localStorage.getItem('practiceAutoSpeak') === 'true';
 let vocabOrder = localStorage.getItem('practiceVocabOrder') || 'sequential'; // 'sequential' or 'random'
 
+function _voiceRegionOfLang(lang) {
+  const l = String(lang || '').toLowerCase();
+  if (l.startsWith('zh-tw') || l.includes('hant') || l.includes('bopo')) return 'tw';
+  if (l.startsWith('zh-hk') || l.startsWith('zh-mo')) return 'hk';
+  if (l.startsWith('zh-cn') || l.startsWith('zh-sg') || l.includes('hans')) return 'cn';
+  return 'all';
+}
+
+function _renderVoiceRegionFilterUI() {
+  const selected = localStorage.getItem('selectedVoiceRegion') || 'all';
+  const idMap = { all: 'voiceRegionAll', tw: 'voiceRegionTW', hk: 'voiceRegionHK', cn: 'voiceRegionCN' };
+  Object.keys(idMap).forEach(id => {
+    const el = document.getElementById(idMap[id]);
+    if (!el) return;
+    const active = id === selected;
+    el.className = active
+      ? 'px-2.5 py-1 rounded-full text-xs font-bold bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300'
+      : 'px-2.5 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300';
+  });
+}
+
 // ---- Pre-warm voice loading (run immediately on script parse) ----
 (function preWarmVoices() {
   if (!window.speechSynthesis) return;
@@ -2765,6 +2808,7 @@ function _getVoicesAsync(timeout = 3000) {
 function _pickChineseVoice(voices) {
   const savedName = localStorage.getItem('selectedVoiceName');
   const savedLang = localStorage.getItem('selectedVoice') || 'zh-TW';
+  const savedRegion = localStorage.getItem('selectedVoiceRegion') || 'all';
   const zh = voices.filter(v => v.lang && v.lang.startsWith('zh'));
   if (!zh.length) return null;
   // 1. Exact saved voice name
@@ -2778,6 +2822,11 @@ function _pickChineseVoice(voices) {
   // 3. Saved lang prefix
   const byPrefix = zh.find(v => v.lang.startsWith(savedLang.substring(0, 5)));
   if (byPrefix) return byPrefix;
+  // 3.5 Preferred region
+  if (savedRegion !== 'all') {
+    const byRegion = zh.find(v => _voiceRegionOfLang(v.lang) === savedRegion);
+    if (byRegion) return byRegion;
+  }
   // 4. Any local zh voice
   const local = zh.find(v => v.localService);
   if (local) return local;
@@ -2819,6 +2868,39 @@ function speakCurrentWord() {
   ttsSpeak(practiceWords[currentIdx].hanzi);
 }
 
+function speakCurrentSentence() {
+  if (currentIdx >= practiceWords.length) return;
+  const w = practiceWords[currentIdx] || {};
+  const text = String(w.hanzi || '').trim();
+  if (!text) return;
+  ttsSpeak(text);
+}
+
+function ensureGameTtsActions() {
+  const hanziEl = document.getElementById('gameHanzi');
+  if (!hanziEl || !hanziEl.parentElement) return;
+  let row = document.getElementById('gameTtsActions');
+  if (!row) {
+    row = document.createElement('div');
+    row.id = 'gameTtsActions';
+    row.className = 'mt-2 flex flex-wrap gap-2';
+    hanziEl.insertAdjacentElement('afterend', row);
+  }
+  row.innerHTML = `
+    <button type="button" id="speakBtn" onclick="speakCurrentSentence()"
+      class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-sky-200 dark:border-sky-800/50
+      text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-900/20
+      hover:border-sky-400 hover:bg-sky-100 dark:hover:bg-sky-900/40 transition-all">
+      <span class="material-symbols-outlined text-sm">volume_up</span> Nghe câu
+    </button>
+    <button type="button" onclick="openVoicePicker()"
+      class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-violet-200 dark:border-violet-800/50
+      text-xs font-bold text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/20
+      hover:border-violet-400 hover:bg-violet-100 dark:hover:bg-violet-900/40 transition-all">
+      <span class="material-symbols-outlined text-sm">record_voice_over</span> Giọng đọc
+    </button>`;
+}
+
 function toggleAutoSpeak() {
   ttsAutoSpeak = !ttsAutoSpeak;
   localStorage.setItem('practiceAutoSpeak', ttsAutoSpeak);
@@ -2854,6 +2936,7 @@ function toggleVocabOrder() {
 // ==================== VOICE PICKER ====================
 function openVoicePicker() {
   document.getElementById('voicePickerModal').classList.remove('hidden');
+  _renderVoiceRegionFilterUI();
   _populateVoicePicker();
 }
 
@@ -2861,29 +2944,42 @@ function closeVoicePicker() {
   document.getElementById('voicePickerModal').classList.add('hidden');
 }
 
+function setVoiceRegionFilter(region) {
+  const r = ['all', 'tw', 'hk', 'cn'].includes(region) ? region : 'all';
+  localStorage.setItem('selectedVoiceRegion', r);
+  _renderVoiceRegionFilterUI();
+  _populateVoicePicker();
+}
+
 async function _populateVoicePicker() {
   const list = document.getElementById('voicePickerList');
+  if (!list) return;
   list.innerHTML = '<div class="flex items-center justify-center gap-2 py-6 text-gray-400 text-sm"><div class="w-4 h-4 border-2 border-sky-400 border-t-transparent rounded-full animate-spin"></div>Đang tải giọng đọc...</div>';
 
   const voices = await _getVoicesAsync(4000);
   const savedVoiceName = localStorage.getItem('selectedVoiceName') || '';
   const savedLang = localStorage.getItem('selectedVoice') || 'zh-TW';
+  const selectedRegion = localStorage.getItem('selectedVoiceRegion') || 'all';
+  _renderVoiceRegionFilterUI();
 
   // Filter: all zh-* voices, deduplicate by name
   const seen = new Set();
-  const zhVoices = voices.filter(v => {
+  const zhVoicesAll = voices.filter(v => {
     if (!v.lang || !v.lang.startsWith('zh')) return false;
     if (seen.has(v.name)) return false;
     seen.add(v.name);
     return true;
   });
+  const zhVoices = selectedRegion === 'all'
+    ? zhVoicesAll
+    : zhVoicesAll.filter(v => _voiceRegionOfLang(v.lang) === selectedRegion);
 
   if (!zhVoices.length) {
     list.innerHTML = `
       <div class="text-center py-6 px-4">
         <div class="text-3xl mb-2">😔</div>
-        <div class="text-gray-600 dark:text-gray-400 text-sm font-semibold mb-1">Không tìm thấy giọng tiếng Trung</div>
-        <div class="text-gray-400 text-xs">Thiết bị cần cài đặt giọng đọc zh-TW / zh-CN để sử dụng tính năng này</div>
+        <div class="text-gray-600 dark:text-gray-400 text-sm font-semibold mb-1">Không có giọng cho vùng đã chọn</div>
+        <div class="text-gray-400 text-xs">Thử chọn vùng khác hoặc cài thêm giọng zh-TW / zh-HK / zh-CN</div>
       </div>`;
     return;
   }

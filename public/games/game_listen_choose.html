@@ -89,7 +89,7 @@
             <p class="text-text-secondary dark:text-primary/70 text-sm font-medium">Nghe phát âm và chọn đáp án đúng</p>
           </div>
         </div>
-        <button onclick="window.history.back()" class="w-10 h-10 rounded-full bg-gray-200 dark:bg-card-dark hover:bg-gray-300 dark:hover:bg-gray-700 flex items-center justify-center transition-all">
+        <button onclick="goBackToPractice()" class="w-10 h-10 rounded-full bg-gray-200 dark:bg-card-dark hover:bg-gray-300 dark:hover:bg-gray-700 flex items-center justify-center transition-all">
           <span class="material-symbols-outlined text-lg">close</span>
         </button>
       </header>
@@ -110,10 +110,18 @@
         <div class=" flex items-center gap-2">
           <div class="flex-1 min-w-0">
             <p class="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">Giọng đọc</p>
-            <select id="voiceRegionSelect" onchange="onVoiceRegionChange()"
+            <select id="voiceSelect" onchange="onVoiceSelectChange()"
               class="w-full rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm font-bold text-gray-700 dark:text-gray-200">
-              <option value="zh-CN">Tiếng Trung (Phổ thông)</option>
-              <option value="zh-TW">Tiếng Đài (Đài Loan)</option>
+              <option value="">Giọng: Tự động</option>
+            </select>
+          </div>
+          <div class="w-28 shrink-0 min-w-0">
+            <p class="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">Tốc độ</p>
+            <select id="voiceRateSelect" onchange="onVoiceRateChange()"
+              class="w-full rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm font-bold text-gray-700 dark:text-gray-200">
+              <option value="0.25">0.25x</option>
+              <option value="0.5">0.5x</option>
+              <option value="1">1.0x</option>
             </select>
           </div>
           <button id="pinyinHintBtn" type="button" onclick="togglePinyinHint()"
@@ -199,8 +207,8 @@
   let gameData = null;
   let isAnswerLocked = false;
   let showPinyin = false;
-  let selectedVoiceRegion = 'zh-CN';
-  let selectedVoiceName = '';
+  let selectedVoiceName = localStorage.getItem('practiceSelectedVoiceName') || '';
+  let selectedVoiceRate = Number(localStorage.getItem('practiceVoiceRate') || '0.5');
 
   // Load game data from sessionStorage
   function loadGameData() {
@@ -238,6 +246,7 @@
       
       totalQuestions = questions.length;
       document.getElementById('totalQuestions').textContent = totalQuestions;
+      initVoiceControls();
       
       if (questions.length > 0) {
         loadQuestion();
@@ -340,12 +349,6 @@
     playAudio();
   }
 
-  function onVoiceRegionChange() {
-    const select = document.getElementById('voiceRegionSelect');
-    selectedVoiceRegion = select?.value || 'zh-CN';
-    selectedVoiceName = '';
-  }
-
   function pickVoice() {
     const voices = window.speechSynthesis?.getVoices?.() || [];
     if (!voices.length) return null;
@@ -353,26 +356,68 @@
       const exact = voices.find(v => v.name === selectedVoiceName);
       if (exact) return exact;
     }
-    const exactLang = voices.find(v => v.lang === selectedVoiceRegion);
-    if (exactLang) return exactLang;
-    const prefix = selectedVoiceRegion.slice(0, 2);
-    return voices.find(v => v.lang?.startsWith(prefix)) || null;
+    return voices.find(v => String(v.lang || '').toLowerCase().startsWith('zh-tw'))
+      || voices.find(v => v.lang?.startsWith('zh'))
+      || null;
   }
 
   function speakText(text) {
     if (!window.speechSynthesis || !text) return;
     window.speechSynthesis.cancel();
     const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = selectedVoiceRegion;
+    utter.lang = 'zh-TW';
     const voice = pickVoice();
     if (voice) {
       utter.voice = voice;
       selectedVoiceName = voice.name;
       utter.lang = voice.lang;
     }
-    utter.rate = 0.95;
+    utter.rate = selectedVoiceRate;
     utter.pitch = 1;
     window.speechSynthesis.speak(utter);
+  }
+
+  function initVoiceControls() {
+    const rateSelect = document.getElementById('voiceRateSelect');
+    if (rateSelect) {
+      rateSelect.value = String(selectedVoiceRate);
+      if (!['0.25', '0.5', '1'].includes(rateSelect.value)) rateSelect.value = '0.5';
+    }
+    refreshVoiceOptions();
+    if (window.speechSynthesis && window.speechSynthesis.onvoiceschanged !== undefined) {
+      window.speechSynthesis.addEventListener('voiceschanged', refreshVoiceOptions, { once: true });
+    }
+  }
+
+  function refreshVoiceOptions() {
+    const select = document.getElementById('voiceSelect');
+    if (!select || !window.speechSynthesis) return;
+    const voices = window.speechSynthesis.getVoices().filter(v => String(v.lang || '').toLowerCase().startsWith('zh'));
+    select.innerHTML = '<option value="">Giọng: Tự động</option>';
+    voices.forEach(v => {
+      const opt = document.createElement('option');
+      opt.value = v.name;
+      opt.textContent = `${v.name} (${v.lang})`;
+      select.appendChild(opt);
+    });
+    select.value = voices.some(v => v.name === selectedVoiceName) ? selectedVoiceName : '';
+  }
+
+  function onVoiceSelectChange() {
+    const select = document.getElementById('voiceSelect');
+    selectedVoiceName = select?.value || '';
+    localStorage.setItem('practiceSelectedVoiceName', selectedVoiceName);
+  }
+
+  function onVoiceRateChange() {
+    const select = document.getElementById('voiceRateSelect');
+    const val = Number(select?.value || '0.5');
+    selectedVoiceRate = [0.25, 0.5, 1].includes(val) ? val : 0.5;
+    localStorage.setItem('practiceVoiceRate', String(selectedVoiceRate));
+  }
+
+  function goBackToPractice() {
+    window.location.href = 'http://localhost:3000/user/practice_bookmarks.html';
   }
 
   // Show results

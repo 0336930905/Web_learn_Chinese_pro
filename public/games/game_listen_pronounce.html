@@ -65,7 +65,7 @@
             <p class="text-text-secondary dark:text-primary/70 text-sm font-medium">Lặp lại phát âm sau khi nghe</p>
           </div>
         </div>
-        <button onclick="window.history.back()" class="w-10 h-10 rounded-full bg-gray-200 dark:bg-card-dark hover:bg-gray-300 dark:hover:bg-gray-700 flex items-center justify-center transition-all">
+        <button onclick="goBackToPractice()" class="w-10 h-10 rounded-full bg-gray-200 dark:bg-card-dark hover:bg-gray-300 dark:hover:bg-gray-700 flex items-center justify-center transition-all">
           <span class="material-symbols-outlined text-lg">close</span>
         </button>
       </header>
@@ -83,11 +83,21 @@
 
       <!-- Unified Listen & Pronounce Card -->
       <div class="bg-white dark:bg-card-dark rounded-3xl shadow-soft p-6 md:p-7 mb-8 border border-orange-100/80 dark:border-orange-900/30">
+        <div class="mb-4 grid grid-cols-1 md:grid-cols-2 gap-2">
+          <select id="voiceSelect" onchange="onVoiceSelectChange()" class="rounded-xl border border-orange-200 dark:border-orange-800/50 bg-white dark:bg-card-dark px-3 py-2 text-xs font-bold text-gray-700 dark:text-gray-200">
+            <option value="">Giọng: Tự động</option>
+          </select>
+          <select id="voiceRateSelect" onchange="onVoiceRateChange()" class="rounded-xl border border-orange-200 dark:border-orange-800/50 bg-white dark:bg-card-dark px-3 py-2 text-xs font-bold text-gray-700 dark:text-gray-200">
+            <option value="0.25">Tốc độ: 0.25x</option>
+            <option value="0.5">Tốc độ: 0.5x</option>
+            <option value="1">Tốc độ: 1.0x</option>
+          </select>
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
           <!-- Listen -->
           <div class="rounded-2xl border border-orange-100 dark:border-orange-900/30 bg-orange-50/40 dark:bg-orange-900/10 p-5 flex flex-col items-center justify-center gap-4">
             <p class="text-center text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Nghe phát âm</p>
-            <div class="text-5xl font-black text-orange-600 dark:text-orange-400">
+            <div onclick="speakCurrentQuestion()" class="cursor-pointer text-5xl font-black text-orange-600 dark:text-orange-400">
               <span id="questionCharacter">-</span>
             </div>
             <button id="playBtn" onclick="playAudio()" class="w-16 h-16 rounded-full bg-gradient-to-br from-orange-400 to-amber-500 text-white flex items-center justify-center text-3xl shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all cursor-pointer group">
@@ -157,6 +167,8 @@
   let isRecording = false;
   let recordingTime = 0;
   let gameData = null;
+  let selectedVoiceName = localStorage.getItem('practiceSelectedVoiceName') || '';
+  let selectedVoiceRate = Number(localStorage.getItem('practiceVoiceRate') || '0.5');
 
   // Load game data from sessionStorage
   function loadGameData() {
@@ -194,6 +206,7 @@
       
       totalQuestions = questions.length;
       document.getElementById('totalQuestions').textContent = totalQuestions;
+      initVoiceControls();
       
       if (questions.length > 0) {
         loadQuestion();
@@ -240,9 +253,31 @@
 
   // Audio control
   function playAudio() {
-    const audio = document.getElementById('audioPlayer');
-    audio.currentTime = 0;
-    audio.play();
+    speakCurrentQuestion();
+  }
+
+  function speakCurrentQuestion() {
+    const q = questions[currentQuestionIndex];
+    if (!q || !window.speechSynthesis) return;
+    const text = String(q.hanzi || q.simplified || '').trim();
+    if (!text) return;
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.rate = selectedVoiceRate;
+    utter.pitch = 1;
+    utter.volume = 1;
+    const voices = window.speechSynthesis.getVoices();
+    const chosen = selectedVoiceName
+      ? voices.find(v => v.name === selectedVoiceName)
+      : voices.find(v => String(v.lang || '').toLowerCase().startsWith('zh-tw'))
+        || voices.find(v => String(v.lang || '').toLowerCase().startsWith('zh'));
+    if (chosen) {
+      utter.voice = chosen;
+      utter.lang = chosen.lang;
+    } else {
+      utter.lang = 'zh-TW';
+    }
+    window.speechSynthesis.speak(utter);
   }
 
   // Recording control
@@ -335,6 +370,49 @@
 
   function goHome() {
     window.location.href = '/user/games_home.html';
+  }
+
+  function initVoiceControls() {
+    const rateSelect = document.getElementById('voiceRateSelect');
+    if (rateSelect) {
+      rateSelect.value = String(selectedVoiceRate);
+      if (!['0.25', '0.5', '1'].includes(rateSelect.value)) rateSelect.value = '0.5';
+    }
+    refreshVoiceOptions();
+    if (window.speechSynthesis && window.speechSynthesis.onvoiceschanged !== undefined) {
+      window.speechSynthesis.addEventListener('voiceschanged', refreshVoiceOptions, { once: true });
+    }
+  }
+
+  function refreshVoiceOptions() {
+    const select = document.getElementById('voiceSelect');
+    if (!select || !window.speechSynthesis) return;
+    const voices = window.speechSynthesis.getVoices().filter(v => String(v.lang || '').toLowerCase().startsWith('zh'));
+    select.innerHTML = '<option value="">Giọng: Tự động</option>';
+    voices.forEach(v => {
+      const opt = document.createElement('option');
+      opt.value = v.name;
+      opt.textContent = `${v.name} (${v.lang})`;
+      select.appendChild(opt);
+    });
+    select.value = voices.some(v => v.name === selectedVoiceName) ? selectedVoiceName : '';
+  }
+
+  function onVoiceSelectChange() {
+    const select = document.getElementById('voiceSelect');
+    selectedVoiceName = select?.value || '';
+    localStorage.setItem('practiceSelectedVoiceName', selectedVoiceName);
+  }
+
+  function onVoiceRateChange() {
+    const select = document.getElementById('voiceRateSelect');
+    const val = Number(select?.value || '0.5');
+    selectedVoiceRate = [0.25, 0.5, 1].includes(val) ? val : 0.5;
+    localStorage.setItem('practiceVoiceRate', String(selectedVoiceRate));
+  }
+
+  function goBackToPractice() {
+    window.location.href = 'http://localhost:3000/user/practice_bookmarks.html';
   }
 
   // Toast notification
