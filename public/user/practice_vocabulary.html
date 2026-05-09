@@ -4277,6 +4277,7 @@ let pinyinBuffer = '';
 let pinyinReplaceLen = 0;
 /** Tối đa 9 lựa chọn: phím 1–9 theo đúng thứ tự hiển thị trên thanh gợi ý */
 let _pinyinHotkeyChoices = [];
+let _pinyinHotkeyIndex = 0; // Counter for sequential numbering 1-9
 /** Bộ đệm gợi ý từ cơ sở dữ liệu (lấy từ API) */
 let _databasePinyinSuggestions = {};
 /** Thời gian chờ trước khi gửi yêu cầu API (ms) để tránh quá tải */
@@ -4491,8 +4492,8 @@ function _pinyinHotkeyNumSpan(num) {
 }
 /** Gán số 1–9 theo thứ tự hiển thị; đồng bộ với _pinyinHotkeyChoices. */
 function _pinyinHotkeyBadgeAndPush(text, replaceLen) {
-  if (_pinyinHotkeyChoices.length >= 9 || text == null || text === '') return '';
-  const num = _pinyinHotkeyChoices.length + 1;
+  if (_pinyinHotkeyIndex >= 9 || text == null || text === '') return '';
+  const num = ++_pinyinHotkeyIndex;
   _pinyinHotkeyChoices.push({ text: String(text), replaceLen });
   return '<span class="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-primary/20 text-primary/80 mr-1">' + num + '</span>';
 }
@@ -4528,12 +4529,13 @@ function insertPinyinChar(char) {
 
 async function _updatePinyinBar(inputEl) {
   const bar = document.getElementById('pinyinSuggestBar');
-  if (!bar || inputMode !== 'vietnamese_to_hanzi') { if (bar) bar.style.display = 'none'; _pinyinHotkeyChoices = []; return; }
+  if (!bar || inputMode !== 'vietnamese_to_hanzi') { if (bar) bar.style.display = 'none'; _pinyinHotkeyChoices = []; _pinyinHotkeyIndex = 0; return; }
   const val = inputEl.value;
   const m = val.match(/[a-z]+$/i);
   pinyinBuffer = m ? m[0].toLowerCase() : '';
   pinyinReplaceLen = pinyinBuffer.length;
   _pinyinHotkeyChoices = [];
+  _pinyinHotkeyIndex = 0;
   if (!pinyinBuffer) { _clearPinyinBar(); return; }
   _latestPinyinQueryKey = pinyinBuffer;
 
@@ -4637,6 +4639,7 @@ function _clearPinyinBar() {
   pinyinBuffer = '';
   pinyinReplaceLen = 0;
   _pinyinHotkeyChoices = [];
+  _pinyinHotkeyIndex = 0;
   const bar = document.getElementById('pinyinSuggestBar');
   if (bar) { bar.style.display = 'none'; bar.innerHTML = ''; }
 }
