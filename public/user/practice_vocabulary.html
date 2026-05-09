@@ -4494,7 +4494,7 @@ function _pinyinHotkeyBadgeAndPush(text, replaceLen) {
   if (_pinyinHotkeyChoices.length >= 9 || text == null || text === '') return '';
   const num = _pinyinHotkeyChoices.length + 1;
   _pinyinHotkeyChoices.push({ text: String(text), replaceLen });
-  return _pinyinHotkeyNumSpan(num);
+  return '';
 }
 
 function _writeInputKeydown(ev) {
