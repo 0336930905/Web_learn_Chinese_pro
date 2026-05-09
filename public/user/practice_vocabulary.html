@@ -42,7 +42,7 @@
     body { font-family: 'Lexend', sans-serif; }
     .tab-active   { @apply bg-primary text-text-main shadow-lg shadow-primary/30; }
     .tab-inactive { @apply bg-white dark:bg-card-dark text-gray-500 dark:text-gray-400 hover:bg-primary/10 dark:hover:bg-primary/10; }
-    .word-input-row { @apply grid grid-cols-3 gap-2 items-center; }
+    .word-input-row { @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 items-center; }
     input[type="text"], input[type="number"] {
       @apply rounded-xl border-2 border-gray-200 dark:border-zinc-700 bg-white dark:bg-card-dark
       focus:border-primary focus:ring-0 text-sm;
@@ -97,18 +97,18 @@
           </div>
         </div>
         <!-- Quick nav -->
-        <div class="flex items-center gap-2 shrink-0">
+        <div class="hidden sm:flex items-center gap-2 shrink-0">
           <a href="personal_vocabulary_categories_screen.html"
             class="flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-card-dark text-text-secondary dark:text-green-400/80
             text-sm font-semibold rounded-full border border-gray-200 dark:border-green-900/30 shadow-soft
             hover:border-primary hover:text-primary transition-all">
-            <span class="material-symbols-outlined text-base">folder_open</span> Quản lý danh mục
+            <span class="material-symbols-outlined text-base">folder_open</span> <span class="hidden md:inline">Quản lý danh mục</span>
           </a>
           <a href="games_home.html"
             class="flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-card-dark text-text-secondary dark:text-green-400/80
             text-sm font-semibold rounded-full border border-gray-200 dark:border-green-900/30 shadow-soft
             hover:border-primary hover:text-primary transition-all">
-            <span class="material-symbols-outlined text-base">games</span> Trò chơi
+            <span class="material-symbols-outlined text-base">games</span> <span class="hidden md:inline">Trò chơi</span>
           </a>
         </div>
       </header>
@@ -117,18 +117,18 @@
       <div id="setupPanel">
 
         <!-- Source Tabs -->
-        <div class="flex gap-2 mb-4 p-1.5 bg-white dark:bg-card-dark rounded-2xl w-fit shadow-soft border border-gray-100 dark:border-green-900/30">
+        <div class="flex gap-1 sm:gap-2 mb-4 p-1.5 bg-white dark:bg-card-dark rounded-2xl w-fit shadow-soft border border-gray-100 dark:border-green-900/30 overflow-x-auto">
           <button id="tabCustom" onclick="switchTab('custom')"
-            class="tab-active px-6 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-base">edit_note</span>Tạo bộ từ
+            class="tab-active px-3 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1 sm:gap-1.5 whitespace-nowrap">
+            <span class="material-symbols-outlined text-base">edit_note</span><span class="hidden sm:inline">Tạo bộ từ</span>
           </button>
           <button id="tabExisting" onclick="switchTab('existing')"
-            class="tab-inactive px-6 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-base">folder_open</span>Bộ từ có sẵn
+            class="tab-inactive px-3 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1 sm:gap-1.5 whitespace-nowrap">
+            <span class="material-symbols-outlined text-base">folder_open</span><span class="hidden sm:inline">Bộ từ có sẵn</span>
           </button>
           <button id="tabMulti" onclick="switchTab('multi')"
-            class="tab-inactive px-6 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-base">collections</span>Luyện tập nhiều bộ
+            class="tab-inactive px-3 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1 sm:gap-1.5 whitespace-nowrap">
+            <span class="material-symbols-outlined text-base">collections</span><span class="hidden sm:inline">Luyện tập nhiều</span>
           </button>
         </div>
 
@@ -330,7 +330,7 @@
             <div id="customListView" class="p-6">
 
               <!-- Loading skeleton -->
-              <div id="setsLoading" class="hidden grid grid-cols-2 gap-4">
+              <div id="setsLoading" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div class="h-28 rounded-2xl bg-gray-100 dark:bg-green-900/20 animate-pulse"></div>
                 <div class="h-28 rounded-2xl bg-gray-100 dark:bg-green-900/20 animate-pulse"></div>
                 <div class="h-28 rounded-2xl bg-gray-100 dark:bg-green-900/20 animate-pulse"></div>
@@ -346,7 +346,7 @@
               </div>
 
               <!-- Sets grid -->
-              <div id="savedSetsList" class="grid grid-cols-2 gap-4"></div>
+              <div id="savedSetsList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
 
             </div><!-- /customListView -->
 
@@ -379,10 +379,10 @@
                   </div>
 
                   <!-- Word table header -->
-                  <div class="grid grid-cols-[2fr_2fr_3fr_40px] gap-2 mb-2 px-1">
+                  <div class="grid grid-cols-[1fr_40px] sm:grid-cols-[2fr_2fr_40px] lg:grid-cols-[2fr_2fr_3fr_40px] gap-2 mb-2 px-1">
                     <span class="text-xs font-bold text-text-secondary dark:text-green-400/70 uppercase tracking-wide">Chữ Hán</span>
-                    <span class="text-xs font-bold text-text-secondary dark:text-green-400/70 uppercase tracking-wide">Phiên âm (Pinyin)</span>
-                    <span class="text-xs font-bold text-text-secondary dark:text-green-400/70 uppercase tracking-wide">Nghĩa tiếng Việt</span>
+                    <span class="hidden sm:inline text-xs font-bold text-text-secondary dark:text-green-400/70 uppercase tracking-wide">Phiên âm</span>
+                    <span class="hidden lg:inline text-xs font-bold text-text-secondary dark:text-green-400/70 uppercase tracking-wide">Nghĩa tiếng Việt</span>
                     <span></span>
                   </div>
 
@@ -678,7 +678,7 @@
             </div>
 
             <!-- Mode Grid (2x2 + 1 full) -->
-            <div class="px-4 pb-1 grid grid-cols-2 gap-2">
+            <div class="px-4 pb-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
               <button onclick="selectInputMode('hanzi_to_pinyin')"
                 class="imp-btn group relative overflow-hidden flex flex-col items-center gap-1.5 py-3.5 px-2 rounded-2xl border-2 border-teal-100 dark:border-teal-900/40 bg-gradient-to-b from-teal-50 to-white dark:from-teal-900/20 dark:to-transparent hover:border-teal-400 hover:from-teal-100 hover:shadow-lg hover:-translate-y-1 active:scale-95 active:shadow-none transition-all duration-200 text-center"
                 style="animation-delay:.04s">
@@ -1462,13 +1462,13 @@ function addWordRow(hanziVal = '', pinyinVal = '', meaningVal = '') {
   const id  = 'row_' + (++customWordRowCount);
   const row = document.createElement('div');
   row.id    = id;
-  row.className = 'grid grid-cols-[2fr_2fr_3fr_40px] gap-2 items-center';
+  row.className = 'grid grid-cols-[1fr_40px] sm:grid-cols-[2fr_2fr_40px] lg:grid-cols-[2fr_2fr_3fr_40px] gap-2 items-center';
   row.innerHTML = `
     <input type="text" class="px-3 py-2 text-sm rounded-xl border-2 border-gray-200 dark:border-zinc-700
       bg-white dark:bg-card-dark focus:border-primary outline-none transition-all" placeholder="Chữ" value="${esc(hanziVal)}" oninput="updateWordCount()" />
-    <input type="text" class="px-3 py-2 text-sm rounded-xl border-2 border-gray-200 dark:border-zinc-700
+    <input type="text" class="hidden sm:block px-3 py-2 text-sm rounded-xl border-2 border-gray-200 dark:border-zinc-700
       bg-white dark:bg-card-dark focus:border-primary outline-none transition-all" placeholder="Pinyin" value="${esc(pinyinVal)}" />
-    <input type="text" class="px-3 py-2 text-sm rounded-xl border-2 border-gray-200 dark:border-zinc-700
+    <input type="text" class="hidden lg:block px-3 py-2 text-sm rounded-xl border-2 border-gray-200 dark:border-zinc-700
       bg-white dark:bg-card-dark focus:border-primary outline-none transition-all" placeholder="Nghĩa" value="${esc(meaningVal)}" oninput="updateWordCount()" />
     <button onclick="removeWordRow('${id}')"
       class="w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-400 transition-colors rounded-xl">
