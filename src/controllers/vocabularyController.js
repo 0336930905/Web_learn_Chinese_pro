@@ -15,6 +15,20 @@ const {
 } = require('../utils/response');
 const { SUCCESS_MESSAGES, HTTP_STATUS } = require('../constants');
 
+const normalizePinyinForMatch = (text) => {
+  if (!text || typeof text !== 'string') return '';
+  let normalized = text.toLowerCase().trim();
+  try {
+    normalized = normalized.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  } catch (_) {}
+  return normalized
+    .replace(/ü/g, 'v')
+    .replace(/[1-5]/g, '')
+    .replace(/[^a-z]/g, '');
+};
+
+const escapeRegex = (text) => String(text || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 /**
  * Get all vocabulary
  * GET /api/vocabulary
@@ -173,18 +187,20 @@ const getRandomVocabulary = asyncHandler(async (req, res) => {
  */
 const getPinyinSuggestions = asyncHandler(async (req, res) => {
   const { pinyin } = req.params;
+  const normalizedInput = normalizePinyinForMatch(pinyin);
   
-  if (!pinyin || pinyin.length === 0) {
+  if (!normalizedInput) {
     return res.status(HTTP_STATUS.BAD_REQUEST).json({
       success: false,
       error: { message: 'Pinyin không được để trống' },
     });
   }
 
-  // Search in vocabulary collection for matching pinyin
-  const suggestions = await req.db.collection('vocabulary')
+  // Truy vấn nhanh theo prefix người dùng gõ; nếu hụt vì dấu/space thì fallback theo chữ cái đầu.
+  const primaryRegex = '^' + escapeRegex(String(pinyin || '').trim());
+  let suggestions = await req.db.collection('vocabulary')
     .find({
-      pinyin: { $regex: '^' + pinyin, $options: 'i' }
+      pinyin: { $regex: primaryRegex, $options: 'i' }
     })
     .project({
       hanzi: 1,
@@ -197,13 +213,32 @@ const getPinyinSuggestions = asyncHandler(async (req, res) => {
     .limit(30)
     .toArray();
 
+  if (!suggestions.length && normalizedInput.length >= 1) {
+    const firstLetterRegex = '^' + escapeRegex(normalizedInput[0]);
+    suggestions = await req.db.collection('vocabulary')
+      .find({
+        pinyin: { $regex: firstLetterRegex, $options: 'i' }
+      })
+      .project({
+        hanzi: 1,
+        pinyin: 1,
+        meaning: 1,
+        vietnamese: 1,
+        traditional: 1,
+        simplified: 1
+      })
+      .limit(400)
+      .toArray();
+  }
+
   // Remove duplicates by hanzi and sort by frequency
   const seen = new Set();
   const results = [];
   
   suggestions.forEach(item => {
     const hanzi = item.hanzi || item.traditional || item.simplified;
-    if (hanzi && !seen.has(hanzi)) {
+    const normalizedPinyin = normalizePinyinForMatch(item.pinyin || '');
+    if (hanzi && normalizedPinyin.startsWith(normalizedInput) && !seen.has(hanzi)) {
       seen.add(hanzi);
       results.push({
         hanzi,

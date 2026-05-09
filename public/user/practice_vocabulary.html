@@ -4281,6 +4281,8 @@ let _pinyinHotkeyChoices = [];
 let _databasePinyinSuggestions = {};
 /** Thời gian chờ trước khi gửi yêu cầu API (ms) để tránh quá tải */
 let _pinyinDebounceTimer = null;
+/** Khóa truy vấn mới nhất để tránh render kết quả cũ khi gõ nhanh */
+let _latestPinyinQueryKey = '';
 
 /** Cụm thường gặp: pinyin liền (a-z, v thay ü) → Hán phồn thể */
 const PINYIN_PHRASE_DICT = {
@@ -4334,19 +4336,31 @@ async function _fetchDatabasePinyinSuggestions(pinyinInput) {
   }
 
   try {
-    const response = await fetch(`/api/vocabulary/pinyin-suggestions/${encodeURIComponent(pinyinInput)}`);
+    const token = localStorage.getItem('authToken')
+      || localStorage.getItem('token')
+      || localStorage.getItem('jwtToken')
+      || sessionStorage.getItem('authToken');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const response = await fetch(`/api/vocabulary/pinyin-suggestions/${encodeURIComponent(pinyinInput)}`, { headers });
     if (!response.ok) return [];
     
     const data = await response.json();
     if (!data.success || !Array.isArray(data.data)) return [];
     
+    const normalizedInput = pinyinToBareAscii(pinyinInput);
     // Lưu kết quả vào bộ đệm
     const results = data.data.map(item => ({
       hanzi: item.hanzi,
       pinyin: item.pinyin,
       vietnamese: item.vietnamese || '',
+      meaning: item.meaning || '',
+      normalizedPinyin: pinyinToBareAscii(item.pinyin || ''),
       fromDatabase: true
-    }));
+    })).filter(item =>
+      item.hanzi &&
+      item.normalizedPinyin &&
+      item.normalizedPinyin.startsWith(normalizedInput)
+    );
     _databasePinyinSuggestions[pinyinInput] = results;
     return results;
   } catch (e) {
@@ -4521,6 +4535,7 @@ async function _updatePinyinBar(inputEl) {
   pinyinReplaceLen = pinyinBuffer.length;
   _pinyinHotkeyChoices = [];
   if (!pinyinBuffer) { _clearPinyinBar(); return; }
+  _latestPinyinQueryKey = pinyinBuffer;
 
   // Hủy yêu cầu API trước đó nếu có
   if (_pinyinDebounceTimer) clearTimeout(_pinyinDebounceTimer);
@@ -4540,9 +4555,12 @@ async function _updatePinyinBar(inputEl) {
   // Lấy gợi ý từ cơ sở dữ liệu (với độ trễ để tránh quá tải)
   let dbRows = [];
   _pinyinDebounceTimer = setTimeout(async () => {
-    dbRows = await _fetchDatabasePinyinSuggestions(pinyinBuffer);
+    const queryKey = pinyinBuffer;
+    dbRows = await _fetchDatabasePinyinSuggestions(queryKey);
+    // Bỏ qua kết quả cũ nếu người dùng đã nhập chuỗi mới
+    if (_latestPinyinQueryKey !== queryKey) return;
     // Cập nhật thanh gợi ý với kết quả từ cơ sở dữ liệu
-    _renderPinyinBar(bar, phrases, comboDefault, vocabRows, sylChars, dbRows, split);
+    _renderPinyinBar(bar, phrases, comboDefault, vocabRows, sylChars, dbRows, split, showSyl);
   }, 150);
 
   // Hiển thị kết quả tạm thời từ bộ nhớ đệm nếu có
@@ -4552,10 +4570,10 @@ async function _updatePinyinBar(inputEl) {
 
   if (!phrases.length && !comboDefault && !vocabRows.length && !sylChars.length && !dbRows.length) { _clearPinyinBar(); return; }
 
-  _renderPinyinBar(bar, phrases, comboDefault, vocabRows, sylChars, dbRows, split);
+  _renderPinyinBar(bar, phrases, comboDefault, vocabRows, sylChars, dbRows, split, showSyl);
 }
 
-function _renderPinyinBar(bar, phrases, comboDefault, vocabRows, sylChars, dbRows, split) {
+function _renderPinyinBar(bar, phrases, comboDefault, vocabRows, sylChars, dbRows, split, showSyl) {
   const escJs = (t) => JSON.stringify(t == null ? '' : String(t));
   const pickRow = (inner) =>
     inner ? '<div class="min-w-0"><div class="flex flex-wrap gap-1 items-center">' + inner + '</div></div>' : '';
@@ -4588,7 +4606,10 @@ function _renderPinyinBar(bar, phrases, comboDefault, vocabRows, sylChars, dbRow
   const mkDatabase = () => {
     if (!dbRows.length) return '';
     return pickRow(dbRows.slice(0, 14).map(v =>
-      '<button type="button" onclick=\'insertPinyinPick(' + escJs(v.hanzi) + ',' + pinyinBuffer.length + ')\' title="' + esc((v.vietnamese || v.pinyin || '')) + '" class="' + _pinyinBtnClass(true) + ' flex items-center">' + _pinyinHotkeyBadgeAndPush(v.hanzi, pinyinBuffer.length) + esc(v.hanzi) + '</button>'
+      '<button type="button" onclick=\'insertPinyinPick(' + escJs(v.hanzi) + ',' + pinyinBuffer.length + ')\' title="' + esc((v.vietnamese || v.meaning || v.pinyin || '')) + '" class="' + _pinyinBtnClass(true) + ' flex items-center gap-1">' +
+        _pinyinHotkeyBadgeAndPush(v.hanzi, pinyinBuffer.length) +
+        '<span>' + esc(v.hanzi) + '</span>' +
+      '</button>'
     ).join(''));
   };
   
