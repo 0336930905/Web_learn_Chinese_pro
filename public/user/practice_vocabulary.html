@@ -1867,10 +1867,10 @@ function renderMultiCustomFolderPills() {
     const isActive = multiCustomCurrentFolderId === f._id;
     const setCount = allCustomSets.filter(s => s.folderId === f._id).length;
     return `
-      <button onclick="selectMultiCustomFolder('${f._id}')" class="folder-item flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${isActive ? 'bg-primary/10 text-primary' : 'text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-green-900/20 hover:bg-gray-200 dark:hover:bg-green-900/40'}">
-        <span class="material-symbols-outlined text-xs" style="font-variation-settings:'FILL' ${isActive ? 1 : 0}">folder</span>
-        ${esc(f.name)}
-        <span class="font-black px-1.5 py-0.5 rounded-full text-[10px] ${isActive ? 'bg-primary/20 text-primary/70' : 'bg-gray-200 dark:bg-zinc-700 text-gray-500'}">${setCount}</span>
+      <button onclick="selectMultiCustomFolder('${f._id}')" class="folder-item flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all overflow-hidden max-w-xs ${isActive ? 'bg-primary/10 text-primary' : 'text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-green-900/20 hover:bg-gray-200 dark:hover:bg-green-900/40'}">
+        <span class="material-symbols-outlined text-xs shrink-0" style="font-variation-settings:'FILL' ${isActive ? 1 : 0}">folder</span>
+        <span class="truncate">${esc(f.name)}</span>
+        <span class="font-black px-1.5 py-0.5 rounded-full text-[10px] shrink-0 ${isActive ? 'bg-primary/20 text-primary/70' : 'bg-gray-200 dark:bg-zinc-700 text-gray-500'}">${setCount}</span>
       </button>
     `;
   }).join('');
@@ -3950,11 +3950,11 @@ async function renderFolderPanel() {
     <div class="group/f relative"
       ondragover="folderDragOver(event, this)" ondragleave="folderDragLeave(event, this)" ondrop="folderDrop(event, '${f._id}')">
       <button onclick="selectFolder('${f._id}')"
-        class="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all
+        class="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all overflow-hidden max-w-xs
         ${isActive ? 'bg-primary/10 text-primary' : 'text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-green-900/20 hover:bg-gray-200 dark:hover:bg-green-900/40'}">
-        <span class="material-symbols-outlined text-xs" style="font-variation-settings:'FILL' ${isActive ? '1' : '0'}">folder</span>
-        ${esc(f.name)}
-        <span class="font-black px-1.5 py-0.5 rounded-full text-[10px]
+        <span class="material-symbols-outlined text-xs shrink-0" style="font-variation-settings:'FILL' ${isActive ? '1' : '0'}">folder</span>
+        <span class="truncate">${esc(f.name)}</span>
+        <span class="font-black px-1.5 py-0.5 rounded-full text-[10px] shrink-0
           ${isActive ? 'bg-primary/20 text-primary/70' : 'bg-gray-200 dark:bg-zinc-700 text-gray-500'}">${count}</span>
       </button>
       <!-- Hover action dropdown -->
