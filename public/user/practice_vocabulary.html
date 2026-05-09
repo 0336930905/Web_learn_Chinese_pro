@@ -4494,7 +4494,7 @@ function _pinyinHotkeyBadgeAndPush(text, replaceLen) {
   if (_pinyinHotkeyChoices.length >= 9 || text == null || text === '') return '';
   const num = _pinyinHotkeyChoices.length + 1;
   _pinyinHotkeyChoices.push({ text: String(text), replaceLen });
-  return '';
+  return '<span class="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-primary/20 text-primary/80 mr-1">' + num + '</span>';
 }
 
 function _writeInputKeydown(ev) {
@@ -4502,7 +4502,7 @@ function _writeInputKeydown(ev) {
     checkWrite();
     return;
   }
-  if (ev.isComposing || inputMode !== 'vietnamese_to_hanzi') return;
+  if (ev.isComposing) return;
   if (!/^[1-9]$/.test(ev.key)) return;
   const idx = parseInt(ev.key, 10) - 1;
   const choice = _pinyinHotkeyChoices[idx];
