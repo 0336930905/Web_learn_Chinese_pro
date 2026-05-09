@@ -4491,13 +4491,6 @@ function _pinyinHotkeyNumSpan(num) {
   return '<span class="inline-flex items-center justify-center min-w-[1rem] h-4 px-0.5 rounded bg-primary/25 dark:bg-primary/35 text-[10px] font-black text-primary mr-0.5 leading-none">' + num + '</span>';
 }
 /** Gán số 1–9 theo thứ tự hiển thị; đồng bộ với _pinyinHotkeyChoices. */
-function _pinyinHotkeyBadgeAndPush(text, replaceLen) {
-  if (_pinyinHotkeyIndex >= 9 || text == null || text === '') return '';
-  const num = ++_pinyinHotkeyIndex;
-  _pinyinHotkeyChoices.push({ text: String(text), replaceLen });
-  return '<span class="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-primary/20 text-primary/80 mr-1">' + num + '</span>';
-}
-
 function _writeInputKeydown(ev) {
   if (ev.key === 'Enter') {
     checkWrite();
@@ -4579,59 +4572,57 @@ function _renderPinyinBar(bar, phrases, comboDefault, vocabRows, sylChars, dbRow
   const escJs = (t) => JSON.stringify(t == null ? '' : String(t));
   const pickRow = (inner) =>
     inner ? '<div class="min-w-0"><div class="flex flex-wrap gap-1 items-center">' + inner + '</div></div>' : '';
-  const joinSecs = (parts) => {
-    const ok = parts.filter(Boolean);
-    return ok.map((html, i) => (i ? '<div class="border-t border-primary/10 dark:border-green-900/20 pt-1.5 mt-1"></div>' : '') + html).join('');
-  };
-
-  /** Gõ ≤1 âm tiết đầy đủ hoặc đang dở âm cuối → ưu tiên hàng đơn âm lên trước. */
+  
+  // Collect tất cả suggestions vào một array theo thứ tự ưu tiên
   const preferSingleSylFirst = !(split.syllables.length >= 2 && split.rest === '');
-
-  const mkPhrases = () => {
-    if (!phrases.length) return '';
-    return pickRow(phrases.slice(0, 14).map(t =>
-      '<button type="button" onclick=\'insertPinyinPick(' + escJs(t) + ',' + pinyinBuffer.length + ')\' class="' + _pinyinBtnClass(true) + ' flex items-center">' + _pinyinHotkeyBadgeAndPush(t, pinyinBuffer.length) + esc(t) + '</button>'
-    ).join(''));
-  };
-  const mkCombo = () => {
-    if (!comboDefault || phrases.indexOf(comboDefault) !== -1) return '';
-    return pickRow('<button type="button" onclick=\'insertPinyinPick(' + escJs(comboDefault) + ',' + pinyinBuffer.length + ')\' class="' + _pinyinBtnClass(true) + ' flex items-center">' + _pinyinHotkeyBadgeAndPush(comboDefault, pinyinBuffer.length) + esc(comboDefault) + '</button>');
-  };
-  const mkVocab = () => {
-    if (!vocabRows.length) return '';
-    return pickRow(vocabRows.map(v =>
-      '<button type="button" onclick=\'insertPinyinPick(' + escJs(v.hanzi) + ',' + pinyinBuffer.length + ')\' title="' + esc(v.hint || v.key) + '" class="' + _pinyinBtnClass(true) + ' flex items-center">' + _pinyinHotkeyBadgeAndPush(v.hanzi, pinyinBuffer.length) + esc(v.hanzi) + '</button>'
-    ).join(''));
-  };
+  const allSuggestions = [];
   
-  // Hiển thị các gợi ý từ cơ sở dữ liệu
-  const mkDatabase = () => {
-    if (!dbRows.length) return '';
-    return pickRow(dbRows.slice(0, 14).map(v =>
-      '<button type="button" onclick=\'insertPinyinPick(' + escJs(v.hanzi) + ',' + pinyinBuffer.length + ')\' title="' + esc((v.vietnamese || v.meaning || v.pinyin || '')) + '" class="' + _pinyinBtnClass(true) + ' flex items-center gap-1">' +
-        _pinyinHotkeyBadgeAndPush(v.hanzi, pinyinBuffer.length) +
-        '<span>' + esc(v.hanzi) + '</span>' +
-      '</button>'
-    ).join(''));
-  };
+  if (preferSingleSylFirst) {
+    // Thứ tự: syllables trước
+    if (sylChars && sylChars.length) allSuggestions.push(...sylChars.slice(0, 36).map(c => ({ text: c, replaceLen: showSyl.length, isSyl: true })));
+    if (phrases && phrases.length) allSuggestions.push(...phrases.slice(0, 14).map(t => ({ text: t, replaceLen: pinyinBuffer.length, isSyl: false })));
+    if (comboDefault && phrases.indexOf(comboDefault) === -1) allSuggestions.push({ text: comboDefault, replaceLen: pinyinBuffer.length, isSyl: false });
+    if (vocabRows && vocabRows.length) allSuggestions.push(...vocabRows.map(v => ({ text: v.hanzi, replaceLen: pinyinBuffer.length, hint: v.hint || v.key, isSyl: false })));
+    if (dbRows && dbRows.length) allSuggestions.push(...dbRows.slice(0, 14).map(v => ({ text: v.hanzi, replaceLen: pinyinBuffer.length, hint: v.vietnamese || v.meaning || v.pinyin || '', isSyl: false })));
+  } else {
+    // Thứ tự: phrases trước
+    if (phrases && phrases.length) allSuggestions.push(...phrases.slice(0, 14).map(t => ({ text: t, replaceLen: pinyinBuffer.length, isSyl: false })));
+    if (comboDefault && phrases.indexOf(comboDefault) === -1) allSuggestions.push({ text: comboDefault, replaceLen: pinyinBuffer.length, isSyl: false });
+    if (vocabRows && vocabRows.length) allSuggestions.push(...vocabRows.map(v => ({ text: v.hanzi, replaceLen: pinyinBuffer.length, hint: v.hint || v.key, isSyl: false })));
+    if (dbRows && dbRows.length) allSuggestions.push(...dbRows.slice(0, 14).map(v => ({ text: v.hanzi, replaceLen: pinyinBuffer.length, hint: v.vietnamese || v.meaning || v.pinyin || '', isSyl: false })));
+    if (sylChars && sylChars.length) allSuggestions.push(...sylChars.slice(0, 36).map(c => ({ text: c, replaceLen: showSyl.length, isSyl: true })));
+  }
   
-  const mkSyl = () => {
-    if (!sylChars.length) return '';
-    return pickRow(sylChars.slice(0, 36).map(c =>
-      '<button type="button" onclick=\'insertPinyinPick(' + escJs(c) + ',' + showSyl.length + ')\' class="' + _pinyinBtnClass(false) + ' flex items-center">' + _pinyinHotkeyBadgeAndPush(c, showSyl.length) + esc(c) + '</button>'
-    ).join(''));
-  };
-
-  const sectionOrder = preferSingleSylFirst
-    ? [mkSyl, mkPhrases, mkCombo, mkVocab, mkDatabase]
-    : [mkPhrases, mkCombo, mkVocab, mkDatabase, mkSyl];
-  const body = joinSecs(sectionOrder.map(fn => fn()).filter(Boolean));
+  // Giới hạn tối đa 9 suggestions
+  const topSuggestions = allSuggestions.slice(0, 9);
+  
+  // Reset hotkey choices và index
+  _pinyinHotkeyChoices = [];
+  _pinyinHotkeyIndex = 0;
+  
+  // Render buttons với badges 1-9 tuần tự
+  const buttons = topSuggestions.map((item, idx) => {
+    const num = idx + 1;
+    const badgeHtml = '<span class="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-primary/20 text-primary/80 mr-1">' + num + '</span>';
+    const buttonClass = item.isSyl ? _pinyinBtnClass(false) : _pinyinBtnClass(true);
+    const titleAttr = item.hint ? ' title="' + esc(item.hint) + '"' : '';
+    
+    _pinyinHotkeyChoices.push({ text: item.text, replaceLen: item.replaceLen });
+    
+    if (item.isSyl) {
+      return '<button type="button" onclick=\'insertPinyinPick(' + escJs(item.text) + ',' + item.replaceLen + ')\' class="' + buttonClass + ' flex items-center">' + badgeHtml + esc(item.text) + '</button>';
+    } else {
+      return '<button type="button" onclick=\'insertPinyinPick(' + escJs(item.text) + ',' + item.replaceLen + ')\'' + titleAttr + ' class="' + buttonClass + ' flex items-center gap-1">' + badgeHtml + '<span>' + esc(item.text) + '</span></button>';
+    }
+  }).join('');
+  
+  const body = buttons ? pickRow(buttons) : '';
 
   if (!bar) return;
   bar.style.display = 'flex';
   bar.innerHTML = '<div class="text-[10px] font-semibold text-gray-500 dark:text-green-500/70 px-0.5 mb-0.5 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">' +
     '<span class="font-mono">' + pinyinBuffer + '</span>' +
-    (_pinyinHotkeyChoices.length ? '<span class="text-primary/75 dark:text-green-400/85">1–9 chọn</span>' : '') +
+    (_pinyinHotkeyChoices.length ? '<span class="text-primary/75 dark:text-green-400/85">1–' + _pinyinHotkeyChoices.length + ' chọn</span>' : '') +
     '</div>' + body;
 }
 
