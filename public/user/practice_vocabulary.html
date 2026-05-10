@@ -3029,8 +3029,51 @@ function checkWrite() {
 
   const expected = getExpectedAnswer(w);
   // Loại bỏ ghi chú từ cả answer và expected, rồi kiểm tra xem có khớp hay không
-  const strippedAnswer = stripAnnotations(answer);
+  let strippedAnswer = stripAnnotations(answer);
   const strippedExpected = stripAnnotations(expected);
+  
+  // Khi nhập tiếng Trung, loại bỏ tất cả khoảng trắng để không bắt lỗi về dấu cách
+  if (inputMode === 'vietnamese_to_hanzi') {
+    strippedAnswer = strippedAnswer.replace(/\s+/g, '');
+    const strippedExpectedNoSpace = strippedExpected.replace(/\s+/g, '');
+    const isCorrect = isAnswerMatching(strippedAnswer, strippedExpectedNoSpace);
+    
+    // Hiển thị feedback với đáp án gốc (chưa loại bỏ khoảng trắng) để người dùng dễ nhìn
+    const feedback_expected = expected;
+    const feedback_answer = answer;
+    
+    // Always reveal all 3 components after answering
+    revealFullWord(w);
+
+    const fb = document.getElementById('writeFeedback');
+    const inputEl = document.getElementById('writeInput');
+    const answeredAt = currentIdx;
+
+    if (isCorrect) {
+      correctCount++;
+      fb.className = 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-2xl p-3 text-sm font-bold text-center mb-5 transition-all';
+      fb.innerHTML = feedbackHtmlCorrect(feedback_answer);
+      setWriteInputRowHighlight('correct');
+    } else {
+      wrongCount++;
+      fb.className = 'bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 rounded-2xl p-3 text-sm font-bold text-center mb-5 transition-all';
+      fb.innerHTML = feedbackHtmlWrong(feedback_answer, feedback_expected);
+      setWriteInputRowHighlight('wrong');
+    }
+
+    sessionResults.push({ word: w, correct: isCorrect, userInput: answer, questionIndex: currentIdx });
+    inputEl.disabled = true;
+    selectWriteInputForReview(inputEl);
+    updateSkipWriteBtnState();
+    updateProgress();
+    setTimeout(() => {
+      currentIdx = findNextUnansweredIndex(answeredAt);
+      updateProgress();
+      renderCurrentCard();
+    }, isCorrect ? 900 : 1600);
+    return;
+  }
+  
   const isCorrect = isAnswerMatching(strippedAnswer, strippedExpected);
 
   // Always reveal all 3 components after answering
@@ -3086,11 +3129,15 @@ function skipWrite() {
   selectWriteInputForReview(inputEl);
   updateSkipWriteBtnState();
   updateProgress();
-  setTimeout(() => {
-    currentIdx = findNextUnansweredIndex(answeredAt);
-    updateProgress();
-    renderCurrentCard();
-  }, 1400);
+  
+  // Đọc lại câu hỏi tiếng Trung trước khi sang câu tiếp theo
+  ttsSpeak(w.hanzi, () => {
+    setTimeout(() => {
+      currentIdx = findNextUnansweredIndex(answeredAt);
+      updateProgress();
+      renderCurrentCard();
+    }, 300);
+  });
 }
 
 // ==================== END PRACTICE ====================

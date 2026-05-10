@@ -82,6 +82,11 @@ function renderSidebar(activePage = 'home', profileData = null) {
                     <span class="material-symbols-outlined ${activePage === 'radicals' ? 'text-primary' : ''}">category</span>
                     <span class="${activePage === 'radicals' ? 'font-semibold' : 'font-medium'}">${t('sidebar.radicals214', '214 bộ thủ')}</span>
                 </a>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-full ${activePage === 'dialogues' ? 'bg-primary/20 text-slate-900 dark:text-white active-fill' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors'}"
+                    href="practice_dialogue_screen.html">
+                    <span class="material-symbols-outlined ${activePage === 'dialogues' ? 'text-primary' : ''}">chat</span>
+                    <span class="${activePage === 'dialogues' ? 'font-semibold' : 'font-medium'}">${t('sidebar.dialogues', 'Luyện Thoại')}</span>
+                </a>
             </nav>
             <div class="p-6 border-t border-slate-100 dark:border-slate-800">
                 <div class="bg-background-light dark:bg-slate-800 p-4 rounded-xl">

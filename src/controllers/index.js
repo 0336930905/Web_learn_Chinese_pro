@@ -15,6 +15,7 @@ const achievementsController = require('./achievementsController');
 const chatbotController = require('./chatbotController');
 const backupController = require('./backupController');
 const practiceController = require('./practiceController');
+const dialogueController = require('./dialogueController');
 
 module.exports = {
   authController,
@@ -29,4 +30,5 @@ module.exports = {
   chatbotController,
   backupController,
   practiceController,
+  dialogueController,
 };

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Luyện Thoại - VocabHero</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>📚</text></svg>" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/user-common.css" />
+  <script src="/i18n/translations.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/sidebar.js"></script>
+  <style type="text/tailwindcss">
+    body { font-family: 'Lexend', sans-serif; }
+    
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #dcfce7; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #4ce64c; }
+
+    .character-badge-a {
+      @apply bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full text-sm font-semibold;
+    }
+
+    .character-badge-b {
+      @apply bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-3 py-1 rounded-full text-sm font-semibold;
+    }
+
+    .line-number {
+      @apply text-gray-400 dark:text-gray-600 text-xs font-mono;
+    }
+
+    .dialogue-line-container {
+      @apply rounded-2xl p-4 border-2 transition-all;
+    }
+
+    .opponent-line {
+      @apply border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800/50;
+    }
+
+    .player-line {
+      @apply border-primary/30 bg-primary/5 dark:bg-primary/5;
+    }
+
+    .text-input {
+      @apply w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-zinc-700 
+             bg-white dark:bg-background-dark focus:border-primary outline-none transition-all
+             text-text-main dark:text-white placeholder-gray-400;
+    }
+
+    .btn-primary {
+      @apply px-4 py-2 bg-primary text-text-main rounded-xl font-semibold text-sm 
+             transition-all shadow-fun hover:-translate-y-0.5 hover:shadow-fun-hover;
+    }
+
+    .btn-secondary {
+      @apply px-4 py-2 bg-gray-200 dark:bg-zinc-700 text-text-main dark:text-white rounded-xl 
+             font-semibold text-sm transition-all hover:bg-gray-300 dark:hover:bg-zinc-600;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-in {
+      animation: fadeIn 0.3s ease-out;
+    }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-text-main dark:text-white overflow-hidden">
+
+<div class="flex h-screen w-full overflow-hidden">
+  <div id="sidebar-container"></div>
+
+  <main class="flex-1 ml-0 md:ml-64 overflow-y-auto bg-background-light dark:bg-background-dark transition-all duration-300">
+    <div class="mx-auto max-w-4xl px-4 md:px-8 py-6 md:py-8 pt-20 md:pt-8">
+      
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <h1 id="dialogueTitle" class="text-3xl font-bold mb-2">Luyện Thoại</h1>
+          <p class="text-text-secondary dark:text-gray-400">Bạn là <span id="characterDisplay" class="font-bold"></span></p>
+        </div>
+        <button onclick="goBack()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-200 dark:bg-zinc-700 hover:bg-gray-300 dark:hover:bg-zinc-600 transition-colors">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="mb-6">
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-sm font-semibold text-text-secondary">Tiến độ</span>
+          <span class="text-sm font-semibold" id="progressText">0/0</span>
+        </div>
+        <div class="w-full h-2 bg-gray-200 dark:bg-zinc-700 rounded-full overflow-hidden">
+          <div id="progressBar" class="h-full bg-primary transition-all duration-300" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div id="gameContainer" class="space-y-6">
+        <!-- This will be filled by JavaScript -->
+      </div>
+
+      <!-- Stats -->
+      <div id="statsContainer" class="hidden mt-8 grid grid-cols-3 gap-4">
+        <div class="bg-white dark:bg-card-dark rounded-2xl p-4 border border-gray-200 dark:border-zinc-700">
+          <div class="text-sm text-text-secondary mb-1">Đúng</div>
+          <div class="text-2xl font-bold text-green-500" id="statCorrect">0</div>
+        </div>
+        <div class="bg-white dark:bg-card-dark rounded-2xl p-4 border border-gray-200 dark:border-zinc-700">
+          <div class="text-sm text-text-secondary mb-1">Sai</div>
+          <div class="text-2xl font-bold text-red-500" id="statIncorrect">0</div>
+        </div>
+        <div class="bg-white dark:bg-card-dark rounded-2xl p-4 border border-gray-200 dark:border-zinc-700">
+          <div class="text-sm text-text-secondary mb-1">Tỷ Lệ</div>
+          <div class="text-2xl font-bold text-primary" id="statAccuracy">0%</div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Pinyin Hint Modal -->
+<div id="hintModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+  <div class="bg-white dark:bg-card-dark rounded-3xl shadow-2xl p-6 max-w-md w-full mx-4 border border-gray-100 dark:border-zinc-800">
+    <h2 class="text-xl font-bold text-text-main dark:text-white mb-4">Phiên Âm</h2>
+    <p id="hintText" class="text-lg text-center text-primary font-semibold mb-6 font-mono"></p>
+    <button onclick="closeHintModal()" class="w-full px-4 py-2 bg-primary text-text-main rounded-xl font-semibold transition-all hover:-translate-y-0.5">
+      Đóng
+    </button>
+  </div>
+</div>
+
+<!-- Complete Modal -->
+<div id="completeModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+  <div class="bg-white dark:bg-card-dark rounded-3xl shadow-2xl p-8 max-w-md w-full mx-4 border border-gray-100 dark:border-zinc-800 text-center">
+    <div class="text-5xl mb-4">🎉</div>
+    <h2 class="text-2xl font-bold text-text-main dark:text-white mb-2">Hoàn Thành!</h2>
+    <p class="text-text-secondary dark:text-gray-400 mb-6">Bạn đã hoàn thành cuộc thoại này</p>
+    
+    <div class="bg-primary/10 dark:bg-primary/5 rounded-2xl p-4 mb-6">
+      <div class="grid grid-cols-3 gap-2 text-center">
+        <div>
+          <div class="text-2xl font-bold text-primary" id="finalCorrect">0</div>
+          <div class="text-xs text-text-secondary">Đúng</div>
+        </div>
+        <div>
+          <div class="text-2xl font-bold text-red-500" id="finalIncorrect">0</div>
+          <div class="text-xs text-text-secondary">Sai</div>
+        </div>
+        <div>
+          <div class="text-2xl font-bold text-primary" id="finalAccuracy">0%</div>
+          <div class="text-xs text-text-secondary">Tỷ Lệ</div>
+        </div>
+      </div>
+    </div>
+
+    <button onclick="goBack()" class="w-full px-4 py-3 bg-primary text-text-main rounded-xl font-semibold mb-2 transition-all hover:-translate-y-0.5">
+      Quay Lại
+    </button>
+    <button onclick="location.reload()" class="w-full px-4 py-3 bg-gray-200 dark:bg-zinc-700 text-text-main dark:text-white rounded-xl font-semibold transition-all hover:-translate-y-0.5">
+      Làm Lại
+    </button>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toastContainer" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+<script>
+// ==================== STATE ====================
+let dialogueData = null;
+let playerCharacter = null;
+let opponentCharacter = null;
+let dialogueLines = [];
+let playerLines = [];
+let opponentLines = [];
+let currentLineIndex = 0;
+let correctCount = 0;
+let incorrectCount = 0;
+let lineAnswers = [];
+
+// ==================== INITIALIZE ====================
+document.addEventListener('DOMContentLoaded', async function() {
+  try {
+    console.log('📄 DOM Loaded - Initializing Dialogue Game');
+    renderSidebar('dialogues', null);
+    
+    // Get dialogue data from session storage or URL params
+    const sessionData = sessionStorage.getItem('dialogueGameData');
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    if (sessionData) {
+      const data = JSON.parse(sessionData);
+      dialogueData = data.dialogue;
+      playerCharacter = data.character;
+      sessionStorage.removeItem('dialogueGameData');
+    } else if (urlParams.has('dialogueId')) {
+      // Fallback: try to load from API
+      const dialogueId = urlParams.get('dialogueId');
+      playerCharacter = urlParams.get('character') || 'A';
+      await loadDialogueById(dialogueId);
+    }
+
+    if (!dialogueData || !playerCharacter) {
+      showToast('Không tìm thấy dữ liệu cuộc thoại', 'error');
+      setTimeout(() => goBack(), 2000);
+      return;
+    }
+
+    opponentCharacter = playerCharacter === 'A' ? 'B' : 'A';
+    
+    // Initialize dialogue lines
+    initializeDialogue();
+    renderCurrentLine();
+    
+    console.log('✅ Game initialized!', { playerCharacter, lines: dialogueLines.length });
+  } catch (err) {
+    console.error('❌ Error initializing:', err);
+    showToast('Lỗi khởi tạo: ' + err.message, 'error');
+  }
+});
+
+// ==================== LOAD DIALOGUE ====================
+async function loadDialogueById(dialogueId) {
+  try {
+    const response = await apiClient.get(`/dialogues/dialogues/${dialogueId}`);
+    if (response.success && response.data) {
+      dialogueData = response.data;
+    }
+  } catch (error) {
+    console.error('Error loading dialogue:', error);
+  }
+}
+
+// ==================== DIALOGUE INITIALIZATION ====================
+function initializeDialogue() {
+  if (!dialogueData) return;
+
+  // Get all entries
+  const entries = dialogueData.entries || [];
+  
+  // Create lines with player/opponent assignment
+  dialogueLines = entries.map((entry, index) => ({
+    index: index + 1,
+    hanzi: entry.hanzi || '',
+    pinyin: entry.pinyin || '',
+    vietnamese: entry.vietnamese || '',
+    character: (index + 1) % 2 === 1 ? 'A' : 'B', // Odd = A, Even = B
+    answered: false,
+    isCorrect: false
+  }));
+
+  // Separate player and opponent lines
+  playerLines = dialogueLines.filter(l => l.character === playerCharacter);
+  opponentLines = dialogueLines.filter(l => l.character === opponentCharacter);
+
+  console.log('Dialogue initialized:', {
+    total: dialogueLines.length,
+    playerLines: playerLines.length,
+    opponentLines: opponentLines.length
+  });
+
+  // Update header
+  document.getElementById('dialogueTitle').textContent = dialogueData.name || dialogueData.hanzi || 'Luyện Thoại';
+  const characterLabel = playerCharacter === 'A' 
+    ? '<span class="character-badge-a">Nhân Vật A</span>' 
+    : '<span class="character-badge-b">Nhân Vật B</span>';
+  document.getElementById('characterDisplay').innerHTML = characterLabel;
+}
+
+// ==================== GAME RENDERING ====================
+function renderCurrentLine() {
+  const container = document.getElementById('gameContainer');
+  container.innerHTML = '';
+
+  if (currentLineIndex >= dialogueLines.length) {
+    showCompleteModal();
+    return;
+  }
+
+  // Get current line
+  const currentLine = dialogueLines[currentLineIndex];
+
+  if (currentLine.character === playerCharacter) {
+    // Show opponent lines that come before current line
+    const opponentLineBeforeCurrent = opponentLines.find(l => l.index === currentLine.index - 1);
+    if (opponentLineBeforeCurrent) {
+      container.innerHTML += `
+        <div class="dialogue-line-container opponent-line animate-in mb-4">
+          <div class="flex items-start justify-between mb-2">
+            <span class="character-badge-b">Nhân Vật B</span>
+            <span class="line-number">#${opponentLineBeforeCurrent.index}</span>
+          </div>
+          <div class="mb-2">
+            <p class="text-lg font-bold text-primary mb-1">${esc(opponentLineBeforeCurrent.hanzi)}</p>
+            <p class="text-sm text-text-secondary dark:text-gray-400 mb-2">${esc(opponentLineBeforeCurrent.pinyin)}</p>
+            <p class="text-base">${esc(opponentLineBeforeCurrent.vietnamese)}</p>
+          </div>
+          <button onclick="playAudio('${esc(opponentLineBeforeCurrent.hanzi)}', '${esc(opponentLineBeforeCurrent.pinyin)}')" class="text-primary hover:text-primary/80 transition-colors flex items-center gap-1 text-sm">
+            <span class="material-symbols-outlined text-base">volume_up</span>
+            Nghe
+          </button>
+        </div>
+      `;
+    }
+    // Render player input
+    container.innerHTML += `
+      <div class="dialogue-line-container player-line animate-in border-primary/50">
+        <div class="flex items-start justify-between mb-2">
+          <span class="character-badge-a">Nhân Vật A - Bạn</span>
+          <span class="line-number">#${currentLine.index}</span>
+        </div>
+        
+        <div class="mb-4 p-3 bg-white dark:bg-background-dark rounded-xl">
+          <p class="text-sm text-text-secondary mb-1">Câu của bạn:</p>
+          <p class="text-base font-semibold text-text-main dark:text-white">${esc(currentLine.hanzi)}</p>
+        </div>
+
+        <div class="space-y-3 mb-4">
+          <textarea id="playerAnswer" class="text-input resize-none" rows="3" placeholder="Nhập câu trả lời của bạn..."></textarea>
+          
+          <div class="flex gap-2">
+            <button onclick="showHint('${esc(currentLine.pinyin)}')" class="flex-1 btn-secondary flex items-center justify-center gap-2">
+              <span class="material-symbols-outlined text-base">info</span>
+              Phiên Âm
+            </button>
+            <button onclick="playAudio('${esc(currentLine.hanzi)}', '${esc(currentLine.pinyin)}')" class="flex-1 btn-secondary flex items-center justify-center gap-2">
+              <span class="material-symbols-outlined text-base">volume_up</span>
+              Nghe
+            </button>
+          </div>
+        </div>
+
+        <button onclick="checkAnswer()" class="w-full btn-primary flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined text-base">check_circle</span>
+          Kiểm Tra
+        </button>
+      </div>
+    `;
+  } else {
+    currentLineIndex++;
+    renderCurrentLine();
+  }
+
+  updateProgress();
+}
+
+// ==================== GAME LOGIC ====================
+function checkAnswer() {
+  const currentLine = dialogueLines[currentLineIndex];
+  const playerAnswer = document.getElementById('playerAnswer')?.value?.trim() || '';
+
+  if (!playerAnswer) {
+    showToast('Vui lòng nhập câu trả lời', 'error');
+    return;
+  }
+
+  // Simple check: just mark as answered, teacher/admin would verify actual pronunciation
+  currentLine.answered = true;
+  currentLine.answer = playerAnswer;
+  
+  // For now, mark as correct if not empty
+  currentLine.isCorrect = true;
+  correctCount++;
+
+  showToast('✅ Đã ghi nhận câu trả lời', 'success');
+  
+  // Move to next line
+  setTimeout(() => {
+    currentLineIndex++;
+    renderCurrentLine();
+  }, 500);
+}
+
+function showHint(pinyin) {
+  document.getElementById('hintText').textContent = pinyin;
+  document.getElementById('hintModal').classList.remove('hidden');
+}
+
+function closeHintModal() {
+  document.getElementById('hintModal').classList.add('hidden');
+}
+
+function playAudio(hanzi, pinyin) {
+  // TODO: Implement text-to-speech using Web Speech API or external service
+  const utterance = new SpeechSynthesisUtterance(hanzi);
+  utterance.lang = 'zh-CN';
+  utterance.rate = 0.8;
+  speechSynthesis.speak(utterance);
+  showToast('🔊 Đang phát âm thanh...', 'info');
+}
+
+// ==================== PROGRESS ====================
+function updateProgress() {
+  const total = dialogueLines.length;
+  const current = currentLineIndex + 1;
+  const percentage = (currentLineIndex / total) * 100;
+
+  document.getElementById('progressText').textContent = `${current}/${total}`;
+  document.getElementById('progressBar').style.width = percentage + '%';
+}
+
+// ==================== COMPLETE ====================
+function showCompleteModal() {
+  const total = dialogueLines.length;
+  const accuracy = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+
+  document.getElementById('finalCorrect').textContent = correctCount;
+  document.getElementById('finalIncorrect').textContent = incorrectCount;
+  document.getElementById('finalAccuracy').textContent = accuracy + '%';
+  document.getElementById('completeModal').classList.remove('hidden');
+}
+
+// ==================== UTILS ====================
+function esc(str) {
+  if (!str) return '';
+  const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+  return str.replace(/[&<>"']/g, m => map[m]);
+}
+
+function showToast(msg, type = 'info') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `px-4 py-3 rounded-lg text-white font-medium shadow-lg animate-fadeIn ${
+    type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+  }`;
+  toast.textContent = msg;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.remove();
+  }, 3000);
+}
+
+function goBack() {
+  window.location.href = '/user/practice_dialogue_screen.html';
+}
+</script>
+
+</body>
+</html>

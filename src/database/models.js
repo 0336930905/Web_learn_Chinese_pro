@@ -119,6 +119,24 @@ async function createIndexes(db) {
       { key: { updatedAt: -1 } },
     ]);
 
+    // Practice Dialogue Folders indexes
+    await db.collection(COLLECTIONS.PRACTICE_DIALOGUE_FOLDERS).createIndexes([
+      { key: { userId: 1 } },
+      { key: { userId: 1, name: 1 }, unique: true },
+      { key: { order: 1 } },
+      { key: { createdAt: -1 } },
+    ]);
+
+    // Practice Dialogues indexes
+    await db.collection(COLLECTIONS.PRACTICE_DIALOGUES).createIndexes([
+      { key: { userId: 1 } },
+      { key: { folderId: 1 } },
+      { key: { hanzi: 1 } },
+      { key: { userId: 1, folderId: 1 } },
+      { key: { createdAt: -1 } },
+      { key: { updatedAt: -1 } },
+    ]);
+
     console.log('Database indexes created successfully');
   } catch (error) {
     console.error('Error creating indexes:', error.message);
@@ -622,6 +640,98 @@ async function setupCollectionValidation(db) {
       // Ignore if collection doesn't exist yet
     });
 
+    // Practice Dialogue Folders validation
+    await db.command({
+      collMod: COLLECTIONS.PRACTICE_DIALOGUE_FOLDERS,
+      validator: {
+        $jsonSchema: {
+          bsonType: 'object',
+          required: ['userId', 'name'],
+          properties: {
+            userId: {
+              bsonType: 'objectId',
+              description: 'ID of the user who owns this folder',
+            },
+            name: {
+              bsonType: 'string',
+              description: 'Folder name',
+            },
+            description: {
+              bsonType: 'string',
+              description: 'Optional folder description',
+            },
+            order: {
+              bsonType: 'int',
+              description: 'Display order for folders',
+            },
+            createdAt: { bsonType: 'date' },
+            updatedAt: { bsonType: 'date' },
+          },
+        },
+      },
+      validationLevel: 'moderate',
+    }).catch(() => {
+      // Ignore if collection doesn't exist yet
+    });
+
+    // Practice Dialogues validation
+    await db.command({
+      collMod: COLLECTIONS.PRACTICE_DIALOGUES,
+      validator: {
+        $jsonSchema: {
+          bsonType: 'object',
+          required: ['userId', 'folderId', 'hanzi', 'pinyin', 'vietnamese'],
+          properties: {
+            userId: {
+              bsonType: 'objectId',
+              description: 'ID of the user who owns this dialogue',
+            },
+            folderId: {
+              bsonType: 'objectId',
+              description: 'ID of the parent dialogue folder',
+            },
+            name: {
+              bsonType: 'string',
+              description: 'Dialogue name/title (optional)',
+            },
+            hanzi: {
+              bsonType: 'string',
+              description: 'Chinese text (traditional)',
+            },
+            pinyin: {
+              bsonType: 'string',
+              description: 'Pinyin pronunciation',
+            },
+            vietnamese: {
+              bsonType: 'string',
+              description: 'Vietnamese translation/meaning',
+            },
+            simplified: {
+              bsonType: 'string',
+              description: 'Simplified Chinese (optional)',
+            },
+            notes: {
+              bsonType: 'string',
+              description: 'Additional notes or context',
+            },
+            difficulty: {
+              enum: Object.values(DIFFICULTY_LEVELS),
+              description: 'Difficulty level (optional)',
+            },
+            order: {
+              bsonType: 'int',
+              description: 'Display order within folder',
+            },
+            createdAt: { bsonType: 'date' },
+            updatedAt: { bsonType: 'date' },
+          },
+        },
+      },
+      validationLevel: 'moderate',
+    }).catch(() => {
+      // Ignore if collection doesn't exist yet
+    });
+
     console.log('Collection validation set up successfully');
   } catch (error) {
     console.error('Error setting up validation:', error.message);
@@ -643,6 +753,8 @@ const Models = {
   BackupSchedule: COLLECTIONS.BACKUP_SCHEDULE,
   RestoreLogs: COLLECTIONS.RESTORE_LOGS,
   CustomWordSets: COLLECTIONS.PRACTICE_CUSTOM_SETS,
+  DialogueFolders: COLLECTIONS.PRACTICE_DIALOGUE_FOLDERS,
+  Dialogues: COLLECTIONS.PRACTICE_DIALOGUES,
 };
 
 module.exports = {

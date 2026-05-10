@@ -154,19 +154,10 @@
     </div>
 
 <script>
-// ========== Helper: Get categoryId or userId from URL ==========
+// ========== Helper: Get categoryId from URL ==========
 function getCategoryIdFromUrl() {
     const params = new URLSearchParams(window.location.search);
     return params.get('categoryId');
-}
-
-function getSourceParamsFromUrl() {
-    const params = new URLSearchParams(window.location.search);
-    return {
-        categoryId: params.get('categoryId'),
-        useBookmarks: params.get('useBookmarks') === 'true',
-        userId: params.get('userId')
-    };
 }
 
 // ========== State ==========
@@ -176,36 +167,17 @@ let score = 0;
 let timeLeft = 20;
 let timerInterval = null;
 let selectedAnswer = null;
-let sourceMode = 'category'; // 'category' | 'bookmarks'
 
 // ========== Load Questions ==========
 async function loadQuestions() {
-    const source = getSourceParamsFromUrl();
-    
-    // Determine source: bookmarks or category
-    if (source.useBookmarks) {
-        sourceMode = 'bookmarks';
-    } else if (!source.categoryId) {
-        alert('Không tìm thấy categoryId hoặc useBookmarks!');
+    const categoryId = getCategoryIdFromUrl();
+    if (!categoryId) {
+        alert('Không tìm thấy categoryId!');
         window.location.href = '../user/games_home.html';
         return;
-    } else {
-        sourceMode = 'category';
     }
-
     try {
-        let apiUrl = '/api/games/reverse-quiz';
-        
-        if (sourceMode === 'bookmarks') {
-            // Load from user bookmarks
-            const userId = source.userId || 'me';
-            apiUrl += `?userId=${userId}&count=10`;
-        } else {
-            // Load from category
-            apiUrl += `?categoryId=${source.categoryId}&count=10`;
-        }
-        
-        const res = await fetch(apiUrl);
+        const res = await fetch(`/api/games/reverse-quiz?categoryId=${categoryId}&count=10`);
         const data = await res.json();
         if (!data.success) {
             alert('Không thể tải câu hỏi: ' + (data.error?.message || 'Lỗi không xác định'));

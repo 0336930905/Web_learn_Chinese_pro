@@ -165,6 +165,8 @@ const COLLECTIONS = {
   PRACTICE_CUSTOM_SETS: 'practice_custom_sets',
   PRACTICE_BOOKMARKS: 'practice_bookmarks',
   PRACTICE_FOLDERS: 'practice_folders',
+  PRACTICE_DIALOGUE_FOLDERS: 'practice_dialogue_folders',
+  PRACTICE_DIALOGUES: 'practice_dialogues',
 };
 
 // Sort Orders

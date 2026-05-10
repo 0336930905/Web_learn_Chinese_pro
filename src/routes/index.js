@@ -17,6 +17,7 @@ const chatbotRoutes = require('./chatbot.routes');
 const backupRoutes = require('./backup.routes');
 const practiceRoutes = require('./practice.routes');
 const characterAnalysisRoutes = require('./characterAnalysis.routes');
+const dialogueRoutes = require('./dialogue.routes');
 
 /**
  * Simple router implementation for serverless
@@ -233,6 +234,7 @@ function setupRoutes(db) {
   const backupRouter = new Router();
   const practiceRouter = new Router();
   const characterAnalysisRouter = new Router();
+  const dialogueRouter = new Router();
 
   authRoutes(authRouter, db);
   adminRoutes(adminRouter, db);
@@ -248,6 +250,7 @@ function setupRoutes(db) {
   backupRoutes(backupRouter, db);
   practiceRoutes(practiceRouter, db);
   characterAnalysisRoutes(characterAnalysisRouter, db);
+  dialogueRoutes(dialogueRouter, db);
 
   return {
     '/auth': authRouter,
@@ -264,6 +267,7 @@ function setupRoutes(db) {
     '/backup': backupRouter,
     '/practice': practiceRouter,
     '/character-analysis': characterAnalysisRouter,
+    '/dialogues': dialogueRouter,
   };
 }
 

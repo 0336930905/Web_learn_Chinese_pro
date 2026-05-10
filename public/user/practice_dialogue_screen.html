@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Luyện Thoại - VocabHero</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>📚</text></svg>" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/user-common.css" />
+  <script src="/i18n/translations.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/sidebar.js"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary":           "#4ce64c",
+            "primary-dark":      "#38c438",
+            "background-light":  "#f6f8f6",
+            "background-dark":   "#112111",
+            "card-dark":         "#1a2e1a",
+            "text-main":         "#0e1b0e",
+            "text-secondary":    "#509550",
+          },
+          fontFamily: { display: ["Lexend", "sans-serif"], body: ["Lexend", "sans-serif"] },
+          borderRadius: { DEFAULT: "1rem", lg: "1.5rem", xl: "2rem", "2xl": "2.5rem", "3xl": "3rem", full: "9999px" },
+          boxShadow: {
+            "soft":      "0 4px 20px -2px rgba(0,0,0,0.05)",
+            "fun":       "0 6px 0px 0px rgba(76,230,76,0.2)",
+            "fun-hover": "0 10px 24px 0 rgba(76,230,76,0.22)",
+          },
+        },
+      },
+    };
+  </script>
+  <script>
+    // Initialize i18n after all scripts are loaded
+    window.addEventListener('load', function() {
+      if (typeof window.i18n === 'undefined' && typeof I18n !== 'undefined') {
+        window.i18n = new I18n('vi');
+      }
+    });
+  </script>
+  <style type="text/tailwindcss">
+    body { font-family: 'Lexend', sans-serif; }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #dcfce7; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #4ce64c; }
+
+    .dialogue-card {
+      @apply bg-gradient-to-br from-white to-gray-50 dark:from-card-dark dark:to-zinc-800;
+      @apply p-5 rounded-2xl border border-gray-100 dark:border-zinc-700 shadow-soft;
+      @apply hover:shadow-fun-hover hover:border-primary transition-all duration-200 cursor-pointer;
+      @apply flex flex-col h-full;
+    }
+
+    .dialogue-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .dialogue-card-title {
+      @apply text-lg font-bold text-text-main dark:text-white mb-3 line-clamp-2;
+    }
+
+    .dialogue-card-meta {
+      @apply text-xs text-text-secondary dark:text-gray-400 mb-4 flex items-center gap-1;
+    }
+
+    .active-fill {
+      fill: currentColor;
+    }
+
+    .folder-item {
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .folder-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px 0 rgba(76,230,76,0.14);
+    }
+    
+    input[type="text"], textarea, select {
+      @apply rounded-xl border-2 border-gray-200 dark:border-zinc-700 bg-white dark:bg-card-dark
+      focus:border-primary focus:ring-0 text-sm;
+    }
+    
+    .tab-active   { @apply bg-primary text-text-main shadow-lg shadow-primary/30; }
+    .tab-inactive { @apply bg-white dark:bg-card-dark text-gray-500 dark:text-gray-400 hover:bg-primary/10 dark:hover:bg-primary/10; }
+
+    @media (max-width: 768px) {
+      .dialogue-table {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+      .dialogue-col-header {
+        display: none;
+      }
+      .dialogue-cell {
+        margin-bottom: 0.5rem;
+      }
+      .hanzi-text {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-text-main dark:text-white overflow-hidden">
+
+<div class="flex h-screen w-full overflow-hidden">
+  <!-- Sidebar -->
+  <div id="sidebar-container"></div>
+
+  <!-- Main Content -->
+  <main class="flex-1 ml-0 md:ml-64 overflow-y-auto bg-background-light dark:bg-background-dark relative transition-all duration-300">
+    <!-- Decorative background blobs -->
+    <div class="absolute top-0 right-0 -z-10 h-96 w-96 translate-x-1/3 -translate-y-1/3 rounded-full bg-primary/10 blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-0 left-0 -z-10 h-64 w-64 -translate-x-1/3 translate-y-1/3 rounded-full bg-blue-400/10 blur-3xl pointer-events-none"></div>
+    <div class="mx-auto max-w-5xl px-4 md:px-8 py-6 md:py-8 pt-20 md:pt-8">
+      
+      <!-- Header -->
+      <header class="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-primary/20 dark:bg-primary/30 flex items-center justify-center text-2xl shadow-soft shrink-0">
+            💬
+          </div>
+          <div>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-text-main dark:text-white tracking-tight leading-tight">Luyện Thoại</h1>
+            <p class="text-text-secondary dark:text-primary/70 text-sm font-medium mt-0.5">Luyện các cuộc hội thoại thực tế</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <button onclick="openDialogueFormModal()" 
+            class="flex items-center gap-1.5 px-4 py-2 bg-primary text-text-main shadow-fun hover:shadow-fun-hover hover:-translate-y-0.5
+            text-sm font-semibold rounded-full transition-all">
+            <span class="material-symbols-outlined text-base">add</span>
+            <span class="hidden sm:inline">Thêm Thoại</span>
+          </button>
+          <button onclick="openFolderIconModal()" 
+            class="w-10 h-10 flex items-center justify-center bg-white dark:bg-card-dark text-text-secondary dark:text-primary shadow-soft
+            rounded-full border border-gray-200 dark:border-green-900/30 hover:border-primary hover:text-primary transition-all">
+            <span class="material-symbols-outlined text-base">create_new_folder</span>
+          </button>
+          <button onclick="openFolderModal()" 
+            class="flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-card-dark text-text-secondary dark:text-green-400/80
+            text-sm font-semibold rounded-full border border-gray-200 dark:border-green-900/30 shadow-soft
+            hover:border-primary hover:text-primary transition-all hidden md:flex">
+            <span class="material-symbols-outlined text-base">folder_open</span>
+            <span class="hidden md:inline">Quản lý</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Content Card (Like practice_vocabulary.html) -->
+      <div class="practice-card bg-white dark:bg-card-dark rounded-3xl border border-gray-100 dark:border-green-900/30 shadow-soft overflow-hidden">
+        
+        <!-- Dynamic Header -->
+        <div id="dialoguePanelHeader" class="bg-gradient-to-br from-primary/20 via-green-100/50 to-transparent dark:from-primary/20 dark:via-green-900/20 dark:to-transparent px-6 py-5 border-b border-gray-100 dark:border-green-900/20">
+          
+          <!-- List Mode Header (default) -->
+          <div id="dialogueHeaderList" class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1">chat</span>
+              <div>
+                <h2 class="font-extrabold text-text-main dark:text-white text-base">Luyện Thoại</h2>
+                <p class="text-xs text-text-secondary dark:text-primary/60 mt-0.5">Chọn hoặc tạo cuộc hội thoại mới để luyện tập</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <button onclick="openDialogueFormModal()" class="flex items-center gap-2 px-5 py-2.5 bg-primary text-text-main text-sm font-bold rounded-2xl
+                shadow-fun hover:shadow-fun-hover hover:brightness-105 active:scale-95 transition-all">
+                <span class="material-symbols-outlined text-base">add</span>
+                <span class="hidden sm:inline">Thêm Thoại</span>
+                <span class="sm:hidden">Mới</span>
+              </button>
+              <button onclick="openFolderModal()" class="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-background-dark text-gray-600 dark:text-gray-300 text-sm font-bold rounded-2xl
+                shadow-soft hover:shadow-soft border border-gray-200 dark:border-green-900/30 transition-all hidden sm:flex">
+                <span class="material-symbols-outlined text-base">folder_open</span>
+                <span>Quản lý</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Form Mode Header (hidden) -->
+          <div id="dialogueHeaderForm" class="hidden flex items-center gap-3">
+            <button onclick="backToDialogueList()" class="flex items-center justify-center w-9 h-9 rounded-xl bg-white/60 dark:bg-white/10
+              hover:bg-white dark:hover:bg-white/20 transition-all shrink-0">
+              <span class="material-symbols-outlined text-xl text-text-main dark:text-white">arrow_back</span>
+            </button>
+            <div>
+              <h2 id="dialogueFormTitle" class="font-extrabold text-text-main dark:text-white text-base">Thêm Cuộc Thoại Mới</h2>
+              <p class="text-xs text-text-secondary dark:text-primary/60 mt-0.5">Nhập thông tin thoại cần luyện tập</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- View 1: LIST OF DIALOGUES (default) -->
+        <div id="dialogueListView" class="p-6">
+          
+          <!-- Folder Filter Pills -->
+          <div class="mb-6">
+            <label class="block text-xs font-bold text-text-secondary dark:text-green-400/70 mb-2.5 uppercase tracking-wide">Chủ đề thoại</label>
+            <div id="dialogueFolderPills" class="flex flex-wrap gap-2">
+              <button onclick="selectDialogueFolder(null)" id="dialogue-folder-all"
+                class="px-4 py-2 rounded-full bg-primary text-text-main shadow-fun font-medium transition-all hover:-translate-y-0.5 hover:shadow-fun-hover">
+                <span class="material-symbols-outlined inline mr-1 align-middle" style="font-size: 18px;">folder_open</span>
+                Tất cả
+              </button>
+            </div>
+          </div>
+
+          <!-- Dialogues Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div id="dialogueTable"></div>
+          </div>
+
+          <!-- Empty State -->
+          <div id="dialogueEmptyState" class="hidden flex flex-col items-center justify-center py-14 text-center gap-3">
+            <div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+              <span class="material-symbols-outlined text-4xl text-primary/60">forum</span>
+            </div>
+            <p class="font-bold text-gray-600 dark:text-gray-300">Chưa có hội thoại nào</p>
+            <p class="text-sm text-gray-400 dark:text-zinc-500">Nhấn <strong>"Thêm Thoại"</strong> để bắt đầu!</p>
+          </div>
+
+        </div><!-- /dialogueListView -->
+
+        <!-- View 2: CREATE / EDIT FORM (hidden) -->
+        <div id="dialogueFormView" class="hidden p-6">
+          
+          <div class="flex flex-col lg:flex-row gap-6">
+            
+            <!-- Left: Form Fields -->
+            <div class="flex-1 min-w-0">
+              
+              <!-- Dialogue Name -->
+              <div class="mb-4">
+                <label class="block text-xs font-bold text-text-secondary dark:text-green-400/80 mb-1.5 uppercase tracking-wide">Tên Cuộc Thoại</label>
+                <input id="dialogueFormName" type="text" placeholder="VD: Xin lỗi, Bọc sách..." 
+                  class="w-full px-4 py-2.5 text-sm rounded-xl border-2 border-gray-200 dark:border-green-900/40
+                  bg-white dark:bg-background-dark focus:border-primary outline-none transition-all">
+              </div>
+
+              <!-- Folder Assignment (Optional) -->
+              <div class="mb-5">
+                <label class="block text-xs font-bold text-text-secondary dark:text-green-400/80 mb-1.5 uppercase tracking-wide">
+                  <span class="material-symbols-outlined text-xs align-middle" style="font-variation-settings:'FILL' 1">folder</span>
+                  Thư mục <span class="text-gray-400 dark:text-gray-500 font-normal">(Tùy chọn)</span>
+                </label>
+                <select id="dialogueFormFolder" class="w-full px-4 py-2.5 text-sm rounded-xl border-2 border-gray-200 dark:border-green-900/40
+                  bg-white dark:bg-background-dark focus:border-primary outline-none transition-all cursor-pointer">
+                  <option value="">-- Không chọn (Mặc định) --</option>
+                </select>
+              </div>
+
+              <!-- Dialogue Entries (Multi-row) -->
+              <div class="mb-6">
+                <div class="flex items-center justify-between mb-3">
+                  <label class="block text-xs font-bold text-text-secondary dark:text-green-400/80 uppercase tracking-wide">Các cụm từ & nghĩa</label>
+                  <span id="dialogueEntryCount" class="text-xs bg-primary/10 text-primary px-2 py-1 rounded-lg font-semibold">0 từ</span>
+                </div>
+                <div id="dialogueRowsContainer" class="space-y-2 mb-4 max-h-[400px] overflow-y-auto pr-1 bg-gray-50 dark:bg-background-dark p-3 rounded-xl border-2 border-gray-100 dark:border-green-900/20">
+                </div>
+                <div class="flex flex-wrap gap-2">
+                  <button onclick="addDialogueRow()" type="button" class="flex items-center gap-2 px-4 py-2 bg-primary/10 text-text-secondary dark:text-primary
+                    text-sm font-semibold rounded-xl hover:bg-primary/20 border border-primary/20 transition-all">
+                    <span class="material-symbols-outlined text-base">add</span> Thêm từ
+                  </button>
+                  <button onclick="addDialogueRowsBulk()" type="button" class="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-card-dark text-gray-600 dark:text-gray-300
+                    text-sm font-semibold rounded-xl hover:bg-gray-200 dark:hover:bg-green-900/30 border border-transparent dark:border-green-900/30 transition-all">
+                    <span class="material-symbols-outlined text-base">format_list_bulleted</span> Nhập nhiều
+                  </button>
+                  <label for="dialogueExcelUpload" type="button" class="flex items-center gap-2 px-4 py-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300
+                    text-sm font-semibold rounded-xl hover:bg-green-200 dark:hover:bg-green-800/40 border border-transparent dark:border-green-800/30 transition-all cursor-pointer">
+                    <span class="material-symbols-outlined text-base">upload_file</span> Nhập từ Excel
+                    <input type="file" id="dialogueExcelUpload" accept=".xlsx, .xls, .csv" class="hidden" onchange="processDialogueExcelImport(event)">
+                  </label>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Right: Sidebar Buttons -->
+            <div class="lg:w-48 shrink-0 flex flex-col gap-3">
+              <p class="text-xs font-bold text-text-secondary dark:text-green-400/70 uppercase tracking-wide hidden lg:block">Lưu &amp; quay lại</p>
+
+              <!-- Save -->
+              <button onclick="saveDialogue()" class="w-full px-5 py-3 bg-primary text-text-main text-sm font-bold rounded-2xl shadow-fun
+                hover:shadow-fun-hover hover:brightness-105 active:scale-95 transition-all flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-base">save</span>
+                <span class="hidden sm:inline">Lưu Thoại</span>
+                <span class="sm:hidden">Lưu</span>
+              </button>
+
+              <!-- Cancel / Back -->
+              <button onclick="backToDialogueList()" class="w-full px-4 py-2.5 bg-white dark:bg-background-dark text-gray-600 dark:text-gray-300
+                text-sm font-semibold rounded-2xl hover:bg-gray-50 dark:hover:bg-green-900/30 border border-gray-200
+                dark:border-green-900/40 transition-all flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-base">close</span>
+                <span class="hidden sm:inline">Hủy</span>
+              </button>
+
+            </div>
+
+          </div>
+
+        </div><!-- /dialogueFormView -->
+
+      </div><!-- /practice-card -->
+    </div>
+  </main>
+</div>
+
+<!-- Dialogue Form Modal -->
+<div id="dialogueFormModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm flex items-start justify-center py-12 px-4 transition-all">
+  <div class="bg-white dark:bg-card-dark rounded-3xl shadow-2xl max-w-2xl w-full border border-gray-100 dark:border-zinc-800" onclick="event.stopPropagation()">
+    <div class="p-6 border-b border-gray-100 dark:border-zinc-800 flex items-center justify-between sticky top-0 bg-white dark:bg-card-dark">
+      <h2 class="text-xl font-bold text-text-main dark:text-white">Thêm Cuộc Thoại Mới</h2>
+      <button onclick="closeDialogueFormModal()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-zinc-800 text-gray-500 hover:text-text-main hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors">
+        <span class="material-symbols-outlined font-bold">close</span>
+      </button>
+    </div>
+
+    <div class="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+      <div>
+        <label class="block text-sm font-medium text-text-main dark:text-gray-300 mb-2">Tên Cuộc Thoại <span class="text-red-500">*</span></label>
+        <input type="text" id="dialogueNameInput" placeholder="Ví dụ: Xin lỗi, Bọc sách..." class="w-full" />
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-text-main dark:text-gray-300 mb-2">Chọn Thư Mục <span class="text-red-500">*</span></label>
+          <select id="folderSelect" class="w-full">
+            <option value="">-- Chọn thư mục --</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-text-main dark:text-gray-300 mb-2">Hán Tự <span class="text-red-500">*</span></label>
+        <input type="text" id="hanziInput" placeholder="Nhập tiếng Trung..." class="w-full text-lg" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-text-main dark:text-gray-300 mb-2">Pinyin <span class="text-red-500">*</span></label>
+        <input type="text" id="pinyinInput" placeholder="Ví dụ: xiàngbàng, dũliàn..." class="w-full" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-text-main dark:text-gray-300 mb-2">Nghĩa Tiếng Việt <span class="text-red-500">*</span></label>
+        <textarea id="vietnameseInput" placeholder="Nhập nghĩa tiếng Việt..." rows="4" class="w-full resize-none"></textarea>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-text-main dark:text-gray-300 mb-2">Ghi Chú (Tùy Chọn)</label>
+        <textarea id="notesInput" placeholder="Ví dụ: Cách dùng, liên tẻ..." rows="3" class="w-full resize-none"></textarea>
+      </div>
+    </div>
+
+    <div class="p-6 border-t border-gray-100 dark:border-zinc-800 flex gap-3 sticky bottom-0 bg-white dark:bg-card-dark">
+      <button onclick="saveDialogue()" class="flex-1 px-6 py-3 bg-primary text-text-main shadow-fun hover:shadow-fun-hover hover:-translate-y-0.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-all">
+        <span class="material-symbols-outlined">save</span>
+        Lưu Hội Thoại
+      </button>
+      <button onclick="importFromExcel()" class="flex items-center gap-1.5 px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-semibold shadow-soft transition-all">
+        <span class="material-symbols-outlined text-base">upload_file</span>
+        <span class="hidden sm:inline">Excel</span>
+      </button>
+      <button onclick="closeDialogueFormModal()" class="px-6 py-3 bg-white dark:bg-card-dark border-2 border-gray-200 dark:border-zinc-700 text-text-main dark:text-white rounded-xl hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors font-medium">
+        Hủy
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Folder Management Modal -->
+<div id="folderModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm flex items-start justify-center py-12 px-4 transition-all">
+  <div class="bg-white dark:bg-card-dark rounded-3xl shadow-2xl max-w-2xl w-full border border-gray-100 dark:border-zinc-800" onclick="event.stopPropagation()">
+    <div class="p-6 border-b border-gray-100 dark:border-zinc-800 flex items-center justify-between">
+      <h2 class="text-xl font-bold text-text-main dark:text-white">Quản Lý Thư Mục Thoại</h2>
+      <button onclick="closeFolderModal()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-zinc-800 text-gray-500 hover:text-text-main hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors">
+        <span class="material-symbols-outlined font-bold">close</span>
+      </button>
+    </div>
+
+    <div class="p-6 space-y-6 max-h-[60vh] overflow-y-auto">
+      <div class="flex gap-3">
+        <input id="folderNameInput" type="text" placeholder="Tên thư mục mới..." class="w-full" />
+        <button onclick="createFolder()" class="px-6 py-2.5 bg-primary text-text-main shadow-fun hover:shadow-fun-hover hover:-translate-y-0.5 rounded-xl font-bold transition-all">
+          <span class="material-symbols-outlined">add</span>
+        </button>
+      </div>
+
+      <div id="folderList" class="space-y-3"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Folder Name Modal (Create/Rename) -->
+<div id="folderNameModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-all" onclick="if(event.target===this)closeFolderNameModal()">
+  <div class="bg-white dark:bg-card-dark rounded-3xl shadow-2xl p-6 max-w-sm w-full mx-4 border border-gray-100 dark:border-zinc-800">
+    <h2 class="text-xl font-bold text-text-main dark:text-white mb-1">Tạo Thư Mục Mới</h2>
+    <p class="text-xs text-text-secondary dark:text-gray-400 mb-4">Thư mục giúp sắp xếp các hội thoại theo chủ đề</p>
+    <input id="folderNameField" type="text" placeholder="VD: Xin lỗi, Mua sắm, Nhà hàng..." autofocus 
+      class="w-full px-4 py-2.5 text-sm rounded-xl border-2 border-gray-200 dark:border-green-900/40
+      bg-white dark:bg-background-dark focus:border-primary outline-none transition-all mb-4" />
+    <div class="flex gap-3">
+      <button onclick="submitFolderNameDialog()" class="flex-1 px-4 py-2.5 bg-primary text-text-main shadow-fun hover:shadow-fun-hover hover:-translate-y-0.5 rounded-xl font-bold transition-all">
+        Tạo
+      </button>
+      <button onclick="closeFolderNameModal()" class="flex-1 px-4 py-2.5 bg-white dark:bg-background-dark border-2 border-gray-200 dark:border-green-900/40 text-text-main dark:text-white font-medium rounded-xl hover:bg-gray-50 dark:hover:bg-green-900/20 transition-colors">
+        Hủy
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Dialogue Game Character Selection Modal -->
+<div id="dialogueGameModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-all">
+  <div class="bg-white dark:bg-card-dark rounded-3xl shadow-2xl p-8 max-w-md w-full mx-4 border border-gray-100 dark:border-zinc-800">
+    <h2 id="gameModalTitle" class="text-2xl font-bold text-text-main dark:text-white mb-2">Chọn Nhân Vật</h2>
+    <p class="text-sm text-text-secondary dark:text-gray-400 mb-6">Bạn muốn đóng vai trò ai trong cuộc hội thoại?</p>
+    
+    <div class="space-y-3">
+      <!-- Character A Button -->
+      <button onclick="startDialogueGame(currentDialogueGameId, 'A')" class="w-full px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl font-bold text-lg transition-all hover:shadow-lg hover:-translate-y-1 flex items-center justify-center gap-3">
+        <span class="material-symbols-outlined text-2xl">person</span>
+        <div class="text-left">
+          <div>Nhân Vật A</div>
+          <div class="text-xs font-normal opacity-90">Các câu lẻ (1, 3, 5, 7...)</div>
+        </div>
+      </button>
+      
+      <!-- Character B Button -->
+      <button onclick="startDialogueGame(currentDialogueGameId, 'B')" class="w-full px-6 py-4 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-2xl font-bold text-lg transition-all hover:shadow-lg hover:-translate-y-1 flex items-center justify-center gap-3">
+        <span class="material-symbols-outlined text-2xl">person</span>
+        <div class="text-left">
+          <div>Nhân Vật B</div>
+          <div class="text-xs font-normal opacity-90">Các câu chẵn (2, 4, 6, 8...)</div>
+        </div>
+      </button>
+    </div>
+    
+    <button onclick="closeDialogueGameModal()" class="w-full mt-4 px-4 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-700 rounded-xl transition-colors">
+      Hủy
+    </button>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toastContainer" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+<script src="../js/sidebar.js"></script>
+<script>
+// ==================== STATE ====================
+let folders = [];
+let dialogues = [];
+let selectedDialogueFolderId = null;
+let currentEditId = null;
+let currentDialogueGameId = null;
+
+// ==================== INITIALIZE ====================
+document.addEventListener('DOMContentLoaded', async function() {
+  try {
+    console.log('📄 DOM Loaded - Initializing Dialogue Page');
+    renderSidebar('dialogues', null);
+    initMobileMenu();
+    initializeChatbot();
+    
+    console.log('👤 Loading user profile...');
+    await loadUserProfile();
+    
+    console.log('📁 Loading folders...');
+    await loadFolders();
+    console.log('Folders state after load:', folders);
+    
+    console.log('💬 Loading dialogues...');
+    await loadDialogues();
+    console.log('Dialogues state after load:', dialogues);
+    
+    console.log('🎨 Rendering dialogue list...');
+    renderDialogueList();
+    
+    console.log('✅ Dialogue page initialized!');
+  } catch (err) {
+    console.error('💥 Critical error during initialization:', err);
+    showToast('Lỗi khởi tạo trang: ' + err.message, 'error');
+  }
+});
+
+// ==================== USER PROFILE ====================
+async function loadUserProfile() {
+  try {
+    const response = await apiClient.get('/auth/profile');
+    if (response.success) {
+      const profileData = response.data;
+      const sidebarContainer = document.getElementById('sidebar-container');
+      sidebarContainer.innerHTML = renderSidebar('dialogues', profileData);
+      initMobileMenu();
+    }
+  } catch (error) {
+    console.error('Error loading profile:', error);
+  }
+}
+
+// ==================== VIEW SWITCHERS ====================
+function openDialogueFormModal() {
+  currentEditId = null;
+  clearDialogueForm();
+  switchToDialogueForm();
+}
+
+function backToDialogueList() {
+  switchToDialogueList();
+  clearDialogueForm();
+}
+
+function switchToDialogueList() {
+  document.getElementById('dialogueListView').classList.remove('hidden');
+  document.getElementById('dialogueFormView').classList.add('hidden');
+  document.getElementById('dialogueHeaderList').classList.remove('hidden');
+  document.getElementById('dialogueHeaderForm').classList.add('hidden');
+}
+
+function switchToDialogueForm(title = 'Thêm Cuộc Thoại Mới') {
+  document.getElementById('dialogueListView').classList.add('hidden');
+  document.getElementById('dialogueFormView').classList.remove('hidden');
+  document.getElementById('dialogueHeaderList').classList.add('hidden');
+  document.getElementById('dialogueHeaderForm').classList.remove('hidden');
+  document.getElementById('dialogueFormTitle').textContent = title;
+}
+
+function openFolderIconModal() {
+  document.getElementById('folderNameField').value = '';
+  document.getElementById('folderNameModal').classList.remove('hidden');
+}
+
+function openFolderModal() {
+  document.getElementById('folderModal').classList.remove('hidden');
+}
+
+// ==================== FOLDERS ====================
+async function loadFolders() {
+  try {
+    console.log('🔄 Fetching dialogue folders...');
+    const response = await apiClient.get('/dialogues/dialogue-folders');
+    console.log('✅ Folders loaded:', response);
+    if (response.success) {
+      folders = response.data;
+      console.log(`📁 Found ${folders.length} folders:`, folders);
+    }
+  } catch (error) {
+    console.error('❌ Error loading folders:', error);
+    showToast('Lỗi tải thư mục: ' + error.message, 'error');
+  }
+}
+
+function renderDialogueList() {
+  console.log('🎨 Rendering dialogue list');
+  
+  // Render folder pills
+  const folderPills = document.getElementById('dialogueFolderPills');
+  if (folderPills) {
+    folderPills.innerHTML = `
+      <button onclick="selectDialogueFolder(null)" id="dialogue-folder-all"
+        class="px-4 py-2 rounded-full ${!selectedDialogueFolderId ? 'bg-primary text-text-main shadow-fun hover:-translate-y-0.5 hover:shadow-fun-hover' : 'bg-white dark:bg-card-dark border-2 border-gray-200 dark:border-zinc-700 text-text-main dark:text-white hover:border-primary'} font-medium transition-all">
+        <span class="material-symbols-outlined inline mr-1 align-middle" style="font-size: 18px;">folder_open</span>
+        Tất cả
+      </button>
+    `;
+
+    folders.forEach(folder => {
+      const btn = document.createElement('button');
+      btn.onclick = () => selectDialogueFolder(folder._id);
+      btn.id = `dialogue-folder-${folder._id}`;
+      btn.className = `px-4 py-2 rounded-full font-medium transition-all flex items-center ${selectedDialogueFolderId === folder._id ? 'bg-primary text-text-main shadow-fun hover:-translate-y-0.5 hover:shadow-fun-hover' : 'bg-white dark:bg-card-dark border-2 border-gray-200 dark:border-zinc-700 text-text-main dark:text-white hover:border-primary'}`;
+      btn.innerHTML = `<span class="material-symbols-outlined inline mr-1" style="font-size: 18px;">folder</span>${esc(folder.name)}`;
+      folderPills.appendChild(btn);
+    });
+  }
+
+  // Render dialogues
+  renderDialogueCards();
+  
+  // Update form dropdown
+  updateDialogueFolderSelect();
+}
+
+function updateDialogueFolderSelect() {
+  const select = document.getElementById('dialogueFormFolder');
+  if (!select) return;
+  select.innerHTML = '<option value="">-- Chọn thư mục --</option>';
+  folders.forEach(folder => {
+    const option = document.createElement('option');
+    option.value = folder._id;
+    option.textContent = folder.name;
+    select.appendChild(option);
+  });
+}
+
+function selectDialogueFolder(id) {
+  selectedDialogueFolderId = id;
+  renderDialogueCards();
+  
+  // Update folder pills
+  document.querySelectorAll('#dialogueFolderPills button').forEach(btn => {
+    btn.classList.remove('bg-primary', 'text-text-main', 'shadow-fun');
+    btn.classList.add('bg-white', 'dark:bg-card-dark', 'border-2', 'border-gray-200', 'dark:border-zinc-700');
+    if (!id && btn.id === 'dialogue-folder-all') {
+      btn.classList.add('bg-primary', 'text-text-main', 'shadow-fun');
+      btn.classList.remove('bg-white', 'dark:bg-card-dark', 'border-2', 'border-gray-200', 'dark:border-zinc-700');
+    } else if (id && btn.id === `dialogue-folder-${id}`) {
+      btn.classList.add('bg-primary', 'text-text-main', 'shadow-fun');
+      btn.classList.remove('bg-white', 'dark:bg-card-dark', 'border-2', 'border-gray-200', 'dark:border-zinc-700');
+    }
+  });
+}
+
+async function loadDialogues() {
+  try {
+    console.log('🔄 Fetching dialogues...');
+    const response = await apiClient.get('/dialogues/dialogues');
+    console.log('✅ Dialogues loaded:', response);
+    if (response.success) {
+      dialogues = response.data;
+      console.log(`💬 Found ${dialogues.length} dialogues:`, dialogues);
+    }
+  } catch (error) {
+    console.error('❌ Error loading dialogues:', error);
+    showToast('Lỗi tải hội thoại: ' + error.message, 'error');
+  }
+}
+
+function renderDialogueCards() {
+  console.log('🎨 Rendering dialogue cards, selectedDialogueFolderId:', selectedDialogueFolderId, 'totalDialogues:', dialogues.length);
+  const filtered = selectedDialogueFolderId 
+    ? dialogues.filter(d => d.folderId === selectedDialogueFolderId)
+    : dialogues;
+
+  const table = document.getElementById('dialogueTable');
+  const emptyState = document.getElementById('dialogueEmptyState');
+
+  if (filtered.length === 0) {
+    if (table) table.innerHTML = '';
+    if (emptyState) emptyState.classList.remove('hidden');
+    return;
+  }
+
+  if (emptyState) emptyState.classList.add('hidden');
+  if (!table) return;
+  
+  table.innerHTML = filtered.map(d => `
+    <div class="bg-white dark:bg-zinc-800 rounded-2xl border border-gray-200 dark:border-zinc-700 p-4 shadow-soft hover:shadow-fun transition-all hover:-translate-y-1 cursor-pointer group">
+      <div class="flex items-start gap-3 mb-3">
+        <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-primary">forum</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <h3 class="font-bold text-sm text-text-main dark:text-white line-clamp-1">${esc(d.name || d.hanzi)}</h3>
+          <p class="text-xs text-text-secondary dark:text-gray-400">${d.entryCount || 1} từ · ${esc(d.hanzi)} · ${esc(d.pinyin)}</p>
+        </div>
+      </div>
+      
+      <p class="text-sm text-text-main dark:text-gray-300 line-clamp-2 mb-3">${esc(d.vietnamese).replace(/\n/g, ' ')}</p>
+      
+      <div class="flex gap-2">
+        <button onclick="practiceDialogue('${d._id}')" class="flex-1 px-3 py-2 bg-primary text-text-main rounded-xl font-semibold text-xs transition-all shadow-fun hover:-translate-y-0.5 hover:shadow-fun-hover flex items-center justify-center gap-1">
+          <span class="material-symbols-outlined text-base">play_arrow</span>
+          <span>Luyện</span>
+        </button>
+        <button onclick="editDialogue('${d._id}')" class="w-9 h-9 flex items-center justify-center rounded-xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">
+          <span class="material-symbols-outlined text-base">edit</span>
+        </button>
+        <button onclick="deleteDialogue('${d._id}')" class="w-9 h-9 flex items-center justify-center rounded-xl bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors">
+          <span class="material-symbols-outlined text-base">delete</span>
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addDialogueRow(hanzi = '', pinyin = '', vietnamese = '') {
+  const container = document.getElementById('dialogueRowsContainer');
+  if (!container) {
+    console.error('❌ Dialogue rows container not found');
+    return;
+  }
+  
+  const rowId = 'dialogue_row_' + Date.now();
+  const row = document.createElement('div');
+  row.id = rowId;
+  row.className = 'grid grid-cols-[1fr_1fr_1.5fr_40px] gap-2 items-start p-3 bg-white dark:bg-card-dark rounded-xl border border-gray-100 dark:border-zinc-700';
+  row.innerHTML = `
+    <input type="text" class="px-3 py-2 text-sm rounded-lg border-2 border-gray-200 dark:border-zinc-700
+      bg-white dark:bg-card-dark focus:border-primary outline-none transition-all" 
+      placeholder="Hán Tự" value="${esc(hanzi)}" oninput="updateDialogueEntryCount()">
+    <input type="text" class="px-3 py-2 text-sm rounded-lg border-2 border-gray-200 dark:border-zinc-700
+      bg-white dark:bg-card-dark focus:border-primary outline-none transition-all" 
+      placeholder="Pinyin" value="${esc(pinyin)}">
+    <textarea class="px-3 py-2 text-sm rounded-lg border-2 border-gray-200 dark:border-zinc-700
+      bg-white dark:bg-card-dark focus:border-primary outline-none transition-all resize-none" 
+      placeholder="Nghĩa Tiếng Việt" rows="2" oninput="updateDialogueEntryCount()">${esc(vietnamese)}</textarea>
+    <button onclick="removeDialogueRow('${rowId}')" type="button" class="w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-400 transition-colors rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20">
+      <span class="material-symbols-outlined text-base">delete</span>
+    </button>
+  `;
+  container.appendChild(row);
+  
+  // Scroll to bottom to show the new row
+  setTimeout(() => {
+    container.scrollTop = container.scrollHeight;
+  }, 0);
+  
+  updateDialogueEntryCount();
+}
+
+function removeDialogueRow(rowId) {
+  const row = document.getElementById(rowId);
+  if (row) {
+    row.remove();
+    updateDialogueEntryCount();
+  }
+}
+
+function updateDialogueEntryCount() {
+  const container = document.getElementById('dialogueRowsContainer');
+  const count = container ? container.querySelectorAll('[id^="dialogue_row_"]').length : 0;
+  const countEl = document.getElementById('dialogueEntryCount');
+  if (countEl) {
+    countEl.textContent = count + ' từ';
+  }
+}
+
+function getDialogueRows() {
+  const container = document.getElementById('dialogueRowsContainer');
+  if (!container) return [];
+  const rows = [];
+  container.querySelectorAll('[id^="dialogue_row_"]').forEach(row => {
+    const inputs = row.querySelectorAll('input, textarea');
+    if (inputs.length >= 3) {
+      const hanzi = inputs[0].value.trim();
+      const pinyin = inputs[1].value.trim();
+      const vietnamese = inputs[2].value.trim();
+      if (hanzi || pinyin || vietnamese) {
+        rows.push({ hanzi, pinyin, vietnamese });
+      }
+    }
+  });
+  return rows;
+}
+
+function addDialogueRowsBulk() {
+  const text = prompt('Nhập các từ, mỗi dòng một mục (định dạng: Hán Tự | Pinyin | Nghĩa):\n\nVD:\n对不起|duìbúqǐ|Xin lỗi\n谢谢|xièxie|Cảm ơn');
+  if (!text) return;
+  
+  const lines = text.split('\n').filter(line => line.trim());
+  lines.forEach(line => {
+    const parts = line.split('|').map(p => p.trim());
+    if (parts.length >= 3) {
+      addDialogueRow(parts[0], parts[1], parts[2]);
+    } else if (parts.length === 2) {
+      addDialogueRow(parts[0], parts[1], '');
+    } else if (parts.length === 1) {
+      addDialogueRow(parts[0], '', '');
+    }
+  });
+}
+
+function processDialogueExcelImport(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      console.log('📁 Reading Excel file:', file.name);
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: 'array' });
+      console.log('📊 Workbook sheets:', workbook.SheetNames);
+      
+      const firstSheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[firstSheetName];
+      
+      // Convert sheet to json array with headers
+      const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+      console.log('📝 Rows from Excel:', json);
+
+      if (json.length === 0) {
+        showToast('File Excel trống', 'error');
+        return;
+      }
+
+      // Clear existing rows
+      const container = document.getElementById('dialogueRowsContainer');
+      if (container) container.innerHTML = '';
+
+      let importedCount = 0;
+      json.forEach((row, index) => {
+        console.log(`  Row ${index}:`, row);
+        
+        // Handle both array format and object format
+        let hanzi = '';
+        let pinyin = '';
+        let vietnamese = '';
+
+        if (Array.isArray(row)) {
+          // Array format: [hanzi, pinyin, vietnamese]
+          hanzi = row[0] || '';
+          pinyin = row[1] || '';
+          vietnamese = row[2] || '';
+        } else {
+          // Object format: {key: value}
+          const values = Object.values(row);
+          hanzi = values[0] || '';
+          pinyin = values[1] || '';
+          vietnamese = values[2] || '';
+        }
+
+        // Convert to string and trim
+        hanzi = String(hanzi).trim();
+        pinyin = String(pinyin).trim();
+        vietnamese = String(vietnamese).trim();
+
+        console.log(`    Processing: hanzi="${hanzi}", pinyin="${pinyin}", vietnamese="${vietnamese}"`);
+
+        // Add row if at least one field is not empty
+        if (hanzi || pinyin || vietnamese) {
+          addDialogueRow(hanzi, pinyin, vietnamese);
+          importedCount++;
+        }
+      });
+
+      if (importedCount > 0) {
+        console.log(`✅ Imported ${importedCount} rows from Excel`);
+        showToast(`Nhập thành công ${importedCount} từ từ file Excel!`, 'success');
+      } else {
+        showToast('Không tìm thấy dữ liệu trong file Excel', 'error');
+      }
+    } catch (error) {
+      console.error('❌ Excel import error:', error);
+      showToast('Lỗi khi đọc file Excel. Vui lòng kiểm tra lại định dạng file.', 'error');
+    }
+
+    // Reset file input so user can select the same file again if needed
+    event.target.value = '';
+  };
+
+  reader.readAsArrayBuffer(file);
+}
+
+async function saveDialogue() {
+  let name = document.getElementById('dialogueFormName').value.trim();
+  const folderId = document.getElementById('dialogueFormFolder').value || null;
+  const entries = getDialogueRows();
+
+  if (entries.length === 0) {
+    showToast('Vui lòng thêm ít nhất một mục (Hán Tự + Pinyin + Nghĩa)', 'error');
+    return;
+  }
+
+  // Use first entry's hanzi as fallback name if no name provided
+  const firstEntry = entries[0];
+  if (!name) {
+    name = firstEntry.hanzi || 'Cuộc thoại mới';
+  }
+
+  try {
+    const payload = {
+      name,
+      folderId,
+      entries,  // Gửi tất cả entries
+      hanzi: firstEntry.hanzi,
+      pinyin: firstEntry.pinyin,
+      vietnamese: firstEntry.vietnamese
+    };
+    
+    if (currentEditId) {
+      const response = await apiClient.patch(`/dialogues/dialogues/${currentEditId}`, payload);
+      if (response.success) {
+        showToast('Cập nhật hội thoại thành công!', 'success');
+      }
+    } else {
+      const response = await apiClient.post('/dialogues/dialogues', payload);
+      if (response.success) {
+        showToast('Thêm hội thoại thành công!', 'success');
+      }
+    }
+
+    backToDialogueList();
+    await loadDialogues();
+    renderDialogueList();
+  } catch (error) {
+    console.error('Error saving dialogue:', error);
+    showToast('Lỗi lưu hội thoại: ' + error.message, 'error');
+  }
+}
+
+function editDialogue(id) {
+  const dialogue = dialogues.find(d => d._id === id);
+  if (!dialogue) {
+    showToast('Không tìm thấy hội thoại', 'error');
+    return;
+  }
+
+  currentEditId = id;
+  document.getElementById('dialogueFormName').value = dialogue.name || dialogue.hanzi || '';
+  document.getElementById('dialogueFormFolder').value = dialogue.folderId || '';
+  
+  // Clear and populate dialogue entries
+  const container = document.getElementById('dialogueRowsContainer');
+  if (container) container.innerHTML = '';
+  
+  // Load single entry (or multiple if stored as entries array)
+  if (dialogue.entries && Array.isArray(dialogue.entries) && dialogue.entries.length > 0) {
+    dialogue.entries.forEach(entry => {
+      addDialogueRow(entry.hanzi || '', entry.pinyin || '', entry.vietnamese || '');
+    });
+  } else if (dialogue.hanzi) {
+    // Standard format: hanzi, pinyin, vietnamese
+    addDialogueRow(dialogue.hanzi || '', dialogue.pinyin || '', dialogue.vietnamese || '');
+  }
+  
+  console.log('Edit dialogue:', dialogue);
+  switchToDialogueForm(`Chỉnh Sửa: ${dialogue.name || dialogue.hanzi}`);
+}
+
+async function deleteDialogue(id) {
+  if (!confirm('Xóa hội thoại này?')) return;
+
+  try {
+    const response = await apiClient.delete(`/dialogues/dialogues/${id}`);
+    if (response.success) {
+      showToast('Xóa hội thoại thành công!', 'success');
+      await loadDialogues();
+      renderDialogueCards();
+    }
+  } catch (error) {
+    console.error('Error deleting dialogue:', error);
+    showToast('Lỗi xóa hội thoại', 'error');
+  }
+}
+
+function clearDialogueForm() {
+  document.getElementById('dialogueFormName').value = '';
+  document.getElementById('dialogueFormFolder').value = '';
+  const container = document.getElementById('dialogueRowsContainer');
+  if (container) container.innerHTML = '';
+  updateDialogueEntryCount();
+  currentEditId = null;
+}
+
+// ==================== FOLDER MANAGEMENT ====================
+async function createFolder() {
+  const folderInput = document.getElementById('folderNameInput');
+  const name = folderInput.value.trim();
+  
+  if (!name) {
+    showToast('Vui lòng nhập tên thư mục', 'error');
+    return;
+  }
+
+  try {
+    const response = await apiClient.post('/dialogues/dialogue-folders', { name });
+    if (response.success) {
+      showToast('Tạo thư mục thành công!', 'success');
+      folderInput.value = '';
+      await loadFolders();
+      renderDialogueList();
+      closeFolderModal();
+    }
+  } catch (error) {
+    console.error('Error creating folder:', error);
+    showToast('Lỗi tạo thư mục', 'error');
+  }
+}
+
+function closeFolderModal() {
+  document.getElementById('folderModal').classList.add('hidden');
+}
+
+function closeFolderNameModal() {
+  document.getElementById('folderNameModal').classList.add('hidden');
+}
+
+function closeDialogueFormModal() {
+  document.getElementById('dialogueFormModal').classList.add('hidden');
+}
+
+function submitFolderNameDialog() {
+  const folderInput = document.getElementById('folderNameField');
+  const name = folderInput.value.trim();
+  
+  if (!name) {
+    showToast('Vui lòng nhập tên thư mục', 'error');
+    return;
+  }
+
+  createFolderInternal(name);
+}
+
+async function createFolderInternal(name) {
+  try {
+    const response = await apiClient.post('/dialogues/dialogue-folders', { name });
+    if (response.success) {
+      showToast('Tạo thư mục thành công!', 'success');
+      await loadFolders();
+      renderDialogueList();
+      closeFolderNameModal();
+    }
+  } catch (error) {
+    console.error('Error creating folder:', error);
+    showToast('Lỗi tạo thư mục: ' + error.message, 'error');
+  }
+}
+
+function submitFolderName() {
+  // This is for rename functionality if needed in future
+  closeFolderNameModal();
+}
+
+async function importFromExcel() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.xlsx,.xls,.csv';
+  
+  input.onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      const data = await file.arrayBuffer();
+      const workbook = XLSX.read(data);
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(sheet);
+
+      if (rows.length === 0) {
+        showToast('File Excel trống', 'error');
+        return;
+      }
+
+      const folderId = document.getElementById('dialogueFormFolder').value;
+      if (!folderId) {
+        showToast('Vui lòng chọn thư mục trước', 'error');
+        return;
+      }
+
+      let successCount = 0;
+      for (const row of rows) {
+        const name = row['Tên'] || row['Name'] || row['name'] || '';
+        const hanzi = row['Hán Tự'] || row['Hanzi'] || row['hanzi'] || '';
+        const pinyin = row['Pinyin'] || row['pinyin'] || '';
+        const vietnamese = row['Nghĩa'] || row['Vietnamese'] || row['vietnamese'] || '';
+        const notes = row['Ghi chú'] || row['Notes'] || row['notes'] || '';
+
+        if (hanzi && pinyin && vietnamese) {
+          try {
+            const response = await apiClient.post('/dialogues/dialogues', {
+              name: name || hanzi,
+              folderId,
+              hanzi,
+              pinyin,
+              vietnamese,
+              notes
+            });
+            if (response.success) successCount++;
+          } catch (err) {
+            console.error('Error importing row:', err);
+          }
+        }
+      }
+
+      showToast(`Nhập thành công ${successCount}/${rows.length} hội thoại!`, 'success');
+      await loadDialogues();
+      renderDialogueCards();
+    } catch (error) {
+      console.error('Excel import error:', error);
+      showToast('Lỗi đọc file Excel', 'error');
+    }
+  };
+
+  input.click();
+}
+
+function practiceDialogue(id) {
+  const dialogue = dialogues.find(d => d._id === id);
+  if (!dialogue) return;
+
+  currentDialogueGameId = id;
+  document.getElementById('gameModalTitle').textContent = `Chọn Nhân Vật - ${esc(dialogue.name || dialogue.hanzi)}`;
+  document.getElementById('dialogueGameModal').classList.remove('hidden');
+}
+
+function closeDialogueGameModal() {
+  document.getElementById('dialogueGameModal').classList.add('hidden');
+  currentDialogueGameId = null;
+}
+
+function startDialogueGame(dialogueId, character) {
+  if (!dialogueId) return;
+  
+  // Encode dialogue data to pass via URL or session storage
+  sessionStorage.setItem('dialogueGameData', JSON.stringify({
+    dialogueId,
+    character,
+    dialogue: dialogues.find(d => d._id === dialogueId)
+  }));
+  
+  // Navigate to game page
+  window.location.href = `/user/game_dialogue_practice.html?dialogueId=${dialogueId}&character=${character}`;
+}
+
+// ==================== UTILS ====================
+function esc(str) {
+  const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+  return str.replace(/[&<>"']/g, m => map[m]);
+}
+
+function formatDate(iso) {
+  return new Date(iso).toLocaleDateString('vi-VN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+}
+
+function showToast(msg, type = 'info') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `px-4 py-3 rounded-lg text-white font-medium shadow-lg animate-fadeIn ${
+    type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+  }`;
+  toast.textContent = msg;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.remove();
+  }, 3000);
+}
+</script>
+
+</body>
+</html>
