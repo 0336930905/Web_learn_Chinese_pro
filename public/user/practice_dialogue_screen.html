@@ -393,12 +393,15 @@
     <div class="p-6 space-y-6 max-h-[60vh] overflow-y-auto">
       <div class="flex gap-3">
         <input id="folderNameInput" type="text" placeholder="Tên thư mục mới..." class="w-full" />
-        <button onclick="createFolder()" class="px-6 py-2.5 bg-primary text-text-main shadow-fun hover:shadow-fun-hover hover:-translate-y-0.5 rounded-xl font-bold transition-all">
+        <button onclick="createFolder()" class="px-6 py-2.5 bg-primary text-text-main shadow-fun hover:shadow-fun-hover hover:-translate-y-0.5 rounded-xl font-bold transition-all flex items-center gap-2">
           <span class="material-symbols-outlined">add</span>
+          <span class="hidden sm:inline">Thêm</span>
         </button>
       </div>
 
-      <div id="folderList" class="space-y-3"></div>
+      <div id="folderList" class="space-y-3">
+        <!-- Folder items will be rendered here -->
+      </div>
     </div>
   </div>
 </div>
@@ -511,6 +514,88 @@ function openFolderIconModal() {
 
 function openFolderModal() {
   document.getElementById('folderModal').classList.remove('hidden');
+  renderFolderList();
+}
+
+function closeFolderModal() {
+  document.getElementById('folderModal').classList.add('hidden');
+}
+
+function renderFolderList() {
+  const folderList = document.getElementById('folderList');
+  if (!folderList) return;
+
+  if (folders.length === 0) {
+    folderList.innerHTML = `
+      <div class="text-center py-8 text-gray-400">
+        <span class="material-symbols-outlined text-4xl mb-2 block">folder_off</span>
+        <p class="text-sm">Chưa có thư mục nào. Hãy tạo thư mục mới!</p>
+      </div>
+    `;
+    return;
+  }
+
+  folderList.innerHTML = folders.map(folder => `
+    <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-zinc-800 rounded-xl border border-gray-200 dark:border-zinc-700 hover:border-primary transition-all group">
+      <div class="flex items-center gap-3 flex-1">
+        <span class="material-symbols-outlined text-primary text-xl">folder</span>
+        <div>
+          <p class="font-semibold text-text-main dark:text-white text-sm">${esc(folder.name)}</p>
+          <p class="text-xs text-text-secondary dark:text-gray-400">ID: ${folder._id}</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <button onclick="editFolderName('${folder._id}', '${esc(folder.name)}')" class="w-9 h-9 flex items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors" title="Sửa">
+          <span class="material-symbols-outlined text-base">edit</span>
+        </button>
+        <button onclick="deleteFolder('${folder._id}')" class="w-9 h-9 flex items-center justify-center rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors" title="Xóa">
+          <span class="material-symbols-outlined text-base">delete</span>
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function editFolderName(folderId, currentName) {
+  const newName = prompt('Sửa tên thư mục:', currentName);
+  if (!newName || newName.trim() === currentName) return;
+
+  updateFolderName(folderId, newName.trim());
+}
+
+async function updateFolderName(folderId, newName) {
+  try {
+    const response = await apiClient.patch(`/dialogues/dialogue-folders/${folderId}`, { name: newName });
+    if (response.success) {
+      showToast('Cập nhật thư mục thành công!', 'success');
+      await loadFolders();
+      renderDialogueList();
+      renderFolderList();
+    }
+  } catch (error) {
+    console.error('Error updating folder:', error);
+    showToast('Lỗi cập nhật thư mục: ' + error.message, 'error');
+  }
+}
+
+async function deleteFolder(folderId) {
+  const folder = folders.find(f => f._id === folderId);
+  const folderName = folder ? folder.name : 'thư mục';
+  
+  if (!confirm(`Xóa thư mục "${folderName}" này? Các hội thoại trong thư mục sẽ không bị xóa.`)) return;
+
+  try {
+    const response = await apiClient.delete(`/dialogues/dialogue-folders/${folderId}`);
+    if (response.success) {
+      showToast('Xóa thư mục thành công!', 'success');
+      await loadFolders();
+      renderDialogueList();
+      renderFolderList();
+    }
+  } catch (error) {
+    console.error('Error deleting folder:', error);
+    showToast('Lỗi xóa thư mục: ' + error.message, 'error');
+  }
 }
 
 // ==================== FOLDERS ====================
@@ -940,16 +1025,12 @@ async function createFolder() {
       folderInput.value = '';
       await loadFolders();
       renderDialogueList();
-      closeFolderModal();
+      renderFolderList();
     }
   } catch (error) {
     console.error('Error creating folder:', error);
-    showToast('Lỗi tạo thư mục', 'error');
+    showToast('Lỗi tạo thư mục: ' + error.message, 'error');
   }
-}
-
-function closeFolderModal() {
-  document.getElementById('folderModal').classList.add('hidden');
 }
 
 function closeFolderNameModal() {
