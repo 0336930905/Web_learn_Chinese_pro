@@ -1103,10 +1103,9 @@
       </button>
     </div>
 
-    <!-- Body -->
-    <div class="p-6 max-h-[70vh] overflow-y-auto">
-      <!-- Folder Filter -->
-      <div class="mb-4 flex items-center gap-3">
+    <!-- Folder Filter (Sticky Above Body) -->
+    <div class="px-6 py-4 border-b border-gray-100 dark:border-green-900/20 bg-white dark:bg-card-dark sticky top-0 z-20 overflow-hidden">
+      <div class="flex items-center gap-3">
         <!-- Label -->
         <div class="flex items-center gap-1 shrink-0">
           <span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings:'FILL' 1">folder</span>
@@ -1114,15 +1113,15 @@
         </div>
         <!-- Scrollable pill row -->
         <div class="flex-1 overflow-x-auto scrollbar-hide">
-          <div class="flex gap-1.5 items-center" style="min-width:max-content">
+          <div class="flex gap-1.5 items-center" style="min-width:max-content; padding-bottom: 0.25rem;">
             <!-- "Tất cả" pill -->
-            <button id="multiCustomFolderBtn_all" onclick="selectMultiCustomFolder(null)" class="folder-item flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-green-900/20 hover:bg-gray-200 dark:hover:bg-green-900/40">
+            <button id="multiCustomFolderBtn_all" onclick="selectMultiCustomFolder(null)" class="folder-item flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-green-900/20 hover:bg-gray-200 dark:hover:bg-green-900/40 shrink-0">
               <span class="material-symbols-outlined text-xs" style="font-variation-settings:'FILL' 1">layers</span>
               Tất cả
               <span id="multiCustomFolderCount_all" class="font-black bg-primary/20 px-1.5 py-0.5 rounded-full text-[10px]">0</span>
             </button>
             <!-- "Chưa phân loại" pill -->
-            <button id="multiCustomFolderBtn_unfiled" onclick="selectMultiCustomFolder('unfiled')" class="folder-item flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-green-900/20 hover:bg-gray-200 dark:hover:bg-green-900/40">
+            <button id="multiCustomFolderBtn_unfiled" onclick="selectMultiCustomFolder('unfiled')" class="folder-item flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-green-900/20 hover:bg-gray-200 dark:hover:bg-green-900/40 shrink-0">
               <span class="material-symbols-outlined text-xs">folder_off</span>
               Chưa phân loại
               <span id="multiCustomFolderCount_unfiled" class="font-black bg-gray-200 dark:bg-zinc-700 px-1.5 py-0.5 rounded-full text-[10px]">0</span>
@@ -1132,11 +1131,14 @@
             <!-- Dynamic folder pills -->
             <div id="multiCustomFolderItemsContainer" class="flex gap-1.5 items-center">
             </div>
-            <div id="multiCustomFolderEmpty" class="hidden text-xs text-gray-400 dark:text-zinc-500 italic px-1">Chưa có thư mục nào</div>
+            <div id="multiCustomFolderEmpty" class="hidden text-xs text-gray-400 dark:text-zinc-500 italic px-1 shrink-0">Chưa có thư mục nào</div>
           </div>
         </div>
       </div>
+    </div>
 
+    <!-- Body -->
+    <div class="p-6 max-h-[calc(70vh-140px)] overflow-y-auto">
       <!-- Search and Sort Controls -->
       <div class="flex gap-3 mb-4 sticky top-0 bg-white dark:bg-card-dark z-10">
         <div class="flex-1 relative">
