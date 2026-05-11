@@ -36,7 +36,7 @@ function renderSidebar(activePage = 'home', profileData = null) {
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
-            <nav class="flex-1 px-4 space-y-2 mt-4">
+            <nav class="flex-1 px-4 space-y-2 mt-4 overflow-y-auto">
                 <a class="flex items-center gap-3 px-4 py-3 rounded-full ${activePage === 'home' ? 'bg-primary/20 text-slate-900 dark:text-white active-fill' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors'}"
                     href="home.html">
                     <span class="material-symbols-outlined ${activePage === 'home' ? 'text-primary' : ''}">home</span>

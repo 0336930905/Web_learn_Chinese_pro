@@ -422,38 +422,6 @@
   </div>
 </div>
 
-<!-- Dialogue Game Character Selection Modal -->
-<div id="dialogueGameModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-all">
-  <div class="bg-white dark:bg-card-dark rounded-3xl shadow-2xl p-8 max-w-md w-full mx-4 border border-gray-100 dark:border-zinc-800">
-    <h2 id="gameModalTitle" class="text-2xl font-bold text-text-main dark:text-white mb-2">Chọn Nhân Vật</h2>
-    <p class="text-sm text-text-secondary dark:text-gray-400 mb-6">Bạn muốn đóng vai trò ai trong cuộc hội thoại?</p>
-    
-    <div class="space-y-3">
-      <!-- Character A Button -->
-      <button onclick="startDialogueGame(currentDialogueGameId, 'A')" class="w-full px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl font-bold text-lg transition-all hover:shadow-lg hover:-translate-y-1 flex items-center justify-center gap-3">
-        <span class="material-symbols-outlined text-2xl">person</span>
-        <div class="text-left">
-          <div>Nhân Vật A</div>
-          <div class="text-xs font-normal opacity-90">Các câu lẻ (1, 3, 5, 7...)</div>
-        </div>
-      </button>
-      
-      <!-- Character B Button -->
-      <button onclick="startDialogueGame(currentDialogueGameId, 'B')" class="w-full px-6 py-4 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-2xl font-bold text-lg transition-all hover:shadow-lg hover:-translate-y-1 flex items-center justify-center gap-3">
-        <span class="material-symbols-outlined text-2xl">person</span>
-        <div class="text-left">
-          <div>Nhân Vật B</div>
-          <div class="text-xs font-normal opacity-90">Các câu chẵn (2, 4, 6, 8...)</div>
-        </div>
-      </button>
-    </div>
-    
-    <button onclick="closeDialogueGameModal()" class="w-full mt-4 px-4 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-700 rounded-xl transition-colors">
-      Hủy
-    </button>
-  </div>
-</div>
-
 <!-- Toast Container -->
 <div id="toastContainer" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
@@ -464,7 +432,6 @@ let folders = [];
 let dialogues = [];
 let selectedDialogueFolderId = null;
 let currentEditId = null;
-let currentDialogueGameId = null;
 
 // ==================== INITIALIZE ====================
 document.addEventListener('DOMContentLoaded', async function() {
@@ -1092,28 +1059,14 @@ function practiceDialogue(id) {
   const dialogue = dialogues.find(d => d._id === id);
   if (!dialogue) return;
 
-  currentDialogueGameId = id;
-  document.getElementById('gameModalTitle').textContent = `Chọn Nhân Vật - ${esc(dialogue.name || dialogue.hanzi)}`;
-  document.getElementById('dialogueGameModal').classList.remove('hidden');
-}
-
-function closeDialogueGameModal() {
-  document.getElementById('dialogueGameModal').classList.add('hidden');
-  currentDialogueGameId = null;
-}
-
-function startDialogueGame(dialogueId, character) {
-  if (!dialogueId) return;
-  
-  // Encode dialogue data to pass via URL or session storage
+  // Encode dialogue data to pass via session storage
   sessionStorage.setItem('dialogueGameData', JSON.stringify({
-    dialogueId,
-    character,
-    dialogue: dialogues.find(d => d._id === dialogueId)
+    dialogueId: id,
+    dialogue: dialogue
   }));
   
-  // Navigate to game page
-  window.location.href = `/user/game_dialogue_practice.html?dialogueId=${dialogueId}&character=${character}`;
+  // Navigate directly to dialogue view page
+  window.location.href = `/user/game_dialogue_practice.html?dialogueId=${id}`;
 }
 
 // ==================== UTILS ====================
