@@ -708,7 +708,7 @@ function renderDialogueCards() {
   if (emptyState) emptyState.classList.add('hidden');
   if (!table) return;
   
-  table.innerHTML = `<div class="grid grid-cols-3 gap-1">
+  table.innerHTML = `<div class="grid grid-cols-3 gap-4">
     ${filtered.map(d => `
     <div class="bg-white dark:bg-zinc-800 rounded-2xl border border-gray-200 dark:border-zinc-700 p-4 shadow-soft hover:shadow-fun transition-all hover:-translate-y-1 cursor-pointer group">
       <div class="flex items-start gap-3 mb-3">
