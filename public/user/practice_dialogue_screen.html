@@ -218,9 +218,7 @@
           </div>
 
           <!-- Dialogues Grid -->
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div id="dialogueTable"></div>
-          </div>
+          <div id="dialogueTable" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
 
           <!-- Empty State -->
           <div id="dialogueEmptyState" class="hidden flex flex-col items-center justify-center py-14 text-center gap-3">
@@ -709,8 +707,7 @@ function renderDialogueCards() {
   if (emptyState) emptyState.classList.add('hidden');
   if (!table) return;
   
-  table.innerHTML = `<div class="grid grid-cols-3 gap-4">
-    ${filtered.map(d => `
+  table.innerHTML = `${filtered.map(d => `
     <div class="bg-white dark:bg-zinc-800 rounded-2xl border border-gray-200 dark:border-zinc-700 p-4 shadow-soft hover:shadow-fun transition-all hover:-translate-y-1 cursor-pointer group">
       <div class="flex items-start gap-3 mb-3">
         <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -737,8 +734,7 @@ function renderDialogueCards() {
         </button>
       </div>
     </div>
-    `).join('')}
-  </div>`;
+    `).join('')}`;
 }
 
 function addDialogueRow(hanzi = '', pinyin = '', vietnamese = '') {
