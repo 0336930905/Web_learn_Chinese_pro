@@ -19,7 +19,6 @@
         extend: {
           colors: {
             "primary":           "#4ce64c",
-            "primary-light":     "#6fee6f",
             "primary-dark":      "#38c438",
             "background-light":  "#f6f8f6",
             "background-dark":   "#112111",
@@ -156,38 +155,6 @@
     .answer-item {
       @apply px-3 py-2 rounded-lg bg-primary/20 text-primary dark:bg-primary/30 dark:text-white border border-primary/50 cursor-pointer hover:bg-primary/30 transition-all font-semibold;
     }
-
-    /* Modal Styles */
-    .modal-backdrop {
-      @apply fixed inset-0 bg-black/50 z-50 backdrop-blur-sm;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-backdrop.hidden {
-      display: none !important;
-    }
-
-    .modal-content {
-      @apply bg-white dark:bg-card-dark rounded-3xl shadow-2xl max-w-md w-full mx-4 p-6 md:p-8 animate-in;
-    }
-
-    .result-badge {
-      @apply inline-block px-4 py-2 rounded-full font-bold text-sm;
-    }
-
-    .result-correct {
-      @apply bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300;
-    }
-
-    .result-wrong {
-      @apply bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300;
-    }
-
-    .hint-button {
-      @apply px-3 py-1.5 text-xs font-semibold bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-all shadow-sm hover:shadow-md;
-    }
   </style>
 </head>
 <body class="bg-background-light dark:bg-background-dark text-text-main dark:text-white overflow-hidden">
@@ -251,6 +218,7 @@
               </button>
               <div class="h-5 border-r border-gray-200 dark:border-zinc-700"></div>
               <button onclick="enterWordPuzzleMode()" title="Trò chơi ghép chữ" class="px-4 py-1.5 text-xs font-semibold bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg shadow-soft hover:shadow-fun transition-all hover:-translate-y-0.5 flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-sm">puzzle</span>
                 <span class="hidden sm:inline">Ghép Chữ</span>
               </button>
               <button onclick="enterKaraokeMode()" class="px-4 py-1.5 text-xs font-semibold bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg shadow-soft hover:shadow-fun transition-all hover:-translate-y-0.5 flex items-center gap-1.5">
@@ -316,6 +284,7 @@
           <!-- Header -->
           <div class="flex items-center justify-between mb-6 pb-6 border-b border-gray-100 dark:border-zinc-700">
             <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-purple-500 text-2xl">puzzle</span>
               <div>
                 <h2 class="text-2xl font-bold text-text-main dark:text-white">Ghép Chữ</h2>
                 <p class="text-xs text-text-secondary">Sắp xếp lại các chữ để tạo thành câu đúng</p>
@@ -333,14 +302,15 @@
             <div>
               <p class="text-sm font-semibold text-text-secondary mb-2">Câu <span id="puzzleCurrentIndex">1</span> / <span id="puzzleTotalCount">0</span></p>
               <div class="p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-900/50">
-                <div class="flex items-start justify-between gap-2 mb-3">
-                  <div>
-                    <p class="text-sm text-text-secondary dark:text-gray-400 mb-2">Gốc: <span id="puzzleOriginal" class="font-semibold text-primary text-lg"></span></p>
-                    <p class="text-xs text-text-secondary dark:text-gray-500 mb-2">Phiên âm: <span id="puzzlePinyin" class="italic text-blue-600 dark:text-blue-300"></span></p>
-                    <p class="text-sm text-text-secondary dark:text-gray-400">Dịch: <span id="puzzleVietnamese" class="italic text-primary"></span></p>
+                <div class="flex items-start justify-between gap-2">
+                  <div class="flex-1">
+                    <p class="text-sm text-text-secondary dark:text-gray-400 mb-2 hidden">Gốc: <span id="puzzleOriginal" class="font-semibold text-primary text-lg"></span></p>
+                    <p class="text-sm text-text-secondary dark:text-gray-500 mb-2"><span class="font-semibold">Dịch: </span><span id="puzzleVietnamese" class="italic text-blue-600 dark:text-blue-300"></span></p>
+                    <p id="puzzlePinyinContainer" class="text-xs text-text-secondary dark:text-gray-400 hidden transition-all duration-300">Phiên âm: <span id="puzzlePinyin" class="italic text-purple-600 dark:text-purple-300"></span></p>
                   </div>
-                  <button onclick="showPinyinHint()" title="Gợi ý Phiên âm" class="hint-button flex-shrink-0">
-                    <span class="material-symbols-outlined text-sm inline mr-1">lightbulb</span>Gợi ý
+                  <button onclick="showPinyinHint()" title="Gợi ý Phiên âm" class="hint-button flex-shrink-0 px-3 py-1.5 text-xs font-medium bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded-lg hover:bg-yellow-200 dark:hover:bg-yellow-900/50 transition-all flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-sm">lightbulb</span>
+                    <span class="hidden sm:inline">Gợi ý</span>
                   </button>
                 </div>
               </div>
@@ -369,7 +339,11 @@
               <span class="material-symbols-outlined text-lg">refresh</span>
               Làm lại
             </button>
-            <button onclick="moveToNextPuzzle()" class="flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-xl font-bold shadow-soft hover:shadow-fun transition-all hover:-translate-y-0.5">
+            <button onclick="checkPuzzleAnswer()" class="flex items-center gap-2 px-6 py-3 bg-primary text-text-main rounded-xl font-bold shadow-fun hover:shadow-fun-hover transition-all hover:-translate-y-0.5">
+              <span class="material-symbols-outlined text-lg">check_circle</span>
+              Kiểm tra
+            </button>
+            <button onclick="nextPuzzleLine()" class="flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-xl font-bold shadow-soft hover:shadow-fun transition-all hover:-translate-y-0.5">
               <span class="material-symbols-outlined text-lg">navigate_next</span>
               Tiếp theo
             </button>
@@ -385,142 +359,6 @@
 <!-- Toast Container -->
 <div id="toastContainer" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-<!-- Result Modal (for each question) -->
-<div id="resultModal" class="hidden modal-backdrop" onclick="if(event.target === this) closeResultModal()">
-  <div class="modal-content">
-    <!-- Result Header -->
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <h2 class="text-2xl font-bold text-text-main dark:text-white mb-2">Kết quả câu hỏi</h2>
-        <div id="resultBadge" class="result-badge result-correct">
-          <span class="material-symbols-outlined text-lg inline mr-1">check_circle</span>
-          <span id="resultText">Chính xác!</span>
-        </div>
-      </div>
-      <button onclick="closeResultModal()" class="text-2xl text-text-secondary hover:text-text-main dark:hover:text-white transition-colors">
-        ✕
-      </button>
-    </div>
-
-    <!-- Result Details -->
-    <div class="space-y-4 mb-6">
-      <!-- Correct Answer -->
-      <div class="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-900/50">
-        <p class="text-xs font-semibold text-green-700 dark:text-green-300 mb-1">✓ Câu đúng</p>
-        <p class="text-sm font-bold text-primary"><span id="resultOriginal"></span></p>
-        <p class="text-xs text-text-secondary dark:text-gray-400 mt-1"><span id="resultPinyin" class="italic text-blue-600 dark:text-blue-300"></span></p>
-      </div>
-
-      <!-- User Answer -->
-      <div id="userAnswerSection" class="hidden p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/50">
-        <p class="text-xs font-semibold text-red-700 dark:text-red-300 mb-1">✗ Câu của bạn</p>
-        <p class="text-sm font-bold text-red-600 dark:text-red-400"><span id="resultUserAnswer"></span></p>
-      </div>
-
-      <!-- Vietnamese Translation -->
-      <div class="p-3 rounded-lg bg-gray-50 dark:bg-zinc-800/50 border border-gray-200 dark:border-zinc-700">
-        <p class="text-xs font-semibold text-text-secondary mb-1">Dịch nghĩa</p>
-        <p class="text-sm text-text-secondary dark:text-gray-300"><span id="resultVietnamese"></span></p>
-      </div>
-    </div>
-
-    <!-- Action Buttons -->
-    <div class="flex gap-3">
-      <button onclick="retryCurrentPuzzle()" class="flex-1 px-4 py-2.5 bg-gray-200 dark:bg-zinc-700 text-text-main dark:text-white rounded-lg font-semibold hover:bg-gray-300 dark:hover:bg-zinc-600 transition-all flex items-center justify-center gap-2">
-        <span class="material-symbols-outlined text-lg">refresh</span>
-        Thử lại
-      </button>
-      <button onclick="moveToNextPuzzle()" class="flex-1 px-4 py-2.5 bg-primary text-text-main rounded-lg font-semibold shadow-fun hover:shadow-fun-hover transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2">
-        <span class="material-symbols-outlined text-lg">navigate_next</span>
-        Tiếp theo
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- Completion Modal (when all puzzles are done) -->
-<div id="completionModal" class="hidden modal-backdrop" onclick="if(event.target === this) closeCompletionModal()">
-  <div class="modal-content">
-    <!-- Completion Header -->
-    <div class="text-center mb-6">
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex-1 flex justify-center">
-          <div class="text-6xl animate-bounce">🎉</div>
-        </div>
-        <button onclick="closeCompletionModal()" class="text-2xl text-text-secondary hover:text-text-main dark:hover:text-white transition-colors" title="Đóng">
-          ✕
-        </button>
-      </div>
-      <h2 class="text-3xl font-bold text-text-main dark:text-white mb-2">Hoàn thành!</h2>
-      <div class="result-badge result-correct mx-auto">
-        <span class="material-symbols-outlined text-lg inline mr-1">emoji_events</span>
-        <span>Bạn đã hoàn thành trò chơi ghép chữ</span>
-      </div>
-    </div>
-
-    <!-- Completion Stats -->
-    <div class="space-y-3 mb-6">
-      <!-- Stats Grid -->
-      <div class="grid grid-cols-3 gap-2">
-        <div class="p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-900/50 text-center">
-          <p class="text-xs font-semibold text-blue-700 dark:text-blue-300 mb-1">Tổng</p>
-          <p class="text-2xl font-bold text-primary" id="completionTotal">0</p>
-        </div>
-        <div class="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-900/50 text-center">
-          <p class="text-xs font-semibold text-green-700 dark:text-green-300 mb-1">✓ Đúng</p>
-          <p class="text-2xl font-bold text-green-600 dark:text-green-400" id="completionCorrect">0</p>
-        </div>
-        <div class="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/50 text-center">
-          <p class="text-xs font-semibold text-red-700 dark:text-red-300 mb-1">✗ Sai</p>
-          <p class="text-2xl font-bold text-red-600 dark:text-red-400" id="completionWrong">0</p>
-        </div>
-      </div>
-
-      <!-- Skipped Stats -->
-      <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-900/20 border border-gray-200 dark:border-gray-800 text-center">
-        <p class="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">⭕ Chưa làm</p>
-        <p class="text-2xl font-bold text-gray-600 dark:text-gray-400" id="completionSkipped">0</p>
-      </div>
-
-      <!-- Percentage and Attempts -->
-      <div class="p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-900/50">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-xs font-semibold text-amber-700 dark:text-amber-300">Tỷ lệ chính xác</span>
-          <span class="text-xl font-bold text-amber-600 dark:text-amber-400" id="completionPercentage">0</span><span class="text-lg text-amber-600 dark:text-amber-400">%</span>
-        </div>
-        <p class="text-xs text-text-secondary dark:text-gray-400">⏱️ Lần thử: <span id="completionAttempts" class="font-bold text-primary">0</span></p>
-      </div>
-
-      <!-- Encouragement Message -->
-      <div class="p-3 rounded-lg bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border border-purple-200 dark:border-purple-900/50">
-        <p class="text-sm text-text-secondary dark:text-gray-300 italic" id="encouragementMessage">
-          Tuyệt vời! Bạn đã làm rất tốt! 🌟
-        </p>
-      </div>
-
-      <!-- Detailed Results List -->
-      <div class="max-h-48 overflow-y-auto space-y-2 p-2 bg-gray-50 dark:bg-zinc-900/50 rounded-lg border border-gray-200 dark:border-zinc-800">
-        <p class="text-xs font-semibold text-text-secondary dark:text-gray-400 mb-2 px-1">📋 Chi tiết từng câu:</p>
-        <div id="puzzleResultsList" class="space-y-2">
-          <!-- Results will be rendered here -->
-        </div>
-      </div>
-    </div>
-
-    <!-- Action Buttons -->
-    <div class="flex gap-3">
-      <button onclick="closeCompletionAndReturn()" class="flex-1 px-4 py-2.5 bg-gray-200 dark:bg-zinc-700 text-text-main dark:text-white rounded-lg font-semibold hover:bg-gray-300 dark:hover:bg-zinc-600 transition-all flex items-center justify-center gap-2">
-        <span class="material-symbols-outlined text-lg">arrow_back</span>
-        Quay lại
-      </button>
-      <button onclick="restartWordPuzzle()" class="flex-1 px-4 py-2.5 bg-primary text-text-main rounded-lg font-semibold shadow-fun hover:shadow-fun-hover transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2">
-        <span class="material-symbols-outlined text-lg">refresh</span>
-        Chơi lại
-      </button>
-    </div>
-  </div>
-</div>
-
 <script>
 // ==================== STATE ====================
 let dialogueData = null;
@@ -534,8 +372,7 @@ let selectedRate = 0.8;
 let isWordPuzzleMode = false;
 let wordPuzzleData = null;
 let selectedWordPuzzleIndex = 0;
-let puzzleAttempts = 0;
-let puzzleResults = [];  // Track result of each puzzle
+let showPinyinHints = {}; // Track which puzzles have shown pinyin
 
 // ==================== INITIALIZE ====================
 document.addEventListener('DOMContentLoaded', async function() {
@@ -543,34 +380,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     console.log('📄 DOM Loaded - Initializing Dialogue View');
     renderSidebar('dialogues', null);
     
-    // Ensure all modals are hidden on page load
-    const resultModal = document.getElementById('resultModal');
-    const completionModal = document.getElementById('completionModal');
-    if (resultModal) {
-      resultModal.classList.add('hidden');
-      resultModal.style.display = 'none';
-    }
-    if (completionModal) {
-      completionModal.classList.add('hidden');
-      completionModal.style.display = 'none';
-    }
-    
     // Initialize voice dropdown
     initializeVoiceSelect();
-    
-    // Add escape key listener to close modals
-    document.addEventListener('keydown', function(event) {
-      if (event.key === 'Escape') {
-        const resultModal = document.getElementById('resultModal');
-        const completionModal = document.getElementById('completionModal');
-        
-        if (resultModal && !resultModal.classList.contains('hidden')) {
-          closeResultModal();
-        } else if (completionModal && !completionModal.classList.contains('hidden')) {
-          closeCompletionModal();
-        }
-      }
-    });
     
     // Get dialogue data from session storage or URL params
     const sessionData = sessionStorage.getItem('dialogueGameData');
@@ -619,50 +430,30 @@ function initializeVoiceSelect() {
   const voiceSelect = document.getElementById('voiceSelect');
   if (!voiceSelect) return;
 
-  function populateVoices() {
-    // Clear existing options
-    voiceSelect.innerHTML = '<option value="">-- Giọng đọc --</option>';
-    
-    // Get available voices
-    let voices = speechSynthesis.getVoices();
-    
-    // Filter Chinese voices
-    const chineseVoices = voices.filter(v => v.lang.includes('zh') || v.lang.includes('CN') || v.lang.includes('Mandarin'));
-    
-    // Use Chinese voices if available, otherwise use all voices
-    const voicesToUse = chineseVoices.length > 0 ? chineseVoices : voices;
-    
-    // If still no voices, show message
-    if (voicesToUse.length === 0) {
-      voiceSelect.innerHTML = '<option value="">Không có giọng khả dụng</option>';
-      return;
-    }
-    
-    // Add voice options
-    voicesToUse.forEach((voice, index) => {
-      const option = document.createElement('option');
-      option.value = index.toString();
-      option.textContent = `${voice.name} (${voice.lang})`;
-      voiceSelect.appendChild(option);
-    });
-
-    // Set default voice if available
-    if (voicesToUse.length > 0) {
-      selectedVoice = voicesToUse[0];
-      voiceSelect.addEventListener('change', (e) => {
-        const index = parseInt(e.target.value);
-        if (voicesToUse[index]) {
-          selectedVoice = voicesToUse[index];
-        }
-      });
-    }
-  }
-
-  // Populate voices immediately
-  populateVoices();
+  // Get available voices
+  const voices = speechSynthesis.getVoices();
+  const chineseVoices = voices.filter(v => v.lang.includes('zh') || v.lang.includes('CN'));
   
-  // Also listen for voiceschanged event (some browsers load voices asynchronously)
-  speechSynthesis.onvoiceschanged = populateVoices;
+  // If no Chinese voices, show all available
+  const voicesToUse = chineseVoices.length > 0 ? chineseVoices : voices;
+  
+  voicesToUse.forEach((voice, index) => {
+    const option = document.createElement('option');
+    option.value = index.toString();
+    option.textContent = `${voice.name} (${voice.lang})`;
+    voiceSelect.appendChild(option);
+  });
+
+  // Set default voice if available
+  if (voicesToUse.length > 0) {
+    selectedVoice = voicesToUse[0];
+    voiceSelect.addEventListener('change', (e) => {
+      const index = parseInt(e.target.value);
+      if (voicesToUse[index]) {
+        selectedVoice = voicesToUse[index];
+      }
+    });
+  }
 }
 
 // ==================== DIALOGUE INITIALIZATION ====================
@@ -952,16 +743,8 @@ function goBack() {
 
 // ==================== WORD PUZZLE MODE ====================
 function enterWordPuzzleMode() {
-  // Safety check
-  if (!dialogueEntries || dialogueEntries.length === 0) {
-    showToast('Lỗi: Không tìm thấy dữ liệu cuộc thoại', 'error');
-    return;
-  }
-
   isWordPuzzleMode = true;
   selectedWordPuzzleIndex = 0;
-  puzzleAttempts = 0;
-  puzzleResults = [];  // Reset results
 
   // Hide list mode, show word puzzle mode
   document.getElementById('listModeContainer').classList.add('hidden');
@@ -971,18 +754,10 @@ function enterWordPuzzleMode() {
   wordPuzzleData = dialogueEntries.map(entry => ({
     ...entry,
     original: entry.hanzi,
-    pinyin: entry.pinyin,
     vietnamese: entry.vietnamese,
     shuffled: shuffleText(entry.hanzi),
     answered: ''
   }));
-
-  // Validate puzzle data
-  if (!wordPuzzleData || wordPuzzleData.length === 0) {
-    showToast('Lỗi: Không thể tạo dữ liệu puzzle', 'error');
-    exitWordPuzzleMode();
-    return;
-  }
 
   // Load first puzzle
   loadPuzzle(0);
@@ -993,18 +768,6 @@ function enterWordPuzzleMode() {
 function exitWordPuzzleMode() {
   isWordPuzzleMode = false;
   
-  // Hide all modals
-  const resultModal = document.getElementById('resultModal');
-  const completionModal = document.getElementById('completionModal');
-  if (resultModal) {
-    resultModal.classList.add('hidden');
-    resultModal.style.display = 'none';
-  }
-  if (completionModal) {
-    completionModal.classList.add('hidden');
-    completionModal.style.display = 'none';
-  }
-  
   // Show list mode, hide word puzzle mode
   document.getElementById('listModeContainer').classList.remove('hidden');
   document.getElementById('wordPuzzleModeContainer').classList.add('hidden');
@@ -1013,20 +776,9 @@ function exitWordPuzzleMode() {
 }
 
 function shuffleText(text) {
-  // Safety check
-  if (!text || typeof text !== 'string') {
-    console.error('Invalid text for shuffle:', text);
-    return [];
-  }
-
   // Convert text to array, remove spaces and punctuation, shuffle
   const chars = text.split('').filter(c => c.trim() !== '' && !/[，？！。]/.test(c));
   
-  // If no characters, return empty array
-  if (chars.length === 0) {
-    return [];
-  }
-
   // Fisher-Yates shuffle
   for (let i = chars.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -1037,13 +789,6 @@ function shuffleText(text) {
 }
 
 function loadPuzzle(index) {
-  // Safety check
-  if (!wordPuzzleData || wordPuzzleData.length === 0) {
-    console.error('Puzzle data not found');
-    showToast('Lỗi: Không tìm thấy dữ liệu câu hỏi', 'error');
-    return;
-  }
-
   if (index >= wordPuzzleData.length) {
     showToast('🎉 Hoàn thành tất cả các câu!', 'success');
     return;
@@ -1056,350 +801,89 @@ function loadPuzzle(index) {
   document.getElementById('puzzleCurrentIndex').textContent = index + 1;
   document.getElementById('puzzleTotalCount').textContent = wordPuzzleData.length;
   document.getElementById('puzzleOriginal').textContent = puzzle.original;
-  document.getElementById('puzzlePinyin').textContent = puzzle.pinyin;
   document.getElementById('puzzleVietnamese').textContent = puzzle.vietnamese;
+  document.getElementById('puzzlePinyin').textContent = puzzle.pinyin;
 
+  // Reset pinyin hint visibility for new puzzle
+  document.getElementById('puzzlePinyinContainer').classList.add('hidden');
+  
   // Clear answer box and render words
   resetPuzzle();
 }
 
 function resetPuzzle() {
-  // Safety check
-  if (!wordPuzzleData || !wordPuzzleData[selectedWordPuzzleIndex]) {
-    console.error('Puzzle data not found');
-    showToast('Lỗi: Không tìm thấy dữ liệu câu hỏi', 'error');
-    return;
-  }
-
   const puzzle = wordPuzzleData[selectedWordPuzzleIndex];
   
   // Clear answer box
   document.getElementById('puzzleAnswerBox').innerHTML = '';
   puzzle.answered = '';
 
-  // Render words - enable all words
+  // Render words
   const container = document.getElementById('puzzleWordsContainer');
   container.innerHTML = puzzle.shuffled.map((char, idx) => `
-    <div class="word-item" onclick="selectWord(this, '${char}')" style="opacity: 1; cursor: pointer;">
+    <div class="word-item" onclick="selectWord(this, '${char}')">
       ${char}
     </div>
   `).join('');
 }
 
 function selectWord(element, char) {
-  // Safety check
-  if (!wordPuzzleData || !wordPuzzleData[selectedWordPuzzleIndex]) {
-    console.error('Puzzle data not found');
-    return;
-  }
-
-  // Prevent selection if already selected
-  if (element.classList.contains('selected')) {
-    return;
-  }
-
   const puzzle = wordPuzzleData[selectedWordPuzzleIndex];
   const answerBox = document.getElementById('puzzleAnswerBox');
   
-  // Create answer item (không có onclick để xóa)
+  // Create answer item
   const answerItem = document.createElement('div');
   answerItem.className = 'answer-item';
   answerItem.textContent = char;
-  answerItem.style.cursor = 'default';  // Không thể xóa
+  answerItem.onclick = () => {
+    answerItem.remove();
+    puzzle.answered = puzzle.answered.split(char).join('');
+    element.classList.remove('selected');
+    if (!document.body.contains(element)) {
+      // Re-render if removed
+      resetPuzzle();
+    }
+  };
   
   answerBox.appendChild(answerItem);
   puzzle.answered += char;
-  
-  // Disable word item - không click được nữa
   element.classList.add('selected');
-  element.style.opacity = '0.5';
-  element.style.cursor = 'not-allowed';
-  element.onclick = null;  // Remove click handler
-}
-
-function showPinyinHint() {
-  // Safety check
-  if (!wordPuzzleData || !wordPuzzleData[selectedWordPuzzleIndex]) {
-    console.error('Puzzle data not found');
-    showToast('Lỗi: Không tìm thấy dữ liệu câu hỏi', 'error');
-    return;
-  }
-
-  const puzzle = wordPuzzleData[selectedWordPuzzleIndex];
-  showToast(`Gợi ý: ${puzzle.pinyin}`, 'info');
 }
 
 function checkPuzzleAnswer() {
-  // Function kept for compatibility but not used in new logic
-  // Save and move to next instead
-  moveToNextPuzzle();
-}
-
-function showResultModal(isCorrect, puzzle) {
-  // Safety check
-  if (!puzzle) {
-    console.error('Puzzle object not found');
-    showToast('Lỗi: Không tìm thấy dữ liệu câu hỏi', 'error');
-    return;
-  }
-
-  const modal = document.getElementById('resultModal');
-  const badge = document.getElementById('resultBadge');
-  const resultText = document.getElementById('resultText');
-  const userAnswerSection = document.getElementById('userAnswerSection');
-
-  // Update badge
-  if (isCorrect) {
-    badge.className = 'result-badge result-correct';
-    resultText.textContent = '✓ Chính xác!';
-    resultText.innerHTML = '<span class="material-symbols-outlined text-lg inline mr-1">check_circle</span>Chính xác!';
-    userAnswerSection.classList.add('hidden');
-  } else {
-    badge.className = 'result-badge result-wrong';
-    resultText.textContent = '✗ Chưa đúng';
-    resultText.innerHTML = '<span class="material-symbols-outlined text-lg inline mr-1">cancel</span>Chưa đúng';
-    userAnswerSection.classList.remove('hidden');
-    document.getElementById('resultUserAnswer').textContent = puzzle.answered || '(trống)';
-  }
-
-  // Update details
-  document.getElementById('resultOriginal').textContent = puzzle.original;
-  document.getElementById('resultPinyin').textContent = puzzle.pinyin;
-  document.getElementById('resultVietnamese').textContent = puzzle.vietnamese;
-
-  // Show modal
-  modal.classList.remove('hidden');
-}
-
-function closeResultModal() {
-  const modal = document.getElementById('resultModal');
-  if (modal) {
-    modal.classList.add('hidden');
-  }
-}
-
-function retryCurrentPuzzle() {
-  if (!wordPuzzleData || !wordPuzzleData[selectedWordPuzzleIndex]) {
-    console.error('Puzzle data not found');
-    closeResultModal();
-    return;
-  }
-
-  closeResultModal();
-  resetPuzzle();
-}
-
-function saveCurrentAnswer() {
-  // Safety check
-  if (!wordPuzzleData || !wordPuzzleData[selectedWordPuzzleIndex]) {
-    console.error('Puzzle data not found');
-    return;
-  }
-
   const puzzle = wordPuzzleData[selectedWordPuzzleIndex];
   const cleanOriginal = puzzle.original.replace(/[，？！。\s]/g, '');
   const cleanAnswered = puzzle.answered.replace(/[，？！。\s]/g, '');
-  const isCorrect = cleanAnswered === cleanOriginal;
 
-  // Track result for each puzzle
-  puzzleResults[selectedWordPuzzleIndex] = {
-    index: selectedWordPuzzleIndex,
-    hanzi: puzzle.original,
-    pinyin: puzzle.pinyin,
-    vietnamese: puzzle.vietnamese,
-    isCorrect: isCorrect,
-    userAnswer: puzzle.answered,
-    attempts: 1
-  };
-
-  // Increase attempts
-  puzzleAttempts++;
-}
-
-function moveToNextPuzzle() {
-  if (!wordPuzzleData || wordPuzzleData.length === 0) {
-    console.error('Puzzle data not found');
-    return;
-  }
-
-  // Save current answer before moving
-  saveCurrentAnswer();
-  nextPuzzleLine();
-}
-
-function showCompletionModal() {
-  const modal = document.getElementById('completionModal');
-  const totalElement = document.getElementById('completionTotal');
-  const attemptsElement = document.getElementById('completionAttempts');
-  const resultsList = document.getElementById('puzzleResultsList');
-
-  if (!modal) {
-    console.error('Completion modal not found');
-    return;
-  }
-
-  // Update stats
-  const correctCount = puzzleResults.filter(r => r.isCorrect).length;
-  const wrongCount = puzzleResults.filter(r => !r.isCorrect).length;
-  const skippedCount = wordPuzzleData.length - puzzleResults.length;
-  
-  totalElement.textContent = wordPuzzleData.length;
-  attemptsElement.textContent = puzzleAttempts;
-
-  // Update correct/wrong/skipped stats
-  document.getElementById('completionCorrect').textContent = correctCount;
-  document.getElementById('completionWrong').textContent = wrongCount;
-  
-  // Add skipped count display if exists
-  const skippedElement = document.getElementById('completionSkipped');
-  if (skippedElement) {
-    skippedElement.textContent = skippedCount;
-  }
-  
-  const percentage = Math.round((correctCount / wordPuzzleData.length) * 100);
-  document.getElementById('completionPercentage').textContent = percentage;
-
-  // Generate encouragement message based on attempts
-  const encouragement = generateEncouragement(wordPuzzleData.length, puzzleAttempts);
-  document.getElementById('encouragementMessage').textContent = encouragement;
-
-  // Render detailed results list
-  if (resultsList) {
-    let html = '';
-
-    // Display completed results (correct answers)
-    const correctResults = puzzleResults.filter(r => r.isCorrect);
-    if (correctResults.length > 0) {
-      html += '<div class="mb-4"><p class="text-xs font-bold text-green-700 dark:text-green-300 mb-2">✅ ĐÚNG</p>';
-      html += correctResults.map(result => `
-        <div class="flex items-start gap-3 p-3 mb-2 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-900/50">
-          <div class="flex-shrink-0 mt-0.5">
-            <span class="material-symbols-outlined text-xl text-green-600 dark:text-green-400">check_circle</span>
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-baseline gap-2 mb-1">
-              <span class="text-sm font-semibold text-text-main dark:text-white">Câu ${result.index + 1}:</span>
-              <span class="text-lg font-bold text-primary">${result.hanzi}</span>
-              <span class="text-xs text-text-secondary dark:text-gray-400 italic">${result.vietnamese}</span>
-            </div>
-            <p class="text-xs text-text-secondary dark:text-gray-400 mb-1">🔤 Pinyin: ${result.pinyin || 'N/A'}</p>
-            <p class="text-xs text-green-600 dark:text-green-400 font-semibold">✓ Đúng ngay từ lần đầu</p>
-          </div>
-        </div>
-      `).join('');
-      html += '</div>';
-    }
-
-    // Display wrong results
-    const wrongResults = puzzleResults.filter(r => !r.isCorrect);
-    if (wrongResults.length > 0) {
-      html += '<div class="mb-4"><p class="text-xs font-bold text-red-700 dark:text-red-300 mb-2">❌ SAI</p>';
-      html += wrongResults.map(result => `
-        <div class="flex items-start gap-3 p-3 mb-2 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/50">
-          <div class="flex-shrink-0 mt-0.5">
-            <span class="material-symbols-outlined text-xl text-red-600 dark:text-red-400">cancel</span>
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-baseline gap-2 mb-1">
-              <span class="text-sm font-semibold text-text-main dark:text-white">Câu ${result.index + 1}:</span>
-              <span class="text-lg font-bold text-primary">${result.hanzi}</span>
-              <span class="text-xs text-text-secondary dark:text-gray-400 italic">${result.vietnamese}</span>
-            </div>
-            <p class="text-xs text-text-secondary dark:text-gray-400 mb-1">🔤 Pinyin: ${result.pinyin || 'N/A'}</p>
-            <p class="text-xs text-red-600 dark:text-red-400 font-semibold">❌ Bạn trả lời: <span class="font-mono">${result.userAnswer || '(trống)'}</span></p>
-          </div>
-        </div>
-      `).join('');
-      html += '</div>';
-    }
-
-    // Display skipped (not attempted) results
-    const skippedIndices = new Set(wordPuzzleData.map((_, idx) => idx));
-    puzzleResults.forEach(r => skippedIndices.delete(r.index));
-    
-    if (skippedIndices.size > 0) {
-      const skippedResults = Array.from(skippedIndices).map(idx => wordPuzzleData[idx]);
-      html += '<div><p class="text-xs font-bold text-gray-700 dark:text-gray-300 mb-2">⭕ CHƯA LÀM</p>';
-      html += skippedResults.map((puzzle, relIdx) => {
-        const absoluteIdx = wordPuzzleData.indexOf(puzzle);
-        return `
-        <div class="flex items-start gap-3 p-3 mb-2 rounded-lg bg-gray-50 dark:bg-gray-900/20 border border-gray-200 dark:border-gray-800">
-          <div class="flex-shrink-0 mt-0.5">
-            <span class="material-symbols-outlined text-xl text-gray-500 dark:text-gray-400">radio_button_unchecked</span>
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-baseline gap-2 mb-1">
-              <span class="text-sm font-semibold text-text-main dark:text-white">Câu ${absoluteIdx + 1}:</span>
-              <span class="text-lg font-bold text-primary">${puzzle.hanzi}</span>
-              <span class="text-xs text-text-secondary dark:text-gray-400 italic">${puzzle.vietnamese}</span>
-            </div>
-            <p class="text-xs text-text-secondary dark:text-gray-400 mb-1">🔤 Pinyin: ${puzzle.pinyin || 'N/A'}</p>
-            <p class="text-xs text-gray-500 dark:text-gray-400 italic">⭕ Chưa hoàn thành</p>
-          </div>
-        </div>
-      `;
-      }).join('');
-      html += '</div>';
-    }
-
-    resultsList.innerHTML = html;
-  }
-
-  // Show modal - remove hidden class and ensure display
-  modal.classList.remove('hidden');
-  modal.style.display = 'flex';
-}
-
-function generateEncouragement(total, attempts) {
-  const attemptPerQuestion = Math.round(attempts / total);
-  
-  if (attemptPerQuestion <= 1) {
-    return '🌟 Tuyệt vời! Bạn đã làm hoàn hảo từ lần thứ nhất!';
-  } else if (attemptPerQuestion <= 1.5) {
-    return '⭐ Rất tốt! Bạn chỉ cần vài lần thử để hoàn thành!';
-  } else if (attemptPerQuestion <= 2.5) {
-    return '👏 Tốt lắm! Bạn đã nỗ lực và đạt được kết quả!';
+  if (cleanAnswered === cleanOriginal) {
+    showToast('✅ Chính xác!', 'success');
+    // Auto-move to next after 1.5 seconds
+    setTimeout(() => nextPuzzleLine(), 1500);
   } else {
-    return '💪 Cố gắng tốt! Tiếp tục luyện tập để cải thiện hơn!';
+    showToast('❌ Chưa đúng, hãy thử lại!', 'error');
   }
-}
-
-function closeCompletionModal() {
-  const modal = document.getElementById('completionModal');
-  if (modal) {
-    modal.classList.add('hidden');
-    // Ensure modal is properly hidden
-    modal.style.display = 'none';
-  }
-}
-
-function closeCompletionAndReturn() {
-  closeCompletionModal();
-  exitWordPuzzleMode();
-}
-
-function restartWordPuzzle() {
-  const modal = document.getElementById('completionModal');
-  if (modal) {
-    modal.classList.add('hidden');
-    modal.style.display = 'none';
-  }
-  enterWordPuzzleMode();
 }
 
 function nextPuzzleLine() {
-  // Safety check
-  if (!wordPuzzleData || wordPuzzleData.length === 0) {
-    console.error('Puzzle data not found');
-    showToast('Lỗi: Không tìm thấy dữ liệu câu hỏi', 'error');
-    return;
-  }
-
   if (selectedWordPuzzleIndex < wordPuzzleData.length - 1) {
     loadPuzzle(selectedWordPuzzleIndex + 1);
   } else {
-    // Show completion modal
-    showCompletionModal();
+    showToast('🎉 Hoàn thành tất cả các câu!', 'success');
+    setTimeout(() => exitWordPuzzleMode(), 2000);
+  }
+}
+
+// ==================== PUZZLE HINT ====================
+function showPinyinHint() {
+  const container = document.getElementById('puzzlePinyinContainer');
+  const isHidden = container.classList.contains('hidden');
+  
+  if (isHidden) {
+    container.classList.remove('hidden');
+    showToast('💡 Đã hiển thị phiên âm', 'info');
+  } else {
+    container.classList.add('hidden');
+    showToast('💡 Đã ẩn phiên âm', 'info');
   }
 }
 </script>

@@ -1194,13 +1194,13 @@ function addWordRow(hanziVal = '', pinyinVal = '', meaningVal = '') {
   const id  = 'row_' + (++customWordRowCount);
   const row = document.createElement('div');
   row.id    = id;
-  row.className = 'grid grid-cols-[2fr_2fr_3fr_40px] gap-2 items-center';
+  row.className = 'grid grid-cols-[1fr_1fr_1fr_40px] sm:grid-cols-[1.5fr_1.5fr_1.5fr_40px] lg:grid-cols-[2fr_2fr_3fr_40px] gap-2 items-center';
   row.innerHTML = `
-    <input type="text" class="px-3 py-2 text-sm rounded-xl border-2 border-gray-200 dark:border-zinc-700
+    <input type="text" class="px-4 py-3 text-base rounded-xl border-2 border-gray-200 dark:border-zinc-700
       bg-white dark:bg-card-dark focus:border-primary outline-none transition-all" placeholder="Chữ" value="${esc(hanziVal)}" oninput="updateWordCount()" />
-    <input type="text" class="px-3 py-2 text-sm rounded-xl border-2 border-gray-200 dark:border-zinc-700
+    <input type="text" class="px-4 py-3 text-base rounded-xl border-2 border-gray-200 dark:border-zinc-700
       bg-white dark:bg-card-dark focus:border-primary outline-none transition-all" placeholder="Pinyin" value="${esc(pinyinVal)}" />
-    <input type="text" class="px-3 py-2 text-sm rounded-xl border-2 border-gray-200 dark:border-zinc-700
+    <input type="text" class="px-4 py-3 text-base rounded-xl border-2 border-gray-200 dark:border-zinc-700
       bg-white dark:bg-card-dark focus:border-primary outline-none transition-all" placeholder="Nghĩa" value="${esc(meaningVal)}" oninput="updateWordCount()" />
     <button onclick="removeWordRow('${id}')"
       class="w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-400 transition-colors rounded-xl">
